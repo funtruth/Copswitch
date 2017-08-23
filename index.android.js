@@ -21,6 +21,9 @@ export default class Huddle extends Component {
   render() {
     return (
       <View style={styles.container}>
+        <Text>
+          dumb
+        </Text>
         <LoginButton
           publishPermissions={["publish_actions"]}
           onLoginFinished={
