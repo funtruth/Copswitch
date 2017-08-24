@@ -1,18 +1,19 @@
-/*
 import React, { Component } from 'react';
+
 import {
-  AppRegistry,
   StyleSheet,
   Text,
   View
 } from 'react-native';
+
+import styles from '../Styles';
 
 const FBSDK = require('react-native-fbsdk');
 const {
   LoginButton,
 } = FBSDK;
 
-export default class Huddle extends Component {
+export default class FBLogin extends Component {
   render() {
     return (
       <View style={styles.container}>
@@ -36,4 +37,4 @@ export default class Huddle extends Component {
       </View>
     );
   }
-}*/
+}
