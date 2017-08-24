@@ -3,23 +3,31 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   Text,
-  View
+  View,
+  Button
 } from 'react-native';
 
 import styles from '../Styles';
+
+import RNFirebase from 'react-native-firebase';
 
 const FBSDK = require('react-native-fbsdk');
 const {
   LoginButton,
 } = FBSDK;
 
+const configurationOptions = {
+  debug: true
+};
+
+const firebase = RNFirebase.initializeApp(configurationOptions);
+
+
 export default class FBLogin extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Text>
-          dumb
-        </Text>
+
         <LoginButton
           publishPermissions={["publish_actions"]}
           onLoginFinished={
