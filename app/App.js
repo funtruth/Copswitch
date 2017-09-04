@@ -1,93 +1,39 @@
+'use strict';
 import React, { Component } from 'react';
 import firebase from './FirebaseController.js';
-import styles from './Styles';
-import User from './User';
-//import RNFirebase from 'react-native-firebase';
-
 import {
-    StyleSheet,
-    Text,
-    View,
-    Button 
-}   from 'react-native';
-/*
-const configurationOptions = {
-    debug: true
-  };
-  
-const firebase = RNFirebase.initializeApp(configurationOptions); */
+  AppRegistry,
+  Text,
+  View,
+  Navigator,
+  AsyncStorage
+} from 'react-native';
+import {DrawerNavigator} from 'react-navigation';
 
-const FBSDK = require('react-native-fbsdk');
-const {
-  LoginButton,
-  AccessToken,
-} = FBSDK; 
+//import Firebase from 'firebase';
 
-export default class App extends Component {
-    constructor(){
-        super();
-        const User = new Object();
-    }
+//let app = new Firebase("Huddle.firebaseio.com");
 
-    initUser(token) {
-        fetch('https://graph.facebook.com/v2.5/me?fields=email,name,friends&access_token=' + token)
-        .then((response) => response.json())
-        .then((json) => {
-            console.log(json)
-            User.name = json.name
-            User.id = json.id
-            //user.user_friends = json.friends
-            User.email = json.email
-            User.username = json.username
-            //user.loading = false
-            //user.loggedIn = true
-            //user.avatar = setAvatar(json.id)
-            console.log(User.name);
-            console.log(User.id);
-            console.log(User.email);
-            console.log(User.username);
-            this.saveUser()
-        })
-        .catch(() => {
-            reject('Error getting data from Facebook')
-        })
-    }
+import styles from './styles/Styles.js';
 
-    saveUser() {
-        firebase.database()
-        .ref('users/' + User.name)
-        .set({
-            name: User.name,
-            id: User.id,
-            email: User.email,
-            username: User.username
-        });
-    }
-    
-    render() {
-        return (
-            <View style={styles.container}>
-                <Text>
-                    Dumb
-                </Text>
-                <LoginButton
-                    publishPermissions={["publish_actions"]}
-                    onLoginFinished={
-                        (error, result) => {
-                            if (error) {
-                                alert("Login failed with error: " + result.error);
-                            } else if (result.isCancelled) {
-                                alert("Login was cancelled");
-                            } else {
-                                AccessToken.getCurrentAccessToken().then((data) => {
-                                    const { accessToken } = data
-                                    this.initUser(accessToken)
-                                })
-                            }
-                        }
-                    }
-                    onLogoutFinished={() => alert("User logged out")}/>
-            </View>
-        );
-    }
-}
+
+//Drawer
+import FirstScreen from './screens/FirstScreen.js';
+import SecondScreen from './screens/SecondScreen.js';
+
+const DrawerExample = DrawerNavigator(
+  {
+    First: {
+        screen: FirstScreen,
+    },
+    Second: {
+        screen: SecondScreen,
+    },
+  },
+  {
+    initialRouteName: 'First',
+    drawerPosition: 'left'
+  }
+);
+
+export default DrawerExample;

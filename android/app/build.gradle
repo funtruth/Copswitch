@@ -138,6 +138,7 @@ dependencies {
     transitive = false
   }
   compile "com.google.firebase:firebase-core:11.0.4"
+  //compile 'com.google.firebase:firebase-core:11.2.0'
 
   compile "com.google.android.gms:play-services-base:11.0.4"
 

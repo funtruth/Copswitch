@@ -4,9 +4,9 @@
  * @flow
  */
 
-//import FBLogin from './app/components/Login';
-import App from './app/App';
+//import Signup from './app/pages/signup.js';
+import DrawerExample from './app/App.js';
 import { AppRegistry } from 'react-native';
 
-AppRegistry.registerComponent('Huddle', () => App);
-//AppRegistry.registerComponent('Huddle', () => FBLogin);
+//AppRegistry.registerComponent('Huddle', () => Signup);
+AppRegistry.registerComponent('Huddle', () => DrawerExample);
