@@ -10,30 +10,42 @@ import {
 } from 'react-native';
 import {DrawerNavigator} from 'react-navigation';
 
-//import Firebase from 'firebase';
-
-//let app = new Firebase("Huddle.firebaseio.com");
-
 import styles from './styles/Styles.js';
 
 
-//Drawer
-import FirstScreen from './screens/FirstScreen.js';
-import SecondScreen from './screens/SecondScreen.js';
+//import Firebase from 'firebase';
+//let app = new Firebase("Huddle.firebaseio.com");
 
-const DrawerExample = DrawerNavigator(
+
+//Drawer
+import ProfileScreen from './screens/ProfileScreen.js';
+import SettingsScreen from './screens/SettingsScreen.js';
+import CreateScreen from './screens/CreateScreen.js';
+import JoinScreen from './screens/JoinScreen.js';
+import DeliveryScreen from './screens/DeliveryScreen.js';
+
+const DrawerNavigation = DrawerNavigator(
   {
-    First: {
-        screen: FirstScreen,
+    Profile: {
+        screen: ProfileScreen,
     },
-    Second: {
-        screen: SecondScreen,
+    Create: {
+      screen: CreateScreen,
+    },
+    Join: {
+      screen: JoinScreen,
+    },
+    Deliver: {
+      screen: DeliveryScreen,
+    },
+    Settings: {
+      screen: SettingsScreen,
     },
   },
   {
-    initialRouteName: 'First',
+    initialRouteName: 'Profile',
     drawerPosition: 'left'
   }
 );
 
-export default DrawerExample;
+export default DrawerNavigation;
