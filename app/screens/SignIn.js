@@ -15,11 +15,8 @@ export default ({ navigation }) => (
 
   <View style={{ paddingVertical: 20 }}>
     <Card>
-      <FormLabel>Email</FormLabel>
       <FormInput placeholder="Email address..." />
-      <FormLabel>Password</FormLabel>
       <FormInput secureTextEntry placeholder="Password..." />
-      <FormLabel>Confirm Password</FormLabel>
       <FormInput secureTextEntry placeholder="Confirm Password..." />
 
       <Button
@@ -36,7 +33,13 @@ export default ({ navigation }) => (
         title="Sign Up"
         onPress={() => navigation.navigate("SignUp")}
       />
-      <LoginButton 
+    </Card>
+    <View style={{
+        marginTop: 30,
+        alignItems: 'center'
+    }}
+    >
+    <LoginButton 
         publishPermissions={["publish_actions"]}
         onLoginFinished={
             (error, result) => {
@@ -53,6 +56,6 @@ export default ({ navigation }) => (
                 }
             }
         }/>
-    </Card>
+      </View>
   </View>
 );

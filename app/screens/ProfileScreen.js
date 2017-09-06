@@ -9,6 +9,9 @@ import {
 import { Card, Button, Text } from "react-native-elements";
 import { onSignOut } from "../auth";
 
+//Facebook
+import { LoginManager } from 'react-native-fbsdk'
+
 export default ({ navigation }) => (
     <View style={{ paddingVertical: 20 }}>
       <Card title="John Doe">

@@ -81,7 +81,6 @@ export const SignedOut = StackNavigator({
         screen: SignIn,
         navigationOptions: {
             drawerLabel: "Log Out",
-            //tabBarLabel: "Log Out",
             tabBarIcon: ({ tintColor }) =>
             <FontAwesome name="user" size={30} color={tintColor} />
         }
