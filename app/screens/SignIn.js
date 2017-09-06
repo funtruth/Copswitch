@@ -1,9 +1,10 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Keyboard } from "react-native";
 import { Card, Button, FormLabel, FormInput } from "react-native-elements";
 import { onSignIn } from "../auth";
 
 import styles from "../styles/Styles";
+import firebase from '../FirebaseController.js';
 
 const FBSDK = require('react-native-fbsdk');
 const {
@@ -11,27 +12,51 @@ const {
   AccessToken,
 } = FBSDK; 
 
-export default ({ navigation }) => (
+export default class SignInScreen extends React.Component {
 
-  <View style={{ paddingVertical: 20 }}>
+state = { 
+    email: '', 
+    password: '',
+    loading: false,
+    };
+
+render(){
+    return <View style={{ paddingVertical: 20 }}>
     <Card>
-      <FormInput placeholder="Email address..." />
-      <FormInput secureTextEntry placeholder="Password..." />
-      <FormInput secureTextEntry placeholder="Confirm Password..." />
+      <FormInput 
+        placeholder="Email address..." 
+        value={this.state.email}
+        onChangeText={email => this.setState({ email })}
+        />
+      <FormInput 
+        secureTextEntry 
+        placeholder="Password..." 
+        value={this.state.password}
+        onChangeText={password => this.setState({ password })}
+        />
 
       <Button
         buttonStyle={{ marginTop: 10 }}
         backgroundColor="#03A9F4"
         title="LOG IN"
         onPress={() => {
-          onSignIn().then(() => navigation.navigate("SignedIn"));
+            firebase.auth().signInWithEmailAndPassword(
+                this.state.email, this.state.password).then(() => 
+                    {
+                        this.props.navigation.navigate("SignedIn");
+                        Keyboard.dismiss();
+                    }
+                    ).catch((error)=>
+                    {
+                        alert('Login Failed');
+                    });
         }}
       />
       <Button
         backgroundColor="transparent"
         textStyle={{ color: "#bcbec1" }}
         title="Sign Up"
-        onPress={() => navigation.navigate("SignUp")}
+        onPress={() => this.props.navigation.navigate("SignUp")}
       />
     </Card>
     <View style={{
@@ -52,10 +77,10 @@ export default ({ navigation }) => (
                         //const { accessToken } = data
                         //this.initUser(accessToken)
                     //})
-                    onSignIn().then(() => navigation.navigate("SignedIn"));
+                    onSignIn().then(() => this.props.navigation.navigate("SignedIn"));
                 }
             }
         }/>
       </View>
-  </View>
-);
+  </View>}
+};

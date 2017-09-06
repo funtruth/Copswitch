@@ -1,5 +1,5 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Keyboard } from "react-native";
 import { Card, Button, FormLabel, FormInput } from "react-native-elements";
 import { onSignIn } from "../auth";
 
@@ -11,6 +11,7 @@ export default class SignUpScreen extends React.Component {
     email: '', 
     password: '',
     confirm: '',
+    loading: false,
   };
 
   render(){
@@ -22,7 +23,8 @@ export default class SignUpScreen extends React.Component {
         onChangeText={email => this.setState({ email })}
       />
       <FormInput 
-        secureTextEntry placeholder="Password..."
+        secureTextEntry 
+        placeholder="Password..."
         value={this.state.password}
         onChangeText={password => this.setState({ password })}
       />
@@ -38,9 +40,23 @@ export default class SignUpScreen extends React.Component {
         backgroundColor="#03A9F4"
         title="SIGN UP"
         onPress={() => {
-          firebase.auth().createUserWithEmailAndPassword(this.state.email,this.state.password)
-          onSignIn().then(() => this.props.navigation.navigate("SignIn"));
-
+          firebase.auth().createUserWithEmailAndPassword(
+            this.state.email,this.state.password).then(() =>{
+              this.setState({
+                email: '',
+                password: '',
+                loading: false
+                }),
+              alert('Your Account was Created!');
+              onSignIn().then(() => this.props.navigation.navigate("SignIn"));
+            }).catch((error) => {
+              this.setState({
+                loading: false,
+              })
+              alert('Account Creation Failed.');
+            });
+          
+          Keyboard.dismiss();
         }}
         />
     </Card>
