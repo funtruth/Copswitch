@@ -100,11 +100,6 @@ export default class ProfileScreen extends React.Component {
             //onSignOut().then(() => this.props.navigation.navigate("SignedOut"))}
           }}
         />
-        <Button
-            backgroundColor="#03A9F4"
-            onPress={() => this.props.navigation.navigate('DrawerOpen')}
-            title="Open Drawer Navigator"
-        />
       </Card>
     </View>}
     
