@@ -46,6 +46,7 @@ render(){
                         this.props.navigation.navigate("SignedIn");
                         Keyboard.dismiss();
                     }
+
                     ).catch((error)=>
                     {
                         alert('Login Failed');

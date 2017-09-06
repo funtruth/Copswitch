@@ -1,19 +1,9 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
-
 import React, { Component } from 'react';
 
 import Signup from './app/pages/signup.js';
 import DrawerExample from './app/App.js';
 import { AppRegistry } from 'react-native';
 
-//import { SignedOut } from './router.js'
-
-//New FB
 import { createRootNavigator } from "./router";
 import { isSignedIn } from "./app/auth";
 
@@ -27,13 +17,11 @@ export default class App extends React.Component {
         };
       }
     
-
     componentWillMount() {
     isSignedIn()
         .then(res => this.setState({ signedIn: res, checkedSignIn: true }))
         .catch(err => alert("An error occurred"));
     }
-
 
     render(){
         const { checkedSignIn, signedIn } = this.state;
@@ -48,7 +36,4 @@ export default class App extends React.Component {
     }
 }
 
-//AppRegistry.registerComponent('Huddle', () => Signup);
 AppRegistry.registerComponent('Huddle', () => App);
-//AppRegistry.registerComponent('Huddle', () => DrawerExample);
-//AppRegistry.registerComponent('Huddle', () => SignedOut);

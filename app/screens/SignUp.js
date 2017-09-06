@@ -48,7 +48,7 @@ export default class SignUpScreen extends React.Component {
                 loading: false
                 }),
               alert('Your Account was Created!');
-              onSignIn().then(() => this.props.navigation.navigate("SignIn"));
+              this.props.navigation.navigate("SignIn");
             }).catch((error) => {
               this.setState({
                 loading: false,
