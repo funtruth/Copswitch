@@ -8,7 +8,7 @@ import {
   Navigator,
   AsyncStorage
 } from 'react-native';
-import {DrawerNavigator} from 'react-navigation';
+import {TabNavigator} from 'react-navigation';
 
 import styles from './styles/Styles.js';
 
@@ -24,7 +24,7 @@ import CreateScreen from './screens/CreateScreen.js';
 import JoinScreen from './screens/JoinScreen.js';
 import DeliveryScreen from './screens/DeliveryScreen.js';
 
-const DrawerNavigation = DrawerNavigator(
+const DrawerNavigation = TabNavigator(
   {
     Profile: {
         screen: ProfileScreen,

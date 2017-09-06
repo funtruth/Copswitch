@@ -3,9 +3,12 @@ import React from 'react';
 import {
     View,
     Image,
-    AsyncStorage
+    AsyncStorage,
+    BackHandler,
+    ToastAndroid
 }   from 'react-native';
-//import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+
+import { NavigationActions } from 'react-navigation';
 
 import { Card, Button, Text } from "react-native-elements";
 import { onSignOut } from "../auth";
@@ -18,7 +21,6 @@ import firebase from '../FirebaseController.js';
 
 let context = this;
 
-
 export default class ProfileScreen extends React.Component {
   
   constructor(props) {
@@ -27,6 +29,8 @@ export default class ProfileScreen extends React.Component {
       user:null,
       loading: true,
     }
+    this.backButtonListener = null;
+    this.currentRouteName = 'Main';
   }
   
   componentWillMount() {
@@ -40,6 +44,29 @@ export default class ProfileScreen extends React.Component {
       });
     });
 
+
+    this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
+      if (this.currentRouteName !== 'Main') {
+          return false;
+      }
+        this.props.navigation.navigate('Profile');
+        return true;
+        _resetStack();
+  });
+}
+
+  componentWillUnmount() {
+    this.backButtonListener.remove();
+}
+
+  resetStack() {
+    const resetAction = NavigationActions.reset({
+      index: 0,
+      actions: [
+        NavigationActions.navigate({ routeName: 'Profile'})
+      ]
+    })
+    this.props.navigation.dispatch(resetAction)
   }
   
   render(){
@@ -67,8 +94,8 @@ export default class ProfileScreen extends React.Component {
             AsyncStorage.removeItem('userData').then(() => {
               onSignOut();
               firebase.auth().signOut;
-              //this.props.navigation.navigate('SignedOut');
-              context.props.navigator.pop();
+              this.props.navigation.navigate('SignedOut');
+              //context.props.navigator.pop();
             });
             //onSignOut().then(() => this.props.navigation.navigate("SignedOut"))}
           }}

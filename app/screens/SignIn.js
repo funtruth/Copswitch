@@ -6,6 +6,9 @@ import { onSignIn } from "../auth";
 import styles from "../styles/Styles";
 import firebase from '../FirebaseController.js';
 
+
+import { NavigationActions } from 'react-navigation';
+
 const FBSDK = require('react-native-fbsdk');
 const {
   LoginButton,

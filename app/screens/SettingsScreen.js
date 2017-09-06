@@ -4,11 +4,15 @@ import {
     Text,
     View,
     Button,
-    Image
+    Image,
+    AsyncStorage,
+    BackHandler
 }   from 'react-native';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default class SettingsScreen extends React.Component {
+
+    currentRouteName = 'Settings';
 
     render(){
         return <View style={
@@ -21,10 +25,6 @@ export default class SettingsScreen extends React.Component {
             <Text style={{fontSize: 30, color: 'blue'}}>
                 Settings
             </Text>
-            <Button
-                onPress={() => this.props.navigation.navigate('DrawerOpen')}
-                title="Open Drawer Navigator"
-            />
         </View>
 
     }

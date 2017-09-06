@@ -2,8 +2,12 @@
 
 import React from "react";
 import { Platform, StatusBar } from "react-native";
-import { StackNavigator, DrawerNavigator } from "react-navigation";
+import { StackNavigator, TabNavigator } from "react-navigation";
+
 import { FontAwesome } from "react-native-vector-icons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+
+import styles from "./app/styles/Styles";
 
 import SignUp from "./app/screens/SignUp";
 import SignIn from "./app/screens/SignIn";
@@ -35,59 +39,46 @@ export const SignedOut = StackNavigator({
     },
   });
   
-  export const SignedIn = DrawerNavigator(
+  export const SignedIn = TabNavigator(
     {
       Profile: {
         screen: Profile,
         navigationOptions: {
-            drawerLabel: "Profile",
-            tabBarIcon: ({ tintColor }) =>
-            <FontAwesome name="user" size={30} color={tintColor} />
+          tabBarLabel: "Profile",
+          tabBarIcon: ({ tintColor }) => <FontAwesome>{Icons.times}</FontAwesome>
         }
       },
       Join: {
         screen: Join,
         navigationOptions: {
-          tabBarLabel: "Home",
-          tabBarIcon: ({ tintColor }) =>
-            <FontAwesome name="home" size={30} color={tintColor} />
+          tabBarLabel: "Join",
+          tabBarIcon: ({tintColor}) => (<MaterialIcons size={24} color="white" name="person" />)
         }
       },
       Create: {
         screen: Create,
         navigationOptions: {
           tabBarLabel: "Create",
-          tabBarIcon: ({ tintColor }) =>
-            <FontAwesome name="home" size={30} color={tintColor} />
+          tabBarIcon: () => (<MaterialIcons size={24} color="white" name="person" />)
         }
       },
       Deliver: {
         screen: Deliver,
         navigationOptions: {
           tabBarLabel: "Deliver",
-          tabBarIcon: ({ tintColor }) =>
-            <FontAwesome name="user" size={30} color={tintColor} />
+          tabBarIcon: () => (<MaterialIcons size={24} color="white" name="person" />)
         }
       },
-      Settings: {
-        screen: Settings,
-        navigationOptions: {
-            drawerLabel: "Settings",
-            tabBarLabel: "Settings",
-            tabBarIcon: ({ tintColor }) =>
-            <FontAwesome name="user" size={30} color={tintColor} />
-        }
-      },
-      LogOut: {
-        screen: SignIn,
-        navigationOptions: {
-            drawerLabel: "Log Out",
-            tabBarIcon: ({ tintColor }) =>
-            <FontAwesome name="user" size={30} color={tintColor} />
-        }
-      },
+      //Settings: {
+      //  screen: Settings,
+      //  navigationOptions: {
+      //      tabBarLabel: "Settings",
+      //      tabBarIcon: () => (<MaterialIcons size={24} color="white" name="person" />)
+      //  }
+      //},
     },
     {
+      tabBarPosition: 'bottom',
       tabBarOptions: {
         style: {
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
