@@ -12,8 +12,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default class SettingsScreen extends React.Component {
 
-    currentRouteName = 'Settings';
-
     render(){
         return <View style={
             {

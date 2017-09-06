@@ -12,6 +12,7 @@ import { NavigationActions } from 'react-navigation';
 
 import { Card, Button, Text } from "react-native-elements";
 import { onSignOut } from "../auth";
+import Settings from './SettingsScreen'
 
 //Facebook
 import { LoginManager } from 'react-native-fbsdk'
@@ -51,23 +52,12 @@ export default class ProfileScreen extends React.Component {
       }
         this.props.navigation.navigate('Profile');
         return true;
-        _resetStack();
   });
 }
 
   componentWillUnmount() {
     this.backButtonListener.remove();
 }
-
-  resetStack() {
-    const resetAction = NavigationActions.reset({
-      index: 0,
-      actions: [
-        NavigationActions.navigate({ routeName: 'Profile'})
-      ]
-    })
-    this.props.navigation.dispatch(resetAction)
-  }
   
   render(){
     return <View style={{ paddingVertical: 20 }}>
@@ -92,14 +82,24 @@ export default class ProfileScreen extends React.Component {
           title="SIGN OUT"
           onPress={() => {
             AsyncStorage.removeItem('userData').then(() => {
-              onSignOut();
-              firebase.auth().signOut;
-              this.props.navigation.navigate('SignedOut');
-              //context.props.navigator.pop();
+              onSignOut().then(() => {
+                firebase.auth().signOut;
+                this.props.navigation.navigate('SignedOut');
+              })
             });
-            //onSignOut().then(() => this.props.navigation.navigate("SignedOut"))}
+            
           }}
         />
+
+        <Button
+          backgroundColor="#03A9F4"
+          title="Settings"
+          style={{
+            marginTop: 20
+          }}
+          //onPress={() => this.props.navigation.navigate("Settings")}
+        />
+
       </Card>
     </View>}
     
