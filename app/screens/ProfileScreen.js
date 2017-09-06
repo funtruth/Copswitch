@@ -1,45 +1,36 @@
 
 import React from 'react';
 import {
-    Text,
     View,
-    Button,
     Image
 }   from 'react-native';
 //import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-export default class ProfileScreen extends React.Component {
-    static navigationOptions = {
-        tabBarLabel: 'Profile',
-        //drawerIcon: () => {
-        //    return (
-        //        <MaterialIcons
-        //            name="card-membership"
-        //            size={24}
-        //            style={{color: tintColor}}
-        //        >
-        //        </MaterialIcons>
-        //    )
-        //}
-    }
+import { Card, Button, Text } from "react-native-elements";
+import { onSignOut } from "../auth";
 
-    render(){
-        return <View style={
-            {
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center'
-            }
-        }>
-            <Text style={{fontSize: 30, color: 'green'}}>
-                Profile
-            </Text>
-            <Button
-                onPress={() => this.props.navigation.navigate('DrawerOpen')}
-                title="Open Drawer Navigator"
-            />
+export default ({ navigation }) => (
+    <View style={{ paddingVertical: 20 }}>
+      <Card title="John Doe">
+        <View
+          style={{
+            backgroundColor: "#bcbec1",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 80,
+            height: 80,
+            borderRadius: 40,
+            alignSelf: "center",
+            marginBottom: 20
+          }}
+        >
+          <Text style={{ color: "white", fontSize: 28 }}>JD</Text>
         </View>
-
-    }
-
-}
+        <Button
+          backgroundColor="#03A9F4"
+          title="SIGN OUT"
+          onPress={() => onSignOut().then(() => navigation.navigate("SignedOut"))}
+        />
+      </Card>
+    </View>
+  );
