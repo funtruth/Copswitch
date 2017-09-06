@@ -31,6 +31,13 @@ export default ({ navigation }) => (
           title="SIGN OUT"
           onPress={() => onSignOut().then(() => navigation.navigate("SignedOut"))}
         />
+        <Button
+            backgroundColor="#03A9F4"
+            onPress={() => navigation.navigate('DrawerOpen')}
+            title="Open Drawer Navigator"
+        />
       </Card>
     </View>
+
+    
   );

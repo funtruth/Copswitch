@@ -7,7 +7,7 @@ import {
     Image
 }   from 'react-native';
 
-export default ({ navigation }) => {
+export default ({ navigation }) => (
         <View style={
             {
                 flex: 1,
@@ -15,12 +15,12 @@ export default ({ navigation }) => {
                 alignItems: 'center'
             }
         }>
-            <Text style={{fontSize: 30, color: 'green'}}>
+            <Text style={{fontSize: 30, color: 'red'}}>
                 Create
             </Text>
             <Button
-                onPress={() => this.props.navigation.navigate('DrawerOpen')}
+                onPress={() => navigation.navigate('DrawerOpen')}
                 title="Open Drawer Navigator"
             />
         </View>
-}
+);

@@ -8,23 +8,8 @@ import {
 }   from 'react-native';
 //import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-export default class JoinScreen extends React.Component {
-    static navigationOptions = {
-        tabBarLabel: 'Join',
-        //drawerIcon: () => {
-        //    return (
-        //        <MaterialIcons
-        //            name="card-membership"
-        //            size={24}
-        //            style={{color: tintColor}}
-        //        >
-        //        </MaterialIcons>
-        //    )
-        //}
-    }
-
-    render(){
-        return <View style={
+export default ({ navigation }) => (
+        <View style={
             {
                 flex: 1,
                 justifyContent: 'center',
@@ -35,11 +20,8 @@ export default class JoinScreen extends React.Component {
                 Join
             </Text>
             <Button
-                onPress={() => this.props.navigation.navigate('DrawerOpen')}
+                onPress={() => navigation.navigate('DrawerOpen')}
                 title="Open Drawer Navigator"
             />
         </View>
-
-    }
-
-}
+);
