@@ -19,9 +19,5 @@ export default ({ navigation }) => (
             <Text style={{fontSize: 30, color: 'red'}}>
                 Deliver
             </Text>
-            <Button
-                onPress={() => navigation.navigate('DrawerOpen')}
-                title="Open Drawer Navigator"
-            />
         </View>
 );

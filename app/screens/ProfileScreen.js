@@ -8,7 +8,7 @@ import {
     ToastAndroid
 }   from 'react-native';
 
-import { NavigationActions } from 'react-navigation';
+//import { NavigationActions } from 'react-navigation';
 
 import { Card, Button, Text } from "react-native-elements";
 import { onSignOut } from "../auth";
