@@ -4,7 +4,7 @@ import { Card, Button, FormLabel, FormInput } from "react-native-elements";
 import { onSignIn } from "../auth";
 
 import styles from "../styles/Styles";
-import firebase from '../FirebaseController.js';
+import firebase from '../firebase/FirebaseController.js';
 
 
 import { NavigationActions } from 'react-navigation';

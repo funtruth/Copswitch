@@ -3,7 +3,7 @@ import { View, Keyboard } from "react-native";
 import { Card, Button, FormLabel, FormInput } from "react-native-elements";
 import { onSignIn } from "../auth";
 
-import firebase from '../FirebaseController.js';
+import firebase from '../firebase/FirebaseController.js';
 
 export default class SignUpScreen extends React.Component {
   
@@ -13,6 +13,38 @@ export default class SignUpScreen extends React.Component {
     confirm: '',
     loading: false,
   };
+
+//Creates user and Signs them in
+_SignUpProcess(email,password){
+  firebase.auth().createUserWithEmailAndPassword(
+    email,password).then(() =>{
+      //this.setState({
+        //email: '',
+        //password: '',
+        //loading: false
+        //}),
+        firebase.auth().signInWithEmailAndPassword(
+        email, password).then(() => 
+            {
+                this.props.navigation.navigate("CreateUsername");
+                Keyboard.dismiss();
+            }
+
+            ).catch((error)=>
+            {
+                alert('Login Failed');
+            });
+      //alert('Your Account was Created!');
+      //this.props.navigation.navigate("CreateUsername");
+
+    }).catch((error) => {
+      this.setState({
+        loading: false,
+      })
+      alert('Account Creation Failed.');
+    });
+  }
+
 
   render(){
     return <View style={{ paddingVertical: 20 }}>
@@ -40,23 +72,7 @@ export default class SignUpScreen extends React.Component {
         backgroundColor="#03A9F4"
         title="SIGN UP"
         onPress={() => {
-          firebase.auth().createUserWithEmailAndPassword(
-            this.state.email,this.state.password).then(() =>{
-              this.setState({
-                email: '',
-                password: '',
-                loading: false
-                }),
-              alert('Your Account was Created!');
-              this.props.navigation.navigate("SignIn");
-            }).catch((error) => {
-              this.setState({
-                loading: false,
-              })
-              alert('Account Creation Failed.');
-            });
-          
-          Keyboard.dismiss();
+            this._SignUpProcess(this.state.email,this.state.password);
         }}
         />
     </Card>

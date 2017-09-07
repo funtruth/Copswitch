@@ -1,6 +1,6 @@
 'use strict';
 import React, { Component } from 'react';
-import firebase from './FirebaseController.js';
+import firebase from './firebase/FirebaseController.js';
 import {
   AppRegistry,
   Text,

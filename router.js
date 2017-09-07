@@ -11,6 +11,7 @@ import styles from "./app/styles/Styles";
 
 import SignUp from "./app/screens/SignUp";
 import SignIn from "./app/screens/SignIn";
+import CreateUsername from "./app/screens/CreateUsername";
 
 import Create from "./app/screens/CreateScreen";
 import Deliver from "./app/screens/DeliveryScreen";
@@ -34,6 +35,13 @@ export const SignedOut = StackNavigator({
       screen: SignUp,
       navigationOptions: {
         title: "Sign Up",
+        headerStyle
+      }
+    },
+    CreateUsername: {
+      screen: CreateUsername,
+      navigationOptions: {
+        title: "Create User",
         headerStyle
       }
     },

@@ -27,7 +27,7 @@ class FirstScreen extends Component {
                     </Text>
                     <Button
                         backgroundColor="#03A9F4"
-                        title="Second Stack"
+                        title="Go to Second Stack"
                         onPress={() => this.props.navigation.navigate('SecondScreen')} 
                     />
                 </View>
@@ -44,12 +44,18 @@ class SecondScreen extends Component {
                     <Text style={{fontSize: 30, color: 'red'}}>
                         Second Screen Stack
                     </Text>
+                    <Button
+                        backgroundColor="#03A9F4"
+                        title="Go Back a Stack"
+                        onPress={() => this.props.navigation.navigate('FirstScreen')} 
+                    />
                 </View>
             }
 }
 
 
-export default stackNav = StackNavigator({
+export default stackNav = StackNavigator(
+{
     FirstScreen: {
         screen: FirstScreen,
  
@@ -57,5 +63,10 @@ export default stackNav = StackNavigator({
     SecondScreen: {
         screen: SecondScreen,
     },
+},
 
-});
+    {
+        headerMode: 'none',
+    }
+
+);

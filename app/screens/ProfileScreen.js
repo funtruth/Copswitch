@@ -18,9 +18,7 @@ import Settings from './SettingsScreen'
 import { LoginManager } from 'react-native-fbsdk'
 
 //Firebase
-import firebase from '../FirebaseController.js';
-
-let context = this;
+import firebase from '../firebase/FirebaseController.js';
 
 export default class ProfileScreen extends React.Component {
   
@@ -28,12 +26,13 @@ export default class ProfileScreen extends React.Component {
     super(props);
     this.state = {
       user:null,
+      email:null,
       loading: true,
     }
     this.backButtonListener = null;
     this.currentRouteName = 'Main';
   }
-  
+
   componentWillMount() {
     // get the current user from firebase
     // const userData = this.props.firebaseApp.auth().currentUser;
@@ -41,6 +40,7 @@ export default class ProfileScreen extends React.Component {
       let userData = JSON.parse(user_data_json);
       this.setState({
         user: userData,
+        email: firebase.auth().currentUser.email,
         loading: false
       });
     });
@@ -59,9 +59,18 @@ export default class ProfileScreen extends React.Component {
     this.backButtonListener.remove();
 }
   
+_writeUserData(userId, email) {
+  firebase.database().ref('users/' + userId).set({
+    //username: name,
+    email: email,
+    //profile_picture : imageUrl
+  });
+}
+
   render(){
+
     return <View style={{ paddingVertical: 20 }}>
-      <Card title="John Doe">
+      <Card title={this.state.email}>
         <View
           style={{
             backgroundColor: "#bcbec1",
@@ -83,7 +92,7 @@ export default class ProfileScreen extends React.Component {
           onPress={() => {
             AsyncStorage.removeItem('userData').then(() => {
               onSignOut().then(() => {
-                firebase.auth().signOut;
+                firebase.auth().signOut();
                 this.props.navigation.navigate('SignedOut');
               })
             });
