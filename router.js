@@ -9,9 +9,9 @@ import { StackNavigator, TabNavigator } from "react-navigation";
 
 import styles from "./app/styles/Styles";
 
-import SignUp from "./app/screens/SignUp";
-import SignIn from "./app/screens/SignIn";
-import CreateUsername from "./app/screens/CreateUsername";
+import SignUp from "./app/loginscreens/SignUp";
+import SignIn from "./app/loginscreens/SignIn";
+import CreateUsername from "./app/loginscreens/CreateUsername";
 
 import Create from "./app/screens/CreateScreen";
 import Deliver from "./app/screens/DeliveryScreen";
@@ -109,7 +109,7 @@ export const SignedOut = StackNavigator({
     }
   );
   
-  export const createRootNavigator = (signedIn = false) => {
+  export const createRootNavigator = (signedIn = true) => {
     return StackNavigator(
       {
         SignedIn: {

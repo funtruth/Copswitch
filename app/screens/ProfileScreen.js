@@ -25,7 +25,7 @@ export default class ProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      user:null,
+      username:null,
       email:null,
       loading: true,
     }
@@ -34,15 +34,10 @@ export default class ProfileScreen extends React.Component {
   }
 
   componentWillMount() {
-    // get the current user from firebase
-    // const userData = this.props.firebaseApp.auth().currentUser;
-    AsyncStorage.getItem('userData').then((user_data_json) => {
-      let userData = JSON.parse(user_data_json);
-      this.setState({
-        user: userData,
-        email: firebase.auth().currentUser.email,
-        loading: false
-      });
+    this.setState({
+      username: null,
+      email: firebase.auth().currentUser.email,
+      loading: false
     });
 
     this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
@@ -56,10 +51,9 @@ export default class ProfileScreen extends React.Component {
 
   componentWillUnmount() {
     this.backButtonListener.remove();
-}
+  }
 
   render(){
-
     return <View style={{ paddingVertical: 20 }}>
       <Card title={this.state.email}>
         <View
@@ -74,20 +68,17 @@ export default class ProfileScreen extends React.Component {
             marginBottom: 20
           }}
         >
-          <Text style={{ color: "white", fontSize: 28 }}>JD</Text>
+          <Text style={{ color: "white", fontSize: 28 }}>MR</Text>
         </View>
 
         <Button
           backgroundColor="#03A9F4"
           title="SIGN OUT"
           onPress={() => {
-            AsyncStorage.removeItem('userData').then(() => {
               onSignOut().then(() => {
                 firebase.auth().signOut();
                 this.props.navigation.navigate('SignedOut');
               })
-            });
-            
           }}
         />
 
