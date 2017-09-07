@@ -5,7 +5,7 @@ import { Platform, StatusBar } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
 
 import { FontAwesome } from "react-native-vector-icons";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+//import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import styles from "./app/styles/Styles";
 
