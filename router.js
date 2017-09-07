@@ -1,10 +1,10 @@
 // app/router.js
 
 import React from "react";
-import { Platform, StatusBar } from "react-native";
+import { Platform, StatusBar, Image } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
 
-import { FontAwesome } from "react-native-vector-icons";
+//import { FontAwesome } from "react-native-vector-icons";
 //import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import styles from "./app/styles/Styles";
@@ -44,29 +44,48 @@ export const SignedOut = StackNavigator({
       Profile: {
         screen: Profile,
         navigationOptions: {
-          tabBarLabel: "Profile",
-          tabBarIcon: ({ tintColor }) => <FontAwesome>{Icons.times}</FontAwesome>
+          tabBarIcon: ({ tintColor }) => (
+            <Image 
+                source={require('./app/images/person.png')}
+                style={[styles.icon, {tintColor: tintColor}]}
+            />
+          ),
         }
       },
       Join: {
         screen: Join,
         navigationOptions: {
-          tabBarLabel: "Join",
-          tabBarIcon: ({tintColor}) => (<MaterialIcons size={24} color="white" name="person" />)
+          tabBarIcon: ({ tintColor }) => (
+            <Image 
+                source={require('./app/images/person.png')}
+                style={[styles.icon, {tintColor: tintColor}]}
+            />
+          ),
+          
         }
       },
       Create: {
         screen: Create,
         navigationOptions: {
-          tabBarLabel: "Create",
-          tabBarIcon: () => (<MaterialIcons size={24} color="white" name="person" />)
+          tabBarIcon: ({ tintColor }) => (
+            <Image 
+                source={require('./app/images/person.png')}
+                style={[styles.icon, {tintColor: tintColor}]}
+            />
+          ),
+          
         }
       },
       Deliver: {
         screen: Deliver,
         navigationOptions: {
-          tabBarLabel: "Deliver",
-          tabBarIcon: () => (<MaterialIcons size={24} color="white" name="person" />)
+          tabBarIcon: ({ tintColor }) => (
+            <Image 
+                source={require('./app/images/person.png')}
+                style={[styles.icon, {tintColor: tintColor}]}
+            />
+          ),
+          
         }
       },
       //Settings: {
@@ -82,7 +101,9 @@ export const SignedOut = StackNavigator({
       tabBarOptions: {
         style: {
           paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
-        }
+        },
+        showIcon: true,
+        showLabel: false
       }
     }
   );

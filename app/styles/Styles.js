@@ -57,8 +57,8 @@ export default StyleSheet.create({
 
     //Drawer
     icon: {
-      width: 24,
-      height: 24,
+      width: 26,
+      height: 26,
     },
     
     });
