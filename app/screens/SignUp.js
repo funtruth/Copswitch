@@ -41,7 +41,6 @@ _SignUpProcess(email,password){
     });
   }
 
-
   render(){
     return <View style={{ paddingVertical: 20 }}>
     <Card>
@@ -71,6 +70,7 @@ _SignUpProcess(email,password){
             this._SignUpProcess(this.state.email,this.state.password);
         }}
         />
+    
     </Card>
   </View>
   }

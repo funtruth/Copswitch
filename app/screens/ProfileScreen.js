@@ -45,7 +45,6 @@ export default class ProfileScreen extends React.Component {
       });
     });
 
-
     this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
       if (this.currentRouteName !== 'Main') {
           return false;
@@ -57,14 +56,6 @@ export default class ProfileScreen extends React.Component {
 
   componentWillUnmount() {
     this.backButtonListener.remove();
-}
-  
-_writeUserData(userId, email) {
-  firebase.database().ref('users/' + userId).set({
-    //username: name,
-    email: email,
-    //profile_picture : imageUrl
-  });
 }
 
   render(){
