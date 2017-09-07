@@ -96,13 +96,6 @@ export const SignedOut = StackNavigator({
           
         }
       },
-      //Settings: {
-      //  screen: Settings,
-      //  navigationOptions: {
-      //      tabBarLabel: "Settings",
-      //      tabBarIcon: () => (<MaterialIcons size={24} color="white" name="person" />)
-      //  }
-      //},
     },
     {
       tabBarPosition: 'bottom',

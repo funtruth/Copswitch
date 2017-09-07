@@ -102,11 +102,17 @@ _writeUserData(userId, email) {
 
         <Button
           backgroundColor="#03A9F4"
-          title="Settings"
+          title="Delete Account"
           style={{
-            marginTop: 20
+            marginTop: 50
           }}
-          //onPress={() => this.props.navigation.navigate("Settings")}
+          onPress={() => {
+            firebase.auth().currentUser.delete().then(() => {
+              this.props.navigation.navigate('SignedOut');
+            }).catch(() => {
+              alert('Failed to Delete');
+            })
+          }}
         />
 
       </Card>

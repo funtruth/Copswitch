@@ -12,30 +12,26 @@ export default class SignUpScreen extends React.Component {
     password: '',
     confirm: '',
     loading: false,
+    name: 'Michael'
   };
 
 //Creates user and Signs them in
 _SignUpProcess(email,password){
   firebase.auth().createUserWithEmailAndPassword(
-    email,password).then(() =>{
-      //this.setState({
-        //email: '',
-        //password: '',
-        //loading: false
-        //}),
+    email,password).then(() =>
+    {
         firebase.auth().signInWithEmailAndPassword(
         email, password).then(() => 
             {
                 this.props.navigation.navigate("CreateUsername");
                 Keyboard.dismiss();
-            }
-
-            ).catch((error)=>
-            {
-                alert('Login Failed');
-            });
-      //alert('Your Account was Created!');
-      //this.props.navigation.navigate("CreateUsername");
+            }).catch((error)=>
+                {
+                    this.setState({
+                      loading: false,
+                    })
+                    alert('Login Failed');
+                });
 
     }).catch((error) => {
       this.setState({
