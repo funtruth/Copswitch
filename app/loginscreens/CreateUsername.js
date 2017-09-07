@@ -1,11 +1,14 @@
 import React from "react";
 import { View, Keyboard } from "react-native";
-import { Card, Button, FormLabel, FormInput } from "react-native-elements";
+import { 
+  Card, 
+  Button, 
+  FormLabel, 
+  FormInput 
+} from "react-native-elements";
 import { onSignIn } from "../auth";
 
 import firebase from '../firebase/FirebaseController.js';
-
-const user = firebase.auth().currentUser;
 
 export default class CreateUsername extends React.Component {
   
