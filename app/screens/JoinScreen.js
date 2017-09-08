@@ -13,28 +13,25 @@ import {
     FormInput
 }   from 'react-native-elements';
 import { StackNavigator } from 'react-navigation';
+import { NavigationActions } from 'react-navigation';
 
 class JoinScreen extends React.Component {
 
 constructor(props) {
     super(props);
-    this.backButtonListener = null;
     this.currentRouteName = 'Join';
     }
 
 componentWillMount() {
-    this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
-        if (this.currentRouteName !== 'Join') {
-            return false;
-        }
-    this.props.navigation.navigate('Join');
-    return true;
-    });
-
+    BackHandler.addEventListener('hardwareBackPress', () => this._backAndroid())
 }
 
 componentWillUnmount() {
-    this.backButtonListener.remove();
+    BackHandler.removeEventListener('hardwareBackPress', () => this._backAndroid())
+}
+
+_backAndroid(){
+    return true
 }
 
     render(){

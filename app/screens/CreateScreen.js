@@ -6,8 +6,8 @@ import {
     Button,
     Image,
     Platform,
-    StatusBar
-    //Picker
+    StatusBar,
+    BackHandler
 }   from 'react-native';
 import { Card, FormInput } from "react-native-elements";
 
@@ -15,7 +15,7 @@ import { StackNavigator } from 'react-navigation';
 
 import firebase from '../firebase/FirebaseController.js';
 
-class FirstScreen extends Component {
+class Create_FirstScreen extends Component {
 
 _MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid){
     firebase.database().ref('rooms/' + uid)
@@ -41,7 +41,6 @@ constructor(props) {
     }
   }
 
-
 componentWillMount() {
     //Grabs the username and email of current user
     const uid = firebase.auth().currentUser.uid
@@ -53,7 +52,6 @@ componentWillMount() {
         })
     })
 }
-
 
 render(){
     return <View style={{
@@ -101,7 +99,7 @@ render(){
                                 this.state.roomsize,this.state.dropoffloc,this.state.dropofftime,
                                 firebase.auth().currentUser.uid);
 
-                            this.props.navigation.navigate('SecondScreen')} 
+                            this.props.navigation.navigate('Create_SecondScreen')} 
                         }
                         style={{
                             width: 80
@@ -112,12 +110,12 @@ render(){
         }
 }
 
-class SecondScreen extends Component {
+class Create_SecondScreen extends Component {
 
 _DeleteRoomDB(uid){
     firebase.database().ref('rooms/' + uid).remove()
 }
-    
+
     render(){
         return <View style={{
                 flex: 1,
@@ -132,7 +130,7 @@ _DeleteRoomDB(uid){
                         onPress={() => {
                             this._DeleteRoomDB(firebase.auth().currentUser.uid)
 
-                            this.props.navigation.navigate('FirstScreen')
+                            this.props.navigation.navigate('Create_FirstScreen')
                         }}
                         style={{
                             width: 80
@@ -145,11 +143,11 @@ _DeleteRoomDB(uid){
 
 export default stackNav = StackNavigator(
 {
-    FirstScreen: {
-        screen: FirstScreen,
+    Create_FirstScreen: {
+        screen: Create_FirstScreen,
     },
-    SecondScreen: {
-        screen: SecondScreen,
+    Create_SecondScreen: {
+        screen: Create_SecondScreen,
     },
 },
     {

@@ -29,39 +29,24 @@ export default class ProfileScreen extends React.Component {
       email:null,
       loading: true,
     }
-    this.backButtonListener = null;
-    this.currentRouteName = 'Main';
   }
 
-  componentWillMount() {
-    //Grabs the username and email of current user
-    const uid = firebase.auth().currentUser.uid
-    const UserDB = firebase.database().ref("users/" + uid)
+componentWillMount() {
+  //Grabs the username and email of current user
+  const uid = firebase.auth().currentUser.uid
+  const UserDB = firebase.database().ref("users/" + uid)
 
-    UserDB.child('username').on('value',snapshot => {
+  UserDB.child('username').on('value',snapshot => {
+    this.setState({
+      username: snapshot.val(),
+    })
+  }),
+  UserDB.child('email').on('value',snapshot => {
       this.setState({
-        username: snapshot.val(),
+        email: snapshot.val(),
       })
-    }),
-    UserDB.child('email').on('value',snapshot => {
-        this.setState({
-          email: snapshot.val(),
-        })
-      }),
-
-    //Back Button Configuration
-    this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (this.currentRouteName !== 'Join') {
-          return false;
-      }
-        this.props.navigation.navigate('Profile');
-        return true;
-  });
+    })
 }
-
-  componentWillUnmount() {
-    this.backButtonListener.remove();
-  }
 
   render(){
     return <View style={{ paddingVertical: 20 }}>
