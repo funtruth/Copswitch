@@ -4,12 +4,35 @@ import {
     Text,
     View,
     Button,
-    Image
+    Image,
+    BackHandler
 }   from 'react-native';
 //import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-export default ({ navigation }) => (
-        <View style={
+export default class JoinScreen extends React.Component {
+
+    constructor(props) {
+        super(props);
+        this.backButtonListener = null;
+        this.currentRouteName = 'Join';
+      }
+
+      componentWillMount() {
+        this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
+          if (this.currentRouteName !== 'Join') {
+              return false;
+          }
+            this.props.navigation.navigate('Join');
+            return true;
+      });
+    }
+    
+      componentWillUnmount() {
+        this.backButtonListener.remove();
+      }
+
+    render(){
+        return <View style={
             {
                 flex: 1,
                 justifyContent: 'center',
@@ -23,5 +46,5 @@ export default ({ navigation }) => (
                 onPress={() => navigation.navigate('DrawerOpen')}
                 title="Open Drawer Navigator"
             />
-        </View>
-);
+        </View>}
+    };

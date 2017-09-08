@@ -6,10 +6,10 @@ import {
     Button,
     Image,
     Platform,
-    StatusBar,
-    Picker
+    StatusBar
+    //Picker
 }   from 'react-native';
-import { Card, FormInput, FormLabel } from "react-native-elements";
+import { Card, FormInput } from "react-native-elements";
 
 import { StackNavigator } from 'react-navigation';
 

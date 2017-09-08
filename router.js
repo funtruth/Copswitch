@@ -49,23 +49,12 @@ export const SignedOut = StackNavigator({
   
   export const SignedIn = TabNavigator(
     {
-      Profile: {
-        screen: Profile,
-        navigationOptions: {
-          tabBarIcon: ({ tintColor }) => (
-            <Image 
-                source={require('./app/images/person.png')}
-                style={[styles.icon, {tintColor: tintColor}]}
-            />
-          ),
-        }
-      },
       Join: {
         screen: Join,
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => (
             <Image 
-                source={require('./app/images/person.png')}
+                source={require('./app/images/coffee.png')}
                 style={[styles.icon, {tintColor: tintColor}]}
             />
           ),
@@ -77,7 +66,7 @@ export const SignedOut = StackNavigator({
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => (
             <Image 
-                source={require('./app/images/person.png')}
+                source={require('./app/images/gps.png')}
                 style={[styles.icon, {tintColor: tintColor}]}
             />
           ),
@@ -89,11 +78,22 @@ export const SignedOut = StackNavigator({
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => (
             <Image 
-                source={require('./app/images/person.png')}
+                source={require('./app/images/arrow.png')}
                 style={[styles.icon, {tintColor: tintColor}]}
             />
           ),
           
+        }
+      },
+      Profile: {
+        screen: Profile,
+        navigationOptions: {
+          tabBarIcon: ({ tintColor }) => (
+            <Image 
+                source={require('./app/images/person.png')}
+                style={[styles.icon, {tintColor: tintColor}]}
+            />
+          ),
         }
       },
     },
@@ -101,7 +101,7 @@ export const SignedOut = StackNavigator({
       tabBarPosition: 'bottom',
       tabBarOptions: {
         style: {
-          paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
+          paddingTop: Platform.OS === "android" ? 0:0
         },
         showIcon: true,
         showLabel: false

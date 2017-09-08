@@ -35,13 +35,13 @@ export default class ProfileScreen extends React.Component {
 
   componentWillMount() {
     this.setState({
-      username: null,
-      email: firebase.auth().currentUser.email,
+      username: '',
+      email: '',
       loading: false
     });
 
     this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (this.currentRouteName !== 'Main') {
+      if (this.currentRouteName !== 'Join') {
           return false;
       }
         this.props.navigation.navigate('Profile');
@@ -55,7 +55,7 @@ export default class ProfileScreen extends React.Component {
 
   render(){
     return <View style={{ paddingVertical: 20 }}>
-      <Card title={this.state.email}>
+      <Card title={firebase.auth().currentUser.email}>
         <View
           style={{
             backgroundColor: "#bcbec1",

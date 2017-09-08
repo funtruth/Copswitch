@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Keyboard } from "react-native";
+import { View, Keyboard, BackHandler } from "react-native";
 import { Card, Button, FormLabel, FormInput } from "react-native-elements";
 import { onSignIn } from "../auth";
 
@@ -17,6 +17,25 @@ const {
 
 export default class SignInScreen extends React.Component {
 
+    constructor(props) {
+        super(props);
+        this.backButtonListener = null;
+        this.currentRouteName = 'SignIn';
+      }
+
+    componentWillMount() {
+        this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
+            if (this.currentRouteName !== 'Kekekekke') {
+                return false;
+            }
+              return true;
+        });
+    }
+
+    componentWillUnmount() {
+        this.backButtonListener.remove();
+    }
+    
 state = { 
     email: '', 
     password: '',
