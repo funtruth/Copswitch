@@ -17,97 +17,131 @@ import firebase from '../firebase/FirebaseController.js';
 
 class FirstScreen extends Component {
 
-    _MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid){
-        firebase.database().ref('rooms/' + uid)
-        .set({
-            roomname,
-            coffeeshop,
-            roomsize,
-            dropoffloc,
-            dropofftime          
-        })
-    }
+_MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid){
+    firebase.database().ref('rooms/' + uid)
+    .set({
+        roomname,
+        coffeeshop,
+        roomsize,
+        dropoffloc,
+        dropofftime          
+    })
+}
 
-    state = { 
+constructor(props) {
+    super(props);
+    this.state = {
+        username: '',
         roomname: '',
         coffeeshop: '', 
         roomsize: '',
         dropoffloc: '', 
         dropofftime: '',
         loading: false,
-      };
+    }
+  }
 
 
-    render(){
-        return <View style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}>
-                    <Card title='Create a Room'>
+componentWillMount() {
+    //Grabs the username and email of current user
+    const uid = firebase.auth().currentUser.uid
+    const UserDB = firebase.database().ref("users/" + uid)
 
-                        <FormInput
-                            placeholder="Placeholder's Room"
-                            value={this.state.roomname}
-                            onChangeText={roomname => this.setState({ roomname })}
-                        />
-                        
-                        <FormInput
-                            placeholder="Coffeeshop..."
-                            value={this.state.coffeeshop}
-                            onChangeText={coffeeshop => this.setState({ coffeeshop })}
-                        />
+    UserDB.child('username').on('value',snapshot => {
+        this.setState({
+        username: snapshot.val(),
+        })
+    })
+}
 
-                        <FormInput
-                            placeholder="Cups of Coffee..."
-                            value={this.state.roomsize}
-                            onChangeText={roomsize => this.setState({ roomsize })}
-                        />
 
-                        <FormInput
-                            placeholder="Location..."
-                            value={this.state.dropoffloc}
-                            onChangeText={dropoffloc => this.setState({ dropoffloc })}
-                        />
+render(){
+    return <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <Card title='Create a Room'>
 
-                        <FormInput
-                            placeholder="Time..."
-                            value={this.state.dropofftime}
-                            onChangeText={dropofftime => this.setState({ dropofftime })}
-                        />
-                        
-                        <Button
-                            backgroundColor="#03A9F4"
-                            title="Create Room"
-                            onPress={() => {
-                                this._MakeRoomDB(this.state.roomname,this.state.coffeeshop,
-                                    this.state.roomsize,this.state.dropoffloc,this.state.dropofftime,
-                                    firebase.auth().currentUser.uid);
+                    <FormInput
+                        placeholder={this.state.username + 's Room'}
+                        value={this.state.roomname}
+                        onChangeText={roomname => this.setState({ roomname })}
+                    />
+                    
+                    <FormInput
+                        placeholder="Coffeeshop..."
+                        value={this.state.coffeeshop}
+                        onChangeText={coffeeshop => this.setState({ coffeeshop })}
+                    />
 
-                                this.props.navigation.navigate('SecondScreen')} 
-                            }
-                            style={{
-                                width: 80
-                            }}
-                        />
-                    </Card>
-                </View>
-            }
+                    <FormInput
+                        placeholder="Cups of Coffee..."
+                        value={this.state.roomsize}
+                        onChangeText={roomsize => this.setState({ roomsize })}
+                    />
+
+                    <FormInput
+                        placeholder="Location..."
+                        value={this.state.dropoffloc}
+                        onChangeText={dropoffloc => this.setState({ dropoffloc })}
+                    />
+
+                    <FormInput
+                        placeholder="Time..."
+                        value={this.state.dropofftime}
+                        onChangeText={dropofftime => this.setState({ dropofftime })}
+                    />
+                    
+                    <Button
+                        backgroundColor="#03A9F4"
+                        title="Create Room"
+                        onPress={() => {
+                            this._MakeRoomDB(this.state.roomname,this.state.coffeeshop,
+                                this.state.roomsize,this.state.dropoffloc,this.state.dropofftime,
+                                firebase.auth().currentUser.uid);
+
+                            this.props.navigation.navigate('SecondScreen')} 
+                        }
+                        style={{
+                            width: 80
+                        }}
+                    />
+                </Card>
+            </View>
+        }
 }
 
 class SecondScreen extends Component {
+
+_DeleteRoomDB(uid){
+    firebase.database().ref('rooms/' + uid).remove()
+}
+    
     render(){
         return <View style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center'
-                }}>
-                    <Text style={{fontSize: 30, color: 'red'}}>
-                        Second Screen Stack
-                    </Text>
-                </View>
-            }
-}
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <Card title='View Room'>
+
+                    <Button
+                        backgroundColor="#03A9F4"
+                        title="Delete Room"
+                        onPress={() => {
+                            this._DeleteRoomDB(firebase.auth().currentUser.uid)
+
+                            this.props.navigation.navigate('FirstScreen')
+                        }}
+                        style={{
+                            width: 80
+                        }}
+                    />
+                </Card>
+            </View>
+}}
+
 
 export default stackNav = StackNavigator(
 {

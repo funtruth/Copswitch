@@ -5,9 +5,13 @@ import {
     View,
     Button,
     Image,
-    BackHandler
+    BackHandler,
+    ScrollView
 }   from 'react-native';
-//import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import {
+    Card,
+    FormInput
+}   from 'react-native-elements';
 
 export default class JoinScreen extends React.Component {
 
@@ -32,19 +36,68 @@ export default class JoinScreen extends React.Component {
     }
 
     render(){
-        return <View style={
-            {
+        return <View style={{
                 flex: 1,
                 justifyContent: 'center',
                 alignItems: 'center'
-            }
-        }>
-            <Text style={{fontSize: 30, color: 'green'}}>
-                Join
-            </Text>
-            <Button
-                onPress={() => navigation.navigate('DrawerOpen')}
-                title="Open Drawer Navigator"
-            />
-        </View>}
-    };
+                }}>
+                <ScrollView>
+                <Card title='Room 1'>
+ 
+                    <FormInput
+                        value="Room 1"
+                    />
+                    
+                    <FormInput
+                        value="Room 1"
+                    />
+
+                    <FormInput
+                        value="Room 1"
+                    />
+
+                    <FormInput
+                        value="Room 1"
+                    />
+                </Card>
+
+                <Card title='Room 2'>
+                
+                    <FormInput
+                        value="Room 2"
+                    />
+                    
+                    <FormInput
+                        value="Room 1"
+                    />
+
+                    <FormInput
+                        value="Room 1"
+                    />
+
+                    <FormInput
+                        value="Room 1"
+                    />
+                </Card>
+
+                <Card title='Room 3'>
+                
+                    <FormInput
+                        value="Room 3"
+                    />
+                    
+                    <FormInput
+                        value="Room 1"
+                    />
+
+                    <FormInput
+                        value="Room 1"
+                    />
+
+                    <FormInput
+                        value="Room 1"
+                    />
+                </Card>
+                </ScrollView>
+            </View>
+    }};
