@@ -64,6 +64,7 @@ render(){
             firebase.auth().signInWithEmailAndPassword(
                 this.state.email, this.state.password).then(() => 
                     {
+                        //AsyncStorage.setItem('userData', JSON.stringify(userData));
                         this.props.navigation.navigate("SignedIn");
                         Keyboard.dismiss();
                     }

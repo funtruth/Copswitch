@@ -13,27 +13,28 @@ import {
     FormInput
 }   from 'react-native-elements';
 
-export default class JoinScreen extends React.Component {
+class JoinScreen extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.backButtonListener = null;
-        this.currentRouteName = 'Join';
-      }
+constructor(props) {
+    super(props);
+    this.backButtonListener = null;
+    this.currentRouteName = 'Join';
+    }
 
-    componentWillMount() {
-        this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
-            if (this.currentRouteName !== 'Join') {
-                return false;
-            }
-        this.props.navigation.navigate('Join');
-        return true;
-      });
-    }
-    
-    componentWillUnmount() {
-        this.backButtonListener.remove();
-    }
+componentWillMount() {
+    this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
+        if (this.currentRouteName !== 'Join') {
+            return false;
+        }
+    this.props.navigation.navigate('Join');
+    return true;
+    });
+
+}
+
+componentWillUnmount() {
+    this.backButtonListener.remove();
+}
 
     render(){
         return <View style={{
@@ -101,3 +102,14 @@ export default class JoinScreen extends React.Component {
                 </ScrollView>
             </View>
     }};
+
+export default JoinNavigation = stackNavigator(
+{
+    JoinScreen: {
+        screen: JoinScreen,
+    },
+},
+    {
+        headerMode: 'none',
+    }
+)
