@@ -17,19 +17,19 @@ export default class JoinScreen extends React.Component {
         this.currentRouteName = 'Join';
       }
 
-      componentWillMount() {
+    componentWillMount() {
         this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
-          if (this.currentRouteName !== 'Join') {
-              return false;
-          }
-            this.props.navigation.navigate('Join');
-            return true;
+            if (this.currentRouteName !== 'Join') {
+                return false;
+            }
+        this.props.navigation.navigate('Join');
+        return true;
       });
     }
     
-      componentWillUnmount() {
+    componentWillUnmount() {
         this.backButtonListener.remove();
-      }
+    }
 
     render(){
         return <View style={
