@@ -20,7 +20,7 @@ export default class App extends React.Component {
     
     componentWillMount() {
     isSignedIn()
-        .then(res => this.setState({ signedIn: false, checkedSignIn: true }))
+        .then(res => this.setState({ signedIn: res, checkedSignIn: true }))
         .catch(err => alert("An error occurred"));
     }
 

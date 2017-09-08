@@ -1,5 +1,10 @@
 import React from "react";
-import { View, Keyboard, BackHandler } from "react-native";
+import { 
+    View, 
+    Keyboard, 
+    BackHandler,
+    AsyncStorage
+} from "react-native";
 import { Card, Button, FormLabel, FormInput } from "react-native-elements";
 import { onSignIn } from "../auth";
 
@@ -64,8 +69,8 @@ render(){
             firebase.auth().signInWithEmailAndPassword(
                 this.state.email, this.state.password).then(() => 
                     {
-                        //AsyncStorage.setItem('userData', JSON.stringify(userData));
                         this.props.navigation.navigate("SignedIn");
+                        onSignIn();
                         Keyboard.dismiss();
                     }
 

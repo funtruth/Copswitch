@@ -12,6 +12,7 @@ import {
     Card,
     FormInput
 }   from 'react-native-elements';
+import { StackNavigator } from 'react-navigation';
 
 class JoinScreen extends React.Component {
 
@@ -103,7 +104,7 @@ componentWillUnmount() {
             </View>
     }};
 
-export default JoinNavigation = stackNavigator(
+export default JoinNavigation = StackNavigator(
 {
     JoinScreen: {
         screen: JoinScreen,
