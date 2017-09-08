@@ -34,12 +34,22 @@ export default class ProfileScreen extends React.Component {
   }
 
   componentWillMount() {
-    this.setState({
-      username: '',
-      email: '',
-      loading: false
-    });
+    //Grabs the username and email of current user
+    const uid = firebase.auth().currentUser.uid
+    const UserDB = firebase.database().ref("users/" + uid)
 
+    UserDB.child('username').on('value',snapshot => {
+      this.setState({
+        username: snapshot.val(),
+      })
+    }),
+    UserDB.child('email').on('value',snapshot => {
+        this.setState({
+          email: snapshot.val(),
+        })
+      }),
+
+    //Back Button Configuration
     this.backButtonListener = BackHandler.addEventListener('hardwareBackPress', () => {
       if (this.currentRouteName !== 'Join') {
           return false;
@@ -55,39 +65,41 @@ export default class ProfileScreen extends React.Component {
 
   render(){
     return <View style={{ paddingVertical: 20 }}>
-      <Card title={firebase.auth().currentUser.email}>
+      <Card title={this.state.email}>
         <View
           style={{
-            backgroundColor: "#bcbec1",
+            backgroundColor: "#03A9F4",
             alignItems: "center",
             justifyContent: "center",
-            width: 80,
-            height: 80,
-            borderRadius: 40,
+            width: 180,
+            height: 60,
             alignSelf: "center",
             marginBottom: 20
           }}
         >
-          <Text style={{ color: "white", fontSize: 28 }}>MR</Text>
+          <Text style={{ color: "white", fontSize: 28 }}>{this.state.username}</Text>
+        </View>
+        
+        <View
+          style={{
+            marginBottom:20
+          }}
+        >
+          <Button
+            backgroundColor="#03A9F4"
+            title="SIGN OUT"
+            onPress={() => {
+                onSignOut().then(() => {
+                  firebase.auth().signOut();
+                  this.props.navigation.navigate('SignedOut');
+                })
+            }}
+          />
         </View>
 
         <Button
-          backgroundColor="#03A9F4"
-          title="SIGN OUT"
-          onPress={() => {
-              onSignOut().then(() => {
-                firebase.auth().signOut();
-                this.props.navigation.navigate('SignedOut');
-              })
-          }}
-        />
-
-        <Button
-          backgroundColor="#03A9F4"
+          backgroundColor="red"
           title="Delete Account"
-          style={{
-            marginTop: 50
-          }}
           onPress={() => {
             firebase.auth().currentUser.delete().then(() => {
               this.props.navigation.navigate('SignedOut');
