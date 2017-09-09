@@ -8,7 +8,9 @@ import {
     Platform,
     StatusBar,
     BackHandler,
-    ScrollView
+    ScrollView,
+    AsyncStorage,
+    Keyboard
 }   from 'react-native';
 import { Card, FormInput } from "react-native-elements";
 
@@ -17,17 +19,6 @@ import { StackNavigator } from 'react-navigation';
 import firebase from '../firebase/FirebaseController.js';
 
 class Deliver_FirstScreen extends Component {
-
-_MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid){
-    firebase.database().ref('rooms/' + uid)
-    .set({
-        roomname,
-        coffeeshop,
-        roomsize,
-        dropoffloc,
-        dropofftime          
-    })
-}
 
 constructor(props) {
     super(props);
@@ -38,9 +29,18 @@ constructor(props) {
         roomsize: '',
         dropoffloc: '', 
         dropofftime: '',
+
+        orderuid1:'',
         loading: false,
     }
   }
+
+_addOrder(orderuid1,myuid) {
+    firebase.database().ref('rooms/' + myuid)
+    .set({
+        orderuid1
+    })
+}
 
 componentWillMount() {
     //Grabs the username and email of current user
@@ -71,8 +71,15 @@ render(){
                         backgroundColor="#03A9F4"
                         title="Take Order"
                         onPress={() => {
-                            this.props.navigation.navigate('Deliver_SecondScreen')} 
-                        }
+                            AsyncStorage.getItem("is_there_a_room")
+                            .then(res => {
+                                if (res !== null) {
+                                    //this._addOrder();
+                                } else {
+                                    this.props.navigation.navigate('Create_FirstScreen');
+                                }
+                            }) 
+                        }}
                         style={{
                             width: 80
                         }}
@@ -89,8 +96,15 @@ render(){
                     backgroundColor="#03A9F4"
                     title="Take Order"
                     onPress={() => {
-                        this.props.navigation.navigate('Deliver_SecondScreen')} 
-                    }
+                        AsyncStorage.getItem("is_there_a_room")
+                            .then(res => {
+                                if (res !== null) {
+                                    //this._addOrder();
+                                } else {
+                                    this.props.navigation.navigate('Create_FirstScreen');
+                                }
+                            })
+                    }}
                     style={{
                         width: 80
                     }}
@@ -107,46 +121,114 @@ render(){
                     backgroundColor="#03A9F4"
                     title="Take Order"
                     onPress={() => {
-                        this.props.navigation.navigate('Deliver_SecondScreen')} 
-                    }
+                        AsyncStorage.getItem("is_there_a_room")
+                            .then(res => {
+                                if (res !== null) {
+                                    //this._addOrder();
+                                } else {
+                                    this.props.navigation.navigate('Create_FirstScreen');
+                                }
+                            }) 
+                    }}
                     style={{
                         width: 80
                     }}
                 />
                 </Card>
+
+                <Button
+                    backgroundColor="#03A9F4"
+                    title="Add Order"
+                    onPress={() => {
+                        this.props.navigation.navigate('Deliver_SecondScreen');      
+                    }}
+                    style={{
+                        width: 80
+                    }}
+                />
+
                 </ScrollView>
             </View>
         }
 }
 
+//Second Screen is for ADDING orders with the (+) button at the bottom
+//Future Update
 class Deliver_SecondScreen extends Component {
-    
-    _DeleteRoomDB(uid){
-        firebase.database().ref('rooms/' + uid).remove()
-    }
 
-    render(){
-        return <View style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}>
-                <Card title='View Room'>
+constructor(props) {
+    super(props);
+    this.state = {
+        username: '',
+        coffeeshop: '', 
+        coffeeorder: '',
+        comment: '',
+        loading: false,
+}}
 
-                    <Button
-                        backgroundColor="#03A9F4"
-                        title="Delete Room"
-                        onPress={() => {
-                            this._DeleteRoomDB(firebase.auth().currentUser.uid)
+_createOrder(uid,coffeeshop,coffeeorder,comment) {
+    firebase.database().ref('orders/' + uid)
+    .set({
+        coffeeshop,
+        coffeeorder,
+        comment
+    })
+}
 
-                            this.props.navigation.navigate('Deliver_FirstScreen')
-                        }}
-                        style={{
-                            width: 80
-                        }}
-                    />
-                </Card>
-            </View>
+componentWillMount() {
+    //Grabs the username and email of current user
+    const uid = firebase.auth().currentUser.uid
+    const UserDB = firebase.database().ref("users/" + uid)
+
+    UserDB.child('username').on('value',snapshot => {
+        this.setState({
+        username: snapshot.val(),
+        })
+    })
+}
+
+render(){
+    return <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center'
+        }}>
+            <Card title='Create your Order'>
+
+                <FormInput
+                    placeholder="Coffeshop..."
+                    value={this.state.coffeeshop}
+                    onChangeText={coffeeshop => this.setState({ coffeeshop })}
+                />
+
+                <FormInput
+                    placeholder="Coffee Order..."
+                    value={this.state.coffeeorder}
+                    onChangeText={coffeeorder => this.setState({ coffeeorder })}
+                />
+
+                <FormInput
+                    placeholder="Comments..."
+                    value={this.state.comment}
+                    onChangeText={comment => this.setState({ comment })}
+                />
+
+                <Button
+                    backgroundColor="#03A9F4"
+                    title="Create Order"
+                    onPress={() => {
+                        this._createOrder(firebase.auth().currentUser.uid,this.state.coffeeshop,
+                        this.state.coffeeorder,this.state.comment)
+
+                        this.props.navigation.navigate('Deliver_FirstScreen')
+                        Keyboard.dismiss()
+                    }}
+                    style={{
+                        width: 80
+                    }}
+                />
+            </Card>
+        </View>
 }}
 
 

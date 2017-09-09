@@ -7,7 +7,8 @@ import {
     Image,
     Platform,
     StatusBar,
-    BackHandler
+    BackHandler,
+    AsyncStorage
 }   from 'react-native';
 import { Card, FormInput } from "react-native-elements";
 
@@ -17,15 +18,18 @@ import firebase from '../firebase/FirebaseController.js';
 
 class Create_FirstScreen extends Component {
 
-_MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid){
+_MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid,spotsleft){
     firebase.database().ref('rooms/' + uid)
     .set({
         roomname,
         coffeeshop,
         roomsize,
         dropoffloc,
-        dropofftime          
+        dropofftime,
+        spotsleft
     })
+    AsyncStorage.setItem("is_there_a_room", "true")
+
 }
 
 constructor(props) {
@@ -37,6 +41,7 @@ constructor(props) {
         roomsize: '',
         dropoffloc: '', 
         dropofftime: '',
+        spotsleft: '',
         loading: false,
     }
   }
@@ -97,7 +102,7 @@ render(){
                         onPress={() => {
                             this._MakeRoomDB(this.state.roomname,this.state.coffeeshop,
                                 this.state.roomsize,this.state.dropoffloc,this.state.dropofftime,
-                                firebase.auth().currentUser.uid);
+                                firebase.auth().currentUser.uid,3);
 
                             this.props.navigation.navigate('Create_SecondScreen')} 
                         }
@@ -114,6 +119,7 @@ class Create_SecondScreen extends Component {
 
 _DeleteRoomDB(uid){
     firebase.database().ref('rooms/' + uid).remove()
+    AsyncStorage.removeItem("is_there_a_room")
 }
 
     render(){
