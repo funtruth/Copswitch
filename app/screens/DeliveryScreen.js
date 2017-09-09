@@ -10,13 +10,50 @@ import {
     BackHandler,
     ScrollView,
     AsyncStorage,
-    Keyboard
+    Keyboard,
+    ListView,
+    StyleSheet,
+    FlatList,
+    TouchableHighlight
 }   from 'react-native';
 import { Card, FormInput } from "react-native-elements";
 
 import { StackNavigator } from 'react-navigation';
 
 import firebase from '../firebase/FirebaseController.js';
+
+const styles = StyleSheet.create({
+    container: {
+     flex: 1,
+     paddingTop: 22
+    },
+    item: {
+      padding: 10,
+      fontSize: 18,
+      height: 44,
+    },
+    listView: {
+        flex: 1,
+      },
+    listItem: {
+    borderBottomColor: '#eee',
+    borderColor: 'gray',
+    flexDirection:'row',
+    alignItems:'center',
+    borderWidth: 1,
+    padding:20
+    },
+    listItemTitle: {
+    flex: 6,
+    color: '#000',
+    fontSize: 16,
+    },
+    listItemAction: {
+    flex: 1,
+    width: 40,
+    height: 40
+    },
+  })
 
 class Deliver_FirstScreen extends Component {
 
@@ -33,6 +70,29 @@ constructor(props) {
         orderuid1:'',
         loading: false,
     }
+
+    this.tasksRef = firebase.database().ref('orders/');
+    const dataSource = new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+    });
+    this.state = {
+        dataSource: dataSource
+    };
+  }
+
+listenForTasks(tasksRef) {
+    tasksRef.on('value', (dataSnapshot) => {
+      var tasks = [];
+      dataSnapshot.forEach((child) => {
+        tasks.push({
+          name: child.val().name,
+        });
+      });
+  
+      this.setState({
+        dataSource: this.state.dataSource.cloneWithRows(tasks)
+      });
+    });
   }
 
 _addOrder(orderuid1,myuid) {
@@ -52,7 +112,13 @@ componentWillMount() {
         username: snapshot.val(),
         })
     })
+
+    this.listenForTasks(this.tasksRef);
 }
+
+renderRow(rowData) {
+        return <Text>{rowData.toString()}</Text>;
+       }
 
 render(){
     return <View style={{
@@ -60,6 +126,13 @@ render(){
                 justifyContent: 'center',
                 alignItems: 'center'
                 }}>
+
+                <ListView
+                    enableEmptySections={true}
+                    dataSource={this.state.dataSource}
+                    renderRow={this.renderRow}
+                />
+
                 <ScrollView>
                 <Card title='Order 1'>
  
