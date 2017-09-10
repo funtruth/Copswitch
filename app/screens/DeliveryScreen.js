@@ -31,11 +31,22 @@ constructor(props) {
         orderuid1:'',
         loading: false,
 
-        data: [],
+        data: [
+            {
+                first: "Michael",
+                last: "Ru"
+            },
+            {
+                first: "Nathan",
+                last: "Nguyen"
+            }
+        ],
         error: null,
         refreshing: false
     }
   }
+
+   
 
 makeRemoteRequest = () => {
 const url = 'https://randomuser.me/api/?seed=${seed}&page=1&results=1';
@@ -75,10 +86,12 @@ componentWillMount() {
         })
     })
 
-    this.makeRemoteRequest();
+    //Request from Firebase
+    //this.makeRemoteRequest();
 }
 
 render(){
+
     return (
         <View>
         <Card style={{
@@ -90,11 +103,11 @@ render(){
                 data={this.state.data}
                 renderItem={({ item }) => (
                     <ListItem
-                        title={`${item.name.first} ${item.name.last}`}
-                        subtitle={item.email}
+                        title={`${item.first} ${item.last}`}
+                        subtitle={item.first}
                     />
                 )}
-                keyExtractor={item => item.email}
+                keyExtractor={item => item.last}
             />
         </List>
         </Card>
