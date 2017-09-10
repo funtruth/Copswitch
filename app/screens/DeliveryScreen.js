@@ -33,39 +33,46 @@ constructor(props) {
 
         data: [
             {
-                first: "Michael",
-                last: "Ru"
+                "first":"Michael",
+                "last":"Ru"
             },
             {
-                first: "Nathan",
-                last: "Nguyen"
+                "first":"Nathan",
+                "last":"Nguyen"
             }
         ],
         error: null,
         refreshing: false
     }
+
+    //const dataSource = new ListView.DataSource({
+               // rowHasChanged: (row1, row2) => row1 !== row2,
+            //});
+            //this.state = {
+            //    data: dataSource
+            //};
   }
 
    
 
 makeRemoteRequest = () => {
-const url = 'https://randomuser.me/api/?seed=${seed}&page=1&results=1';
-//const url = 'https://huddlec-4205b.firebaseio.com/orders.json';
+
 this.setState({ loading: true });
 
-fetch(url)
-    .then(res => res.json())
-    .then(res => {
-    this.setState({
-        data: true ? res.results : [...this.state.data, ...res.results],
-        error: res.error || null,
-        loading: false,
-        refreshing: false
-    });
-    })
-    .catch(error => {
-    this.setState({ error, loading: false });
-    });
+firebase.database().ref('orders/').on('value', (dataSnapshot) => {
+          var tasks = [];
+          dataSnapshot.forEach((child) => {
+            tasks.push({
+              name: child.val().name,
+              _key: child.key
+            });
+            alert(child.key)
+          });
+      
+          this.setState({
+            data: this.state.data.cloneWithRows(tasks)
+          });
+        });
 };
 
 _addOrder(orderuid,myuid) {
@@ -107,7 +114,7 @@ render(){
                         subtitle={item.first}
                     />
                 )}
-                keyExtractor={item => item.last}
+                keyExtractor={item => item.first}
             />
         </List>
         </Card>
