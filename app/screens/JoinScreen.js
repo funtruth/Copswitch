@@ -35,11 +35,7 @@ _backAndroid(){
 }
 
     render(){
-        return <View style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center'
-                }}>
+        return <View>
                 <ScrollView>
                 <Card title='Room 1'>
  

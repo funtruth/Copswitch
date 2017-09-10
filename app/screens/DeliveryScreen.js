@@ -1,59 +1,20 @@
-
 import React, { Component } from 'react';
 import {
     Text,
     View,
     Button,
     Image,
-    Platform,
-    StatusBar,
-    BackHandler,
     ScrollView,
     AsyncStorage,
     Keyboard,
     ListView,
-    StyleSheet,
-    FlatList,
-    TouchableHighlight
+    FlatList
 }   from 'react-native';
 import { Card, FormInput } from "react-native-elements";
 
 import { StackNavigator } from 'react-navigation';
 
 import firebase from '../firebase/FirebaseController.js';
-
-const styles = StyleSheet.create({
-    container: {
-     flex: 1,
-     paddingTop: 22
-    },
-    item: {
-      padding: 10,
-      fontSize: 18,
-      height: 44,
-    },
-    listView: {
-        flex: 1,
-      },
-    listItem: {
-    borderBottomColor: '#eee',
-    borderColor: 'gray',
-    flexDirection:'row',
-    alignItems:'center',
-    borderWidth: 1,
-    padding:20
-    },
-    listItemTitle: {
-    flex: 6,
-    color: '#000',
-    fontSize: 16,
-    },
-    listItemAction: {
-    flex: 1,
-    width: 40,
-    height: 40
-    },
-  })
 
 class Deliver_FirstScreen extends Component {
 
@@ -72,11 +33,11 @@ constructor(props) {
     }
 
     this.tasksRef = firebase.database().ref('orders/');
-    const dataSource = new ListView.DataSource({
+    const dataSauce = new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
     });
     this.state = {
-        dataSource: dataSource
+        dataSource: dataSauce
     };
   }
 
@@ -86,7 +47,9 @@ listenForTasks(tasksRef) {
       dataSnapshot.forEach((child) => {
         tasks.push({
           name: child.val().name,
+          _key: child.key
         });
+        //alert(child.key)
       });
   
       this.setState({
@@ -95,11 +58,13 @@ listenForTasks(tasksRef) {
     });
   }
 
-_addOrder(orderuid1,myuid) {
+_addOrder(orderuid,myuid) {
+
     firebase.database().ref('rooms/' + myuid)
     .set({
-        orderuid1
+        orderuid
     })
+
 }
 
 componentWillMount() {
@@ -116,114 +81,77 @@ componentWillMount() {
     this.listenForTasks(this.tasksRef);
 }
 
-renderRow(rowData) {
-        return <Text>{rowData.toString()}</Text>;
+_renderRow(item) {
+    return (
+        <View>    
+        <Button 
+            title="I hate ListViews"
+            onPress={() => {
+                alert(this.state.dataSource.getRowAndSectionCount())
+            }}
+                
+        />
+        <Text> Debugging </Text>
+        </View>
+    );
        }
+_renderItem({item, index}) {
+    return <Text>{item}</Text>;
+}
 
 render(){
-    return <View style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center'
-                }}>
+    return <View>
+        <FlatList
+            data={this.state.dataSource}
+            renderItem={this._renderItem}
+        />
+        <ListView
+            enableEmptySections={true}
+            dataSource={this.state.dataSource}
+            renderRow={(rowData) => <Text>{rowData.toString()}</Text>}
+        />
 
-                <ListView
-                    enableEmptySections={true}
-                    dataSource={this.state.dataSource}
-                    renderRow={this.renderRow}
-                />
+        <ScrollView>
+        <Card title='Order 1'>
 
-                <ScrollView>
-                <Card title='Order 1'>
- 
-                    <FormInput
-                        value="Order 1"
-                    />
-                    
-                    <Button
-                        backgroundColor="#03A9F4"
-                        title="Take Order"
-                        onPress={() => {
-                            AsyncStorage.getItem("is_there_a_room")
-                            .then(res => {
-                                if (res !== null) {
-                                    //this._addOrder();
-                                } else {
-                                    this.props.navigation.navigate('Create_FirstScreen');
-                                }
-                            }) 
-                        }}
-                        style={{
-                            width: 80
-                        }}
-                    />
-                </Card>
+            <FormInput
+                value="Order 1"
+            />
+            
+            <Button
+                backgroundColor="#03A9F4"
+                title="Take Order"
+                onPress={() => {
+                    AsyncStorage.getItem("is_there_a_room")
+                    .then(res => {
+                        if (res !== null) {
+                            this._addOrder(firebase.auth().currentUser.uid,
+                                firebase.auth().currentUser.uid);
+                        } else {
+                            this.props.navigation.navigate('Create_FirstScreen');
+                        }
+                    }) 
+                }}
+                style={{
+                    width: 80
+                }}
+            />
+        </Card>
 
-                <Card title='Order 2'>
-                
-                    <FormInput
-                        value="Order 2"
-                    />
-                    
-                    <Button
-                    backgroundColor="#03A9F4"
-                    title="Take Order"
-                    onPress={() => {
-                        AsyncStorage.getItem("is_there_a_room")
-                            .then(res => {
-                                if (res !== null) {
-                                    //this._addOrder();
-                                } else {
-                                    this.props.navigation.navigate('Create_FirstScreen');
-                                }
-                            })
-                    }}
-                    style={{
-                        width: 80
-                    }}
-                />
-                </Card>
+        <Card>
+        <Button
+            backgroundColor="#03A9F4"
+            title="Add Order"
+            onPress={() => {
+                this.props.navigation.navigate('Deliver_SecondScreen');      
+            }}
 
-                <Card title='Order 3'>
-                
-                    <FormInput
-                        value="Order 3"
-                    />
-                    
-                    <Button
-                    backgroundColor="#03A9F4"
-                    title="Take Order"
-                    onPress={() => {
-                        AsyncStorage.getItem("is_there_a_room")
-                            .then(res => {
-                                if (res !== null) {
-                                    //this._addOrder();
-                                } else {
-                                    this.props.navigation.navigate('Create_FirstScreen');
-                                }
-                            }) 
-                    }}
-                    style={{
-                        width: 80
-                    }}
-                />
-                </Card>
+        />
+        </Card>
 
-                <Button
-                    backgroundColor="#03A9F4"
-                    title="Add Order"
-                    onPress={() => {
-                        this.props.navigation.navigate('Deliver_SecondScreen');      
-                    }}
-                    style={{
-                        width: 80
-                    }}
-                />
-
-                </ScrollView>
-            </View>
-        }
-}
+        </ScrollView>
+        </View>
+}}
 
 //Second Screen is for ADDING orders with the (+) button at the bottom
 //Future Update
@@ -261,11 +189,7 @@ componentWillMount() {
 }
 
 render(){
-    return <View style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center'
-        }}>
+    return <View>
             <Card title='Create your Order'>
 
                 <FormInput

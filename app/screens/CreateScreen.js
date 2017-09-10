@@ -59,11 +59,7 @@ componentWillMount() {
 }
 
 render(){
-    return <View style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}>
+    return <View>
                 <Card title='Create a Room'>
 
                     <FormInput
