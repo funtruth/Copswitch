@@ -10,7 +10,7 @@ import {
     ListView,
     FlatList
 }   from 'react-native';
-import { Card, FormInput } from "react-native-elements";
+import { Card, FormInput, List, ListItem } from "react-native-elements";
 
 import { StackNavigator } from 'react-navigation';
 
@@ -30,41 +30,38 @@ constructor(props) {
 
         orderuid1:'',
         loading: false,
+
+        data: [],
+        error: null,
+        refreshing: false
     }
-
-    this.tasksRef = firebase.database().ref('orders/');
-    const dataSauce = new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-    });
-    this.state = {
-        dataSource: dataSauce
-    };
   }
 
-listenForTasks(tasksRef) {
-    tasksRef.on('value', (dataSnapshot) => {
-      var tasks = [];
-      dataSnapshot.forEach((child) => {
-        tasks.push({
-          name: child.val().name,
-          _key: child.key
-        });
-        //alert(child.key)
-      });
-  
-      this.setState({
-        dataSource: this.state.dataSource.cloneWithRows(tasks)
-      });
+makeRemoteRequest = () => {
+const url = 'https://randomuser.me/api/?seed=${seed}&page=1&results=1';
+//const url = 'https://huddlec-4205b.firebaseio.com/orders.json';
+this.setState({ loading: true });
+
+fetch(url)
+    .then(res => res.json())
+    .then(res => {
+    this.setState({
+        data: true ? res.results : [...this.state.data, ...res.results],
+        error: res.error || null,
+        loading: false,
+        refreshing: false
     });
-  }
+    })
+    .catch(error => {
+    this.setState({ error, loading: false });
+    });
+};
 
 _addOrder(orderuid,myuid) {
-
     firebase.database().ref('rooms/' + myuid)
     .set({
         orderuid
     })
-
 }
 
 componentWillMount() {
@@ -78,64 +75,28 @@ componentWillMount() {
         })
     })
 
-    this.listenForTasks(this.tasksRef);
-}
-
-_renderRow(item) {
-    return (
-        <View>    
-        <Button 
-            title="I hate ListViews"
-            onPress={() => {
-                alert(this.state.dataSource.getRowAndSectionCount())
-            }}
-                
-        />
-        <Text> Debugging </Text>
-        </View>
-    );
-       }
-_renderItem({item, index}) {
-    return <Text>{item}</Text>;
+    this.makeRemoteRequest();
 }
 
 render(){
-    return <View>
-        <FlatList
-            data={this.state.dataSource}
-            renderItem={this._renderItem}
-        />
-        <ListView
-            enableEmptySections={true}
-            dataSource={this.state.dataSource}
-            renderRow={(rowData) => <Text>{rowData.toString()}</Text>}
-        />
-
-        <ScrollView>
-        <Card title='Order 1'>
-
-            <FormInput
-                value="Order 1"
+    return (
+        <View>
+        <Card style={{
+            width: 350,
+            height: 400    
+        }}>
+        <List style={{ borderTopWidth:0, borderBottomWidth:0 }}>
+            <FlatList
+                data={this.state.data}
+                renderItem={({ item }) => (
+                    <ListItem
+                        title={`${item.name.first} ${item.name.last}`}
+                        subtitle={item.email}
+                    />
+                )}
+                keyExtractor={item => item.email}
             />
-            
-            <Button
-                backgroundColor="#03A9F4"
-                title="Take Order"
-                onPress={() => {
-                    AsyncStorage.getItem("is_there_a_room")
-                    .then(res => {
-                        if (res !== null) {
-                            this._addOrder(firebase.auth().currentUser.uid,
-                                firebase.auth().currentUser.uid);
-                        } else {
-                            this.props.navigation.navigate('Create_FirstScreen');
-                        }
-                    }) 
-                }}
-                style={{
-                    width: 80
-                }}
-            />
+        </List>
         </Card>
 
         <Card>
@@ -145,12 +106,10 @@ render(){
             onPress={() => {
                 this.props.navigation.navigate('Deliver_SecondScreen');      
             }}
-
         />
         </Card>
-
-        </ScrollView>
         </View>
+    );
 }}
 
 //Second Screen is for ADDING orders with the (+) button at the bottom
