@@ -86,11 +86,10 @@ componentWillMount() {
 render(){
 
     return (
-        <View>
-        <Card style={{
-            width: 350,
-            height: 400    
+        <View style={{
+            backgroundColor: '#e6ddd1',
         }}>
+
         <List style={{ borderTopWidth:0, borderBottomWidth:0 }}>
             <FlatList
                 data={this.state.data}
@@ -106,17 +105,20 @@ render(){
                 keyExtractor={item => item._key}
             />
         </List>
-        </Card>
 
-        <Card>
         <Button
-            backgroundColor="#03A9F4"
-            title="Create Order"
+            color='#8b6f4b'
+            title="Place an Order"
             onPress={() => {
                 this.props.navigation.navigate('Deliver_SecondScreen');      
             }}
+            style={{
+                width: 150,
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}
         />
-        </Card>
         </View>
     );
 }}
@@ -157,8 +159,12 @@ componentWillMount() {
 }
 
 render(){
-    return <View>
-            <Card title='Create your Order'>
+    return <View style={{
+                backgroundColor: '#e6ddd1',
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
 
                 <FormInput
                     placeholder="Coffeshop..."
@@ -179,7 +185,7 @@ render(){
                 />
 
                 <Button
-                    backgroundColor="#03A9F4"
+                    color='#8b6f4b'
                     title="Create Order"
                     onPress={() => {
                         this._createOrder(firebase.auth().currentUser.uid,this.state.coffeeshop,
@@ -188,11 +194,7 @@ render(){
                         this.props.navigation.navigate('Deliver_FirstScreen')
                         Keyboard.dismiss()
                     }}
-                    style={{
-                        width: 80
-                    }}
                 />
-            </Card>
         </View>
 }}
 

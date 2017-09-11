@@ -49,29 +49,18 @@ componentWillMount() {
 }
 
   render(){
-    return <View style={{ paddingVertical: 20 }}>
-      <Card title={this.state.email}>
-        <View
-          style={{
-            backgroundColor: "#03A9F4",
-            alignItems: "center",
-            justifyContent: "center",
-            width: 180,
-            height: 60,
-            alignSelf: "center",
-            marginBottom: 20
-          }}
-        >
-          <Text style={{ color: "white", fontSize: 28 }}>{this.state.username}</Text>
-        </View>
-        
-        <View
-          style={{
-            marginBottom:20
-          }}
-        >
+    return <View style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center'
+          }}>
+
+          <Text style={{ color:'#493a27', fontSize: 28 }}>{this.state.username}</Text>
+          <Text style={{ color: '#493a27', fontSize: 28 }}>{this.state.email}</Text>
+
           <Button
-            backgroundColor="#03A9F4"
+            backgroundColor="#8b6f4b"
+            color="white"
             title="SIGN OUT"
             onPress={() => {
                 onSignOut().then(() => {
@@ -79,11 +68,15 @@ componentWillMount() {
                   this.props.navigation.navigate('SignedOut');
                 })
             }}
+            style={{
+                width: 80,
+                alignCenter: 'center'
+            }}
           />
-        </View>
 
         <Button
-          backgroundColor="red"
+          backgroundColor="#8b6f4b"
+          color="white"
           title="Delete Account"
           onPress={() => {
             firebase.auth().currentUser.delete().then(() => {
@@ -92,9 +85,10 @@ componentWillMount() {
               alert('Failed to Delete');
             })
           }}
+          style={{
+                width: 80
+          }}
         />
-
-      </Card>
     </View>}
     
 };

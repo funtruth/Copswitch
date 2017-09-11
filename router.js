@@ -100,11 +100,17 @@ export const SignedOut = StackNavigator({
     {
       tabBarPosition: 'bottom',
       tabBarOptions: {
-        style: {
-          paddingTop: Platform.OS === "android" ? 0:0
-        },
         showIcon: true,
-        showLabel: false
+        showLabel: false,
+        activeTintColor:'#8b6f4b',
+        inactiveTintColor:'#b89d7a',
+        style: {
+          backgroundColor: '#DECFC6',
+        },
+        indicatorStyle: {
+          backgroundColor: '#8b6f4b',
+          height:5,
+        }
       }
     }
   );
