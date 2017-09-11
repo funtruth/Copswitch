@@ -17,40 +17,24 @@ import { StackNavigator } from 'react-navigation';
 import firebase from '../firebase/FirebaseController.js';
 
 class Deliver_FirstScreen extends Component {
-
+    
 constructor(props) {
     super(props);
     this.state = {
-        username: '',
-        roomname: '',
-        coffeeshop: '', 
-        roomsize: '',
-        dropoffloc: '', 
-        dropofftime: '',
 
-        orderuid1:'',
+        orderuid:'',
         loading: false,
 
-        data: [
-            {
-                "first":"Michael",
-                "last":"Ru"
-            },
-            {
-                "first":"Nathan",
-                "last":"Nguyen"
-            }
-        ],
         error: null,
         refreshing: false
     }
 
-    //const dataSource = new ListView.DataSource({
-               // rowHasChanged: (row1, row2) => row1 !== row2,
-            //});
-            //this.state = {
-            //    data: dataSource
-            //};
+    const dataSource = new ListView.DataSource({
+            rowHasChanged: (row1, row2) => row1 !== row2,
+        });
+        this.state = {
+            data: dataSource
+        };
   }
 
    
@@ -63,15 +47,17 @@ firebase.database().ref('orders/').on('value', (dataSnapshot) => {
           var tasks = [];
           dataSnapshot.forEach((child) => {
             tasks.push({
-              name: child.val().name,
-              _key: child.key
+              "coffeeorder": child.val().coffeeorder,
+              "_key": child.key
             });
-            alert(child.key)
           });
       
           this.setState({
-            data: this.state.data.cloneWithRows(tasks)
+            //data: this.state.data.cloneWithRows(tasks)
+            data: tasks
           });
+          
+          alert(this.state.data.join('\n'))
         });
 };
 
@@ -83,18 +69,8 @@ _addOrder(orderuid,myuid) {
 }
 
 componentWillMount() {
-    //Grabs the username and email of current user
-    const uid = firebase.auth().currentUser.uid
-    const UserDB = firebase.database().ref("users/" + uid)
-
-    UserDB.child('username').on('value',snapshot => {
-        this.setState({
-        username: snapshot.val(),
-        })
-    })
-
     //Request from Firebase
-    //this.makeRemoteRequest();
+    this.makeRemoteRequest();
 }
 
 render(){
@@ -108,13 +84,8 @@ render(){
         <List style={{ borderTopWidth:0, borderBottomWidth:0 }}>
             <FlatList
                 data={this.state.data}
-                renderItem={({ item }) => (
-                    <ListItem
-                        title={`${item.first} ${item.last}`}
-                        subtitle={item.first}
-                    />
-                )}
-                keyExtractor={item => item.first}
+                renderItem={({item}) => <ListItem title={item.coffeeorder}/>}
+                keyExtractor={item => item.key}
             />
         </List>
         </Card>
