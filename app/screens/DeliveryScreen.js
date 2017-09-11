@@ -48,6 +48,8 @@ firebase.database().ref('orders/').on('value', (dataSnapshot) => {
           dataSnapshot.forEach((child) => {
             tasks.push({
               "coffeeorder": child.val().coffeeorder,
+              "coffeeshop": child.val().coffeeshop,
+              "comment": child.val().comment,
               "_key": child.key
             });
           });
@@ -56,8 +58,6 @@ firebase.database().ref('orders/').on('value', (dataSnapshot) => {
             //data: this.state.data.cloneWithRows(tasks)
             data: tasks
           });
-          
-          alert(this.state.data.join('\n'))
         });
 };
 
@@ -84,8 +84,16 @@ render(){
         <List style={{ borderTopWidth:0, borderBottomWidth:0 }}>
             <FlatList
                 data={this.state.data}
-                renderItem={({item}) => <ListItem title={item.coffeeorder}/>}
-                keyExtractor={item => item.key}
+                renderItem={({item}) => (
+                    <ListItem 
+                        title={`${item.coffeeshop} ${item.coffeeorder}`}
+                        subtitle={item.comment}
+                        onPress={() => {
+                            firebase.database().ref('orders/' + item._key).remove()
+                        }}
+                    />
+                )}
+                keyExtractor={item => item._key}
             />
         </List>
         </Card>
