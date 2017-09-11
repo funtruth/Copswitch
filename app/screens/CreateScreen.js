@@ -26,7 +26,10 @@ _MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid,spotsleft){
         roomsize,
         dropoffloc,
         dropofftime,
-        spotsleft
+        spotsleft,
+        spot1: '',
+        spot2: '',
+        spot3: ''
     })
     AsyncStorage.setItem("is_there_a_room", "true")
 

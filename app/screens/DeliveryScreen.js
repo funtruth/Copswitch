@@ -68,6 +68,18 @@ _addOrder(orderuid,myuid) {
     })
 }
 
+_doesUserHaveRoom(uid,coffeeorder) {
+    firebase.database().ref('rooms/' + uid).on('value',snapshot => {
+        if (snapshot.exists()) {
+            firebase.database().ref('orders/' + uid).remove().then(() => {
+                firebase.database().ref('rooms/' + uid).update({spot1:coffeeorder})
+            })
+        } else {
+            this.props.navigation.navigate('Create_FirstScreen');
+        }
+    })
+}
+
 componentWillMount() {
     //Request from Firebase
     this.makeRemoteRequest();
@@ -89,7 +101,7 @@ render(){
                         title={`${item.coffeeshop} ${item.coffeeorder}`}
                         subtitle={item.comment}
                         onPress={() => {
-                            firebase.database().ref('orders/' + item._key).remove()
+                            this._doesUserHaveRoom(item._key,item.coffeeorder)
                         }}
                     />
                 )}
