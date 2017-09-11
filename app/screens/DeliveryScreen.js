@@ -37,13 +37,11 @@ constructor(props) {
         };
   }
 
-   
+_makeRemoteRequest = () => {
 
-makeRemoteRequest = () => {
+    this.setState({ loading: true });
 
-this.setState({ loading: true });
-
-firebase.database().ref('orders/').on('value', (dataSnapshot) => {
+    firebase.database().ref('orders/').on('value', (dataSnapshot) => {
           var tasks = [];
           dataSnapshot.forEach((child) => {
             tasks.push({
@@ -82,7 +80,7 @@ _doesUserHaveRoom(uid,coffeeorder) {
 
 componentWillMount() {
     //Request from Firebase
-    this.makeRemoteRequest();
+    this._makeRemoteRequest();
 }
 
 render(){
@@ -113,7 +111,7 @@ render(){
         <Card>
         <Button
             backgroundColor="#03A9F4"
-            title="Add Order"
+            title="Create Order"
             onPress={() => {
                 this.props.navigation.navigate('Deliver_SecondScreen');      
             }}

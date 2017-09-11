@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 
-import DrawerExample from './app/App.js';
 import { AppRegistry } from 'react-native';
 
 import { createRootNavigator } from "./router";
