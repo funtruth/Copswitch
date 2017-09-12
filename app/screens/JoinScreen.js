@@ -44,7 +44,7 @@ _makeRoomRequest = () => {
         var tasks = [];
         dataSnapshot.forEach((child) => {
         tasks.push({
-            "username": child.val().username,
+            "owner": child.val().owner,
             "coffeeshop": child.val().coffeeshop,
             "dropoffloc": child.val().dropoffloc,
             "dropofftime": child.val().dropofftime,
@@ -71,9 +71,13 @@ componentWillMount() {
 
 
 render(){
-    return <View>
+    return <View 
+                style={{    
+                    backgroundColor: '#e6ddd1',
+                    flex: 1
+                }}>
 
-            <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor: '#e6ddd1', }}>
+            <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor: '#b18d77', }}>
                 <FlatList
                     data={this.state.datac}
                     renderItem={({item}) => (
@@ -83,11 +87,18 @@ render(){
                             title={item.roomname}
                             titleStyle={{
                                 fontWeight: 'bold',
+                                color: 'white'
                             }}
-                            subtitle={item.username + "\n" + item.coffeeshop + "\n" + item.dropoffloc
-                                + "\n" + item.dropofftime}
+                            subtitle={item.coffeeshop + "\n" + item.dropoffloc
+                                + "\n" + item.dropofftime + "\n" +  item.owner }
+                            subtitleStyle={{
+                                color: '#ece4df'
+                            }}
                             subtitleNumberOfLines={4}
                             rightTitle= {item.cups + '/4'}
+                            rightTitleStyle={{
+                                color: 'white'
+                            }}
                             
                         />
                     )}

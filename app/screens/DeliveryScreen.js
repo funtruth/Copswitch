@@ -86,13 +86,20 @@ _doesUserHaveRoom(uid,coffeeorder) {
     })
 }
 
+_noOrdersMessage() {
+    return (
+        <View style={{flex: 0.5}}>
+            <Text>There are no Orders.</Text>
+        </View>
+    )
+}
+
 componentWillMount() {
     //Request from Firebase
     this._makeRemoteRequest();
 }
 
 render(){
-
     return (
         <View style={{
             flex: 1,
@@ -133,9 +140,8 @@ render(){
           onPress={() => this.props.navigation.navigate('Deliver_SecondScreen')}
           icon={<MaterialIcons name="add" style={styles.actionButtonIcon }/>}
         />
-      
+
       </View>
-    
     );
 }}
 
@@ -263,7 +269,12 @@ render(){
                         alignSelf: 'center'
                     }}
                 />
-
+                
+                <View style = {{
+                    width: 180,
+                    marginTop: 20,
+                    alignSelf: 'center'
+                }}>
                 <Button
                     color='#b18d77'
                     title="Create Order"
@@ -280,6 +291,7 @@ render(){
                         alignSelf: 'center'
                     }}
                 />
+                </View>
         </View>
 }}
 
