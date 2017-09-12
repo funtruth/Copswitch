@@ -8,10 +8,12 @@ import {
     AsyncStorage,
     Keyboard,
     ListView,
-    FlatList
+    FlatList,
+    StyleSheet
 }   from 'react-native';
 import { Card, FormInput, List, ListItem } from "react-native-elements";
-import ActionButton from "react-native-action-button";
+//import ActionButton from "react-native-action-button";
+//import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import { StackNavigator } from 'react-navigation';
 
@@ -120,14 +122,16 @@ render(){
                 alignItems: 'center'
             }}
         />
-
-        <ActionButton
-            buttonColor='#8b6f4b'
-            onPress={() => {
-                this.props.navigation.navigate('Deliver_SecondScreen');
-            }}
-        />
-        
+{/*
+        <ActionButton buttonColor="rgba(231,76,60,1)">
+        <ActionButton.Item
+          buttonColor="#9b59b6"
+          title="New Task"
+          onPress={() => console.log('notes tapped!')}>
+          <MaterialIcons name="add-alert" style={styles.actionButtonIcon} />
+        </ActionButton.Item>
+      </ActionButton>
+*/}
         </View>
     );
 }}
@@ -222,3 +226,11 @@ export default stackNav = StackNavigator(
         }
     );
 
+
+    const styles = StyleSheet.create({
+        actionButtonIcon: {
+          fontSize: 20,
+          height: 22,
+          color: 'black'
+        },
+      });
