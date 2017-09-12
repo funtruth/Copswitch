@@ -8,7 +8,6 @@ import {
     AsyncStorage,
     BackHandler
 }   from 'react-native';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 export default class SettingsScreen extends React.Component {
 

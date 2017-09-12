@@ -11,6 +11,7 @@ import {
     FlatList
 }   from 'react-native';
 import { Card, FormInput, List, ListItem } from "react-native-elements";
+import ActionButton from "react-native-action-button";
 
 import { StackNavigator } from 'react-navigation';
 
@@ -119,6 +120,14 @@ render(){
                 alignItems: 'center'
             }}
         />
+
+        <ActionButton
+            buttonColor='#8b6f4b'
+            onPress={() => {
+                this.props.navigation.navigate('Deliver_SecondScreen');
+            }}
+        />
+        
         </View>
     );
 }}
