@@ -9,11 +9,13 @@ import {
     Keyboard,
     ListView,
     FlatList,
-    StyleSheet
+    StyleSheet,
+    TextInput
 }   from 'react-native';
 import { Card, FormInput, List, ListItem } from "react-native-elements";
-//import ActionButton from "react-native-action-button";
-//import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import ActionButton from "react-native-action-button";
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import ModalPicker from 'react-native-modal-picker';
 
 import { StackNavigator } from 'react-navigation';
 
@@ -50,7 +52,10 @@ _makeRemoteRequest = () => {
             tasks.push({
               "coffeeorder": child.val().coffeeorder,
               "coffeeshop": child.val().coffeeshop,
+              "size": child.val().size,
+              "dropoffloc": child.val().dropoffloc,
               "comment": child.val().comment,
+              "username": child.val().username,
               "_key": child.key
             });
           });
@@ -90,18 +95,32 @@ render(){
 
     return (
         <View style={{
-            backgroundColor: '#e6ddd1',
+            flex: 1,
+            backgroundColor:'#e6ddd1'
         }}>
 
-        <List style={{ borderTopWidth:0, borderBottomWidth:0 }}>
+        <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor:'#b18d77' }}>
             <FlatList
                 data={this.state.data}
                 renderItem={({item}) => (
                     <ListItem 
-                        title={`${item.coffeeshop} ${item.coffeeorder}`}
-                        subtitle={item.comment}
+                        title={`${item.size} ${item.coffeeorder}`}
+                        titleStyle={{
+                            fontWeight: 'bold',
+                            color: 'white'
+                        }}
+                        subtitle={item.coffeeshop + "\n" + item.dropoffloc + "\n" + item.comment
+                            + "\n" + item.username}
+                        subtitleNumberOfLines={4}
+                        subtitleStyle={{
+                            color: '#ece4df'
+                        }}
                         onPress={() => {
                             this._doesUserHaveRoom(item._key,item.coffeeorder)
+                        }}
+                        rightTitle= 'Take Order'
+                        rightTitleStyle={{
+                            color: 'white'
                         }}
                     />
                 )}
@@ -109,30 +128,14 @@ render(){
             />
         </List>
 
-        <Button
-            color='#8b6f4b'
-            title="Place an Order"
-            onPress={() => {
-                this.props.navigation.navigate('Deliver_SecondScreen');      
-            }}
-            style={{
-                width: 150,
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}
+        <ActionButton 
+          buttonColor="rgba(222, 207, 198, 1)"
+          onPress={() => this.props.navigation.navigate('Deliver_SecondScreen')}
+          icon={<MaterialIcons name="add" style={styles.actionButtonIcon }/>}
         />
-{/*
-        <ActionButton buttonColor="rgba(231,76,60,1)">
-        <ActionButton.Item
-          buttonColor="#9b59b6"
-          title="New Task"
-          onPress={() => console.log('notes tapped!')}>
-          <MaterialIcons name="add-alert" style={styles.actionButtonIcon} />
-        </ActionButton.Item>
-      </ActionButton>
-*/}
-        </View>
+      
+      </View>
+    
     );
 }}
 
@@ -146,16 +149,21 @@ constructor(props) {
         username: '',
         coffeeshop: '', 
         coffeeorder: '',
+        size: '',
+        dropoffloc: '',
         comment: '',
         loading: false,
 }}
 
-_createOrder(uid,coffeeshop,coffeeorder,comment) {
+_createOrder(uid,coffeeshop,coffeeorder,comment,size,dropoffloc,username) {
     firebase.database().ref('orders/' + uid)
     .set({
         coffeeshop,
         coffeeorder,
-        comment
+        dropoffloc,
+        size,
+        comment,
+        username
     })
 }
 
@@ -166,46 +174,110 @@ componentWillMount() {
 
     UserDB.child('username').on('value',snapshot => {
         this.setState({
-        username: snapshot.val(),
+            username: snapshot.val(),
         })
     })
 }
 
 render(){
+
+    let index = 0;
+    const shops = [
+        { key: index++, section: true, label: 'Coffeeshops' },
+        { key: index++, label: "Tim Horton's" },
+        { key: index++, label: "William's" },
+        { key: index++, label: "Starbucks" },
+        { key: index++, label: "Second Cup" },
+    ];
+    let index2 = 0;
+    const sizes = [
+        { key: index2++, section: true, label: 'Select Size' },
+        { key: index2++, label: "Small" },
+        { key: index2++, label: "Medium" },
+        { key: index2++, label: "Large" },
+    ];
+
     return <View style={{
                 backgroundColor: '#e6ddd1',
                 flex: 1,
                 justifyContent: 'center',
-                alignItems: 'center'
             }}>
+                <ModalPicker
+                    data={shops}
+                    initValue="LOL"
+                    onChange={(option)=>{ this.setState({coffeeshop:option.label})}}>
+                        <TextInput
+                            style={{
+                                padding:10, 
+                                height:50,
+                                width: 250,
+                                alignSelf: 'center',
+                                textAlign: 'center'}}
+                            editable={false}
+                            placeholder="Select a Coffeeshop ..."
+                            value={this.state.coffeeshop} />
+                </ModalPicker>
+
+                <ModalPicker
+                    data={sizes}
+                    initValue="LOL"
+                    onChange={(option)=>{ this.setState({size:option.label})}}>
+                        <TextInput
+                            style={{
+                                padding:10, 
+                                height:50,
+                                width: 250,
+                                alignSelf: 'center',
+                                textAlign: 'center'}}
+                            editable={false}
+                            placeholder="Size ..."
+                            value={this.state.size} />
+                </ModalPicker>
 
                 <FormInput
-                    placeholder="Coffeshop..."
-                    value={this.state.coffeeshop}
-                    onChangeText={coffeeshop => this.setState({ coffeeshop })}
-                />
-
-                <FormInput
-                    placeholder="Coffee Order..."
+                    placeholder="Coffee Order ..."
                     value={this.state.coffeeorder}
                     onChangeText={coffeeorder => this.setState({ coffeeorder })}
+                    style={{
+                        width: 250,
+                        alignSelf: 'center'
+                    }}
                 />
 
                 <FormInput
-                    placeholder="Comments..."
+                    placeholder="Drop-off Location ..."
+                    value={this.state.dropoffloc}
+                    onChangeText={dropoffloc => this.setState({ dropoffloc })}
+                    style={{
+                        width: 250,
+                        alignSelf: 'center'
+                    }}
+                />
+
+                <FormInput
+                    placeholder="Comments ..."
                     value={this.state.comment}
                     onChangeText={comment => this.setState({ comment })}
+                    style={{
+                        width: 250,
+                        alignSelf: 'center'
+                    }}
                 />
 
                 <Button
-                    color='#8b6f4b'
+                    color='#b18d77'
                     title="Create Order"
                     onPress={() => {
                         this._createOrder(firebase.auth().currentUser.uid,this.state.coffeeshop,
-                        this.state.coffeeorder,this.state.comment)
+                        this.state.coffeeorder,this.state.comment,this.state.size,this.state.dropoffloc,
+                        this.state.username)
 
                         this.props.navigation.navigate('Deliver_FirstScreen')
                         Keyboard.dismiss()
+                    }}
+                    style={{
+                        width: 250,
+                        alignSelf: 'center'
                     }}
                 />
         </View>
@@ -227,10 +299,11 @@ export default stackNav = StackNavigator(
     );
 
 
-    const styles = StyleSheet.create({
-        actionButtonIcon: {
-          fontSize: 20,
-          height: 22,
-          color: 'black'
-        },
-      });
+const styles = StyleSheet.create({
+    actionButtonIcon: {
+        fontSize: 20,
+        height: 22,
+        color: '#8b6f4b',
+    },
+
+});

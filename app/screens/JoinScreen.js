@@ -31,7 +31,8 @@ constructor(props) {
         rowHasChanged: (row1, row2) => row1 !== row2,
     });
     this.state = {
-        datac: dataSource
+        datac: dataSource,
+        loading: false
     };
 }
 
@@ -70,11 +71,9 @@ componentWillMount() {
 
 
 render(){
-    return <View style = {{
-                backgroundColor: '#e6ddd1',
-            }}>
+    return <View>
 
-            <List style={{ borderTopWidth:0, borderBottomWidth:0 }}>
+            <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor: '#e6ddd1', }}>
                 <FlatList
                     data={this.state.datac}
                     renderItem={({item}) => (

@@ -63,7 +63,7 @@ componentWillMount() {
             color="white"
             title="SIGN OUT"
             onPress={() => {
-              this.props.navigation.navigate('SignedOut')
+              this.props.navigation.navigate('SignedOut');
               /*
                 onSignOut().then(() => {
                   firebase.auth().signOut();
