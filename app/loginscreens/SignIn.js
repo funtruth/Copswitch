@@ -6,7 +6,7 @@ import {
     AsyncStorage
 } from "react-native";
 import { Card, Button, FormLabel, FormInput } from "react-native-elements";
-import { onSignIn } from "../auth";
+//import { onSignIn } from "../auth";
 
 import styles from "../styles/Styles";
 import firebase from '../firebase/FirebaseController.js';
@@ -73,7 +73,7 @@ render(){
                 this.state.email, this.state.password).then(() => 
                     {
                         this.props.navigation.navigate("SignedIn");
-                        onSignIn();
+                        //onSignIn();
                         Keyboard.dismiss();
                     }
 
@@ -118,13 +118,10 @@ render(){
                         })
                         .then(data => {
                             // create a new firebase credential with the token
-                            console.log("we're almost here")
                             const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
 
                             // login with credential
-                            console.log("we made it")
                             return firebase.auth().signInWithCredential(credential);
-                            console.log("we're here")
                         })
                         .then((currentUser) => {
                             if (currentUser === 'cancelled') {
@@ -137,7 +134,7 @@ render(){
                         .catch((error) => {
                             console.log(`Login fail with error: ${error}`);
                         });
-                    onSignIn()
+                    //onSignIn()
                     this.props.navigation.navigate("SignedIn");
                 }
             }
