@@ -11,7 +11,7 @@ import {
 //import { NavigationActions } from 'react-navigation';
 
 import { Card, Button, Text } from "react-native-elements";
-import { onSignOut } from "../auth";
+//import { onSignOut } from "../auth";
 import Settings from './SettingsScreen'
 
 //Facebook
@@ -63,10 +63,12 @@ componentWillMount() {
             color="white"
             title="SIGN OUT"
             onPress={() => {
+              this.props.navigation.navigate('SignedOut')
+              /*
                 onSignOut().then(() => {
                   firebase.auth().signOut();
                   this.props.navigation.navigate('SignedOut');
-                })
+                }) */
             }}
             style={{
                 width: 80,

@@ -43,10 +43,7 @@ _WriteToDB(uid,username,email){
         title="Do weird things"
         onPress={() => {
             //Write uid, email, and username to the Database
-            this._WriteToDB(firebase.auth().currentUser.uid,this.state.username,
-                firebase.auth().currentUser.email).then(() => {
-                  onSignIn();
-                }) 
+            this._WriteToDB(firebase.auth().currentUser.uid,this.state.username, firebase.auth().currentUser.email)
 
             this.props.navigation.navigate('Profile');
         }}

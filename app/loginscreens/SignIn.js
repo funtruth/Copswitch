@@ -16,7 +16,10 @@ import { NavigationActions } from 'react-navigation';
 const FBSDK = require('react-native-fbsdk');
 const {
   LoginButton,
+  LoginManager,
   AccessToken,
+  GraphRequest,
+  GraphRequestManager
 } = FBSDK; 
 
 export default class SignInScreen extends React.Component {
@@ -87,6 +90,7 @@ render(){
         onPress={() => this.props.navigation.navigate("SignUp")}
       />
     </Card>
+
     <View style={{
         marginTop: 30,
         alignItems: 'center'
@@ -102,14 +106,42 @@ render(){
                 } else if (result.isCancelled) {
                     alert("Login was cancelled");
                 } else {
-                    //AccessToken.getCurrentAccessToken().then((data) => {
-                        //const { accessToken } = data
-                        //this.initUser(accessToken)
-                    //})
-                    onSignIn().then(() => this.props.navigation.navigate("SignedIn"));
+                    LoginManager
+                        .logInWithReadPermissions(['public_profile', 'email'])
+                        .then((result) => {
+                            if (result.isCancelled) {
+                                return Promise.resolve('cancelled');
+                            }
+                            console.log(`Login success with permissions: ${result.grantedPermissions.toString()}`);
+                            // get the access token
+                            return AccessToken.getCurrentAccessToken();
+                        })
+                        .then(data => {
+                            // create a new firebase credential with the token
+                            console.log("we're almost here")
+                            const credential = firebase.auth.FacebookAuthProvider.credential(data.accessToken);
+
+                            // login with credential
+                            console.log("we made it")
+                            return firebase.auth().signInWithCredential(credential);
+                            console.log("we're here")
+                        })
+                        .then((currentUser) => {
+                            if (currentUser === 'cancelled') {
+                                console.log('Login cancelled');
+                            } else {
+                                // now signed in
+                                console.warn(JSON.stringify(currentUser.toJSON()));
+                            }
+                        })
+                        .catch((error) => {
+                            console.log(`Login fail with error: ${error}`);
+                        });
+                    onSignIn()
+                    this.props.navigation.navigate("SignedIn");
                 }
             }
         }/>
-      </View>
+    </View>
   </View>}
 };
