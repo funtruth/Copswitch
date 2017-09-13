@@ -200,23 +200,24 @@ componentWillMount() {
 _compileRoomDB = () => {
     //Grabs the username and email of current user
     const uid = firebase.auth().currentUser.uid
-    const UserDB = firebase.database().ref("users/" + uid)
+    //const UserDB = firebase.database().ref("users/" + uid)
 
-    firebase.database().ref('rooms/' + uid).once('value', (snapshot) => {
-        this.setState({
-            roomname: snapshot.val().roomname,
-            owner: snapshot.val().owner,
-            coffeeshop: snapshot.val().coffeeshop,
-            dropoffloc: snapshot.val().dropoffloc,
-            dropofftime: snapshot.val().dropofftime,
-            roomsize: snapshot.val().roomsize,
-            cups: snapshot.val().cups,
-            spot1: snapshot.val().spot1,
-            spot2: snapshot.val().spot2,
-            spot3: snapshot.val().spot3,
-            _key: snapshot.key
-        })
-
+    firebase.database().ref('rooms/' + uid).on('value', (snapshot) => {
+        if(snapshot.exists()){    
+            this.setState({
+                roomname: snapshot.val().roomname,
+                owner: snapshot.val().owner,
+                coffeeshop: snapshot.val().coffeeshop,
+                dropoffloc: snapshot.val().dropoffloc,
+                dropofftime: snapshot.val().dropofftime,
+                roomsize: snapshot.val().roomsize,
+                cups: snapshot.val().cups,
+                spot1: snapshot.val().spot1,
+                spot2: snapshot.val().spot2,
+                spot3: snapshot.val().spot3,
+                _key: snapshot.key
+            })
+        }
     })
 {/*}
     UserDB.child('username').on('value',snapshot => {
@@ -307,7 +308,9 @@ _DeleteRoomDB(uid){
 
                             {/*second order*/}
                             <View style={styles.orderBox}>
-
+                                <Text style={{
+                                    alignSelf: 'center'
+                                }}>{this.state.spot1}</Text>
                             </View>
 
                         </View>
@@ -320,12 +323,16 @@ _DeleteRoomDB(uid){
 
                             {/*3rd order*/}
                             <View style={styles.orderBox}>
-
+                                <Text style={{
+                                    alignSelf: 'center'
+                                }}>{this.state.spot2}</Text>
                             </View>
 
                             {/*4th order*/}
                             <View style={styles.orderBox}>
-
+                                <Text style={{
+                                    alignSelf: 'center'
+                                }}>{this.state.spot3}</Text>
                             </View>
 
                         </View>

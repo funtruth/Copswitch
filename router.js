@@ -116,6 +116,7 @@ export const SignedOut = StackNavigator({
   );
   
   export const createRootNavigator = (signedIn = true) => {
+    
     return StackNavigator(
       {
         SignedIn: {

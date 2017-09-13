@@ -31,7 +31,9 @@ constructor(props) {
         loading: false,
 
         error: null,
-        refreshing: false
+        refreshing: false,
+
+        currentcups: 1,
     }
 
     const dataSource = new ListView.DataSource({
@@ -44,6 +46,14 @@ constructor(props) {
 
 _makeRemoteRequest = () => {
 
+    firebase.database().ref('rooms/' + firebase.auth().currentUser.uid).on('value', snapshot => {
+        if (snapshot.exists()){
+            this.setState({
+                currentcups: snapshot.val().cups
+            })
+        }
+    })
+
     this.setState({ loading: true });
 
     firebase.database().ref('orders/').on('value', (dataSnapshot) => {
@@ -51,6 +61,7 @@ _makeRemoteRequest = () => {
           dataSnapshot.forEach((child) => {
             tasks.push({
               "coffeeorder": child.val().coffeeorder,
+              "drinktype": child.val().drinktype,
               "coffeeshop": child.val().coffeeshop,
               "size": child.val().size,
               "dropoffloc": child.val().dropoffloc,
@@ -74,24 +85,47 @@ _addOrder(orderuid,myuid) {
     })
 }
 
-_doesUserHaveRoom(uid,coffeeorder) {
-    firebase.database().ref('rooms/' + uid).on('value',snapshot => {
+_doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comment) {
+    firebase.database().ref('rooms/' + myuid).once('value',snapshot => {
         if (snapshot.exists()) {
-            firebase.database().ref('orders/' + uid).remove().then(() => {
-                firebase.database().ref('rooms/' + uid).update({spot1:coffeeorder})
-            })
+            if(currentcups==1){    
+                firebase.database().ref('orders/' + uid).remove().then(() => {
+                    firebase.database().ref('activeorders/' + username).set({
+                        drinktype,
+                        size,
+                        coffeeorder,
+                        comment
+                    })
+                    firebase.database().ref('rooms/' + myuid).update({spot1:username})
+                    firebase.database().ref('rooms/' + myuid).update({cups:2})
+                })
+            } if(currentcups==2){
+                firebase.database().ref('orders/' + uid).remove().then(() => {
+                    firebase.database().ref('activeorders/' + username).set({
+                        drinktype,
+                        size,
+                        coffeeorder,
+                        comment
+                    })
+                    firebase.database().ref('rooms/' + myuid).update({spot2:username})
+                    firebase.database().ref('rooms/' + myuid).update({cups:3})
+                })
+            } if (currentcups==3) {
+                firebase.database().ref('orders/' + uid).remove().then(() => {
+                    firebase.database().ref('activeorders/' + username).set({
+                        drinktype,
+                        size,
+                        coffeeorder,
+                        comment
+                    })
+                    firebase.database().ref('rooms/' + myuid).update({spot3:username})
+                    firebase.database().ref('rooms/' + myuid).update({cups:4})
+                })
+            }
         } else {
             this.props.navigation.navigate('Create_FirstScreen');
         }
     })
-}
-
-_noOrdersMessage() {
-    return (
-        <View style={{flex: 0.5}}>
-            <Text>There are no Orders.</Text>
-        </View>
-    )
 }
 
 componentWillMount() {
@@ -111,7 +145,7 @@ render(){
                 data={this.state.data}
                 renderItem={({item}) => (
                     <ListItem 
-                        title={`${item.size} ${item.coffeeorder}`}
+                        title={`${item.size} ${item.coffeeorder} ${item.drinktype}`}
                         titleStyle={{
                             fontWeight: 'bold',
                             color: 'white'
@@ -123,7 +157,9 @@ render(){
                             color: '#ece4df'
                         }}
                         onPress={() => {
-                            this._doesUserHaveRoom(item._key,item.coffeeorder)
+                            this._doesUserHaveRoom(item._key,firebase.auth().currentUser.uid,
+                                item.username,this.state.currentcups,item.drinktype,
+                                item.size,item.coffeeorder,item.comment)
                         }}
                         rightTitle= 'Take Order'
                         rightTitleStyle={{
@@ -156,15 +192,17 @@ constructor(props) {
         coffeeshop: '', 
         coffeeorder: '',
         size: '',
+        drinktype: '',
         dropoffloc: '',
         comment: '',
         loading: false,
 }}
 
-_createOrder(uid,coffeeshop,coffeeorder,comment,size,dropoffloc,username) {
+_createOrder(uid,coffeeshop,coffeeorder,comment,size,dropoffloc,username,drinktype) {
     firebase.database().ref('orders/' + uid)
     .set({
         coffeeshop,
+        drinktype,
         coffeeorder,
         dropoffloc,
         size,
@@ -202,6 +240,12 @@ render(){
         { key: index2++, label: "Medium" },
         { key: index2++, label: "Large" },
     ];
+    let index3 = 0;
+    const drinks = [
+        { key: index3++, section: true, label: 'Choose a Drink' },
+        { key: index3++, label: "Coffee" },
+        { key: index3++, label: "Tea" },
+    ];
 
     return <View style={{
                 backgroundColor: '#e6ddd1',
@@ -222,6 +266,22 @@ render(){
                             editable={false}
                             placeholder="Select a Coffeeshop ..."
                             value={this.state.coffeeshop} />
+                </ModalPicker>
+
+                <ModalPicker
+                    data={drinks}
+                    initValue="LOL"
+                    onChange={(option)=>{ this.setState({drinktype:option.label})}}>
+                        <TextInput
+                            style={{
+                                padding:10, 
+                                height:50,
+                                width: 250,
+                                alignSelf: 'center',
+                                textAlign: 'center'}}
+                            editable={false}
+                            placeholder="Drink ..."
+                            value={this.state.drinktype} />
                 </ModalPicker>
 
                 <ModalPicker
@@ -281,7 +341,7 @@ render(){
                     onPress={() => {
                         this._createOrder(firebase.auth().currentUser.uid,this.state.coffeeshop,
                         this.state.coffeeorder,this.state.comment,this.state.size,this.state.dropoffloc,
-                        this.state.username)
+                        this.state.username, this.state.drinktype)
 
                         this.props.navigation.navigate('Deliver_FirstScreen')
                         Keyboard.dismiss()
