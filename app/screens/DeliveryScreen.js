@@ -44,6 +44,7 @@ constructor(props) {
         };
   }
 
+//Makes a request to listen to all the this.state values needed
 _makeRemoteRequest = () => {
 
     firebase.database().ref('rooms/' + firebase.auth().currentUser.uid).on('value', snapshot => {
@@ -78,13 +79,11 @@ _makeRemoteRequest = () => {
         });
 };
 
-_addOrder(orderuid,myuid) {
-    firebase.database().ref('rooms/' + myuid)
-    .set({
-        orderuid
-    })
-}
-
+//Used to Add orders to your own room
+//Order is removed
+//Order becomes an ACTIVE Order
+//Spot in room is updated with Username
+//Number of spots is updated
 _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comment) {
     firebase.database().ref('rooms/' + myuid).once('value',snapshot => {
         if (snapshot.exists()) {
@@ -96,7 +95,7 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
                         coffeeorder,
                         comment
                     })
-                    firebase.database().ref('rooms/' + myuid).update({spot1:username})
+                    firebase.database().ref('rooms/' + myuid).update({"spot1":username})
                     firebase.database().ref('rooms/' + myuid).update({cups:2})
                 })
             } if(currentcups==2){
@@ -107,7 +106,7 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
                         coffeeorder,
                         comment
                     })
-                    firebase.database().ref('rooms/' + myuid).update({spot2:username})
+                    firebase.database().ref('rooms/' + myuid).update({"spot2":username})
                     firebase.database().ref('rooms/' + myuid).update({cups:3})
                 })
             } if (currentcups==3) {
@@ -118,7 +117,7 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
                         coffeeorder,
                         comment
                     })
-                    firebase.database().ref('rooms/' + myuid).update({spot3:username})
+                    firebase.database().ref('rooms/' + myuid).update({"spot3":username})
                     firebase.database().ref('rooms/' + myuid).update({cups:4})
                 })
             }
@@ -198,6 +197,7 @@ constructor(props) {
         loading: false,
 }}
 
+//Makes an order 
 _createOrder(uid,coffeeshop,coffeeorder,comment,size,dropoffloc,username,drinktype) {
     firebase.database().ref('orders/' + uid)
     .set({

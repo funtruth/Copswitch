@@ -36,12 +36,12 @@ componentWillMount() {
   const uid = firebase.auth().currentUser.uid
   const UserDB = firebase.database().ref("users/" + uid)
 
-  UserDB.child('username').on('value',snapshot => {
+  UserDB.child('username').once('value',snapshot => {
     this.setState({
       username: snapshot.val(),
     })
   }),
-  UserDB.child('email').on('value',snapshot => {
+  UserDB.child('email').once('value',snapshot => {
       this.setState({
         email: snapshot.val(),
       })

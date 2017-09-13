@@ -22,6 +22,7 @@ import firebase from '../firebase/FirebaseController.js';
 
 class Create_FirstScreen extends Component {
 
+//Initial Room Creation -> Makes a room in Database
 _MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid,cups,owner){
     firebase.database().ref('rooms/' + uid)
     .set({
@@ -37,7 +38,6 @@ _MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid,cups,owner){
         spot3: ''
     })
     AsyncStorage.setItem("is_there_a_room", "true")
-
 }
 
 constructor(props) {
@@ -72,6 +72,7 @@ componentWillMount() {
 
 render(){
 
+    //Arrays with Dropdown menu options
     let index = 0;
     const shops = [
         { key: index++, section: true, label: 'Coffeeshops' },
@@ -190,6 +191,19 @@ constructor(props) {
         spot2: '',
         spot3: '',
         loading: false,
+
+        drinktype1: '',
+        size1: '',
+        coffeeorder1: '',
+        comment1: '',
+        drinktype2: '',
+        size2: '',
+        coffeeorder2: '',
+        comment2: '',
+        drinktype3: '',
+        size3: '',
+        coffeeorder3: '',
+        comment3: '',
     }
 }
 
@@ -197,10 +211,11 @@ componentWillMount() {
     this._compileRoomDB();
 }
 
+//Sets all the this.state values that are necessary for viewing your own room
+//listens for changes and updates
 _compileRoomDB = () => {
-    //Grabs the username and email of current user
+
     const uid = firebase.auth().currentUser.uid
-    //const UserDB = firebase.database().ref("users/" + uid)
 
     firebase.database().ref('rooms/' + uid).on('value', (snapshot) => {
         if(snapshot.exists()){    
@@ -219,20 +234,96 @@ _compileRoomDB = () => {
             })
         }
     })
-{/*}
-    UserDB.child('username').on('value',snapshot => {
-        this.setState({
-        username: snapshot.val(),
-        })
-    }),
-    UserDB.child('email').on('value',snapshot => {
-        this.setState({
-            email: snapshot.val(),
-        })
-    })
-*/}
 }
 
+//Not being used - really poor coding LOL
+//WORK IN PROGRESS
+_renderActiveOrder1(username) {
+
+if(username){
+    firebase.database().ref('activeorders/' + username).on('value', (snapshot) => {
+        if(snapshot.exists()) {
+            this.setState({
+                drinktype1: snapshot.val().drinktype,
+                size1: snapshot.val().size,
+                coffeeorder1: snapshot.val().coffeeorder,
+                comment1: snapshot.val().comment,
+            })
+        }
+    })
+
+    return <View style={styles.orderDetails}>
+        <Text>{username}</Text>
+        <Text>{this.state.drinktype1}</Text>
+        <Text>{this.state.size1}</Text>
+        <Text>{this.state.coffeeorder1}</Text>
+        <Text>{this.state.comment1}</Text>
+    </View>
+}
+return <View style={styles.orderDetails}>
+    <Text>Add your Order!</Text>
+    </View> 
+}
+
+//Not being used
+//WORK IN PROGRESS
+_renderActiveOrder2(username) {
+    
+    if(username){
+        firebase.database().ref('activeorders/' + username).on('value', (snapshot) => {
+            if(snapshot.exists()) {
+                this.setState({
+                    drinktype2: snapshot.val().drinktype,
+                    size2: snapshot.val().size,
+                    coffeeorder2: snapshot.val().coffeeorder,
+                    comment2: snapshot.val().comment,
+                })
+            }
+        })
+    
+        return <View style={styles.orderDetails}>
+            <Text>{username}</Text>
+            <Text>{this.state.drinktype2}</Text>
+            <Text>{this.state.size2}</Text>
+            <Text>{this.state.coffeeorder2}</Text>
+            <Text>{this.state.comment2}</Text>
+        </View>
+    }
+    return <View style={styles.orderDetails}>
+        <Text>Add your Order!</Text>
+        </View> 
+    }
+
+//Not being used
+//WORK IN PROGRESS
+_renderActiveOrder3(username) {
+    
+    if(username){
+        firebase.database().ref('activeorders/' + username).on('value', (snapshot) => {
+            if(snapshot.exists()) {
+                this.setState({
+                    drinktype3: snapshot.val().drinktype,
+                    size3: snapshot.val().size,
+                    coffeeorder3: snapshot.val().coffeeorder,
+                    comment3: snapshot.val().comment,
+                })
+            }
+        })
+    
+        return <View style={styles.orderDetails}>
+            <Text>{username}</Text>
+            <Text>{this.state.drinktype3}</Text>
+            <Text>{this.state.size3}</Text>
+            <Text>{this.state.coffeeorder3}</Text>
+            <Text>{this.state.comment3}</Text>
+        </View>
+    }
+        return <View style={styles.orderDetails}>
+            <Text>Add your Order!</Text>
+            </View> 
+}
+
+//Deletes a room from the database and from AsyncStorage
 _DeleteRoomDB(uid){
     firebase.database().ref('rooms/' + uid).remove()
     AsyncStorage.removeItem("is_there_a_room")
@@ -311,6 +402,7 @@ _DeleteRoomDB(uid){
                                 <Text style={{
                                     alignSelf: 'center'
                                 }}>{this.state.spot1}</Text>
+                                {/*{this._renderActiveOrder1(this.state.spot1)}*/}
                             </View>
 
                         </View>
@@ -326,6 +418,7 @@ _DeleteRoomDB(uid){
                                 <Text style={{
                                     alignSelf: 'center'
                                 }}>{this.state.spot2}</Text>
+                                {/*{this._renderActiveOrder2(this.state.spot2)}*/}
                             </View>
 
                             {/*4th order*/}
@@ -333,6 +426,7 @@ _DeleteRoomDB(uid){
                                 <Text style={{
                                     alignSelf: 'center'
                                 }}>{this.state.spot3}</Text>
+                                {/*{this._renderActiveOrder3(this.state.spot3)}*/}
                             </View>
 
                         </View>
@@ -391,5 +485,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 1,
+    },
+    orderDetails: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
     }
 });
