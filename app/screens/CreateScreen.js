@@ -17,6 +17,7 @@ import {
 }   from 'react-native';
 import { Card, FormInput, List, ListItem } from "react-native-elements";
 import ModalPicker from 'react-native-modal-picker';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ActionButton from 'react-native-action-button';
 
 import { StackNavigator } from 'react-navigation';
@@ -67,6 +68,8 @@ constructor(props) {
         dropofftime: '',
         cups: '',
         loading: false,
+
+        currentuid: '',
     }
   }
 
@@ -78,6 +81,7 @@ componentWillMount() {
     UserDB.child('username').on('value',snapshot => {
         this.setState({
             username: snapshot.val(),
+            currentuid: uid,
         })
     })
     
@@ -175,9 +179,9 @@ render(){
                     onPress={() => {
                         this._MakeRoomDB(this.state.roomname,this.state.coffeeshop,
                             this.state.roomsize,this.state.dropoffloc,this.state.dropofftime,
-                            firebase.auth().currentUser.uid,1,this.state.username);
+                            this.state.currentuid,1,this.state.username);
 
-                        this.props.navigation.navigate('Create_SecondScreen',{uid: firebase.auth().currentUser.uid})
+                        this.props.navigation.navigate('Create_SecondScreen',{uid: this.state.currentuid})
                         Keyboard.dismiss() }
                     }
                     
@@ -267,15 +271,22 @@ _compileRoomDB(){
 _renderActiveOrder(username,drinktype,size,coffeeorder,comment) {
 if(username){
     return <View style={styles.orderDetails}>
-        <Text>{username}</Text>
-        <Text>{drinktype}</Text>
-        <Text>{size}</Text>
-        <Text>{coffeeorder}</Text>
-        <Text>{comment}</Text>
+        <Text style={{flex:1.2,borderWidth:1,textAlignVertical:'center'}}>{size + " " + drinktype}</Text>
+        <Text style={{flex:1,borderWidth:1,textAlignVertical:'center'}}>{coffeeorder}</Text>
+        <Text style={{flex:5,borderWidth:1,textAlignVertical:'center'}}>picture</Text>
+        <Text style={{flex:0.8,borderWidth:1,textAlignVertical:'center'}}>{username}</Text>
+        <Text style={{flex:0.8,borderWidth:1,textAlignVertical:'center'}}>{comment}</Text>
     </View>
 } else {
-        return <View style={styles.orderDetails}>
-            <Text>Add your Order!</Text>
+        return <View 
+                style={styles.orderDetails}>
+                <Button 
+                    color='#b18d77'
+                    title="Add an Order!"
+                    onPress = {() => {
+                        this.props.navigation.navigate('Deliver_SecondScreen')
+                    }}
+                />
             </View> 
 }}
 
@@ -291,23 +302,23 @@ _DeleteRoomDB(uid){
 _isThisMyRoom(owneruid) {
 const compareuid = firebase.auth().currentUser.uid
 
-    if(owneruid==compareuid){
+if(owneruid==compareuid){
     return <Button
         color='#b18d77'
-        title="Delete Room"
+        title="Delete"
         onPress={() => {
             this._DeleteRoomDB(firebase.auth().currentUser.uid)
-
             this.props.navigation.navigate('JoinScreen')
         }}
-        />
+    />
+        
 } else {
     return <Button
-    color='#b18d77'
-    title="Go Back"
-    onPress={() => {
-        this.props.navigation.navigate('JoinScreen')
-    }}
+        color='#b18d77'
+        title="Back"
+        onPress={() => {
+            this.props.navigation.navigate('JoinScreen')
+        }}
     />
 }
 }
@@ -330,7 +341,7 @@ const compareuid = firebase.auth().currentUser.uid
                                 flex: 2,
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                height: 60,
+                                height:50
                             }}>
                                 <Text style = {{
                                     fontSize: 28,
@@ -344,7 +355,7 @@ const compareuid = firebase.auth().currentUser.uid
                                 justifyContent: 'center',
                                 borderWidth: 1,
                             }}>
-                                <Text>{params.uid}</Text>
+                                {this._isThisMyRoom(params.uid)}
                             </View>
                         </View>
 
@@ -362,12 +373,16 @@ const compareuid = firebase.auth().currentUser.uid
                             <View style={styles.debugBox}>
                                 <Text>{this.state.dropofftime}</Text>
                             </View>
+
+                            <View style={styles.debugBox}>
+                                <Text>{this.state.owner}</Text>
+                            </View>
                         </View>
                     </View>
 
                     {/*order boxes*/}
                     <View style={{
-                        flex: 4,
+                        flex: 6.5,
                         borderWidth: 1,
                         marginBottom: 5,
                     }}>
@@ -412,14 +427,6 @@ const compareuid = firebase.auth().currentUser.uid
                         </View>
 
                     </View>
-                      
-                    <View style={{
-                        width: 180,
-                        alignSelf: 'center',
-                        marginBottom: 15,
-                    }}>
-                    {this._isThisMyRoom(params.uid)}
-                </View>
             </View>
 }}
 
@@ -438,6 +445,21 @@ constructor(props) {
     };
 }
 
+//Checks if Current User has a room and renders the MY ROOM Action Item
+//WORK IN PROGRESS
+_doIHaveARoom(checkuid) {
+    if(true){
+            return<ActionButton.Item
+                buttonColor='#b18d77' 
+                title="My Room" 
+                hideShadow
+                onPress={() => {
+                    this.props.navigation.navigate('Create_SecondScreen',{uid:checkuid})}}>
+                <MaterialIcons name="home" style={styles.actionButtonItem} />
+            </ActionButton.Item>
+    }
+}
+
 _makeRoomRequest = () => {
     
     this.setState({ loading: true });
@@ -446,19 +468,21 @@ _makeRoomRequest = () => {
         if(dataSnapshot.exists()){
             var tasks = [];
             dataSnapshot.forEach((child) => {
-            tasks.push({
-                "owner": child.val().owner,
-                "coffeeshop": child.val().coffeeshop,
-                "dropoffloc": child.val().dropoffloc,
-                "dropofftime": child.val().dropofftime,
-                "roomname": child.val().roomname,
-                "roomsize": child.val().roomsize,
-                "spot1": child.val().spot1,
-                "spot2": child.val().spot2,
-                "spot3": child.val().spot3,
-                "cups": child.val().cups,
-                "_key": child.key
-            });
+            if(child.key != firebase.auth().currentUser.uid){
+                tasks.push({
+                    "owner": child.val().owner,
+                    "coffeeshop": child.val().coffeeshop,
+                    "dropoffloc": child.val().dropoffloc,
+                    "dropofftime": child.val().dropofftime,
+                    "roomname": child.val().roomname,
+                    "roomsize": child.val().roomsize,
+                    "spot1": child.val().spot1,
+                    "spot2": child.val().spot2,
+                    "spot3": child.val().spot3,
+                    "cups": child.val().cups,
+                    "_key": child.key
+                });
+            }
     });
         
         this.setState({
@@ -517,11 +541,23 @@ render(){
                 />  
             </List>
 
-            <ActionButton 
+            <ActionButton
                 buttonColor="rgba(222, 207, 198, 1)"
-                onPress={() => this.props.navigation.navigate('Create_FirstScreen')}
-                //icon={<MaterialIcons name="add" style={styles.actionButtonIcon }/>}
-             />
+                degrees={30}
+                useNativeFeedback = {false} 
+                icon={<MaterialIcons name="menu" style={styles.actionButtonIcon }/>}>
+                
+                    {this._doIHaveARoom('Fu8A05e2rJWYoTqvyboP1ayiy3r1')}
+                
+                    <ActionButton.Item 
+                        buttonColor='#b18d77' 
+                        title="Create Room" 
+                        hideShadow
+                        onPress={() => {
+                        this.props.navigation.navigate('Create_FirstScreen')}}>
+                        <MaterialIcons name="add" style={styles.actionButtonItem} />
+                    </ActionButton.Item>
+             </ActionButton>
         </View>
 }};
 
@@ -549,6 +585,11 @@ const styles = StyleSheet.create({
         height: 22,
         color: '#8b6f4b',
     },
+    actionButtonItem: {
+        fontSize: 20,
+        height: 22,
+        color: 'white',
+    },
     orderBox: {
         flex: 1,
         borderWidth: 5,
@@ -567,5 +608,6 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+        borderWidth: 1,
     }
 });

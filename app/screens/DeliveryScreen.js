@@ -14,7 +14,7 @@ import {
 }   from 'react-native';
 import { Card, FormInput, List, ListItem } from "react-native-elements";
 import ActionButton from "react-native-action-button";
-//import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ModalPicker from 'react-native-modal-picker';
 
 import { StackNavigator } from 'react-navigation';
