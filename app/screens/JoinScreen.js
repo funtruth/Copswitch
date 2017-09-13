@@ -40,29 +40,32 @@ _makeRoomRequest = () => {
     
     this.setState({ loading: true });
 
-    firebase.database().ref('rooms/').on('value', (dataSnapshot) => {
-        var tasks = [];
-        dataSnapshot.forEach((child) => {
-        tasks.push({
-            "owner": child.val().owner,
-            "coffeeshop": child.val().coffeeshop,
-            "dropoffloc": child.val().dropoffloc,
-            "dropofftime": child.val().dropofftime,
-            "roomname": child.val().roomname,
-            "roomsize": child.val().roomsize,
-            "spot1": child.val().spot1,
-            "spot2": child.val().spot2,
-            "spot3": child.val().spot3,
-            "cups": child.val().cups,
-            "_key": child.key
-        });
+    firebase.database().ref('rooms/').on('value', (dataSnapshot) => {  
+        if(dataSnapshot.exists()){
+            var tasks = [];
+            dataSnapshot.forEach((child) => {
+            tasks.push({
+                "owner": child.val().owner,
+                "coffeeshop": child.val().coffeeshop,
+                "dropoffloc": child.val().dropoffloc,
+                "dropofftime": child.val().dropofftime,
+                "roomname": child.val().roomname,
+                "roomsize": child.val().roomsize,
+                "spot1": child.val().spot1,
+                "spot2": child.val().spot2,
+                "spot3": child.val().spot3,
+                "cups": child.val().cups,
+                "_key": child.key
+            });
     });
         
         this.setState({
-        //data: this.state.data.cloneWithRows(tasks)
             datac: tasks
         });
+    }
     });
+    
+
 };
 
 componentWillMount() {

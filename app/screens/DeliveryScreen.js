@@ -58,6 +58,7 @@ _makeRemoteRequest = () => {
     this.setState({ loading: true });
 
     firebase.database().ref('orders/').on('value', (dataSnapshot) => {
+        if(dataSnapshot.exists()){
           var tasks = [];
           dataSnapshot.forEach((child) => {
             tasks.push({
@@ -76,6 +77,7 @@ _makeRemoteRequest = () => {
             //data: this.state.data.cloneWithRows(tasks)
             data: tasks
           });
+        }
         });
 };
 
