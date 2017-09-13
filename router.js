@@ -15,7 +15,6 @@ import CreateUsername from "./app/loginscreens/CreateUsername";
 
 import Create from "./app/screens/CreateScreen";
 import Deliver from "./app/screens/DeliveryScreen";
-import Join from "./app/screens/JoinScreen";
 import Profile from "./app/screens/ProfileScreen";
 import Settings from "./app/screens/SettingsScreen";
 
@@ -49,24 +48,12 @@ export const SignedOut = StackNavigator({
   
   export const SignedIn = TabNavigator(
     {
-      Join: {
-        screen: Join,
-        navigationOptions: {
-          tabBarIcon: ({ tintColor }) => (
-            <Image 
-                source={require('./app/images/coffee.png')}
-                style={[styles.icon, {tintColor: tintColor}]}
-            />
-          ),
-          
-        }
-      },
       Create: {
         screen: Create,
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => (
             <Image 
-                source={require('./app/images/gps.png')}
+                source={require('./app/images/coffee.png')}
                 style={[styles.icon, {tintColor: tintColor}]}
             />
           ),
@@ -111,7 +98,8 @@ export const SignedOut = StackNavigator({
           backgroundColor: '#8b6f4b',
           height:5,
         }
-      }
+      },
+      initialRouteName: 'Create',
     }
   );
   

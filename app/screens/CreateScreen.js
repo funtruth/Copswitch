@@ -11,12 +11,16 @@ import {
     AsyncStorage,
     TextInput,
     StyleSheet,
-    Keyboard
+    Keyboard,
+    ListView,
+    FlatList
 }   from 'react-native';
-import { Card, FormInput } from "react-native-elements";
+import { Card, FormInput, List, ListItem } from "react-native-elements";
 import ModalPicker from 'react-native-modal-picker';
+import ActionButton from 'react-native-action-button';
 
 import { StackNavigator } from 'react-navigation';
+import { NavigationActions } from 'react-navigation';
 
 import firebase from '../firebase/FirebaseController.js';
 
@@ -282,6 +286,32 @@ _DeleteRoomDB(uid){
     AsyncStorage.removeItem("is_there_a_room")
 }
 
+//Renders a different button based on whether the uid of the room
+//matches the current user.
+_isThisMyRoom(owneruid) {
+const compareuid = firebase.auth().currentUser.uid
+
+    if(owneruid==compareuid){
+    return <Button
+        color='#b18d77'
+        title="Delete Room"
+        onPress={() => {
+            this._DeleteRoomDB(firebase.auth().currentUser.uid)
+
+            this.props.navigation.navigate('JoinScreen')
+        }}
+        />
+} else {
+    return <Button
+    color='#b18d77'
+    title="Go Back"
+    onPress={() => {
+        this.props.navigation.navigate('JoinScreen')
+    }}
+    />
+}
+}
+
     render(){
         
         const { params } = this.props.navigation.state;
@@ -382,25 +412,118 @@ _DeleteRoomDB(uid){
                         </View>
 
                     </View>
-
+                      
                     <View style={{
                         width: 180,
                         alignSelf: 'center',
                         marginBottom: 15,
                     }}>
-                    <Button
-                        color='#b18d77'
-                        title="Delete Room"
-                        onPress={() => {
-                            this._DeleteRoomDB(firebase.auth().currentUser.uid)
-
-                            this.props.navigation.navigate('Create_FirstScreen')
-                        }}
-                    />
+                    {this._isThisMyRoom(params.uid)}
                 </View>
             </View>
 }}
 
+class JoinScreen extends React.Component {
+    
+constructor(props) {
+    super(props);
+    this.currentRouteName = 'Join';
+
+    const dataSource = new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+    });
+    this.state = {
+        datac: dataSource,
+        loading: false
+    };
+}
+
+_makeRoomRequest = () => {
+    
+    this.setState({ loading: true });
+
+    firebase.database().ref('rooms/').on('value', (dataSnapshot) => {  
+        if(dataSnapshot.exists()){
+            var tasks = [];
+            dataSnapshot.forEach((child) => {
+            tasks.push({
+                "owner": child.val().owner,
+                "coffeeshop": child.val().coffeeshop,
+                "dropoffloc": child.val().dropoffloc,
+                "dropofftime": child.val().dropofftime,
+                "roomname": child.val().roomname,
+                "roomsize": child.val().roomsize,
+                "spot1": child.val().spot1,
+                "spot2": child.val().spot2,
+                "spot3": child.val().spot3,
+                "cups": child.val().cups,
+                "_key": child.key
+            });
+    });
+        
+        this.setState({
+            datac: tasks,
+        });
+    } else {
+        this.setState({
+            datac: [],
+        })
+    }
+    });
+    
+
+};
+
+componentWillMount() {
+    this._makeRoomRequest();
+}
+
+render(){
+    return <View 
+                style={{    
+                    backgroundColor: '#e6ddd1',
+                    flex: 1
+                }}>
+
+            <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor: '#b18d77', }}>
+                <FlatList
+                    data={this.state.datac}
+                    renderItem={({item}) => (
+                        <ListItem 
+                            roundAvatar
+                            avatar={'http://www.actuallywecreate.com/wp-content/uploads/2012/10/tim-hortons-logo.jpg'}
+                            title={item.roomname}
+                            titleStyle={{
+                                fontWeight: 'bold',
+                                color: 'white'
+                            }}
+                            subtitle={item.coffeeshop + "\n" + item.dropoffloc
+                                + "\n" + item.dropofftime + "\n" +  item.owner }
+                            subtitleStyle={{
+                                color: '#ece4df'
+                            }}
+                            subtitleNumberOfLines={4}
+                            rightTitle= {item.cups + '/4'}
+                            rightTitleStyle={{
+                                color: 'white'
+                            }}
+                            onPress={() => {
+                                this.props.navigation.navigate('Create_SecondScreen',{ uid: item._key })
+                            }}
+                            
+                        />
+                    )}
+                    keyExtractor={item => item._key}
+                />  
+            </List>
+
+            <ActionButton 
+                buttonColor="rgba(222, 207, 198, 1)"
+                onPress={() => this.props.navigation.navigate('Create_FirstScreen')}
+                //icon={<MaterialIcons name="add" style={styles.actionButtonIcon }/>}
+             />
+        </View>
+}};
 
 export default stackNav = StackNavigator(
 {
@@ -410,9 +533,13 @@ export default stackNav = StackNavigator(
     Create_SecondScreen: {
         screen: Create_SecondScreen,
     },
+    JoinScreen: {
+        screen: JoinScreen,
+    },
 },
     {
         headerMode: 'none',
+        initialRouteName: 'JoinScreen',
     }
 );
 
