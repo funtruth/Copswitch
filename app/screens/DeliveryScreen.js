@@ -14,7 +14,7 @@ import {
 }   from 'react-native';
 import { Card, FormInput, List, ListItem } from "react-native-elements";
 import ActionButton from "react-native-action-button";
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+//import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ModalPicker from 'react-native-modal-picker';
 
 import { StackNavigator } from 'react-navigation';
@@ -173,7 +173,7 @@ render(){
         <ActionButton 
           buttonColor="rgba(222, 207, 198, 1)"
           onPress={() => this.props.navigation.navigate('Deliver_SecondScreen')}
-          icon={<MaterialIcons name="add" style={styles.actionButtonIcon }/>}
+          //icon={<MaterialIcons name="add" style={styles.actionButtonIcon }/>}
         />
 
       </View>
