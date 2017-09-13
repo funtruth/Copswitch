@@ -35,7 +35,19 @@ _MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid,cups,owner){
         cups,
         spot1: '',
         spot2: '',
-        spot3: ''
+        spot3: '',
+        drinktype1: '',
+        drinktype2: '',
+        drinktype3: '',
+        size1: '',
+        size2: '',
+        size3: '',
+        coffeeorder1: '',
+        coffeeorder2: '',
+        coffeeorder3: '',
+        comment1: '',
+        comment2: '',
+        comment3: '',
     })
     AsyncStorage.setItem("is_there_a_room", "true")
 }
@@ -55,8 +67,7 @@ constructor(props) {
   }
 
 componentWillMount() {
-    if (1==1) {
-    //Grabs the username and email of current user
+
     const uid = firebase.auth().currentUser.uid
     const UserDB = firebase.database().ref("users/" + uid)
 
@@ -64,10 +75,7 @@ componentWillMount() {
         this.setState({
             username: snapshot.val(),
         })
-    })
-    } else {
-        this.props.navigation.navigate('Create_SecondScreen')
-    }
+    })    
 }
 
 render(){
@@ -230,98 +238,42 @@ _compileRoomDB = () => {
                 spot1: snapshot.val().spot1,
                 spot2: snapshot.val().spot2,
                 spot3: snapshot.val().spot3,
+
+                drinktype1: snapshot.val().drinktype1,
+                size1: snapshot.val().size1,
+                coffeeorder1: snapshot.val().coffeeorder1,
+                comment1: snapshot.val().comment1,
+                drinktype2: snapshot.val().drinktype2,
+                size2: snapshot.val().size2,
+                coffeeorder2: snapshot.val().coffeeorder2,
+                comment2: snapshot.val().comment2,
+                drinktype3: snapshot.val().drinktype3,
+                size3: snapshot.val().size3,
+                coffeeorder3: snapshot.val().coffeeorder3,
+                comment3: snapshot.val().comment3,
+
                 _key: snapshot.key
             })
         }
     })
 }
 
-//Not being used - really poor coding LOL
-//WORK IN PROGRESS
-_renderActiveOrder1(username) {
-
+//Renders the Order
+_renderActiveOrder(username,drinktype,size,coffeeorder,comment) {
 if(username){
-    firebase.database().ref('activeorders/' + username).on('value', (snapshot) => {
-        if(snapshot.exists()) {
-            this.setState({
-                drinktype1: snapshot.val().drinktype,
-                size1: snapshot.val().size,
-                coffeeorder1: snapshot.val().coffeeorder,
-                comment1: snapshot.val().comment,
-            })
-        }
-    })
-
     return <View style={styles.orderDetails}>
         <Text>{username}</Text>
-        <Text>{this.state.drinktype1}</Text>
-        <Text>{this.state.size1}</Text>
-        <Text>{this.state.coffeeorder1}</Text>
-        <Text>{this.state.comment1}</Text>
+        <Text>{drinktype}</Text>
+        <Text>{size}</Text>
+        <Text>{coffeeorder}</Text>
+        <Text>{comment}</Text>
     </View>
-}
-return <View style={styles.orderDetails}>
-    <Text>Add your Order!</Text>
-    </View> 
-}
-
-//Not being used
-//WORK IN PROGRESS
-_renderActiveOrder2(username) {
-    
-    if(username){
-        firebase.database().ref('activeorders/' + username).on('value', (snapshot) => {
-            if(snapshot.exists()) {
-                this.setState({
-                    drinktype2: snapshot.val().drinktype,
-                    size2: snapshot.val().size,
-                    coffeeorder2: snapshot.val().coffeeorder,
-                    comment2: snapshot.val().comment,
-                })
-            }
-        })
-    
-        return <View style={styles.orderDetails}>
-            <Text>{username}</Text>
-            <Text>{this.state.drinktype2}</Text>
-            <Text>{this.state.size2}</Text>
-            <Text>{this.state.coffeeorder2}</Text>
-            <Text>{this.state.comment2}</Text>
-        </View>
-    }
-    return <View style={styles.orderDetails}>
-        <Text>Add your Order!</Text>
-        </View> 
-    }
-
-//Not being used
-//WORK IN PROGRESS
-_renderActiveOrder3(username) {
-    
-    if(username){
-        firebase.database().ref('activeorders/' + username).on('value', (snapshot) => {
-            if(snapshot.exists()) {
-                this.setState({
-                    drinktype3: snapshot.val().drinktype,
-                    size3: snapshot.val().size,
-                    coffeeorder3: snapshot.val().coffeeorder,
-                    comment3: snapshot.val().comment,
-                })
-            }
-        })
-    
-        return <View style={styles.orderDetails}>
-            <Text>{username}</Text>
-            <Text>{this.state.drinktype3}</Text>
-            <Text>{this.state.size3}</Text>
-            <Text>{this.state.coffeeorder3}</Text>
-            <Text>{this.state.comment3}</Text>
-        </View>
-    }
+} else {
         return <View style={styles.orderDetails}>
             <Text>Add your Order!</Text>
             </View> 
-}
+}}
+
 
 //Deletes a room from the database and from AsyncStorage
 _DeleteRoomDB(uid){
@@ -399,10 +351,8 @@ _DeleteRoomDB(uid){
 
                             {/*second order*/}
                             <View style={styles.orderBox}>
-                                <Text style={{
-                                    alignSelf: 'center'
-                                }}>{this.state.spot1}</Text>
-                                {/*{this._renderActiveOrder1(this.state.spot1)}*/}
+                                {this._renderActiveOrder(this.state.spot1,this.state.drinktype1,
+                                this.state.size1,this.state.coffeeorder1,this.state.comment1)}
                             </View>
 
                         </View>
@@ -415,18 +365,14 @@ _DeleteRoomDB(uid){
 
                             {/*3rd order*/}
                             <View style={styles.orderBox}>
-                                <Text style={{
-                                    alignSelf: 'center'
-                                }}>{this.state.spot2}</Text>
-                                {/*{this._renderActiveOrder2(this.state.spot2)}*/}
+                                {this._renderActiveOrder(this.state.spot2,this.state.drinktype2,
+                                this.state.size2,this.state.coffeeorder2,this.state.comment2)}
                             </View>
 
                             {/*4th order*/}
                             <View style={styles.orderBox}>
-                                <Text style={{
-                                    alignSelf: 'center'
-                                }}>{this.state.spot3}</Text>
-                                {/*{this._renderActiveOrder3(this.state.spot3)}*/}
+                                {this._renderActiveOrder(this.state.spot3,this.state.drinktype3,
+                                this.state.size3,this.state.coffeeorder3,this.state.comment3)}
                             </View>
 
                         </View>
@@ -463,6 +409,7 @@ export default stackNav = StackNavigator(
 },
     {
         headerMode: 'none',
+        initialRouteName: true ? "Create_FirstScreen" : "Create_SecondScreen"
     }
 );
 

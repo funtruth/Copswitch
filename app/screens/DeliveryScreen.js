@@ -78,6 +78,9 @@ _makeRemoteRequest = () => {
             data: tasks
           });
         }
+        else{this.setState({
+            data: []
+        })}
         });
 };
 
@@ -91,33 +94,33 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
         if (snapshot.exists()) {
             if(currentcups==1){    
                 firebase.database().ref('orders/' + uid).remove().then(() => {
-                    firebase.database().ref('activeorders/' + username).set({
-                        drinktype,
-                        size,
-                        coffeeorder,
-                        comment
+                    firebase.database().ref('rooms/' + myuid).update({
+                        drinktype1: drinktype,
+                        size1: size,
+                        coffeeorder1: coffeeorder,
+                        comment1: comment
                     })
                     firebase.database().ref('rooms/' + myuid).update({"spot1":username})
                     firebase.database().ref('rooms/' + myuid).update({cups:2})
                 })
             } if(currentcups==2){
                 firebase.database().ref('orders/' + uid).remove().then(() => {
-                    firebase.database().ref('activeorders/' + username).set({
-                        drinktype,
-                        size,
-                        coffeeorder,
-                        comment
+                    firebase.database().ref('rooms/' + myuid).update({
+                        drinktype2: drinktype,
+                        size2: size,
+                        coffeeorder2: coffeeorder,
+                        comment2: comment
                     })
                     firebase.database().ref('rooms/' + myuid).update({"spot2":username})
                     firebase.database().ref('rooms/' + myuid).update({cups:3})
                 })
             } if (currentcups==3) {
                 firebase.database().ref('orders/' + uid).remove().then(() => {
-                    firebase.database().ref('activeorders/' + username).set({
-                        drinktype,
-                        size,
-                        coffeeorder,
-                        comment
+                    firebase.database().ref('rooms/' + myuid).update({
+                        drinktype3: drinktype,
+                        size3: size,
+                        coffeeorder3: coffeeorder,
+                        comment3: comment
                     })
                     firebase.database().ref('rooms/' + myuid).update({"spot3":username})
                     firebase.database().ref('rooms/' + myuid).update({cups:4})

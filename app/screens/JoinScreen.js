@@ -60,8 +60,12 @@ _makeRoomRequest = () => {
     });
         
         this.setState({
-            datac: tasks
+            datac: tasks,
         });
+    } else {
+        this.setState({
+            datac: [],
+        })
     }
     });
     
