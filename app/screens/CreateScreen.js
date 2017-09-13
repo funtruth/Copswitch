@@ -75,7 +75,9 @@ componentWillMount() {
         this.setState({
             username: snapshot.val(),
         })
-    })    
+    })
+    
+    
 }
 
 render(){
@@ -105,8 +107,7 @@ render(){
                 justifyContent: 'center',
                 alignItems: 'center',
                 backgroundColor: '#e6ddd1'        
-            }}
-            >
+            }}>
 
                 <FormInput
                     value={this.state.roomname}
@@ -172,9 +173,8 @@ render(){
                             this.state.roomsize,this.state.dropoffloc,this.state.dropofftime,
                             firebase.auth().currentUser.uid,1,this.state.username);
 
-                        this.props.navigation.navigate('Create_SecondScreen')
+                        this.props.navigation.navigate('Create_SecondScreen',{uid: firebase.auth().currentUser.uid})
                         Keyboard.dismiss() }
-                        
                     }
                     
                 />
@@ -182,6 +182,7 @@ render(){
             </View>
         }
 }
+
 
 class Create_SecondScreen extends Component {
 
@@ -221,10 +222,10 @@ componentWillMount() {
 
 //Sets all the this.state values that are necessary for viewing your own room
 //listens for changes and updates
-_compileRoomDB = () => {
-
-    const uid = firebase.auth().currentUser.uid
-
+_compileRoomDB(){
+    const { params } = this.props.navigation.state;
+    const uid = params.uid
+    
     firebase.database().ref('rooms/' + uid).on('value', (snapshot) => {
         if(snapshot.exists()){    
             this.setState({
@@ -282,6 +283,9 @@ _DeleteRoomDB(uid){
 }
 
     render(){
+        
+        const { params } = this.props.navigation.state;
+
         return <View style={{
                 flex: 1,
                 backgroundColor: '#e6ddd1',
@@ -310,7 +314,7 @@ _DeleteRoomDB(uid){
                                 justifyContent: 'center',
                                 borderWidth: 1,
                             }}>
-                                <Text></Text>
+                                <Text>{params.uid}</Text>
                             </View>
                         </View>
 
@@ -344,9 +348,9 @@ _DeleteRoomDB(uid){
                         }}>
                             {/*first order*/}
                             <View style={styles.orderBox}>
-                                <Text style={{
-                                    alignSelf: 'center'
-                                }}>My Coffee</Text>
+                                <View style={styles.orderDetails}>
+                                    <Text>{this.state.owner}</Text>
+                                </View>
                             </View >
 
                             {/*second order*/}
@@ -409,7 +413,6 @@ export default stackNav = StackNavigator(
 },
     {
         headerMode: 'none',
-        initialRouteName: true ? "Create_FirstScreen" : "Create_SecondScreen"
     }
 );
 

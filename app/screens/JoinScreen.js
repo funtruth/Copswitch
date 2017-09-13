@@ -106,6 +106,9 @@ render(){
                             rightTitleStyle={{
                                 color: 'white'
                             }}
+                            onPress={() => {
+                                this.props.navigation.navigate('Create_SecondScreen',{ uid: item._key })
+                            }}
                             
                         />
                     )}

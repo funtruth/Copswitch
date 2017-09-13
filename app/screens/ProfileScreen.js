@@ -5,12 +5,13 @@ import {
     Image,
     AsyncStorage,
     BackHandler,
-    ToastAndroid
+    ToastAndroid,
+    Button
 }   from 'react-native';
 
 //import { NavigationActions } from 'react-navigation';
 
-import { Card, Button, Text } from "react-native-elements";
+import { Card, Text } from "react-native-elements";
 //import { onSignOut } from "../auth";
 import Settings from './SettingsScreen'
 
@@ -52,7 +53,8 @@ componentWillMount() {
     return <View style={{
               flex: 1,
               justifyContent: 'center',
-              alignItems: 'center'
+              alignItems: 'center',
+              backgroundColor: '#e6ddd1',
           }}>
 
           <Text style={{ color:'#493a27', fontSize: 28 }}>{this.state.username}</Text>
@@ -60,25 +62,21 @@ componentWillMount() {
 
           <Button
             backgroundColor="#8b6f4b"
-            color="white"
+            color='#b18d77'
             title="SIGN OUT"
             onPress={() => {
               this.props.navigation.navigate('SignedOut');
-              /*
-                onSignOut().then(() => {
-                  firebase.auth().signOut();
-                  this.props.navigation.navigate('SignedOut');
-                }) */
-            }}
-            style={{
-                width: 80,
-                alignCenter: 'center'
+              
+                //onSignOut().then(() => {
+                  //firebase.auth().signOut();
+                 //this.props.navigation.navigate('SignedOut');
+                //}) 
             }}
           />
 
         <Button
           backgroundColor="#8b6f4b"
-          color="white"
+          color='#b18d77'
           title="Delete Account"
           onPress={() => {
             firebase.auth().currentUser.delete().then(() => {
@@ -86,9 +84,6 @@ componentWillMount() {
             }).catch(() => {
               alert('Failed to Delete');
             })
-          }}
-          style={{
-                width: 80
           }}
         />
     </View>}
