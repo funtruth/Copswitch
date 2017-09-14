@@ -67,6 +67,7 @@ _MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid,cups,owner){
 
 constructor(props) {
     super(props);
+    this.currentRouteName = 'Createfirst';
     this.state = {
         username: null,
         roomname: '',
@@ -215,6 +216,7 @@ static navigationOptions = ({navigation}) => ({
 
 constructor(props) {
     super(props);
+    this.currentRouteName = 'Createsecond';
     this.state = {
         roomname: '',
         owner: '',
@@ -321,6 +323,18 @@ _DeleteRoomDB(uid){
     AsyncStorage.removeItem("is_there_a_room")
 }
 
+_resetStack(){
+    return this.props
+               .navigation
+               .dispatch(NavigationActions.reset(
+                 {
+                    index: 0,
+                    actions: [
+                      NavigationActions.navigate({ routeName: 'JoinScreen'})
+                    ]
+                  }));
+  }
+
 //Renders a different button based on whether the uid of the room
 //matches the current user.
 _renderDeleteRoom(owneruid) {
@@ -334,6 +348,8 @@ if(owneruid==compareuid){
         onPress={() => {
             this._DeleteRoomDB(this.state.currentuid)
             this.props.navigation.navigate('JoinScreen')
+            this._resetStack()
+
         }}
     />
 </View>      
@@ -545,6 +561,18 @@ _makeRoomRequest = () => {
 };
 
 componentWillMount() {
+
+    //Back Handler
+    BackHandler.addEventListener('hardwareBackPress', function() {
+        if(this.currentRouteName != 'Join'){
+            this.navigation.navigate('JoinScreen')
+            return true 
+    } else {
+            this.props.navigation.navigate('JoinScreen')
+            return false
+    }
+    })
+
     this._makeRoomRequest();
 }
 

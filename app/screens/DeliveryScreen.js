@@ -17,7 +17,7 @@ import ActionButton from "react-native-action-button";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ModalPicker from 'react-native-modal-picker';
 
-import { StackNavigator } from 'react-navigation';
+import { StackNavigator, NavigationActions } from 'react-navigation';
 
 import firebase from '../firebase/FirebaseController.js';
 
@@ -33,6 +33,7 @@ static navigationOptions = {
 
 constructor(props) {
     super(props);
+    this.currentRouteName = 'Deliverfirst';
     this.state = {
 
         orderuid:'',
@@ -213,6 +214,7 @@ static navigationOptions = {
 
 constructor(props) {
     super(props);
+    this.currentRouteName = 'Deliversecond';
     this.state = {
         username: '',
         coffeeshop: '', 
@@ -254,6 +256,18 @@ componentWillMount() {
         })
     })
 }
+
+_resetStack(){
+    return this.props
+               .navigation
+               .dispatch(NavigationActions.reset(
+                 {
+                    index: 0,
+                    actions: [
+                      NavigationActions.navigate({ routeName: 'Deliver_FirstScreen'})
+                    ]
+                  }));
+  }
 
 render(){
 
@@ -376,6 +390,7 @@ render(){
                         this.state.username, this.state.drinktype)
 
                         this.props.navigation.navigate('Deliver_FirstScreen')
+                        this._resetStack()
                         Keyboard.dismiss()
                     }}
                     style={{

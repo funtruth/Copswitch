@@ -16,7 +16,6 @@ import CreateUsername from "./app/loginscreens/CreateUsername";
 import Create from "./app/screens/CreateScreen";
 import Deliver from "./app/screens/DeliveryScreen";
 import Profile from "./app/screens/ProfileScreen";
-import Settings from "./app/screens/SettingsScreen";
 
 const headerStyle = {
   marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0

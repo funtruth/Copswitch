@@ -13,7 +13,6 @@ import {
 
 import { Card, Text } from "react-native-elements";
 //import { onSignOut } from "../auth";
-import Settings from './SettingsScreen'
 
 //Facebook
 import { LoginManager } from 'react-native-fbsdk'
