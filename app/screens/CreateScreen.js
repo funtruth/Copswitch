@@ -27,6 +27,14 @@ import firebase from '../firebase/FirebaseController.js';
 
 class Create_FirstScreen extends Component {
 
+static navigationOptions = {
+    headerTitle: 'Create a Room',
+    headerTintColor: 'white',
+    headerStyle: {
+        backgroundColor: '#b18d77',
+    }
+}
+
 //Initial Room Creation -> Makes a room in Database
 _MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid,cups,owner){
     firebase.database().ref('rooms/' + uid)
@@ -81,9 +89,10 @@ componentWillMount() {
     UserDB.child('username').on('value',snapshot => {
         this.setState({
             username: snapshot.val(),
-            currentuid: uid,
         })
     })
+
+    this.setState({currentuid: firebase.auth().currentUser.uid});
     
     
 }
@@ -181,7 +190,8 @@ render(){
                             this.state.roomsize,this.state.dropoffloc,this.state.dropofftime,
                             this.state.currentuid,1,this.state.username);
 
-                        this.props.navigation.navigate('Create_SecondScreen',{uid: this.state.currentuid})
+                        this.props.navigation.navigate('Create_SecondScreen',{uid: this.state.currentuid,
+                            roomname: this.state.roomname})
                         Keyboard.dismiss() }
                     }
                     
@@ -193,6 +203,15 @@ render(){
 
 
 class Create_SecondScreen extends Component {
+
+static navigationOptions = ({navigation}) => ({
+    headerTitle: navigation.state.params.roomname,
+    headerTintColor: 'white',
+    headerStyle: {
+        backgroundColor: '#b18d77',
+    },
+})
+
 
 constructor(props) {
     super(props);
@@ -221,10 +240,15 @@ constructor(props) {
         size3: '',
         coffeeorder3: '',
         comment3: '',
+
+        currentuid: '',
     }
 }
 
 componentWillMount() {
+
+    this.setState({currentuid: firebase.auth().currentUser.uid});
+
     this._compileRoomDB();
 }
 
@@ -235,7 +259,7 @@ _compileRoomDB(){
     const uid = params.uid
     
     firebase.database().ref('rooms/' + uid).on('value', (snapshot) => {
-        if(snapshot.exists()){    
+        if(snapshot.exists()){
             this.setState({
                 roomname: snapshot.val().roomname,
                 owner: snapshot.val().owner,
@@ -299,29 +323,21 @@ _DeleteRoomDB(uid){
 
 //Renders a different button based on whether the uid of the room
 //matches the current user.
-_isThisMyRoom(owneruid) {
-const compareuid = firebase.auth().currentUser.uid
+_renderDeleteRoom(owneruid) {
+const compareuid = this.state.currentuid
 
 if(owneruid==compareuid){
-    return <Button
+    return <View
+    ><Button
         color='#b18d77'
         title="Delete"
         onPress={() => {
-            this._DeleteRoomDB(firebase.auth().currentUser.uid)
+            this._DeleteRoomDB(this.state.currentuid)
             this.props.navigation.navigate('JoinScreen')
         }}
     />
-        
-} else {
-    return <Button
-        color='#b18d77'
-        title="Back"
-        onPress={() => {
-            this.props.navigation.navigate('JoinScreen')
-        }}
-    />
-}
-}
+</View>      
+}}
 
     render(){
         
@@ -334,56 +350,50 @@ if(owneruid==compareuid){
                     <View style = {{
                         flex: 1,
                     }}>
-                        <View style = {{
+                        <View style ={{
                             flexDirection: 'row',
+                            backgroundColor: '#DECFC6',
                         }}>
                             <View style={{
                                 flex: 2,
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                height:50
                             }}>
-                                <Text style = {{
-                                    fontSize: 28,
-                                    borderWidth: 1,
-                                }}>{this.state.roomname}</Text>
+                                <Text style={{fontSize: 16}}>{this.state.coffeeshop}</Text>
+                            </View>
+
+                            <View style={{
+                                flex: 1.6,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                <Text 
+                                    style={{fontSize: 16}}
+                                    numberOfLines= {2}>
+                                {this.state.dropoffloc + "\n" + this.state.dropofftime}</Text>
                             </View>
 
                             <View style={{
                                 flex: 1,
                                 alignItems: 'center',
                                 justifyContent: 'center',
-                                borderWidth: 1,
                             }}>
-                                {this._isThisMyRoom(params.uid)}
-                            </View>
-                        </View>
-
-                        <View style ={{
-                            flexDirection: 'row',
-                        }}>
-                            <View style={styles.debugBox}>
-                                <Text>{this.state.coffeeshop}</Text>
+                                <Text style={{fontSize: 16}}>{this.state.owner}</Text>
                             </View>
 
-                            <View style={styles.debugBox}>
-                                <Text>{this.state.dropoffloc}</Text>
-                            </View>
-
-                            <View style={styles.debugBox}>
-                                <Text>{this.state.dropofftime}</Text>
-                            </View>
-
-                            <View style={styles.debugBox}>
-                                <Text>{this.state.owner}</Text>
+                            <View style ={{
+                                flex: 1.5,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                {this._renderDeleteRoom(this.state._key)}
                             </View>
                         </View>
                     </View>
 
                     {/*order boxes*/}
                     <View style={{
-                        flex: 6.5,
-                        borderWidth: 1,
+                        flex: 9,
                         marginBottom: 5,
                     }}>
                         {/*first row*/}
@@ -431,7 +441,15 @@ if(owneruid==compareuid){
 }}
 
 class JoinScreen extends React.Component {
-    
+
+static navigationOptions = {
+    headerTitle: 'Rooms',
+    headerTintColor: 'white',
+    headerStyle: {
+        backgroundColor: '#b18d77',
+    }
+}
+
 constructor(props) {
     super(props);
     this.currentRouteName = 'Join';
@@ -441,34 +459,50 @@ constructor(props) {
     });
     this.state = {
         datac: dataSource,
-        loading: false
+        loading: false,
+
+        myroomname: '',
+        currentuid: '',
     };
 }
 
-//Checks if Current User has a room and renders the MY ROOM Action Item
-//WORK IN PROGRESS
-_doIHaveARoom(checkuid) {
-    if(true){
-            return<ActionButton.Item
-                buttonColor='#b18d77' 
-                title="My Room" 
-                hideShadow
-                onPress={() => {
-                    this.props.navigation.navigate('Create_SecondScreen',{uid:checkuid})}}>
-                <MaterialIcons name="home" style={styles.actionButtonItem} />
-            </ActionButton.Item>
+//Renders the Appropriate Action Button
+_doIHaveARoom(checkuid,myroomname) {
+
+    if(myroomname){
+        return <ActionButton.Item
+            buttonColor='#b18d77' 
+            title="My Room" 
+            hideShadow
+            onPress={() => {
+                this.props.navigation.navigate('Create_SecondScreen',{uid:checkuid,
+                    roomname:myroomname})}}>
+            <MaterialIcons name="home" style={styles.actionButtonItem} />
+        </ActionButton.Item>
+    } else {
+        return <ActionButton.Item 
+            buttonColor='#b18d77' 
+            title="Create Room" 
+            hideShadow
+            onPress={() => {
+                this.props.navigation.navigate('Create_FirstScreen')}}>
+            <MaterialIcons name="add" style={styles.actionButtonItem} />
+        </ActionButton.Item>
     }
 }
 
 _makeRoomRequest = () => {
-    
-    this.setState({ loading: true });
+
+    this.setState({ 
+        loading: true,
+        currentuid: firebase.auth().currentUser.uid 
+    });
 
     firebase.database().ref('rooms/').on('value', (dataSnapshot) => {  
         if(dataSnapshot.exists()){
             var tasks = [];
             dataSnapshot.forEach((child) => {
-            if(child.key != firebase.auth().currentUser.uid){
+            if(child.key != this.state.currentuid){
                 tasks.push({
                     "owner": child.val().owner,
                     "coffeeshop": child.val().coffeeshop,
@@ -494,6 +528,18 @@ _makeRoomRequest = () => {
         })
     }
     });
+
+    //Grab the name of my Room
+    firebase.database().ref('rooms/' + firebase.auth().currentUser.uid  + '/roomname/')
+        .on('value',(snapshot) => {
+            if(snapshot.exists()){
+                this.setState({
+                    myroomname: snapshot.val(),
+                })
+            } else {
+                this.setState({myroomname: null,})
+            }
+        })
     
 
 };
@@ -532,7 +578,7 @@ render(){
                                 color: 'white'
                             }}
                             onPress={() => {
-                                this.props.navigation.navigate('Create_SecondScreen',{ uid: item._key })
+                                this.props.navigation.navigate('Create_SecondScreen',{ uid: item._key,roomname:item.roomname })
                             }}
                             
                         />
@@ -547,16 +593,8 @@ render(){
                 useNativeFeedback = {false} 
                 icon={<MaterialIcons name="menu" style={styles.actionButtonIcon }/>}>
                 
-                    {this._doIHaveARoom('Fu8A05e2rJWYoTqvyboP1ayiy3r1')}
-                
-                    <ActionButton.Item 
-                        buttonColor='#b18d77' 
-                        title="Create Room" 
-                        hideShadow
-                        onPress={() => {
-                        this.props.navigation.navigate('Create_FirstScreen')}}>
-                        <MaterialIcons name="add" style={styles.actionButtonItem} />
-                    </ActionButton.Item>
+                    {this._doIHaveARoom(this.state.currentuid,this.state.myroomname)}
+
              </ActionButton>
         </View>
 }};
@@ -574,7 +612,7 @@ export default stackNav = StackNavigator(
     },
 },
     {
-        headerMode: 'none',
+        headerMode: 'screen',
         initialRouteName: 'JoinScreen',
     }
 );
@@ -592,22 +630,15 @@ const styles = StyleSheet.create({
     },
     orderBox: {
         flex: 1,
-        borderWidth: 5,
+        borderWidth: 3,
         margin: 5,
         borderColor: '#b18d77',
         borderStyle: 'dotted',
-        borderRadius: 2,
-    },
-    debugBox: {
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1,
+        borderRadius: 5,
     },
     orderDetails: {
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
-        borderWidth: 1,
     }
 });

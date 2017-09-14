@@ -23,6 +23,14 @@ import firebase from '../firebase/FirebaseController.js';
 
 class Deliver_FirstScreen extends Component {
     
+static navigationOptions = {
+    headerTitle: 'Orders',
+    headerTintColor: 'white',
+    headerStyle: {
+        backgroundColor: '#b18d77',
+    }
+}
+
 constructor(props) {
     super(props);
     this.state = {
@@ -34,6 +42,7 @@ constructor(props) {
         refreshing: false,
 
         currentcups: 1,
+        currentuid: '',
     }
 
     const dataSource = new ListView.DataSource({
@@ -46,6 +55,8 @@ constructor(props) {
 
 //Makes a request to listen to all the this.state values needed
 _makeRemoteRequest = () => {
+
+    this.setState({currentuid: firebase.auth().currentUser.uid})
 
     firebase.database().ref('rooms/' + firebase.auth().currentUser.uid).on('value', snapshot => {
         if (snapshot.exists()){
@@ -100,8 +111,9 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
                         coffeeorder1: coffeeorder,
                         comment1: comment
                     })
-                    firebase.database().ref('rooms/' + myuid).update({"spot1":username})
-                    firebase.database().ref('rooms/' + myuid).update({cups:2})
+                    firebase.database().ref('rooms/' + myuid).update({
+                        spot1:username,
+                        cups:2})
                 })
             } if(currentcups==2){
                 firebase.database().ref('orders/' + uid).remove().then(() => {
@@ -111,8 +123,9 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
                         coffeeorder2: coffeeorder,
                         comment2: comment
                     })
-                    firebase.database().ref('rooms/' + myuid).update({"spot2":username})
-                    firebase.database().ref('rooms/' + myuid).update({cups:3})
+                    firebase.database().ref('rooms/' + myuid).update({
+                        spot2:username,
+                        cups:3,})
                 })
             } if (currentcups==3) {
                 firebase.database().ref('orders/' + uid).remove().then(() => {
@@ -122,8 +135,9 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
                         coffeeorder3: coffeeorder,
                         comment3: comment
                     })
-                    firebase.database().ref('rooms/' + myuid).update({"spot3":username})
-                    firebase.database().ref('rooms/' + myuid).update({cups:4})
+                    firebase.database().ref('rooms/' + myuid).update({
+                        spot3:username,
+                        cups: 4,})
                 })
             }
         } else {
@@ -149,7 +163,7 @@ render(){
                 data={this.state.data}
                 renderItem={({item}) => (
                     <ListItem 
-                        title={`${item.size} ${item.coffeeorder} ${item.drinktype}`}
+                        title={`${item.size} ${item.drinktype} ${item.coffeeorder}`}
                         titleStyle={{
                             fontWeight: 'bold',
                             color: 'white'
@@ -161,7 +175,7 @@ render(){
                             color: '#ece4df'
                         }}
                         onPress={() => {
-                            this._doesUserHaveRoom(item._key,firebase.auth().currentUser.uid,
+                            this._doesUserHaveRoom(item._key,this.state.currentuid,
                                 item.username,this.state.currentcups,item.drinktype,
                                 item.size,item.coffeeorder,item.comment)
                         }}
@@ -178,7 +192,7 @@ render(){
         <ActionButton 
           buttonColor="rgba(222, 207, 198, 1)"
           onPress={() => this.props.navigation.navigate('Deliver_SecondScreen')}
-          //icon={<MaterialIcons name="add" style={styles.actionButtonIcon }/>}
+          icon={<MaterialIcons name="add" style={styles.actionButtonIcon }/>}
         />
 
       </View>
@@ -188,6 +202,14 @@ render(){
 //Second Screen is for ADDING orders with the (+) button at the bottom
 //Future Update
 class Deliver_SecondScreen extends Component {
+
+static navigationOptions = {
+    headerTitle: 'Place an Order',
+    headerTintColor: 'white',
+    headerStyle: {
+        backgroundColor: '#b18d77',
+    }
+}
 
 constructor(props) {
     super(props);
@@ -200,6 +222,8 @@ constructor(props) {
         dropoffloc: '',
         comment: '',
         loading: false,
+
+        currentuid: '',
 }}
 
 //Makes an order 
@@ -219,6 +243,9 @@ _createOrder(uid,coffeeshop,coffeeorder,comment,size,dropoffloc,username,drinkty
 componentWillMount() {
     //Grabs the username and email of current user
     const uid = firebase.auth().currentUser.uid
+
+    this.setState({currentuid:uid})
+
     const UserDB = firebase.database().ref("users/" + uid)
 
     UserDB.child('username').on('value',snapshot => {
@@ -344,7 +371,7 @@ render(){
                     color='#b18d77'
                     title="Create Order"
                     onPress={() => {
-                        this._createOrder(firebase.auth().currentUser.uid,this.state.coffeeshop,
+                        this._createOrder(this.state.currentuid,this.state.coffeeshop,
                         this.state.coffeeorder,this.state.comment,this.state.size,this.state.dropoffloc,
                         this.state.username, this.state.drinktype)
 
@@ -365,13 +392,14 @@ export default stackNav = StackNavigator(
     {
         Deliver_FirstScreen: {
             screen: Deliver_FirstScreen,
+            title: 'hello',
         },
         Deliver_SecondScreen: {
             screen: Deliver_SecondScreen,
         },
     },
         {
-            headerMode: 'none',
+            headerMode: 'screen',
         }
     );
 
