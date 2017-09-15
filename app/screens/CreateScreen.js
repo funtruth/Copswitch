@@ -3,20 +3,16 @@ import React, { Component } from 'react';
 import {
     Text,
     View,
-    //Button,
     Image,
-    Platform,
-    StatusBar,
     BackHandler,
     AsyncStorage,
     TextInput,
     StyleSheet,
     Keyboard,
     ListView,
-    FlatList,
-    TouchableOpacity
+    FlatList
 }   from 'react-native';
-import { Card, FormInput, List, ListItem, Button } from "react-native-elements";
+import { FormInput, List, ListItem, Button } from "react-native-elements";
 import ModalPicker from 'react-native-modal-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ActionButton from 'react-native-action-button';
@@ -93,9 +89,6 @@ componentWillMount() {
     })
 
     this.setState({currentuid: firebase.auth().currentUser.uid});
-    
-    alert('create first screen');
-    
 }
 
 render(){
@@ -211,6 +204,7 @@ static navigationOptions = ({navigation}) => ({
     headerStyle: {
         backgroundColor: '#b18d77',
     },
+    headerLeft: null,
     headerRight: 
         <Button
             title="Return"
@@ -260,14 +254,11 @@ constructor(props) {
         comment3: '',
 
         currentuid: '',
+
+        //Passed uid from navigation
+        passeduid: '',
     }
-}
-
-componentWillMount() {
-
-    this.setState({currentuid: firebase.auth().currentUser.uid});
-    this._compileRoomDB();
-    alert('create second screen');
+    this.ref = null;
 }
 
 //Sets all the this.state values that are necessary for viewing your own room
@@ -276,7 +267,10 @@ _compileRoomDB(){
     const { params } = this.props.navigation.state;
     const uid = params.uid
     
-    firebase.database().ref('rooms/' + uid).once('value', (snapshot) => {
+    this.setState({passeduid: uid})
+    this.ref = firebase.database().ref('rooms/' + uid)
+    
+    this.ref.on('value', (snapshot) => {
         if(snapshot.exists()){
             this.setState({
                 roomname: snapshot.val().roomname,
@@ -309,6 +303,12 @@ _compileRoomDB(){
     })
 }
 
+componentWillUnmount(){
+    if(this.ref){
+        this.ref.off();
+    }
+}
+
 //Renders the Order
 _renderActiveOrder(username,drinktype,size,coffeeorder,comment) {
 if(username){
@@ -325,7 +325,7 @@ if(username){
                 <Button 
                     color='white'
                     title="Add an Order!"
-                    borderRadius={12}
+                    borderRadius={17}
                     backgroundColor='#b18d77'
                     onPress = {() => {
                         this.props.navigation.navigate('Deliver_SecondScreen')
@@ -335,7 +335,6 @@ if(username){
 }}
 
 
-//Deletes a room from the database and from AsyncStorage
 _DeleteRoomDB(uid){
     firebase.database().ref('rooms/' + uid).remove()
 }
@@ -374,6 +373,13 @@ if(owneruid==currentuid){
     />
 </View>      
 }}
+
+
+componentWillMount() {
+    this.setState({currentuid: firebase.auth().currentUser.uid});
+    this._compileRoomDB();
+    alert('View ROom mount')
+}
 
     render(){
         
@@ -571,7 +577,7 @@ _makeRoomRequest = () => {
     //Grab the name of my Room
     this.ref2 = firebase.database().ref('rooms/' + firebase.auth().currentUser.uid  + '/roomname/')
     this.ref2
-        .once('value',(snapshot) => {
+        .on('value',(snapshot) => {
             if(snapshot.exists()){
                 this.setState({
                     myroomname: snapshot.val(),
@@ -586,7 +592,6 @@ _makeRoomRequest = () => {
 
 componentWillMount() {
     this._makeRoomRequest();
-    alert('join screen');
 };
 
 componentWillUnmount() {
@@ -638,6 +643,7 @@ render(){
             </List>
 
             <ActionButton
+                title='hello'
                 buttonColor="rgba(222, 207, 198, 1)"
                 degrees={30}
                 useNativeFeedback = {false} 

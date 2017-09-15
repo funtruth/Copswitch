@@ -44,6 +44,7 @@ constructor(props) {
 
         currentcups: 1,
         currentuid: '',
+        roomname: '',
     }
 
     const dataSource = new ListView.DataSource({
@@ -52,6 +53,9 @@ constructor(props) {
         this.state = {
             data: dataSource
         };
+
+    this.ref = firebase.database().ref('rooms/' + firebase.auth().currentUser.uid);
+    this.ref2 = firebase.database().ref('orders/');
   }
 
 //Makes a request to listen to all the this.state values needed
@@ -59,18 +63,18 @@ _makeRemoteRequest = () => {
 
     this.setState({currentuid: firebase.auth().currentUser.uid})
 
-    firebase.database().ref('rooms/' + firebase.auth().currentUser.uid).once('value', snapshot => {
+    this.ref.on('value', snapshot => {
         if (snapshot.exists()){
             this.setState({
-                currentcups: snapshot.val().cups
+                currentcups: snapshot.val().cups,
+                roomname: snapshot.val().roomname,
             })
         }
     })
 
     this.setState({ loading: true });
 
-    firebase.database().ref('orders/').once('value', (dataSnapshot) => {
-        if(dataSnapshot.exists()){
+    this.ref2.on('value', (dataSnapshot) => {
           var tasks = [];
           dataSnapshot.forEach((child) => {
             tasks.push({
@@ -86,22 +90,27 @@ _makeRemoteRequest = () => {
           });
       
           this.setState({
-            //data: this.state.data.cloneWithRows(tasks)
             data: tasks
           });
-        }
-        else{this.setState({
-            data: []
-        })}
+
         });
 };
+
+componentWillUnmount() {
+    if(this.ref){
+        this.ref.off();
+    }
+    if(this.ref2) {
+        this.ref2.off();
+    }
+}
 
 //Used to Add orders to your own room
 //Order is removed
 //Order becomes an ACTIVE Order
 //Spot in room is updated with Username
 //Number of spots is updated
-_doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comment) {
+_doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comment,myroomname) {
     firebase.database().ref('rooms/' + myuid).once('value',snapshot => {
         if (snapshot.exists()) {
             if(currentcups==1){    
@@ -116,6 +125,7 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
                         spot1:username,
                         cups:2})
                 })
+               
             } if(currentcups==2){
                 firebase.database().ref('orders/' + uid).remove().then(() => {
                     firebase.database().ref('rooms/' + myuid).update({
@@ -128,6 +138,7 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
                         spot2:username,
                         cups:3,})
                 })
+
             } if (currentcups==3) {
                 firebase.database().ref('orders/' + uid).remove().then(() => {
                     firebase.database().ref('rooms/' + myuid).update({
@@ -141,6 +152,7 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
                         cups: 4,})
                 })
             }
+        
         } else {
             this.props.navigation.navigate('Create_FirstScreen');
         }
@@ -179,7 +191,7 @@ render(){
                         onPress={() => {
                             this._doesUserHaveRoom(item._key,this.state.currentuid,
                                 item.username,this.state.currentcups,item.drinktype,
-                                item.size,item.coffeeorder,item.comment)
+                                item.size,item.coffeeorder,item.comment,this.state.roomname)
                         }}
                         rightTitle= 'Take Order'
                         rightTitleStyle={{
