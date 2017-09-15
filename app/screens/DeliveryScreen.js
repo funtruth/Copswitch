@@ -239,7 +239,9 @@ constructor(props) {
         loading: false,
 
         currentuid: '',
-}}
+    }
+    this.ref = null;
+}
 
 //Makes an order 
 _createOrder(uid,coffeeshop,coffeeorder,comment,size,dropoffloc,username,drinktype) {
@@ -261,9 +263,8 @@ componentWillMount() {
 
     this.setState({currentuid:uid})
 
-    const UserDB = firebase.database().ref("users/" + uid)
-
-    UserDB.child('username').once('value',snapshot => {
+    this.ref = firebase.database().ref("users/" + uid + "/username/")
+    this.ref.on('value',snapshot => {
         this.setState({
             username: snapshot.val(),
         })
@@ -271,6 +272,11 @@ componentWillMount() {
     //alert('deliver second screen');
 }
 
+componentWillUnmount(){
+    if(this.ref){
+        this.ref.off();
+    }
+}
 
 _resetStack(){
     return this.props

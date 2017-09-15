@@ -310,28 +310,43 @@ componentWillUnmount(){
 }
 
 //Renders the Order
-_renderActiveOrder(username,drinktype,size,coffeeorder,comment) {
+_renderActiveOrder(username,drinktype,size,coffeeorder,comment,owneruid,currentuid) {
 if(username){
     return <View style={styles.orderDetails}>
-        <Text style={{flex:1.2,borderWidth:1,textAlignVertical:'center'}}>{size + " " + drinktype}</Text>
-        <Text style={{flex:1,borderWidth:1,textAlignVertical:'center'}}>{coffeeorder}</Text>
-        <Text style={{flex:5,borderWidth:1,textAlignVertical:'center'}}>picture</Text>
-        <Text style={{flex:0.8,borderWidth:1,textAlignVertical:'center'}}>{username}</Text>
-        <Text style={{flex:0.8,borderWidth:1,textAlignVertical:'center'}}>{comment}</Text>
+        <Text style={styles.orderDetailCoffee}>{size + " " + drinktype}</Text>
+        <Text style={styles.orderDetailOrder}>{coffeeorder}</Text>
+        <Text style={{flex:5,textAlignVertical:'center'}}>picture</Text>
+        <Text style={styles.orderDetailUsername}>{username}</Text>
+        <Text style={styles.orderDetailComment}>{comment}</Text>
     </View>
 } else {
-        return <View 
-                style={styles.orderDetails}>
-                <Button 
-                    color='white'
-                    title="Add an Order!"
-                    borderRadius={17}
-                    backgroundColor='#b18d77'
-                    onPress = {() => {
-                        this.props.navigation.navigate('Deliver_SecondScreen')
-                    }}
-                />
+        if(owneruid != currentuid){
+            return <View 
+                    style={styles.orderDetails}>
+                    <Button 
+                        color='white'
+                        title="Add an Order!"
+                        borderRadius={17}
+                        backgroundColor='#b18d77'
+                        onPress = {() => {
+                            this.props.navigation.navigate('Deliver_SecondScreen')
+                        }}
+                    />
+                </View> 
+        } else {
+            return <View 
+                    style={styles.orderDetails}>
+                    <Button 
+                        color='white'
+                        title="Add an Order!"
+                        borderRadius={17}
+                        backgroundColor='#b18d77'
+                        onPress = {() => {
+                            this.props.navigation.navigate('Deliver_FirstScreen')
+                        }}
+                    />
             </View> 
+        }
 }}
 
 
@@ -378,7 +393,6 @@ if(owneruid==currentuid){
 componentWillMount() {
     this.setState({currentuid: firebase.auth().currentUser.uid});
     this._compileRoomDB();
-    alert('View ROom mount')
 }
 
     render(){
@@ -453,7 +467,8 @@ componentWillMount() {
                             {/*second order*/}
                             <View style={styles.orderBox}>
                                 {this._renderActiveOrder(this.state.spot1,this.state.drinktype1,
-                                this.state.size1,this.state.coffeeorder1,this.state.comment1)}
+                                this.state.size1,this.state.coffeeorder1,this.state.comment1,
+                                this.state._key,this.state.currentuid)}
                             </View>
 
                         </View>
@@ -467,13 +482,15 @@ componentWillMount() {
                             {/*3rd order*/}
                             <View style={styles.orderBox}>
                                 {this._renderActiveOrder(this.state.spot2,this.state.drinktype2,
-                                this.state.size2,this.state.coffeeorder2,this.state.comment2)}
+                                this.state.size2,this.state.coffeeorder2,this.state.comment2,
+                                this.state._key,this.state.currentuid)}
                             </View>
 
                             {/*4th order*/}
                             <View style={styles.orderBox}>
                                 {this._renderActiveOrder(this.state.spot3,this.state.drinktype3,
-                                this.state.size3,this.state.coffeeorder3,this.state.comment3)}
+                                this.state.size3,this.state.coffeeorder3,this.state.comment3,
+                                this.state._key,this.state.currentuid)}
                             </View>
 
                         </View>
@@ -696,5 +713,45 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    orderDetailCoffee: {
+        flex:1,
+        textAlignVertical:'center',
+        backgroundColor: '#b18d77',
+        color: 'white',
+        borderRadius:5,
+        margin: 2,
+        paddingLeft: 10,
+        paddingRight: 10,
+    },
+    orderDetailOrder: {
+        flex:1,
+        textAlignVertical:'center',
+        backgroundColor: '#b18d77',
+        color: 'white',
+        borderRadius:5,
+        margin: 2,
+        paddingLeft: 10,
+        paddingRight: 10,
+    },
+    orderDetailUsername: {
+        flex:1,
+        textAlignVertical:'center',
+        backgroundColor: '#b18d77',
+        color: 'white',
+        borderRadius:5,
+        margin: 2,
+        paddingLeft: 10,
+        paddingRight: 10,
+    },
+    orderDetailComment: {
+        flex:1,
+        textAlignVertical:'center',
+        backgroundColor: '#b18d77',
+        color: 'white',
+        borderRadius:5,
+        margin: 2,
+        paddingLeft: 10,
+        paddingRight: 10,
     }
 });
