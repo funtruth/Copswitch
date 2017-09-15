@@ -13,7 +13,7 @@ import {
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
-import { Button, List, Avatar } from "react-native-elements";
+import { Button, List, ListItem, Avatar } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
 //import { onSignOut } from "../auth";
 
@@ -66,17 +66,18 @@ componentWillMount() {
               flex: 1,
               alignItems: 'center'
             }}>
-              <Text style={{ color:'#b18d77', fontSize: 24}}>{this.state.username}</Text>
-              <Text style={{ color: '#b18d77', fontSize: 12}}>{this.state.email}</Text>
               <Avatar
                 large
                 rounded
                 containerStyle={{
                   marginTop: 15,
-                  borderWidth: 5,
+                  borderWidth: 2,
                   borderColor: '#b18d77',
                 }}
               />
+              <Text style={{ color:'#b18d77', fontSize: 24}}>{this.state.username}</Text>
+              <Text style={{ color: '#b18d77', fontSize: 12}}>{this.state.email}</Text>
+              
             </View>
 
             <View style = {{
@@ -99,7 +100,7 @@ componentWillMount() {
                     <ProfileButton title="Settings" 
                       icon={{name: 'settings', size: 16}}
                       onPress={() => {
-                        alert('teehee')
+                        this.props.navigation.navigate('SettingsScreen')
                       }}/>
                   </View>
                   <View style = {{
@@ -110,7 +111,7 @@ componentWillMount() {
                       title="Defaults"
                       icon={{name: 'menu', size: 16}}
                       onPress={() => {
-                        alert('haha')
+                        this.props.navigation.navigate('DefaultsScreen')
                       }}/>
                     </View>
                 </View>
@@ -159,12 +160,123 @@ componentWillMount() {
     </View>
 }};
 
+class SettingsScreen extends React.Component {
+
+static navigationOptions = {
+  headerTitle: 'Settings',
+  headerTintColor: 'white',
+  headerStyle: {
+      backgroundColor: '#b18d77',
+  }
+}
+
+render() {
+  return <ScrollView style = {{
+      backgroundColor: '#e6ddd1',
+      flex: 1,
+  }}>
+    <Text>My Account</Text>
+    <List>
+
+      <ListItem
+        title='placeholder'
+        hideChevron={true}
+        switchButton={true}
+        onSwitch={() => {
+          alert('test')
+        }}
+      />
+      <ListItem
+      />
+
+    </List>
+
+    <Text>Options</Text>
+    <List>
+
+      <ListItem
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+
+    </List> 
+
+  </ScrollView>
+}
+
+}
+
+class DefaultsScreen extends React.Component {
+
+static navigationOptions = {
+  headerTitle: 'Defaults',
+  headerTintColor: 'white',
+  headerStyle: {
+      backgroundColor: '#b18d77',
+  }
+}
+
+render() {
+  return <ScrollView style = {{
+      backgroundColor: '#e6ddd1',
+      flex: 1,
+  }}>
+    <Text>Choose Defaults</Text>
+    <List>
+
+      <ListItem
+        title='placeholder'
+        hideChevron={true}
+        switchButton={true}
+        onSwitch={() => {
+          alert('test')
+        }}
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+      <ListItem
+      />
+
+    </List> 
+
+  </ScrollView>
+}
+
+}
+
 export default stackNav = StackNavigator(
   {
       ProfileScreen: {
           screen: ProfileScreen,
       },
-
+      SettingsScreen: {
+        screen: SettingsScreen,
+      },
+      DefaultsScreen: {
+          screen: DefaultsScreen,
+      },
   },
       {
           headerMode: 'screen',
