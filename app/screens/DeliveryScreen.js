@@ -101,7 +101,7 @@ _makeRemoteRequest = () => {
 //Order becomes an ACTIVE Order
 //Spot in room is updated with Username
 //Number of spots is updated
-_doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comment) {
+/*_doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comment) {
     firebase.database().ref('rooms/' + myuid).once('value',snapshot => {
         if (snapshot.exists()) {
             if(currentcups==1){    
@@ -145,11 +145,17 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
             this.props.navigation.navigate('Create_FirstScreen');
         }
     })
-}
+}*/
 
 componentWillMount() {
     //Request from Firebase
     this._makeRemoteRequest();
+}
+
+componentWillUnmount() {
+    firebase.database().ref('rooms/' + firebase.auth().currentUser.uid).off()
+
+    firebase.database().ref('orders/').off()
 }
 
 render(){
@@ -176,9 +182,9 @@ render(){
                             color: '#ece4df'
                         }}
                         onPress={() => {
-                            this._doesUserHaveRoom(item._key,this.state.currentuid,
+                            /*this._doesUserHaveRoom(item._key,this.state.currentuid,
                                 item.username,this.state.currentcups,item.drinktype,
-                                item.size,item.coffeeorder,item.comment)
+                                item.size,item.coffeeorder,item.comment)*/
                         }}
                         rightTitle= 'Take Order'
                         rightTitleStyle={{
@@ -255,6 +261,11 @@ componentWillMount() {
             username: snapshot.val(),
         })
     })
+}
+
+componentWillUnmount() {
+    const uid = firebase.auth().currentUser.uid
+    firebase.database().ref("users/" + uid).child('username').off
 }
 
 _resetStack(){

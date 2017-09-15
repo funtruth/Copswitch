@@ -62,7 +62,6 @@ _MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid,cups,owner){
         comment2: '',
         comment3: '',
     })
-    AsyncStorage.setItem("is_there_a_room", "true")
 }
 
 constructor(props) {
@@ -320,7 +319,6 @@ if(username){
 //Deletes a room from the database and from AsyncStorage
 _DeleteRoomDB(uid){
     firebase.database().ref('rooms/' + uid).remove()
-    AsyncStorage.removeItem("is_there_a_room")
 }
 
 _resetStack(){
@@ -337,16 +335,15 @@ _resetStack(){
 
 //Renders a different button based on whether the uid of the room
 //matches the current user.
-_renderDeleteRoom(owneruid) {
-const compareuid = this.state.currentuid
+_renderDeleteButton(owneruid,currentuid) {
 
-if(owneruid==compareuid){
+if(owneruid==currentuid){
     return <View
     ><Button
         color='#b18d77'
         title="Delete"
         onPress={() => {
-            this._DeleteRoomDB(this.state.currentuid)
+            this._DeleteRoomDB(currentuid)
             this.props.navigation.navigate('JoinScreen')
             this._resetStack()
 
@@ -402,7 +399,7 @@ if(owneruid==compareuid){
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
-                                {this._renderDeleteRoom(this.state._key)}
+                                {this._renderDeleteButton(this.state._key,this.state.currentuid)}
                             </View>
                         </View>
                     </View>
@@ -561,18 +558,6 @@ _makeRoomRequest = () => {
 };
 
 componentWillMount() {
-
-    //Back Handler
-    BackHandler.addEventListener('hardwareBackPress', function() {
-        if(this.currentRouteName != 'Join'){
-            this.navigation.navigate('JoinScreen')
-            return true 
-    } else {
-            this.props.navigation.navigate('JoinScreen')
-            return false
-    }
-    })
-
     this._makeRoomRequest();
 }
 
