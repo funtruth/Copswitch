@@ -55,10 +55,11 @@ export default StyleSheet.create({
       borderWidth: 1
     },
 
-    //Drawer
+    //Tab
     icon: {
-      width: 26,
       height: 26,
+      color: '#b18d77',
+      fontSize: 20
     },
     
     });

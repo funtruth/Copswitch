@@ -4,7 +4,6 @@ import React from "react";
 import { Platform, StatusBar, Image } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
 
-//import { FontAwesome } from "react-native-vector-icons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 import styles from "./app/styles/Styles";
@@ -51,10 +50,7 @@ export const SignedOut = StackNavigator({
         screen: Create,
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => (
-            <Image 
-                source={require('./app/images/coffee.png')}
-                style={[styles.icon, {tintColor: tintColor}]}
-            />
+            <MaterialIcons name="home" style={styles.icon}/>
           ),
           
         }
@@ -63,10 +59,7 @@ export const SignedOut = StackNavigator({
         screen: Deliver,
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => (
-            <Image 
-                source={require('./app/images/arrow.png')}
-                style={[styles.icon, {tintColor: tintColor}]}
-            />
+            <MaterialIcons name="shopping-cart" style={styles.icon}/>
           ),
           
         }
@@ -75,10 +68,7 @@ export const SignedOut = StackNavigator({
         screen: Profile,
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => (
-            <Image 
-                source={require('./app/images/person.png')}
-                style={[styles.icon, {tintColor: tintColor}]}
-            />
+            <MaterialIcons name="person" style={styles.icon}/>
           ),
         }
       },
@@ -94,7 +84,7 @@ export const SignedOut = StackNavigator({
           backgroundColor: '#DECFC6',
         },
         indicatorStyle: {
-          backgroundColor: '#8b6f4b',
+          backgroundColor: '#b18d77',
           height:5,
         }
       },

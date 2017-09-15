@@ -191,6 +191,7 @@ render(){
                     
                 />
                 </View>
+
             </View>
         }
 }
@@ -669,6 +670,7 @@ render(){
                     {this._doIHaveARoom(this.state.currentuid,this.state.myroomname)}
 
              </ActionButton>
+             
         </View>
 }};
 

@@ -5,13 +5,16 @@ import {
     Image,
     AsyncStorage,
     BackHandler,
-    ToastAndroid,
-    Button
+    Text,
+    ScrollView,
+    StyleSheet
 }   from 'react-native';
 
-//import { NavigationActions } from 'react-navigation';
+import { StackNavigator } from 'react-navigation';
+import { NavigationActions } from 'react-navigation';
 
-import { Card, Text } from "react-native-elements";
+import { Button, List, Avatar } from "react-native-elements";
+import ProfileButton from '../components/ProfileButton.js';
 //import { onSignOut } from "../auth";
 
 //Facebook
@@ -20,8 +23,16 @@ import { LoginManager } from 'react-native-fbsdk'
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
-export default class ProfileScreen extends React.Component {
-  
+class ProfileScreen extends React.Component {
+
+static navigationOptions = {
+  headerTitle: 'My Profile',
+  headerTintColor: 'white',
+  headerStyle: {
+      backgroundColor: '#b18d77',
+  }
+}
+
   constructor(props) {
     super(props);
     this.state = {
@@ -29,62 +40,144 @@ export default class ProfileScreen extends React.Component {
       email:null,
       loading: true,
     }
+    this.ref = null;
   }
 
 componentWillMount() {
   //Grabs the username and email of current user
   const uid = firebase.auth().currentUser.uid
-  const UserDB = firebase.database().ref("users/" + uid)
+  this.ref = firebase.database().ref("users/" + uid)
 
-  UserDB.child('username').once('value',snapshot => {
+  this.ref.once('value',snapshot => {
     this.setState({
-      username: snapshot.val(),
+      username: snapshot.val().username,
+      email: snapshot.val().email,
     })
-  }),
-  UserDB.child('email').once('value',snapshot => {
-      this.setState({
-        email: snapshot.val(),
-      })
-    })
+  })
 }
 
   render(){
     return <View style={{
               flex: 1,
-              justifyContent: 'center',
-              alignItems: 'center',
               backgroundColor: '#e6ddd1',
           }}>
+            
+            <View style = {{
+              flex: 1,
+              alignItems: 'center'
+            }}>
+              <Text style={{ color:'#b18d77', fontSize: 24}}>{this.state.username}</Text>
+              <Text style={{ color: '#b18d77', fontSize: 12}}>{this.state.email}</Text>
+              <Avatar
+                large
+                rounded
+                containerStyle={{
+                  marginTop: 15,
+                  borderWidth: 5,
+                  borderColor: '#b18d77',
+                }}
+              />
+            </View>
 
-          <Text style={{ color:'#493a27', fontSize: 28 }}>{this.state.username}</Text>
-          <Text style={{ color: '#493a27', fontSize: 28 }}>{this.state.email}</Text>
+            <View style = {{
+              flex: 2,
+              backgroundColor: '#e6ddd1',
+            }}>
 
-          <Button
-            backgroundColor="#8b6f4b"
-            color='#b18d77'
-            title="SIGN OUT"
-            onPress={() => {
-              this.props.navigation.navigate('SignedOut');
-              
-                //onSignOut().then(() => {
-                  //firebase.auth().signOut();
-                 //this.props.navigation.navigate('SignedOut');
-                //}) 
-            }}
-          />
+              <ScrollView style = {{
+                flex: 1,
+              }}>
+                <View style = {{
+                  flex: 1,
+                  flexDirection: 'row',
+                  backgroundColor: '#e6ddd1',
+                }}>
+                  <View style = {{
+                    flex: 1,
+                    margin: 5,
+                  }}>
+                    <ProfileButton title="Settings" 
+                      icon={{name: 'settings', size: 16}}
+                      onPress={() => {
+                        alert('teehee')
+                      }}/>
+                  </View>
+                  <View style = {{
+                    flex: 1,
+                    margin: 5,
+                  }}>
+                    <ProfileButton
+                      title="Defaults"
+                      icon={{name: 'menu', size: 16}}
+                      onPress={() => {
+                        alert('haha')
+                      }}/>
+                    </View>
+                </View>
 
-        <Button
-          backgroundColor="#8b6f4b"
-          color='#b18d77'
-          title="Delete Account"
-          onPress={() => {
-            firebase.auth().currentUser.delete().then(() => {
-              this.props.navigation.navigate('SignedOut');
-            }).catch(() => {
-              alert('Failed to Delete');
-            })
-          }}
-        />
-    </View>}
-    
-};
+                <View style = {{
+                  flex: 1,
+                  flexDirection: 'row',
+                  backgroundColor: '#e6ddd1',
+                }}>
+                  <View style = {{
+                    flex: 1,
+                    margin: 5,
+                  }}>
+                    <ProfileButton
+                      title="Log Out"
+                      icon={{name: 'subdirectory-arrow-left', size: 16}}
+                      onPress={() => {
+                        this.props.navigation.navigate('SignedOut');
+                      
+                        //onSignOut().then(() => {
+                          //firebase.auth().signOut();
+                        //this.props.navigation.navigate('SignedOut');
+                        //}) 
+                    }}/>
+                  </View>
+                  <View style = {{
+                    flex: 1,
+                    margin: 5
+                  }}>
+                    <ProfileButton
+                      title="Delete Account"
+                      icon={{name: 'delete', size: 16}}
+                      onPress={() => {
+                        firebase.auth().currentUser.delete().then(() => {
+                          this.props.navigation.navigate('SignedOut');
+                        }).catch(() => {
+                          alert('Failed to Delete');
+                        })
+                      }}/>
+                    </View>
+                </View>
+
+
+                </ScrollView>
+            </View>
+    </View>
+}};
+
+export default stackNav = StackNavigator(
+  {
+      ProfileScreen: {
+          screen: ProfileScreen,
+      },
+
+  },
+      {
+          headerMode: 'screen',
+          initialRouteName: 'ProfileScreen',
+      }
+  );
+
+
+  const styles = StyleSheet.create({
+    actionButtonIcon: {
+        fontSize: 20,
+        height: 22,
+        color: 'white',
+    },
+
+});

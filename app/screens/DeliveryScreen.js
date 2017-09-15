@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import {
     Text,
     View,
-    Button,
     Image,
     ScrollView,
     AsyncStorage,
@@ -12,7 +11,7 @@ import {
     StyleSheet,
     TextInput
 }   from 'react-native';
-import { Card, FormInput, List, ListItem } from "react-native-elements";
+import { Card, FormInput, List, ListItem, Button } from "react-native-elements";
 import ActionButton from "react-native-action-button";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ModalPicker from 'react-native-modal-picker';
@@ -403,7 +402,9 @@ render(){
                     alignSelf: 'center'
                 }}>
                 <Button
-                    color='#b18d77'
+                    backgroundColor='#b18d77'
+                    borderRadius={15}
+                    color='white'
                     title="Create Order"
                     onPress={() => {
                         this._createOrder(this.state.currentuid,this.state.coffeeshop,
