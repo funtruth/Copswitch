@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import {
     Text,
     View,
-    Button,
+    //Button,
     Image,
     Platform,
     StatusBar,
@@ -13,9 +13,10 @@ import {
     StyleSheet,
     Keyboard,
     ListView,
-    FlatList
+    FlatList,
+    TouchableOpacity
 }   from 'react-native';
-import { Card, FormInput, List, ListItem } from "react-native-elements";
+import { Card, FormInput, List, ListItem, Button } from "react-native-elements";
 import ModalPicker from 'react-native-modal-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ActionButton from 'react-native-action-button';
@@ -82,11 +83,10 @@ constructor(props) {
   }
 
 componentWillMount() {
-
     const uid = firebase.auth().currentUser.uid
     const UserDB = firebase.database().ref("users/" + uid)
 
-    UserDB.child('username').on('value',snapshot => {
+    UserDB.child('username').once('value',snapshot => {
         this.setState({
             username: snapshot.val(),
         })
@@ -94,6 +94,7 @@ componentWillMount() {
 
     this.setState({currentuid: firebase.auth().currentUser.uid});
     
+    alert('create first screen');
     
 }
 
@@ -182,8 +183,8 @@ render(){
 
                 <View style = {{marginTop:20, width: 180}}>
                 <Button
-                    backgroundColor="#8b6f4b"
-                    color='#b18d77'
+                    backgroundColor='#b18d77'
+                    color='white'
                     title="Create Room"
                     onPress={() => {
                         this._MakeRoomDB(this.state.roomname,this.state.coffeeshop,
@@ -210,6 +211,22 @@ static navigationOptions = ({navigation}) => ({
     headerStyle: {
         backgroundColor: '#b18d77',
     },
+    headerRight: 
+        <Button
+            title="Return"
+            color='#b18d77'
+            backgroundColor='white'
+            borderRadius={12}
+            fontSize={11}
+            buttonStyle={{paddingTop: 5, paddingBottom: 5, paddingLeft: 8, paddingRight: 8}}
+            onPress={()=> {
+                    navigation.dispatch(NavigationActions.reset({
+                        index: 0,
+                        actions: [
+                            NavigationActions.navigate({ routeName: 'JoinScreen'})
+                        ]
+            }));
+        }} />,       
 })
 
 
@@ -249,8 +266,8 @@ constructor(props) {
 componentWillMount() {
 
     this.setState({currentuid: firebase.auth().currentUser.uid});
-
     this._compileRoomDB();
+    alert('create second screen');
 }
 
 //Sets all the this.state values that are necessary for viewing your own room
@@ -259,7 +276,7 @@ _compileRoomDB(){
     const { params } = this.props.navigation.state;
     const uid = params.uid
     
-    firebase.database().ref('rooms/' + uid).on('value', (snapshot) => {
+    firebase.database().ref('rooms/' + uid).once('value', (snapshot) => {
         if(snapshot.exists()){
             this.setState({
                 roomname: snapshot.val().roomname,
@@ -306,8 +323,10 @@ if(username){
         return <View 
                 style={styles.orderDetails}>
                 <Button 
-                    color='#b18d77'
+                    color='white'
                     title="Add an Order!"
+                    borderRadius={12}
+                    backgroundColor='#b18d77'
                     onPress = {() => {
                         this.props.navigation.navigate('Deliver_SecondScreen')
                     }}
@@ -340,8 +359,12 @@ _renderDeleteButton(owneruid,currentuid) {
 if(owneruid==currentuid){
     return <View
     ><Button
-        color='#b18d77'
+        color='white'
+        backgroundColor='#b18d77'
         title="Delete"
+        borderRadius={16}
+        fontSize={15}
+        buttonStyle={{marginTop: 5, marginBottom: 5, paddingTop: 5, paddingBottom: 5, paddingLeft: 8, paddingRight: 8}}
         onPress={() => {
             this._DeleteRoomDB(currentuid)
             this.props.navigation.navigate('JoinScreen')
@@ -395,7 +418,7 @@ if(owneruid==currentuid){
                             </View>
 
                             <View style ={{
-                                flex: 1.5,
+                                flex: 2,
                                 alignItems: 'center',
                                 justifyContent: 'center',
                             }}>
@@ -477,6 +500,8 @@ constructor(props) {
         myroomname: '',
         currentuid: '',
     };
+    this.ref = null;
+    this.ref2 = null;
 }
 
 //Renders the Appropriate Action Button
@@ -511,7 +536,8 @@ _makeRoomRequest = () => {
         currentuid: firebase.auth().currentUser.uid 
     });
 
-    firebase.database().ref('rooms/').on('value', (dataSnapshot) => {  
+    this.ref = firebase.database().ref('rooms/')
+    this.ref.on('value', (dataSnapshot) => {  
         if(dataSnapshot.exists()){
             var tasks = [];
             dataSnapshot.forEach((child) => {
@@ -543,14 +569,15 @@ _makeRoomRequest = () => {
     });
 
     //Grab the name of my Room
-    firebase.database().ref('rooms/' + firebase.auth().currentUser.uid  + '/roomname/')
-        .on('value',(snapshot) => {
+    this.ref2 = firebase.database().ref('rooms/' + firebase.auth().currentUser.uid  + '/roomname/')
+    this.ref2
+        .once('value',(snapshot) => {
             if(snapshot.exists()){
                 this.setState({
                     myroomname: snapshot.val(),
                 })
             } else {
-                this.setState({myroomname: null,})
+                this.setState({myroomname: null})
             }
         })
     
@@ -559,7 +586,17 @@ _makeRoomRequest = () => {
 
 componentWillMount() {
     this._makeRoomRequest();
-}
+    alert('join screen');
+};
+
+componentWillUnmount() {
+    if (this.ref) {
+        this.ref.off();
+      }
+    if (this.ref2) {
+        this.ref2.off();
+    }
+};
 
 render(){
     return <View 

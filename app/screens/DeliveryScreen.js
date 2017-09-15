@@ -59,7 +59,7 @@ _makeRemoteRequest = () => {
 
     this.setState({currentuid: firebase.auth().currentUser.uid})
 
-    firebase.database().ref('rooms/' + firebase.auth().currentUser.uid).on('value', snapshot => {
+    firebase.database().ref('rooms/' + firebase.auth().currentUser.uid).once('value', snapshot => {
         if (snapshot.exists()){
             this.setState({
                 currentcups: snapshot.val().cups
@@ -69,7 +69,7 @@ _makeRemoteRequest = () => {
 
     this.setState({ loading: true });
 
-    firebase.database().ref('orders/').on('value', (dataSnapshot) => {
+    firebase.database().ref('orders/').once('value', (dataSnapshot) => {
         if(dataSnapshot.exists()){
           var tasks = [];
           dataSnapshot.forEach((child) => {
@@ -101,7 +101,7 @@ _makeRemoteRequest = () => {
 //Order becomes an ACTIVE Order
 //Spot in room is updated with Username
 //Number of spots is updated
-/*_doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comment) {
+_doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comment) {
     firebase.database().ref('rooms/' + myuid).once('value',snapshot => {
         if (snapshot.exists()) {
             if(currentcups==1){    
@@ -145,17 +145,12 @@ _makeRemoteRequest = () => {
             this.props.navigation.navigate('Create_FirstScreen');
         }
     })
-}*/
+}
 
 componentWillMount() {
     //Request from Firebase
     this._makeRemoteRequest();
-}
-
-componentWillUnmount() {
-    firebase.database().ref('rooms/' + firebase.auth().currentUser.uid).off()
-
-    firebase.database().ref('orders/').off()
+    //alert('deliver first screen');
 }
 
 render(){
@@ -182,9 +177,9 @@ render(){
                             color: '#ece4df'
                         }}
                         onPress={() => {
-                            /*this._doesUserHaveRoom(item._key,this.state.currentuid,
+                            this._doesUserHaveRoom(item._key,this.state.currentuid,
                                 item.username,this.state.currentcups,item.drinktype,
-                                item.size,item.coffeeorder,item.comment)*/
+                                item.size,item.coffeeorder,item.comment)
                         }}
                         rightTitle= 'Take Order'
                         rightTitleStyle={{
@@ -256,17 +251,14 @@ componentWillMount() {
 
     const UserDB = firebase.database().ref("users/" + uid)
 
-    UserDB.child('username').on('value',snapshot => {
+    UserDB.child('username').once('value',snapshot => {
         this.setState({
             username: snapshot.val(),
         })
     })
+    //alert('deliver second screen');
 }
 
-componentWillUnmount() {
-    const uid = firebase.auth().currentUser.uid
-    firebase.database().ref("users/" + uid).child('username').off
-}
 
 _resetStack(){
     return this.props
