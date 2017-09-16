@@ -22,6 +22,9 @@ import { NavigationActions } from 'react-navigation';
 
 import firebase from '../firebase/FirebaseController.js';
 
+//Components
+import HeaderButton from '../components/HeaderButton.js';
+
 class Create_FirstScreen extends Component {
 
 static navigationOptions = {
@@ -207,21 +210,17 @@ static navigationOptions = ({navigation}) => ({
     },
     headerLeft: null,
     headerRight: 
-        <Button
+        <HeaderButton
             title="Return"
-            color='#b18d77'
-            backgroundColor='white'
-            borderRadius={12}
-            fontSize={11}
-            buttonStyle={{paddingTop: 5, paddingBottom: 5, paddingLeft: 8, paddingRight: 8}}
             onPress={()=> {
                     navigation.dispatch(NavigationActions.reset({
                         index: 0,
                         actions: [
                             NavigationActions.navigate({ routeName: 'JoinScreen'})
                         ]
-            }));
-        }} />,       
+                }));
+            }}
+    />,       
 })
 
 
@@ -260,6 +259,10 @@ constructor(props) {
         passeduid: '',
     }
     this.ref = null;
+}
+
+_Debugger(){
+    alert('yes')
 }
 
 //Sets all the this.state values that are necessary for viewing your own room

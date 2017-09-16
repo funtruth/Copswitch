@@ -15,6 +15,9 @@ import { NavigationActions } from 'react-navigation';
 
 import { Button, List, ListItem, Avatar } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
+import HeaderButton from '../components/HeaderButton.js';
+import ToggleListItem from '../components/ToggleListItem.js';
+
 //import { onSignOut } from "../auth";
 
 //Facebook
@@ -36,6 +39,7 @@ static navigationOptions = {
   constructor(props) {
     super(props);
     this.state = {
+      uid:null,
       username:null,
       email:null,
       loading: true,
@@ -45,8 +49,8 @@ static navigationOptions = {
 
 componentWillMount() {
   //Grabs the username and email of current user
-  const uid = firebase.auth().currentUser.uid
-  this.ref = firebase.database().ref("users/" + uid)
+  this.state.uid = firebase.auth().currentUser.uid
+  this.ref = firebase.database().ref("users/" + this.state.uid)
 
   this.ref.once('value',snapshot => {
     this.setState({
@@ -145,6 +149,7 @@ componentWillMount() {
                       title="Delete Account"
                       icon={{name: 'delete', size: 16}}
                       onPress={() => {
+                        firebase.database().ref('users/' + this.state.uid).remove();
                         firebase.auth().currentUser.delete().then(() => {
                           this.props.navigation.navigate('SignedOut');
                         }).catch(() => {
@@ -162,13 +167,24 @@ componentWillMount() {
 
 class SettingsScreen extends React.Component {
 
-static navigationOptions = {
+static navigationOptions = ({navigation}) => ({
   headerTitle: 'Settings',
   headerTintColor: 'white',
   headerStyle: {
       backgroundColor: '#b18d77',
-  }
-}
+  },
+  headerRight: 
+  <HeaderButton
+      title="Save"
+      onPress={()=> {
+              navigation.dispatch(NavigationActions.reset({
+                  index: 0,
+                  actions: [
+                      NavigationActions.navigate({ routeName: 'ProfileScreen'})
+                  ]
+      }));
+  }} />
+})
 
 render() {
   return <ScrollView style = {{
@@ -218,12 +234,93 @@ render() {
 
 class DefaultsScreen extends React.Component {
 
-static navigationOptions = {
+static navigationOptions = ({navigation}) => ({
   headerTitle: 'Defaults',
   headerTintColor: 'white',
   headerStyle: {
       backgroundColor: '#b18d77',
+  },
+  headerRight: 
+  <HeaderButton
+      title="Save"
+      onPress={()=> {
+          navigation.handleSave;
+
+          navigation.dispatch(NavigationActions.reset({
+              index: 0,
+              actions: [
+                  NavigationActions.navigate({ routeName: 'ProfileScreen'})
+              ]
+          }));
+  }}/>
+})
+
+constructor(props) {
+  super(props)
+  this.state = {
+    coffeeshop: '',
+    _coffeeshop: false,
+    drinktype: '',
+    _drinktype: false,
+    coffeeorder: '',
+    _coffeeorder: false,
+    size: '',
+    _size: false,
+    dropoffloc: '',
+    _dropoffloc: false,
+    dropofftime: '',
+    _dropofftime: false,
   }
+  this.ref = null;
+}
+
+_pullDefaultsDB() {
+  const uid = firebase.auth().currentUser.uid
+  this.ref = firebase.database().ref('defaults/' + uid)
+
+  this.ref.once('value', (snapshot) => {
+    this.setState({
+      coffeeshop: snapshot.val().coffeeshop,
+      _coffeeshop: snapshot.val()._coffeeshop,
+      drinktype: snapshot.val().drinktype,
+      _drinktype: snapshot.val()._drinktype,
+      coffeeorder: snapshot.val().coffeeorder,
+      _coffeeorder: snapshot.val()._coffeeorder,
+      size: snapshot.val().size,
+      _size: snapshot.val()._size,
+      dropoffloc: snapshot.val().dropoffloc,
+      _dropoffloc: snapshot.val()._dropoffloc,
+      dropofftime: snapshot.val().dropofftime,
+      _dropofftime: snapshot.val()._dropofftime,
+    })
+  })
+
+}
+
+_saveDetails() {
+  firebase.database().ref('defaults/' + firebase.auth().currentUser.uid)
+  .update({
+    coffeeshop: this.state.coffeeshop,
+    _coffeeshop: this.state._coffeeshop,
+    drinktype: this.state.drinktype,
+    _drinktype: this.state._drinktype,
+    coffeeorder: this.state.coffeeorder,
+    _coffeeorder: this.state._coffeeorder,
+    size: this.state.size,
+    _size: this.state._size,
+    dropoffloc: this.state.dropoffloc,
+    _dropoffloc: this.state._dropoffloc,
+    dropofftime: this.state.dropofftime,
+    _dropofftime: this.state._dropofftime,
+  })
+}
+
+componentWillMount() {
+  this._pullDefaultsDB();
+}
+
+componentWillUnmount() {
+  this.props.navigation.setParams({ handleSave: this._saveDetails() });
 }
 
 render() {
@@ -231,36 +328,64 @@ render() {
       backgroundColor: '#e6ddd1',
       flex: 1,
   }}>
-    <Text>Choose Defaults</Text>
-    <List>
-
-      <ListItem
-        title='placeholder'
-        hideChevron={true}
-        switchButton={true}
+    <List style = {{borderTopWidth: 0, borderBottomWidth: 0}}>
+      <ToggleListItem
+        title={'Coffeeshop:'}
+        subtitle={this.state.coffeeshop}
+        switched={this.state._coffeeshop}
         onSwitch={() => {
-          alert('test')
+          if(this.state._coffeeshop){this.setState({_coffeeshop:false})} 
+          else {this.setState({_coffeeshop:true})}          
         }}
       />
-      <ListItem
-      />
-      <ListItem
-      />
-      <ListItem
-      />
-      <ListItem
-      />
-      <ListItem
-      />
-      <ListItem
-      />
-      <ListItem
-      />
-      <ListItem
-      />
 
+      <ToggleListItem
+        title='Drink:'
+        subtitle={this.state.drinktype}
+        switched={this.state._drinktype}
+        onSwitch={() => {
+          if(this.state._drinktype){this.setState({_drinktype:false})} 
+          else {this.setState({_drinktype:true})} 
+        }}
+      />
+      
+      <ToggleListItem
+        title='Order:'
+        subtitle={this.state.coffeeorder}
+        switched={this.state._coffeeorder}
+        onSwitch={() => {
+          if(this.state._coffeeorder){this.setState({_coffeeorder:false})} 
+          else {this.setState({_coffeeorder : true})} 
+        }}/>
+      
+      <ToggleListItem
+        title='Size:'
+        subtitle={this.state.size}
+        switched={this.state._size}
+        onSwitch={() => {
+          if(this.state._size){this.setState({_size:false})} 
+          else {this.setState({_size : true})} 
+        }}/>
+      
+      <ToggleListItem
+        title='Locations:'
+        subtitle={this.state.dropoffloc}
+        switched={this.state._dropoffloc}
+        onSwitch={() => {
+          if(this.state._dropoffloc){this.setState({_dropoffloc:false})} 
+          else {this.setState({_dropoffloc : true})} 
+        }}/>
+      
+      <ToggleListItem
+        title='Time:'
+        subtitle={this.state.dropofftime}
+        switched={this.state._dropofftime}
+        onSwitch={() => {
+          if(this.state._dropofftime){this.setState({_dropofftime:false})} 
+          else {this.setState({_dropofftime: true})} 
+        }}/>
+      
     </List> 
-
   </ScrollView>
 }
 

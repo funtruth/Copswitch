@@ -12,7 +12,6 @@ export default class SignUpScreen extends React.Component {
     password: '',
     confirm: '',
     loading: false,
-    name: 'Michael'
   };
 
 //Creates user and Signs them in
