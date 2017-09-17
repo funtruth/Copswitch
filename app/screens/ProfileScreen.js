@@ -7,11 +7,16 @@ import {
     BackHandler,
     Text,
     ScrollView,
-    StyleSheet
+    StyleSheet,
+    TextInput
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
+
+
+
+import ModalPicker from 'react-native-modal-picker';
 
 import { Button, List, ListItem, Avatar } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
@@ -234,26 +239,22 @@ render() {
 
 class DefaultsScreen extends React.Component {
 
-static navigationOptions = ({navigation}) => ({
-  headerTitle: 'Defaults',
-  headerTintColor: 'white',
-  headerStyle: {
-      backgroundColor: '#b18d77',
-  },
-  headerRight: 
-  <HeaderButton
-      title="Save"
-      onPress={()=> {
-          navigation.handleSave;
-
-          navigation.dispatch(NavigationActions.reset({
-              index: 0,
-              actions: [
-                  NavigationActions.navigate({ routeName: 'ProfileScreen'})
-              ]
-          }));
-  }}/>
-})
+static navigationOptions = ({navigation}) => {
+  const { state } = navigation;
+  const params = state.params || {};
+  return{
+      headerTitle: 'Defaults',
+      headerTintColor: 'white',
+      headerStyle: {
+          backgroundColor: '#b18d77',
+      },
+      headerRight: 
+      <HeaderButton
+          title="Save"
+          onPress={params.handleSave}
+      />
+  }
+}
 
 constructor(props) {
   super(props)
@@ -272,6 +273,8 @@ constructor(props) {
     _dropofftime: false,
   }
   this.ref = null;
+
+  this._handleSavePress = this._handleSavePress.bind(this);
 }
 
 _pullDefaultsDB() {
@@ -294,10 +297,9 @@ _pullDefaultsDB() {
       _dropofftime: snapshot.val()._dropofftime,
     })
   })
-
 }
 
-_saveDetails() {
+_handleSavePress() {
   firebase.database().ref('defaults/' + firebase.auth().currentUser.uid)
   .update({
     coffeeshop: this.state.coffeeshop,
@@ -312,18 +314,37 @@ _saveDetails() {
     _dropoffloc: this.state._dropoffloc,
     dropofftime: this.state.dropofftime,
     _dropofftime: this.state._dropofftime,
-  })
+  });
+
+  this.props
+      .navigation
+      .dispatch(NavigationActions.reset(
+        {
+          index: 0,
+          actions: [
+            NavigationActions.navigate({ routeName: 'ProfileScreen'})
+          ]
+        }));
 }
 
 componentWillMount() {
   this._pullDefaultsDB();
-}
-
-componentWillUnmount() {
-  this.props.navigation.setParams({ handleSave: this._saveDetails() });
+  this.props.navigation.setParams({ 
+    handleSave: this._handleSavePress,
+  });
 }
 
 render() {
+
+  let index = 0;
+  const shops = [
+      { key: index++, section: true, label: 'Coffeeshops' },
+      { key: index++, label: "Tim Horton's" },
+      { key: index++, label: "William's" },
+      { key: index++, label: "Starbucks" },
+      { key: index++, label: "Second Cup" },
+  ];
+
   return <ScrollView style = {{
       backgroundColor: '#e6ddd1',
       flex: 1,
@@ -331,7 +352,8 @@ render() {
     <List style = {{borderTopWidth: 0, borderBottomWidth: 0}}>
       <ToggleListItem
         title={'Coffeeshop:'}
-        subtitle={this.state.coffeeshop}
+        datalist={shops}
+        pickertype={this.state.coffeeshop}
         switched={this.state._coffeeshop}
         onSwitch={() => {
           if(this.state._coffeeshop){this.setState({_coffeeshop:false})} 
@@ -341,7 +363,8 @@ render() {
 
       <ToggleListItem
         title='Drink:'
-        subtitle={this.state.drinktype}
+        datalist={shops}
+        pickertype={this.state.drinktype}
         switched={this.state._drinktype}
         onSwitch={() => {
           if(this.state._drinktype){this.setState({_drinktype:false})} 
@@ -351,25 +374,30 @@ render() {
       
       <ToggleListItem
         title='Order:'
-        subtitle={this.state.coffeeorder}
+        datalist={shops}
+        pickertype={this.state.coffeeorder}
         switched={this.state._coffeeorder}
         onSwitch={() => {
           if(this.state._coffeeorder){this.setState({_coffeeorder:false})} 
           else {this.setState({_coffeeorder : true})} 
-        }}/>
+        }}
+      />
       
       <ToggleListItem
         title='Size:'
-        subtitle={this.state.size}
+        datalist={shops}
+        pickertype={this.state.size}
         switched={this.state._size}
         onSwitch={() => {
           if(this.state._size){this.setState({_size:false})} 
           else {this.setState({_size : true})} 
-        }}/>
+        }}
+      />
       
       <ToggleListItem
         title='Locations:'
-        subtitle={this.state.dropoffloc}
+        datalist={shops}
+        pickertype={this.state.dropoffloc}
         switched={this.state._dropoffloc}
         onSwitch={() => {
           if(this.state._dropoffloc){this.setState({_dropoffloc:false})} 
@@ -378,12 +406,14 @@ render() {
       
       <ToggleListItem
         title='Time:'
-        subtitle={this.state.dropofftime}
+        datalist={shops}
+        pickertype={this.state.dropofftime}
         switched={this.state._dropofftime}
         onSwitch={() => {
           if(this.state._dropofftime){this.setState({_dropofftime:false})} 
           else {this.setState({_dropofftime: true})} 
-        }}/>
+        }}
+      />
       
     </List> 
   </ScrollView>

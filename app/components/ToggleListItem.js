@@ -3,7 +3,13 @@ import React, { Component } from 'react';
 import {
     ListItem
 } from 'react-native-elements';
+import {
+    TextInput
+} from 'react-native'
+;
 
+
+import ModalPicker from 'react-native-modal-picker';
 
 import firebase from '../firebase/FirebaseController.js';
 
@@ -15,6 +21,7 @@ constructor(props) {
       
 
 render() {
+
     return (
         <ListItem
             title={this.props.title}
@@ -23,7 +30,15 @@ render() {
                 fontSize: 14,
                 color: '#b18d77',
             }}
-            subtitle={this.props.subtitle}
+            subtitle= {<ModalPicker
+                    data={this.props.datalist}
+                    initValue={this.props.pickertype}
+                    onChange={(option)=>{ pickertype ='hi'}}>
+                        <TextInput
+                            style={{marginLeft:20, height:35, width: 150,}}
+                            editable={false}
+                            value={this.props.pickertype} />
+                </ModalPicker>}
             subtitleStyle={{
                 marginLeft: 25,
                 fontWeight: 'bold',
