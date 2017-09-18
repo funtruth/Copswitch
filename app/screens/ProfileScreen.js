@@ -58,6 +58,8 @@ componentWillMount() {
 
   this.ref.once('value',snapshot => {
     this.setState({
+      firstname: snapshot.val().firstname,
+      lastname: snapshot.val().lastname,
       username: snapshot.val().username,
       email: snapshot.val().email,
     })
@@ -83,8 +85,10 @@ componentWillMount() {
                   borderColor: '#b18d77',
                 }}
               />
-              <Text style={{ color:'#b18d77', fontSize: 24}}>{this.state.username}</Text>
+              <Text style={{ color:'#b18d77', fontSize: 24}}>{this.state.firstname 
+                  + " " + this.state.lastname}</Text>
               <Text style={{ color: '#b18d77', fontSize: 12}}>{this.state.email}</Text>
+              <Text style={{ color:'#b18d77', fontSize: 18}}>{this.state.username}</Text>
               
             </View>
 
@@ -200,7 +204,7 @@ render() {
       marginLeft: 10,
       marginBottom: 5,
       marginTop: 15,
-    }} >My Account</Text>
+    }}>My Account</Text>
 
       <List style = {{borderBottomWidth:0, borderTopWidth: 0,}} >
 

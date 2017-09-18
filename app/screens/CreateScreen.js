@@ -10,7 +10,8 @@ import {
     StyleSheet,
     Keyboard,
     ListView,
-    FlatList
+    FlatList,
+    TouchableOpacity
 }   from 'react-native';
 import { FormInput, List, ListItem, Button } from "react-native-elements";
 import ModalPicker from 'react-native-modal-picker';
@@ -69,6 +70,8 @@ constructor(props) {
     this.currentRouteName = 'Createfirst';
     this.state = {
         username: null,
+        firstname: '',
+        lastname: '',
         roomname: '',
         coffeeshop: '', 
         roomsize: '',
@@ -85,9 +88,11 @@ componentWillMount() {
     const uid = firebase.auth().currentUser.uid
     const UserDB = firebase.database().ref("users/" + uid)
 
-    UserDB.child('username').once('value',snapshot => {
+    UserDB.once('value',snapshot => {
         this.setState({
-            username: snapshot.val(),
+            username: snapshot.val().username,
+            firstname: snapshot.val().firstname,
+            lastname: snapshot.val().lastname,
         })
     })
 
@@ -114,7 +119,7 @@ render(){
     ];
 
 
-    this.state.roomname = this.state.username + "'s Room"
+    this.state.roomname = this.state.firstname + " " + this.state.lastname + "'s Room"
 
     return <View style={{
                 flex: 1,
@@ -191,10 +196,8 @@ render(){
                             roomname: this.state.roomname})
                         Keyboard.dismiss() }
                     }
-                    
                 />
                 </View>
-
             </View>
         }
 }
@@ -625,39 +628,67 @@ componentWillUnmount() {
 };
 
 render(){
-    return <View 
-                style={{    
-                    backgroundColor: '#e6ddd1',
-                    flex: 1
-                }}>
+    return <View style={{ backgroundColor: '#e6ddd1',flex: 1 }}>
 
-            <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor: '#b18d77', }}>
+            <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor: '#e6ddd1', }}>
                 <FlatList
                     data={this.state.datac}
                     renderItem={({item}) => (
-                        <ListItem 
-                            roundAvatar
-                            avatar={'http://www.actuallywecreate.com/wp-content/uploads/2012/10/tim-hortons-logo.jpg'}
-                            title={item.roomname}
-                            titleStyle={{
-                                fontWeight: 'bold',
-                                color: 'white'
-                            }}
-                            subtitle={item.coffeeshop + "\n" + item.dropoffloc
-                                + "\n" + item.dropofftime + "\n" +  item.owner }
-                            subtitleStyle={{
-                                color: '#ece4df'
-                            }}
-                            subtitleNumberOfLines={4}
-                            rightTitle= {item.cups + '/4'}
-                            rightTitleStyle={{
-                                color: 'white'
-                            }}
+
+                        <TouchableOpacity style = {{
+                            backgroundColor: '#decfc6', 
+                            borderRadius: 15,
+                            margin: 15,}}
                             onPress={() => {
-                                this.props.navigation.navigate('Create_SecondScreen',{ uid: item._key,roomname:item.roomname })
-                            }}
+                                this.props.navigation.navigate('Create_SecondScreen',
+                                    { uid: item._key,roomname:item.roomname })
+                            }}>
+                            <Text style = {{
+                                backgroundColor:'#b18d77',
+                                borderTopLeftRadius:15,
+                                borderTopRightRadius:15,
+                                color: 'white',
+                                textAlign: 'center',}}>{item.roomname}</Text>
                             
-                        />
+                            <View style = {{flexDirection: 'row'}} >
+                                <View style = {{flex:1}} >
+                                </View>
+
+                                <View style = {{ flex:3,borderWidth:1}}>
+                                    <Text>{item.coffeeshop}</Text>
+                                    <Text>{item.dropoffloc}</Text>
+                                    <Text>{item.dropofftime}</Text>
+                                    <Text>{item.owner}</Text>
+                                </View>
+
+                                <View style = {{flex:1, justifyContent: 'center'}}>
+                                    <Button
+                                        title='A'
+                                        color='white'
+                                        backgroundColor='#b18d77'
+                                        borderRadius={4}
+                                        fontSize={11}
+                                        buttonStyle={{
+                                            paddingTop: 5, paddingBottom: 5, paddingLeft: 8, paddingRight: 8,
+                                            marginTop: 5, marginBottom:5,
+                                            }}
+                                        onPress={()=>{alert('hi')}}
+                                    />
+                                    <Button
+                                        title='Q'
+                                        color='white'
+                                        backgroundColor='#b18d77'
+                                        borderRadius={4}
+                                        fontSize={11}
+                                        buttonStyle={{
+                                            paddingTop: 5, paddingBottom: 5, paddingLeft: 8, paddingRight: 8,
+                                            marginBottom:5,}}
+                                        onPress={()=>{alert('hi')}}
+                                    />
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+
                     )}
                     keyExtractor={item => item._key}
                 />  

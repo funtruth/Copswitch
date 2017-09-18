@@ -27,7 +27,7 @@ render() {
             title={this.props.title}
             titleStyle={{
                 fontWeight: 'normal',
-                fontSize: 16,
+                fontSize: 15,
                 color: '#b18d77',
             }}
             subtitle= {this.props.subtitle}

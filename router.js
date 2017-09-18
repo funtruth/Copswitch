@@ -97,8 +97,7 @@ export const SignedOut = StackNavigator(
       {
         headerMode: "none",
         mode: "modal",
-        //initialRouteName: signedIn ? "SignedIn" : "SignedOut",
-        initialRouteName: "SignedOut",
+        initialRouteName: signedIn ? "SignedIn" : "SignedOut",
       }
     );
   };

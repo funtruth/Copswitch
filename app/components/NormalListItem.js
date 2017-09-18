@@ -39,6 +39,7 @@ render() {
                 borderBottomWidth: 0,
             }}
             onPress={this.props.onPress}
+            hideChevron={true}
       />
     )
 }

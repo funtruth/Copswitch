@@ -27,13 +27,37 @@ _SignUpProcess(email,password){
         firebase.auth().signInWithEmailAndPassword(
         email, password).then(() => 
             {
-                firebase.database().ref('users/' + firebase.auth().currentUser.uid)
+                const uid = firebase.auth().currentUser.uid
+                firebase.database().ref('users/' + uid)
                 .set({
                     firstname: this.state.firstname,
                     lastname: this.state.lastname,
                     email: email,
                     username: this.state.username,
                 })
+
+                firebase.database().ref('defaults/' + uid)
+                .set({
+                    coffeeshop: 'None',
+                    _coffeeshop: false,
+                    drinktype: 'None',
+                    _drinktype: false,
+                    coffeeorder: 'None',
+                    _coffeeorder: false,
+                    size: 'None',
+                    _size: false,
+                    dropoffloc: 'None',
+                    _dropoffloc: false,
+                    dropofftime: 'None',
+                    _dropofftime: false,
+                })
+                firebase.database().ref('settings/' + uid)
+                .set({
+                    settings1: '',
+                    settings2: '',
+                    settings3: '',
+                })
+
                 this.props.navigation.navigate("SignedIn");
                 Keyboard.dismiss();
             }).catch((error)=>

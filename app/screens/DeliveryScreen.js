@@ -84,6 +84,8 @@ _makeRemoteRequest = () => {
               "dropoffloc": child.val().dropoffloc,
               "comment": child.val().comment,
               "username": child.val().username,
+              "firstname":child.val().firstname,
+              "lastname":child.val().lastname,
               "_key": child.key
             });
           });
@@ -176,25 +178,26 @@ render(){
                 data={this.state.data}
                 renderItem={({item}) => (
                     <ListItem 
-                        title={`${item.size} ${item.drinktype} ${item.coffeeorder}`}
+                        containerStyle={{
+                            marginLeft: 5,
+                            
+                        }}
+                        title={`${item.size} ${item.drinktype} (${item.coffeeorder})`}
                         titleStyle={{
                             fontWeight: 'bold',
-                            color: 'white'
+                            color: 'white',
                         }}
-                        subtitle={item.coffeeshop + "\n" + item.dropoffloc + "\n" + item.comment
-                            + "\n" + item.username}
+                        subtitle={item.coffeeshop + "\n" + item.dropoffloc + "\n" 
+                            + item.firstname+" "+item.lastname+" ("+item.username+")" +
+                            "\n" + item.comment}
                         subtitleNumberOfLines={4}
                         subtitleStyle={{
-                            color: '#ece4df'
+                            color: '#decfc6'
                         }}
                         onPress={() => {
                             this._doesUserHaveRoom(item._key,this.state.currentuid,
                                 item.username,this.state.currentcups,item.drinktype,
                                 item.size,item.coffeeorder,item.comment,this.state.roomname)
-                        }}
-                        rightTitle= 'Take Order'
-                        rightTitleStyle={{
-                            color: 'white'
                         }}
                     />
                 )}
@@ -229,6 +232,8 @@ constructor(props) {
     this.currentRouteName = 'Deliversecond';
     this.state = {
         username: '',
+        firstname: '',
+        lastname: '',
         coffeeshop: '', 
         coffeeorder: '',
         size: '',
@@ -244,7 +249,7 @@ constructor(props) {
 }
 
 //Makes an order 
-_createOrder(uid,coffeeshop,coffeeorder,comment,size,dropoffloc,username,drinktype) {
+_createOrder(uid,coffeeshop,coffeeorder,comment,size,dropoffloc,username,drinktype,firstname,lastname) {
     firebase.database().ref('orders/' + uid)
     .set({
         coffeeshop,
@@ -253,7 +258,9 @@ _createOrder(uid,coffeeshop,coffeeorder,comment,size,dropoffloc,username,drinkty
         dropoffloc,
         size,
         comment,
-        username
+        username,
+        firstname,
+        lastname
     })
 }
 
@@ -263,10 +270,12 @@ componentWillMount() {
 
     this.setState({currentuid:uid})
 
-    this.ref = firebase.database().ref("users/" + uid + "/username/")
+    this.ref = firebase.database().ref("users/" + uid)
     this.ref.on('value',snapshot => {
         this.setState({
-            username: snapshot.val(),
+            username: snapshot.val().username,
+            firstname: snapshot.val().firstname,
+            lastname: snapshot.val().lastname
         })
     })
 
@@ -449,7 +458,7 @@ render(){
                     onPress={() => {
                         this._createOrder(this.state.currentuid,this.state.coffeeshop,
                         this.state.coffeeorder,this.state.comment,this.state.size,this.state.dropoffloc,
-                        this.state.username, this.state.drinktype)
+                        this.state.username, this.state.drinktype,this.state.firstname,this.state.lastname)
 
                         this.props.navigation.navigate('Deliver_FirstScreen')
                         this._resetStack()
