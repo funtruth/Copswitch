@@ -10,39 +10,24 @@ import styles from "./app/styles/Styles";
 
 import SignUp from "./app/loginscreens/SignUp";
 import SignIn from "./app/loginscreens/SignIn";
-import CreateUsername from "./app/loginscreens/CreateUsername";
 
 import Create from "./app/screens/CreateScreen";
 import Deliver from "./app/screens/DeliveryScreen";
 import Profile from "./app/screens/ProfileScreen";
 
-const headerStyle = {
-  marginTop: Platform.OS === "android" ? StatusBar.currentHeight : 0
-};
-
-export const SignedOut = StackNavigator({
+export const SignedOut = StackNavigator(
+  {
     SignIn: {
         screen: SignIn,
-        navigationOptions: {
-          title: "Sign In",
-          headerStyle
-        }
       },
     SignUp: {
       screen: SignUp,
-      navigationOptions: {
-        title: "Sign Up",
-        headerStyle
-      }
     },
-    CreateUsername: {
-      screen: CreateUsername,
-      navigationOptions: {
-        title: "Create User",
-        headerStyle
-      }
-    },
-  });
+  },
+    {
+    headerMode: 'none',
+    }
+  );
   
   export const SignedIn = TabNavigator(
     {
@@ -112,7 +97,8 @@ export const SignedOut = StackNavigator({
       {
         headerMode: "none",
         mode: "modal",
-        initialRouteName: signedIn ? "SignedIn" : "SignedOut"
+        //initialRouteName: signedIn ? "SignedIn" : "SignedOut",
+        initialRouteName: "SignedOut",
       }
     );
   };
