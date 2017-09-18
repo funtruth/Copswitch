@@ -240,6 +240,7 @@ constructor(props) {
         currentuid: '',
     }
     this.ref = null;
+    this.ref2 = null;
 }
 
 //Makes an order 
@@ -268,12 +269,48 @@ componentWillMount() {
             username: snapshot.val(),
         })
     })
-    //alert('deliver second screen');
+
+    this.ref2 = firebase.database().ref('defaults/' + uid)
+    this.ref2.on('value', snapshot => {
+        if(snapshot.val()._coffeeshop){
+            this.setState({
+                coffeeshop: snapshot.val().coffeeshop,
+            })
+        }
+        if(snapshot.val()._coffeeorder){
+            this.setState({
+                coffeeorder: snapshot.val().coffeeorder,
+            })
+        }
+        if(snapshot.val()._drinktype){
+            this.setState({
+                drinktype: snapshot.val().drinktype,
+            })
+        }
+        if(snapshot.val()._dropoffloc){
+            this.setState({
+                dropoffloc: snapshot.val().dropoffloc,
+            })
+        }
+        if(snapshot.val()._dropofftime){
+            this.setState({
+                dropofftime: snapshot.val().dropofftime,
+            })
+        }
+        if(snapshot.val()._size){
+            this.setState({
+                size: snapshot.val().size,
+            })
+        }     
+    })
 }
 
 componentWillUnmount(){
     if(this.ref){
         this.ref.off();
+    }
+    if(this.ref2){
+        this.ref2.off();
     }
 }
 
@@ -324,6 +361,7 @@ render(){
                     onChange={(option)=>{ this.setState({coffeeshop:option.label})}}>
                         <TextInput
                             style={{
+                                color:'#666b75',
                                 padding:10, 
                                 height:50,
                                 width: 250,
@@ -340,6 +378,7 @@ render(){
                     onChange={(option)=>{ this.setState({drinktype:option.label})}}>
                         <TextInput
                             style={{
+                                color:'#666b75',
                                 padding:10, 
                                 height:50,
                                 width: 250,
@@ -356,6 +395,7 @@ render(){
                     onChange={(option)=>{ this.setState({size:option.label})}}>
                         <TextInput
                             style={{
+                                color:'#666b75',
                                 padding:10, 
                                 height:50,
                                 width: 250,
