@@ -13,7 +13,7 @@ import ModalPicker from 'react-native-modal-picker';
 
 import firebase from '../firebase/FirebaseController.js';
 
-export default class ProfileButton extends React.Component {
+export default class ToggleListItem extends React.Component {
 
 constructor(props) {
     super(props);
@@ -27,28 +27,23 @@ render() {
             title={this.props.title}
             titleStyle={{
                 fontWeight: 'normal',
-                fontSize: 14,
+                fontSize: 16,
                 color: '#b18d77',
             }}
-            subtitle= {<ModalPicker
-                    data={this.props.datalist}
-                    initValue={this.props.pickertype}
-                    onChange={(option)=>{ pickertype ='hi'}}>
-                        <TextInput
-                            style={{marginLeft:20, height:35, width: 150,}}
-                            editable={false}
-                            value={this.props.pickertype} />
-                </ModalPicker>}
+            subtitle= {this.props.subtitle}
             subtitleStyle={{
                 marginLeft: 25,
                 fontWeight: 'bold',
                 fontSize: 17,
                 color: "#b18d77",
             }}
-            backgroundColor='#decfc6'
+            backgroundColor='#e6ddd1'
+            containerStyle={{
+                borderBottomWidth: 0,
+            }}
             hideChevron={true}
             switchButton={true}
-            switchTintColor='#e6ddd1'
+            switchTintColor='#decfc6'
             switchOnTintColor='#b18d77'
             switchThumbTintColor='#c9b0a1'
             switched={this.props.switched}

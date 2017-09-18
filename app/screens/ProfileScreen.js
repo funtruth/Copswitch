@@ -14,14 +14,13 @@ import {
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
-
-
 import ModalPicker from 'react-native-modal-picker';
 
 import { Button, List, ListItem, Avatar } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
 import HeaderButton from '../components/HeaderButton.js';
 import ToggleListItem from '../components/ToggleListItem.js';
+import NormalListItem from '../components/NormalListItem.js';
 
 //import { onSignOut } from "../auth";
 
@@ -196,21 +195,23 @@ render() {
       backgroundColor: '#e6ddd1',
       flex: 1,
   }}>
-    <Text>My Account</Text>
-    <List>
+    <Text style={{
+      color: '#987057',
+      marginLeft: 10,
+      marginBottom: 5,
+      marginTop: 15,
+    }} >My Account</Text>
 
-      <ListItem
-        title='placeholder'
-        hideChevron={true}
-        switchButton={true}
-        onSwitch={() => {
-          alert('test')
-        }}
-      />
-      <ListItem
-      />
+      <List style = {{borderBottomWidth:0, borderTopWidth: 0,}} >
 
-    </List>
+        <NormalListItem
+          title='Edit Account'
+        />
+        <NormalListItem
+          title='Notifications'
+        />
+
+      </List>
 
     <Text>Options</Text>
     <List>
@@ -336,13 +337,44 @@ componentWillMount() {
 
 render() {
 
-  let index = 0;
-  const shops = [
-      { key: index++, section: true, label: 'Coffeeshops' },
-      { key: index++, label: "Tim Horton's" },
-      { key: index++, label: "William's" },
-      { key: index++, label: "Starbucks" },
-      { key: index++, label: "Second Cup" },
+  const coffeeshops = [
+      { key: 1, section: true, label: 'Coffeeshops' },
+      { key: 2, label: "Tim Horton's" },
+      { key: 3, label: "William's" },
+      { key: 4, label: "Starbucks" },
+      { key: 5, label: "Second Cup" },
+  ];
+  const drinks = [
+    { key: 1, section: true, label: 'Drink' },
+    { key: 2, label: "Coffee" },
+    { key: 3, label: "Tea" },
+  ];
+  const coffeeorders = [
+    { key: 1, section: true, label: 'Order' },
+    { key: 2, label: "Placeholder" },
+    { key: 3, label: "Placeholder" },
+    { key: 4, label: "Placeholder" },
+    { key: 5, label: "Placeholder" },
+  ];
+  const sizes = [
+    { key: 1, section: true, label: 'Size' },
+    { key: 2, label: "Large" },
+    { key: 3, label: "Medium" },
+    { key: 4, label: "Small" },
+  ];
+  const locations = [
+    { key: 1, section: true, label: 'Locations' },
+    { key: 2, label: "Placeholder" },
+    { key: 3, label: "Placeholder" },
+    { key: 4, label: "Placeholder" },
+    { key: 5, label: "Placeholder" },
+  ];
+  const times = [
+    { key: 1, section: true, label: 'Time' },
+    { key: 2, label: "Placeholder" },
+    { key: 3, label: "Placeholder" },
+    { key: 4, label: "Placeholder" },
+    { key: 5, label: "Placeholder" },
   ];
 
   return <ScrollView style = {{
@@ -352,8 +384,16 @@ render() {
     <List style = {{borderTopWidth: 0, borderBottomWidth: 0}}>
       <ToggleListItem
         title={'Coffeeshop:'}
-        datalist={shops}
-        pickertype={this.state.coffeeshop}
+        subtitle={
+          <ModalPicker
+              data={coffeeshops}
+              initValue={this.state.coffeeshop}
+              onChange={(option)=>{ this.setState({coffeeshop: option.label, _coffeeshop: true}) }}>
+                  <TextInput
+                      style={{marginLeft:20, height:35, width: 150,}}
+                      editable={false}
+                      value={this.state.coffeeshop} />
+          </ModalPicker>}
         switched={this.state._coffeeshop}
         onSwitch={() => {
           if(this.state._coffeeshop){this.setState({_coffeeshop:false})} 
@@ -363,8 +403,16 @@ render() {
 
       <ToggleListItem
         title='Drink:'
-        datalist={shops}
-        pickertype={this.state.drinktype}
+        subtitle={
+          <ModalPicker
+              data={drinks}
+              initValue={this.state.drinktype}
+              onChange={(option)=>{ this.setState({drinktype: option.label, _drinktype: true}) }}>
+                  <TextInput
+                      style={{marginLeft:20, height:35, width: 150,}}
+                      editable={false}
+                      value={this.state.drinktype} />
+          </ModalPicker>}
         switched={this.state._drinktype}
         onSwitch={() => {
           if(this.state._drinktype){this.setState({_drinktype:false})} 
@@ -374,8 +422,16 @@ render() {
       
       <ToggleListItem
         title='Order:'
-        datalist={shops}
-        pickertype={this.state.coffeeorder}
+        subtitle={
+          <ModalPicker
+              data={coffeeorders}
+              initValue={this.state.coffeeorder}
+              onChange={(option)=>{ this.setState({coffeeorder: option.label, _coffeeorder: true}) }}>
+                  <TextInput
+                      style={{marginLeft:20, height:35, width: 150,}}
+                      editable={false}
+                      value={this.state.coffeeorder} />
+          </ModalPicker>}
         switched={this.state._coffeeorder}
         onSwitch={() => {
           if(this.state._coffeeorder){this.setState({_coffeeorder:false})} 
@@ -385,8 +441,16 @@ render() {
       
       <ToggleListItem
         title='Size:'
-        datalist={shops}
-        pickertype={this.state.size}
+        subtitle={
+          <ModalPicker
+              data={sizes}
+              initValue={this.state.size}
+              onChange={(option)=>{ this.setState({size: option.label,_size: true}) }}>
+                  <TextInput
+                      style={{marginLeft:20, height:35, width: 150,}}
+                      editable={false}
+                      value={this.state.size} />
+          </ModalPicker>}
         switched={this.state._size}
         onSwitch={() => {
           if(this.state._size){this.setState({_size:false})} 
@@ -396,8 +460,16 @@ render() {
       
       <ToggleListItem
         title='Locations:'
-        datalist={shops}
-        pickertype={this.state.dropoffloc}
+        subtitle={
+          <ModalPicker
+              data={locations}
+              initValue={this.state.dropoffloc}
+              onChange={(option)=>{ this.setState({dropoffloc: option.label,_dropoffloc: true}) }}>
+                  <TextInput
+                      style={{marginLeft:20, height:35, width: 150,}}
+                      editable={false}
+                      value={this.state.dropoffloc} />
+          </ModalPicker>}
         switched={this.state._dropoffloc}
         onSwitch={() => {
           if(this.state._dropoffloc){this.setState({_dropoffloc:false})} 
@@ -406,8 +478,16 @@ render() {
       
       <ToggleListItem
         title='Time:'
-        datalist={shops}
-        pickertype={this.state.dropofftime}
+        subtitle={
+          <ModalPicker
+              data={times}
+              initValue={this.state.dropofftime}
+              onChange={(option)=>{ this.setState({dropofftime: option.label,_dropofftime:true}) }}>
+                  <TextInput
+                      style={{marginLeft:20, height:35, width: 150,}}
+                      editable={false}
+                      value={this.state.dropofftime} />
+          </ModalPicker>}
         switched={this.state._dropofftime}
         onSwitch={() => {
           if(this.state._dropofftime){this.setState({_dropofftime:false})} 
