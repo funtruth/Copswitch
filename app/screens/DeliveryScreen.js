@@ -16,6 +16,8 @@ import ActionButton from "react-native-action-button";
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ModalPicker from 'react-native-modal-picker';
 
+import HeaderButton from '../components/HeaderButton.js';
+
 import { StackNavigator, NavigationActions } from 'react-navigation';
 
 import firebase from '../firebase/FirebaseController.js';
@@ -27,7 +29,14 @@ static navigationOptions = {
     headerTintColor: 'white',
     headerStyle: {
         backgroundColor: '#b18d77',
-    }
+    },
+    headerRight: 
+    <HeaderButton
+        title="Filter"
+        onPress={()=> {
+            alert('yo')                    
+        }}
+/>, 
 }
 
 constructor(props) {

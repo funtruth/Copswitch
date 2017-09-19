@@ -14,6 +14,7 @@ import SignIn from "./app/loginscreens/SignIn";
 import Rooms from "./app/screens/CreateScreen";
 import Deliver from "./app/screens/DeliveryScreen";
 import Profile from "./app/screens/ProfileScreen";
+import Group from "./app/screens/GroupScreen.js";
 
 export const SignedOut = StackNavigator(
   {
@@ -47,6 +48,14 @@ export const SignedOut = StackNavigator(
             <MaterialIcons name="shopping-cart" style={styles.icon}/>
           ),
           
+        }
+      },
+      Group: {
+        screen: Group,
+        navigationOptions : {
+          tabBarIcon: ({ tintColor }) => (
+            <MaterialIcons name="group" style={styles.icon}/>
+          ),
         }
       },
       Profile: {
