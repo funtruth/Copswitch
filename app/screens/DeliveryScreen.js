@@ -20,7 +20,7 @@ import { StackNavigator, NavigationActions } from 'react-navigation';
 
 import firebase from '../firebase/FirebaseController.js';
 
-class Deliver_FirstScreen extends Component {
+class ViewOrder_Screen extends Component {
     
 static navigationOptions = {
     headerTitle: 'Orders',
@@ -155,7 +155,7 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
             }
         
         } else {
-            this.props.navigation.navigate('Create_FirstScreen');
+            this.props.navigation.navigate('CreateRoom_Screen');
         }
     })
 }
@@ -207,7 +207,7 @@ render(){
 
         <ActionButton 
           buttonColor="rgba(222, 207, 198, 1)"
-          onPress={() => this.props.navigation.navigate('Deliver_SecondScreen')}
+          onPress={() => this.props.navigation.navigate('MakeOrder_Screen')}
           icon={<MaterialIcons name="add" style={styles.actionButtonIcon }/>}
         />
 
@@ -217,7 +217,7 @@ render(){
 
 //Second Screen is for ADDING orders with the (+) button at the bottom
 //Future Update
-class Deliver_SecondScreen extends Component {
+class MakeOrder_Screen extends Component {
 
 static navigationOptions = {
     headerTitle: 'Place an Order',
@@ -330,7 +330,7 @@ _resetStack(){
                  {
                     index: 0,
                     actions: [
-                      NavigationActions.navigate({ routeName: 'Deliver_FirstScreen'})
+                      NavigationActions.navigate({ routeName: 'ViewOrder_Screen'})
                     ]
                   }));
   }
@@ -460,7 +460,7 @@ render(){
                         this.state.coffeeorder,this.state.comment,this.state.size,this.state.dropoffloc,
                         this.state.username, this.state.drinktype,this.state.firstname,this.state.lastname)
 
-                        this.props.navigation.navigate('Deliver_FirstScreen')
+                        this.props.navigation.navigate('ViewOrder_Screen')
                         this._resetStack()
                         Keyboard.dismiss()
                     }}
@@ -476,12 +476,12 @@ render(){
 
 export default stackNav = StackNavigator(
     {
-        Deliver_FirstScreen: {
-            screen: Deliver_FirstScreen,
+        ViewOrder_Screen: {
+            screen: ViewOrder_Screen,
             title: 'hello',
         },
-        Deliver_SecondScreen: {
-            screen: Deliver_SecondScreen,
+        MakeOrder_Screen: {
+            screen: MakeOrder_Screen,
         },
     },
         {

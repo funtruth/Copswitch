@@ -26,7 +26,7 @@ import firebase from '../firebase/FirebaseController.js';
 //Components
 import HeaderButton from '../components/HeaderButton.js';
 
-class Create_FirstScreen extends Component {
+class CreateRoom_Screen extends Component {
 
 static navigationOptions = {
     headerTitle: 'Create a Room',
@@ -192,7 +192,7 @@ render(){
                             this.state.roomsize,this.state.dropoffloc,this.state.dropofftime,
                             this.state.currentuid,1,this.state.username);
 
-                        this.props.navigation.navigate('Create_SecondScreen',{uid: this.state.currentuid,
+                        this.props.navigation.navigate('ViewRoom_Screen',{uid: this.state.currentuid,
                             roomname: this.state.roomname})
                         Keyboard.dismiss() }
                     }
@@ -203,7 +203,7 @@ render(){
 }
 
 
-class Create_SecondScreen extends Component {
+class ViewRoom_Screen extends Component {
 
 static navigationOptions = ({navigation}) => ({
     headerTitle: navigation.state.params.roomname,
@@ -219,7 +219,7 @@ static navigationOptions = ({navigation}) => ({
                     navigation.dispatch(NavigationActions.reset({
                         index: 0,
                         actions: [
-                            NavigationActions.navigate({ routeName: 'JoinScreen'})
+                            NavigationActions.navigate({ routeName: 'JoinRoom_Screen'})
                         ]
                 }));
             }}
@@ -262,10 +262,6 @@ constructor(props) {
         passeduid: '',
     }
     this.ref = null;
-}
-
-_Debugger(){
-    alert('yes')
 }
 
 //Sets all the this.state values that are necessary for viewing your own room
@@ -336,7 +332,7 @@ if(username){
                         borderRadius={17}
                         backgroundColor='#b18d77'
                         onPress = {() => {
-                            this.props.navigation.navigate('Deliver_SecondScreen')
+                            this.props.navigation.navigate('MakeOrder_Screen')
                         }}
                     />
                 </View> 
@@ -349,7 +345,7 @@ if(username){
                         borderRadius={17}
                         backgroundColor='#b18d77'
                         onPress = {() => {
-                            this.props.navigation.navigate('Deliver_FirstScreen')
+                            this.props.navigation.navigate('ViewOrder_Screen')
                         }}
                     />
             </View> 
@@ -368,7 +364,7 @@ _resetStack(){
                  {
                     index: 0,
                     actions: [
-                      NavigationActions.navigate({ routeName: 'JoinScreen'})
+                      NavigationActions.navigate({ routeName: 'JoinRoom_Screen'})
                     ]
                   }));
   }
@@ -388,7 +384,7 @@ if(owneruid==currentuid){
         buttonStyle={{marginTop: 5, marginBottom: 5, paddingTop: 5, paddingBottom: 5, paddingLeft: 8, paddingRight: 8}}
         onPress={() => {
             this._DeleteRoomDB(currentuid)
-            this.props.navigation.navigate('JoinScreen')
+            this.props.navigation.navigate('JoinRoom_Screen')
             this._resetStack()
 
         }}
@@ -506,7 +502,7 @@ componentWillMount() {
             </View>
 }}
 
-class JoinScreen extends React.Component {
+class JoinRoom_Screen extends React.Component {
 
 static navigationOptions = {
     headerTitle: 'Rooms',
@@ -543,7 +539,7 @@ _doIHaveARoom(checkuid,myroomname) {
             title="My Room" 
             hideShadow
             onPress={() => {
-                this.props.navigation.navigate('Create_SecondScreen',{uid:checkuid,
+                this.props.navigation.navigate('ViewRoom_Screen',{uid:checkuid,
                     roomname:myroomname})}}>
             <MaterialIcons name="home" style={styles.actionButtonItem} />
         </ActionButton.Item>
@@ -553,7 +549,7 @@ _doIHaveARoom(checkuid,myroomname) {
             title="Create Room" 
             hideShadow
             onPress={() => {
-                this.props.navigation.navigate('Create_FirstScreen')}}>
+                this.props.navigation.navigate('CreateRoom_Screen')}}>
             <MaterialIcons name="add" style={styles.actionButtonItem} />
         </ActionButton.Item>
     }
@@ -640,7 +636,7 @@ render(){
                             borderRadius: 15,
                             margin: 15,}}
                             onPress={() => {
-                                this.props.navigation.navigate('Create_SecondScreen',
+                                this.props.navigation.navigate('ViewRoom_Screen',
                                     { uid: item._key,roomname:item.roomname })
                             }}>
                             <Text style = {{
@@ -695,7 +691,6 @@ render(){
             </List>
 
             <ActionButton
-                title='hello'
                 buttonColor="rgba(222, 207, 198, 1)"
                 degrees={30}
                 useNativeFeedback = {false} 
@@ -710,19 +705,19 @@ render(){
 
 export default stackNav = StackNavigator(
 {
-    Create_FirstScreen: {
-        screen: Create_FirstScreen,
+    CreateRoom_Screen: {
+        screen: CreateRoom_Screen,
     },
-    Create_SecondScreen: {
-        screen: Create_SecondScreen,
+    ViewRoom_Screen: {
+        screen: ViewRoom_Screen,
     },
-    JoinScreen: {
-        screen: JoinScreen,
+    JoinRoom_Screen: {
+        screen: JoinRoom_Screen,
     },
 },
     {
         headerMode: 'screen',
-        initialRouteName: 'JoinScreen',
+        initialRouteName: 'JoinRoom_Screen',
     }
 );
 

@@ -11,7 +11,7 @@ import styles from "./app/styles/Styles";
 import SignUp from "./app/loginscreens/SignUp";
 import SignIn from "./app/loginscreens/SignIn";
 
-import Create from "./app/screens/CreateScreen";
+import Rooms from "./app/screens/CreateScreen";
 import Deliver from "./app/screens/DeliveryScreen";
 import Profile from "./app/screens/ProfileScreen";
 
@@ -31,8 +31,8 @@ export const SignedOut = StackNavigator(
   
   export const SignedIn = TabNavigator(
     {
-      Create: {
-        screen: Create,
+      Rooms: {
+        screen: Rooms,
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => (
             <MaterialIcons name="home" style={styles.icon}/>
@@ -73,7 +73,7 @@ export const SignedOut = StackNavigator(
           height:5,
         }
       },
-      initialRouteName: 'Create',
+      initialRouteName: 'Rooms',
     }
   );
   
