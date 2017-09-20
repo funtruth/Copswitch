@@ -9,7 +9,8 @@ import {
     ScrollView,
     StyleSheet,
     TextInput,
-    Keyboard
+    Keyboard,
+    FlatList
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -92,11 +93,86 @@ static navigationOptions = ({navigation}) => ({
   },
 })
 
+constructor(props) {
+    super(props);
+
+    this.state = {
+        loading: false,
+        data: [],
+    };
+
+    this.ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups');
+}
+
+_pullGroupDataDB() {
+
+    this.setState({ loading: true });
+
+    this.ref.on('value', (snapshot) => {
+        const groupdata = [];
+
+        snapshot.forEach((child) => {
+
+            const NewRef = firebase.database().ref('groups/' + child.val())
+
+            NewRef.once('value', (dataSnapshot) => {
+                groupdata.push({
+                    "displayname":dataSnapshot.val().displayname,
+                    "type":dataSnapshot.val().type,
+                    "owner":dataSnapshot.val().owner,
+                    "_key":dataSnapshot.key,
+                })
+
+            });
+        });
+
+        this.setState({
+            data: groupdata
+        });
+    });   
+};
+
+componentWillMount() {
+    this._pullGroupDataDB();
+    this.state.data.push({
+        "displayname": null,
+        "type": null,
+        "owner": null,
+        "_key": "d1"
+    });
+}
+
+componentWillUnmount() {
+    this.ref.off();
+}
+
 render() {
   return <View style = {{
       backgroundColor: '#e6ddd1',
       flex: 1,
   }}>
+
+    <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor:'#b18d77' }}>
+        <FlatList
+            data={this.state.data}
+            renderItem={({item}) => (
+                <ListItem 
+                    containerStyle={{marginLeft: 5,}}
+                    title={item.displayname}
+                    titleStyle={{
+                        fontWeight: 'bold',
+                        color: 'white',
+                    }}
+                    subtitle={item.type}
+                    subtitleStyle={{
+                        color: '#decfc6'
+                    }}
+                />
+            )}
+            keyExtractor={item => item._key}
+        />
+    </List>
+
     
     <ActionButton
         buttonColor="rgba(222, 207, 198, 1)"
@@ -147,23 +223,30 @@ constructor(props){
         groupdisplayname: '',
         groupowner: '',
         grouptype: '',           //Security
-
     }
+    this.ref = null;
 }
 
 componentWillMount() {
-    const uid = firebase.auth().currentUser.uid
-    firebase.database().ref('users/' + uid).once('value',snapshot => {
-        this.setState({groupowner: snapshot.val().username})
+    this.ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid)
+    this.ref.once('value',snapshot => {
+        this.setState({
+            groupowner: snapshot.val().username
+        })
     })
 }
 
 _makeGroupDB(displayname,id,type,owner) {
+
+    //Create the group and add the owner
     firebase.database().ref('groups/' + id).set({
         displayname: displayname,
         type:type,
+        owner:owner,
     })
-    firebase.database().ref('groups/' + id + '/' + owner).set(true)
+    firebase.database().ref('groups/' + id + '/' + owner).set(owner)
+
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/' + id).set(id)
 }
 
 render() {
@@ -213,7 +296,7 @@ render() {
                 this.props.navigation.dispatch(NavigationActions.reset(
                  {index: 0,
                     actions: [
-                      NavigationActions.navigate({ routeName: 'ViewGroups_Screen'})
+                      NavigationActions.navigate({ routeName: 'MyGroups_Screen'})
                     ]
                   }));
                 Keyboard.dismiss()

@@ -55,12 +55,9 @@ constructor(props) {
         roomname: '',
     }
 
-    const dataSource = new ListView.DataSource({
-            rowHasChanged: (row1, row2) => row1 !== row2,
-        });
-        this.state = {
-            data: dataSource
-        };
+    this.state = {
+        data: [],
+    };
 
     this.ref = firebase.database().ref('rooms/' + firebase.auth().currentUser.uid);
     this.ref2 = firebase.database().ref('orders/');
@@ -81,9 +78,9 @@ _makeRemoteRequest = () => {
     })
 
     this.setState({ loading: true });
-
+    var tasks = [];
+    
     this.ref2.on('value', (dataSnapshot) => {
-          var tasks = [];
           dataSnapshot.forEach((child) => {
             tasks.push({
               "coffeeorder": child.val().coffeeorder,
@@ -103,7 +100,7 @@ _makeRemoteRequest = () => {
             data: tasks
           });
 
-        });
+    });
 };
 
 componentWillUnmount() {
@@ -172,7 +169,6 @@ _doesUserHaveRoom(uid,myuid,username,currentcups,drinktype,size,coffeeorder,comm
 componentWillMount() {
     //Request from Firebase
     this._makeRemoteRequest();
-    //alert('deliver first screen');
 }
 
 render(){

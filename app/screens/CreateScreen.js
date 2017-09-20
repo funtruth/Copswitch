@@ -587,6 +587,7 @@ _makeRoomRequest = () => {
         this.setState({
             datac: tasks,
         });
+        
     } else {
         this.setState({
             datac: [],
