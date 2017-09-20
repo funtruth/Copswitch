@@ -99,47 +99,66 @@ constructor(props) {
     this.state = {
         loading: false,
         data: [],
+
+        activedisplayname: '',
+        activetype: '',
+        activeowner: '',
+        active_key: '',
+
     };
 
     this.ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups');
 }
 
 _pullGroupDataDB() {
+    
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/activegroup')
+        .on('value', (snapshot) => {
+
+            firebase.database().ref('groups/' + snapshot.val()).on('value', (datasnapshot) => {
+                this.setState({
+                    activedisplayname:datasnapshot.val().displayname,
+                    activetype:datasnapshot.val().type,
+                    activeowner:datasnapshot.val().owner,
+                    active_key: datasnapshot.key
+                })
+            })
+        });
+
+    //SetState is Asynchronus meaning this pushes null values
+    //NEED TO FIX
+    this.state.data.push({
+        "displayname":this.state.activedisplayname,
+        "type":this.state.activetype,
+        "owner":this.state.activeowner,
+        "_key":this.state.active_key
+    })
 
     this.setState({ loading: true });
 
     this.ref.on('value', (snapshot) => {
-        const groupdata = [];
-
+        
         snapshot.forEach((child) => {
+            firebase.database().ref('groups/' + child.val()).once('value', (dataSnapshot) => {
 
-            const NewRef = firebase.database().ref('groups/' + child.val())
-
-            NewRef.once('value', (dataSnapshot) => {
-                groupdata.push({
+                this.state.data.push({
                     "displayname":dataSnapshot.val().displayname,
                     "type":dataSnapshot.val().type,
                     "owner":dataSnapshot.val().owner,
-                    "_key":dataSnapshot.key,
+                    "_key":dataSnapshot.key
                 })
 
             });
         });
-
-        this.setState({
-            data: groupdata
-        });
-    });   
+    });
 };
+
+componentDidUpdate() {
+    
+}
 
 componentWillMount() {
     this._pullGroupDataDB();
-    this.state.data.push({
-        "displayname": null,
-        "type": null,
-        "owner": null,
-        "_key": "d1"
-    });
 }
 
 componentWillUnmount() {

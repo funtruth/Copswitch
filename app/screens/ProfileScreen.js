@@ -53,8 +53,9 @@ static navigationOptions = {
 
 componentWillMount() {
   //Grabs the username and email of current user
-  this.setState({uid:firebase.auth().currentUser.uid}) 
-  this.ref = firebase.database().ref("users/" + this.state.uid)
+  this.setState({uid:firebase.auth().currentUser.uid})
+  const uid = firebase.auth().currentUser.uid 
+  this.ref = firebase.database().ref("users/" + uid)
 
   this.ref.on('value',snapshot => {
     this.setState({
