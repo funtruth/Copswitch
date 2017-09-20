@@ -51,8 +51,10 @@ constructor(props) {
         refreshing: false,
 
         currentcups: 1,
-        currentuid: '',
+        currentuid: firebase.auth().currentUser.uid,
         roomname: '',
+
+        activecofeeshop: '',
     }
 
     this.state = {
@@ -61,12 +63,11 @@ constructor(props) {
 
     this.ref = firebase.database().ref('rooms/' + firebase.auth().currentUser.uid);
     this.ref2 = firebase.database().ref('orders/');
+    this.ref3 = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
   }
 
 //Makes a request to listen to all the this.state values needed
 _makeRemoteRequest = () => {
-
-    this.setState({currentuid: firebase.auth().currentUser.uid})
 
     this.ref.on('value', snapshot => {
         if (snapshot.exists()){
@@ -77,10 +78,15 @@ _makeRemoteRequest = () => {
         }
     })
 
-    this.setState({ loading: true });
+    this.ref3.on('value', snapshot => {
+        this.setState({
+            activecoffeeshop: snapshot.val().activecofeeshop,
+        })
+    })
+
     var tasks = [];
     
-    this.ref2.on('value', (dataSnapshot) => {
+    this.ref2.orderByChild("coffeeshop").equalTo(this.state.activecoffeeshop).on('value', (dataSnapshot) => {
           dataSnapshot.forEach((child) => {
             tasks.push({
               "coffeeorder": child.val().coffeeorder,

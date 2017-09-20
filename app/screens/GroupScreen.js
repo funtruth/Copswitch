@@ -113,7 +113,7 @@ constructor(props) {
 _pullGroupDataDB() {
     
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/activegroup')
-        .on('value', (snapshot) => {
+        .once('value', (snapshot) => {
 
             firebase.database().ref('groups/' + snapshot.val()).on('value', (datasnapshot) => {
                 this.setState({
@@ -136,7 +136,7 @@ _pullGroupDataDB() {
 
     this.setState({ loading: true });
 
-    this.ref.on('value', (snapshot) => {
+    this.ref.once('value', (snapshot) => {
         
         snapshot.forEach((child) => {
             firebase.database().ref('groups/' + child.val()).once('value', (dataSnapshot) => {
@@ -162,7 +162,7 @@ componentWillMount() {
 }
 
 componentWillUnmount() {
-    this.ref.off();
+    //this.ref.off();
 }
 
 render() {
