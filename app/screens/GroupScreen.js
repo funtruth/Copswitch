@@ -10,7 +10,8 @@ import {
     StyleSheet,
     TextInput,
     Keyboard,
-    FlatList
+    FlatList,
+    ListView
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -23,15 +24,15 @@ import ActionButton from 'react-native-action-button';
 import { Button, List, ListItem, FormInput } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
 import HeaderButton from '../components/HeaderButton.js';
-import NormalListItem from '../components/NormalListItem.js';
+import ToggleListItem from '../components/ToggleListItem.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
-class ViewGroups_Screen extends React.Component {
+class FindGroups_Screen extends React.Component {
 
 static navigationOptions = {
-  headerTitle: 'Join a Group',
+  headerTitle: 'Search for Group',
   headerTintColor: 'white',
   headerStyle: {
       backgroundColor: '#b18d77',
@@ -83,116 +84,30 @@ componentWillMount() {
     </View>
 }};
 
-class MyGroups_Screen extends React.Component {
+class ActiveGroup_Screen extends React.Component {
 
 static navigationOptions = ({navigation}) => ({
-  headerTitle: 'My Groups',
-  headerTintColor: 'white',
-  headerStyle: {
-      backgroundColor: '#b18d77',
-  },
+    headerTitle: 'Active Group',
+    headerTintColor: 'white',
+    headerStyle: {
+        backgroundColor: '#b18d77',
+    },
 })
 
 constructor(props) {
     super(props);
 
     this.state = {
-        loading: false,
-        data: [],
-
-        activedisplayname: '',
-        activetype: '',
-        activeowner: '',
-        active_key: '',
-
     };
 
-    this.ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups');
 }
 
-_pullGroupDataDB() {
-    
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/activegroup')
-        .once('value', (snapshot) => {
-
-            firebase.database().ref('groups/' + snapshot.val()).on('value', (datasnapshot) => {
-                if(datasnapshot.exists()){
-                    this.setState({
-                        activedisplayname:datasnapshot.val().displayname,
-                        activetype:datasnapshot.val().type,
-                        activeowner:datasnapshot.val().owner,
-                        active_key: datasnapshot.key
-                    })
-                }
-            })
-        });
-
-    //SetState is Asynchronus meaning this pushes null values
-    //NEED TO FIX
-    this.state.data.push({
-        "displayname":this.state.activedisplayname,
-        "type":this.state.activetype,
-        "owner":this.state.activeowner,
-        "_key":this.state.active_key
-    })
-
-    this.setState({ loading: true });
-
-    this.ref.once('value', (snapshot) => {
-        
-        snapshot.forEach((child) => {
-            firebase.database().ref('groups/' + child.val()).once('value', (dataSnapshot) => {
-
-                this.state.data.push({
-                    "displayname":dataSnapshot.val().displayname,
-                    "type":dataSnapshot.val().type,
-                    "owner":dataSnapshot.val().owner,
-                    "_key":dataSnapshot.key
-                })
-
-            });
-        });
-    });
-};
-
-componentDidUpdate() {
-    
-}
-
-componentWillMount() {
-    this._pullGroupDataDB();
-}
-
-componentWillUnmount() {
-    //this.ref.off();
-}
 
 render() {
-  return <View style = {{
-      backgroundColor: '#e6ddd1',
-      flex: 1,
-  }}>
-
-    <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor:'#b18d77' }}>
-        <FlatList
-            data={this.state.data}
-            renderItem={({item}) => (
-                <ListItem 
-                    containerStyle={{marginLeft: 5,}}
-                    title={item.displayname}
-                    titleStyle={{
-                        fontWeight: 'bold',
-                        color: 'white',
-                    }}
-                    subtitle={item.type}
-                    subtitleStyle={{
-                        color: '#decfc6'
-                    }}
-                />
-            )}
-            keyExtractor={item => item._key}
-        />
-    </List>
+    return <View style = {{
+        backgroundColor: '#e6ddd1',
+        flex: 1,
+    }}>
 
     
     <ActionButton
@@ -206,7 +121,16 @@ render() {
             title="Find Group" 
             hideShadow
             onPress={() => {
-                this.props.navigation.navigate('ViewGroups_Screen')}}>
+                this.props.navigation.navigate('FindGroups_Screen')}}>
+            <MaterialIcons name="search" style={styles.actionButtonItem} />
+        </ActionButton.Item>
+
+        <ActionButton.Item
+            buttonColor='#b18d77' 
+            title="My Groups" 
+            hideShadow
+            onPress={() => {
+                this.props.navigation.navigate('MyGroups_Screen')}}>
             <MaterialIcons name="group" style={styles.actionButtonItem} />
         </ActionButton.Item>
 
@@ -221,10 +145,90 @@ render() {
         </ActionButton.Item>
     </ActionButton>
 
-  </View>
+    </View>
 }
 
 }
+
+class MyGroups_Screen extends React.Component {
+
+static navigationOptions = ({navigation}) => ({
+  headerTitle: 'My Groups',
+  headerTintColor: 'white',
+  headerStyle: {
+      backgroundColor: '#b18d77',
+  },
+})
+
+constructor(props) {
+    super(props);
+
+    const dataSource = new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+    });
+
+    this.state = {
+        loading: false,
+        data: dataSource,
+
+        activedisplayname: '',
+        activetype: '',
+        activeowner: '',
+        active_key: '',
+
+    };
+
+    this.ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups');
+}
+
+_pullGroupDataDB() {
+    
+    this.setState({ loading: true });
+
+    this.ref.on('value', (snapshot) => {
+        const groups = [];
+        snapshot.forEach((child) => {
+            groups.push({
+                groupname: child.val(),
+                groupid: child.key,
+            })
+        });
+
+        this.setState({data:groups,})
+    });
+};
+
+componentWillMount() {
+    this._pullGroupDataDB();
+}
+
+componentWillUnmount() {
+    if(this.ref) {
+        this.ref.off();
+    }
+}
+
+render() {
+  return <View style = {{
+      backgroundColor: '#e6ddd1',
+      flex: 1,
+  }}>
+
+    <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor:'#b18d77' }}>
+        <FlatList
+            data={this.state.data}
+            renderItem={({item}) => (
+                <ToggleListItem 
+                    title={item.groupid}
+                    subtitle={item.groupname}
+                />
+            )}
+            keyExtractor={item => item.groupid}
+        />
+    </List>
+
+  </View>
+}}
 
 class CreateGroup_Screen extends React.Component {
     
@@ -267,7 +271,7 @@ _makeGroupDB(displayname,id,type,owner) {
     })
     firebase.database().ref('groups/' + id + '/' + owner).set(owner)
 
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/' + id).set(id)
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/' + id).set(displayname)
 }
 
 render() {
@@ -315,8 +319,9 @@ render() {
                 this._makeGroupDB(this.state.groupdisplayname,this.state.groupid,
                     this.state.grouptype,this.state.groupowner)
                 this.props.navigation.dispatch(NavigationActions.reset(
-                 {index: 0,
+                 {index: 1,
                     actions: [
+                      NavigationActions.navigate({ routeName: 'ActiveGroup_Screen'}),
                       NavigationActions.navigate({ routeName: 'MyGroups_Screen'})
                     ]
                   }));
@@ -335,8 +340,11 @@ render() {
 
 export default stackNav = StackNavigator(
   {
-      ViewGroups_Screen: {
-          screen: ViewGroups_Screen,
+      ActiveGroup_Screen: {
+          screen: ActiveGroup_Screen,
+      },
+      FindGroups_Screen: {
+          screen: FindGroups_Screen,
       },
       MyGroups_Screen: {
           screen: MyGroups_Screen,
@@ -347,7 +355,7 @@ export default stackNav = StackNavigator(
   },
       {
           headerMode: 'screen',
-          initialRouteName: 'MyGroups_Screen',
+          initialRouteName: 'ActiveGroup_Screen',
       }
   );
 
