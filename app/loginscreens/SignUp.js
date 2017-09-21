@@ -57,6 +57,12 @@ _SignUpProcess(email,password){
                     settings2: '',
                     settings3: '',
                 })
+                firebase.database().ref('filters/' + uid)
+                .set({
+                    coffeeshop: '',
+                    company: '',
+                    location: '',
+                })
 
                 this.props.navigation.navigate("SignedIn");
                 Keyboard.dismiss();

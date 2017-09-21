@@ -17,6 +17,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import ModalPicker from 'react-native-modal-picker';
 
 import HeaderButton from '../components/HeaderButton.js';
+import NormalListItem from '../components/NormalListItem.js';
 
 import { StackNavigator, NavigationActions } from 'react-navigation';
 
@@ -24,7 +25,8 @@ import firebase from '../firebase/FirebaseController.js';
 
 class ViewOrder_Screen extends Component {
     
-static navigationOptions = {
+static navigationOptions = ({navigation}) => ({
+
     headerTitle: 'Orders',
     headerTintColor: 'white',
     headerStyle: {
@@ -33,11 +35,9 @@ static navigationOptions = {
     headerRight: 
     <HeaderButton
         title="Filter"
-        onPress={()=> {
-            alert('yo')                    
-        }}
-/>, 
-}
+        onPress={() => {navigation.navigate('Filter_Screen')}}
+    />
+})
 
 constructor(props) {
     super(props);
@@ -54,21 +54,23 @@ constructor(props) {
         currentuid: firebase.auth().currentUser.uid,
         roomname: '',
 
-        activecofeeshop: '',
-    }
+        activecoffeeshop: '',
+    };
 
     this.state = {
         data: [],
+        coffeeshopfilter: null,
     };
 
     this.ref = firebase.database().ref('rooms/' + firebase.auth().currentUser.uid);
     this.ref2 = firebase.database().ref('orders/');
-    this.ref3 = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
+
   }
 
 //Makes a request to listen to all the this.state values needed
 _makeRemoteRequest = () => {
 
+    //Listens to the data from your Room if it exists
     this.ref.on('value', snapshot => {
         if (snapshot.exists()){
             this.setState({
@@ -78,44 +80,41 @@ _makeRemoteRequest = () => {
         }
     })
 
-    this.ref3.on('value', snapshot => {
-        this.setState({
-            activecoffeeshop: snapshot.val().activecofeeshop,
-        })
-    })
+    firebase.database().ref('filters/' + firebase.auth().currentUser.uid).once('value',snapshot => {
+        this.ref2.orderByChild("coffeeshop")
+        .equalTo(snapshot.val().coffeeshop).once('value', (dataSnapshot) => {
 
-    var tasks = [];
-    
-    this.ref2.orderByChild("coffeeshop").equalTo(this.state.activecoffeeshop).on('value', (dataSnapshot) => {
-          dataSnapshot.forEach((child) => {
+        var tasks = [];
+
+        dataSnapshot.forEach((child) => {
             tasks.push({
-              "coffeeorder": child.val().coffeeorder,
-              "drinktype": child.val().drinktype,
-              "coffeeshop": child.val().coffeeshop,
-              "size": child.val().size,
-              "dropoffloc": child.val().dropoffloc,
-              "comment": child.val().comment,
-              "username": child.val().username,
-              "firstname":child.val().firstname,
-              "lastname":child.val().lastname,
-              "_key": child.key
+            "coffeeorder": child.val().coffeeorder,
+            "drinktype": child.val().drinktype,
+            "coffeeshop": child.val().coffeeshop,
+            "size": child.val().size,
+            "dropoffloc": child.val().dropoffloc,
+            "comment": child.val().comment,
+            "username": child.val().username,
+            "firstname":child.val().firstname,
+            "lastname":child.val().lastname,
+            "_key": child.key
             });
-          });
-      
-          this.setState({
+        });
+    
+        this.setState({
             data: tasks
-          });
+        });
 
-    });
+        }); 
+    })  
+
 };
 
 componentWillUnmount() {
     if(this.ref){
         this.ref.off();
     }
-    if(this.ref2) {
-        this.ref2.off();
-    }
+    alert('unmounting')
 }
 
 //Used to Add orders to your own room
@@ -226,8 +225,7 @@ render(){
     );
 }}
 
-//Second Screen is for ADDING orders with the (+) button at the bottom
-//Future Update
+
 class MakeOrder_Screen extends Component {
 
 static navigationOptions = {
@@ -484,19 +482,107 @@ render(){
         </View>
 }}
 
+class Filter_Screen extends Component {
+
+static navigationOptions = {
+    headerTitle: 'Filters',
+    headerTintColor: 'white',
+    headerStyle: {
+        backgroundColor: '#b18d77',
+    }
+}
+
+constructor(props) {
+    super(props);
+    this.state = {
+        coffeeorder: '',
+        locationdata: [{name: "All"}],
+    }
+
+    this.coffeeshopref = firebase.database().ref('filters/' + firebase.auth().currentUser.uid)
+
+}
+
+
+_resetStack(){
+    return this.props
+               .navigation
+               .dispatch(NavigationActions.reset(
+                 {
+                    index: 0,
+                    actions: [
+                      NavigationActions.navigate({ routeName: 'ViewOrder_Screen'})
+                    ]
+                  }));
+  }
+
+componentWillMount() {
+
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid).once('value', snapshot => {
+        firebase.database().ref('groups/' + snapshot.val().activegroup + '/locations/')
+            .once('value', snapshot2 => {
+                snapshot2.forEach((child)=>{
+                    this.state.locationdata.push({name:child.key})
+                })
+            })
+    });
+}
+
+render(){
+
+    return <View style={{
+                backgroundColor: '#e6ddd1',
+                flex: 1,
+            }}>
+
+                <Text style={{
+                    color: '#987057',
+                    marginLeft: 10,
+                    marginBottom: 5,
+                    marginTop: 15,
+                }}>Coffeeshop</Text>
+          
+                <List style = {{borderBottomWidth:0, borderTopWidth: 0,}} >
+                    <FlatList
+                        data={this.state.locationdata}
+                        renderItem={({item}) => (
+                            <NormalListItem
+                                title={item.name}
+                                onPress = {() => {
+                                    this.coffeeshopref.update({
+                                        coffeeshop: item.name,
+                                    });
+                                    this._resetStack();
+                                }}
+                            />
+                        
+                        )}
+                        keyExtractor={item => item.name} 
+                    />
+                  
+                  
+          
+                </List>
+                
+        </View>
+    }
+}
 
 export default stackNav = StackNavigator(
     {
         ViewOrder_Screen: {
             screen: ViewOrder_Screen,
-            title: 'hello',
         },
         MakeOrder_Screen: {
             screen: MakeOrder_Screen,
         },
+        Filter_Screen: {
+            screen: Filter_Screen,
+        },
     },
         {
             headerMode: 'screen',
+            initialRoute: 'ViewOrder_Screen',
         }
     );
 

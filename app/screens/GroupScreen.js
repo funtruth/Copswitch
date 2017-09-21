@@ -116,12 +116,14 @@ _pullGroupDataDB() {
         .once('value', (snapshot) => {
 
             firebase.database().ref('groups/' + snapshot.val()).on('value', (datasnapshot) => {
-                this.setState({
-                    activedisplayname:datasnapshot.val().displayname,
-                    activetype:datasnapshot.val().type,
-                    activeowner:datasnapshot.val().owner,
-                    active_key: datasnapshot.key
-                })
+                if(datasnapshot.exists()){
+                    this.setState({
+                        activedisplayname:datasnapshot.val().displayname,
+                        activetype:datasnapshot.val().type,
+                        activeowner:datasnapshot.val().owner,
+                        active_key: datasnapshot.key
+                    })
+                }
             })
         });
 
