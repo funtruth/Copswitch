@@ -179,6 +179,7 @@ _pullGroupDataDB() {
     
     this.setState({ loading: true });
     const groups = [];
+    
     this.ref.on('value', (snapshot) => {
         
         snapshot.forEach((child) => {
