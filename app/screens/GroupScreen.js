@@ -170,12 +170,6 @@ constructor(props) {
     this.state = {
         loading: false,
         data: dataSource,
-
-        activedisplayname: '',
-        activetype: '',
-        activeowner: '',
-        active_key: '',
-
     };
 
     this.ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups');
@@ -184,9 +178,9 @@ constructor(props) {
 _pullGroupDataDB() {
     
     this.setState({ loading: true });
-
+    const groups = [];
     this.ref.on('value', (snapshot) => {
-        const groups = [];
+        
         snapshot.forEach((child) => {
             groups.push({
                 groupname: child.val(),

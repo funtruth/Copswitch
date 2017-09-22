@@ -494,9 +494,14 @@ static navigationOptions = {
 
 constructor(props) {
     super(props);
+
+    const dataSource = new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+    });
+
     this.state = {
         coffeeorder: '',
-        locationdata: [{name: "All"}],
+        locationdata: dataSource,
     }
 
     this.coffeeshopref = firebase.database().ref('filters/' + firebase.auth().currentUser.uid)
@@ -506,14 +511,14 @@ constructor(props) {
 
 _resetStack(){
     return this.props
-               .navigation
-               .dispatch(NavigationActions.reset(
-                 {
-                    index: 0,
-                    actions: [
-                      NavigationActions.navigate({ routeName: 'ViewOrder_Screen'})
-                    ]
-                  }));
+        .navigation
+        .dispatch(NavigationActions.reset(
+            {
+            index: 0,
+            actions: [
+                NavigationActions.navigate({ routeName: 'ViewOrder_Screen'})
+            ]
+            }));
   }
 
 componentWillMount() {
@@ -521,10 +526,14 @@ componentWillMount() {
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).once('value', snapshot => {
         firebase.database().ref('groups/' + snapshot.val().activegroup + '/locations/')
             .once('value', snapshot2 => {
+
+                const coffeeshops = [];
                 snapshot2.forEach((child)=>{
-                    this.state.locationdata.push({name:child.key})
+                    coffeeshops.push({name:child.key})
                 })
+                this.setState({locationdata:coffeeshops})
             })
+
     });
 }
 
