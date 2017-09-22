@@ -24,7 +24,7 @@ import ActionButton from 'react-native-action-button';
 import { Button, List, ListItem, FormInput } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
 import HeaderButton from '../components/HeaderButton.js';
-import ToggleListItem from '../components/ToggleListItem.js';
+import NormalListItem from '../components/NormalListItem.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -96,12 +96,45 @@ static navigationOptions = ({navigation}) => ({
 
 constructor(props) {
     super(props);
+    const dataSource = new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+    });
 
     this.state = {
+        dropofflocdata: dataSource,
+
+        activegroupname: '',
+        activegroupid: '',
     };
 
 }
 
+componentWillMount() {
+
+    
+
+    //Grabbing name of Active Group
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid).once('value', snap => {
+
+        //Active Group Details
+        firebase.database().ref('groups/' + snap.val().activegroup).once('value', snapshot => {
+            this.setState({
+                activegroupname: snapshot.val().displayname,
+                activegroupid: snapshot.key,
+            })
+        })
+
+        firebase.database().ref('groups/' + snap.val().activegroup + '/dropoffloc/').once('value', snapshot => {
+            
+            const coolarray = [];
+            snapshot.forEach((child) => {
+                coolarray.push({happysad:child.val().name})
+            })
+            this.setState({dropofflocdata:coolarray})
+        })
+    });
+
+}
 
 render() {
     return <View style = {{
@@ -109,6 +142,34 @@ render() {
         flex: 1,
     }}>
 
+    <View style = {{
+        flex:3,
+        borderWidth: 1,
+        margin: 10,
+    }}>
+        <Text>{this.state.activegroupname}</Text>
+        <Text>{this.state.activegroupid}</Text>
+        <Text>Group Background</Text>
+        <Text>Edit button for Owner</Text>
+    </View>
+
+    <View style = {{
+        flex:5,
+        borderWidth:1,
+        margin: 10,
+    }}>
+        <Text>Locations</Text>
+
+        <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor: '#e6ddd1', }}>
+            <FlatList
+                data={this.state.dropofflocdata}
+                renderItem={({item}) => {
+                    <Text>{item.happysad}</Text>
+                }}
+                keyExtractor={item => item.happysad}
+            />
+        </List>
+    </View>
     
     <ActionButton
         buttonColor="rgba(222, 207, 198, 1)"
@@ -179,7 +240,7 @@ _pullGroupDataDB() {
     
     this.setState({ loading: true });
     const groups = [];
-    
+
     this.ref.on('value', (snapshot) => {
         
         snapshot.forEach((child) => {
@@ -209,13 +270,25 @@ render() {
       flex: 1,
   }}>
 
-    <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor:'#b18d77' }}>
+    <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor:'#e6ddd1' }}>
         <FlatList
             data={this.state.data}
             renderItem={({item}) => (
-                <ToggleListItem 
+                <NormalListItem 
                     title={item.groupid}
                     subtitle={item.groupname}
+                    onPress={()=> {
+                        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
+                            activegroup: item.groupid,
+                        })
+                        this.props.navigation.dispatch(NavigationActions.reset({
+                            index: 0,
+                            actions: [
+                                NavigationActions.navigate({ routeName: 'ActiveGroup_Screen'})
+                            ]
+                        }));
+                    }}
+                    
                 />
             )}
             keyExtractor={item => item.groupid}

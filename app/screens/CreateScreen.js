@@ -221,7 +221,7 @@ static navigationOptions = ({navigation}) => ({
                         actions: [
                             NavigationActions.navigate({ routeName: 'JoinRoom_Screen'})
                         ]
-                }));
+                    }));
             }}
     />,       
 })

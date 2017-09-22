@@ -524,6 +524,7 @@ _resetStack(){
 componentWillMount() {
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).once('value', snapshot => {
+        
         firebase.database().ref('groups/' + snapshot.val().activegroup + '/locations/')
             .once('value', snapshot2 => {
 
