@@ -522,7 +522,7 @@ _resetStack(){
   }
 
 componentWillMount() {
-
+    
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).once('value', snapshot => {
         
         firebase.database().ref('groups/' + snapshot.val().activegroup + '/locations/')
@@ -570,8 +570,6 @@ render(){
                         keyExtractor={item => item.name} 
                     />
                   
-                  
-          
                 </List>
                 
         </View>

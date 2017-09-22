@@ -25,6 +25,7 @@ import { Button, List, ListItem, FormInput } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
 import HeaderButton from '../components/HeaderButton.js';
 import NormalListItem from '../components/NormalListItem.js';
+import ToggleListItem from '../components/ToggleListItem.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -101,20 +102,24 @@ constructor(props) {
     });
 
     this.state = {
-        dropofflocdata: dataSource,
+        data: dataSource,
 
         activegroupname: '',
         activegroupid: '',
+
+        refreshflag: '',
     };
+
+    this.ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid)
 
 }
 
 componentWillMount() {
 
-    
-
     //Grabbing name of Active Group
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid).once('value', snap => {
+    this.ref.once('value', snap => {
+
+        this.setState({refreshflag: snap.val().refreshflag});
 
         //Active Group Details
         firebase.database().ref('groups/' + snap.val().activegroup).once('value', snapshot => {
@@ -122,18 +127,29 @@ componentWillMount() {
                 activegroupname: snapshot.val().displayname,
                 activegroupid: snapshot.key,
             })
-        })
+        });
 
-        firebase.database().ref('groups/' + snap.val().activegroup + '/dropoffloc/').once('value', snapshot => {
-            
+        //Pull the list of Drop off Locations
+        firebase.database().ref('groups/' + snap.val().activegroup + '/dropoffloc/')
+        .on('value', insidesnapshot => {
+
             const coolarray = [];
-            snapshot.forEach((child) => {
-                coolarray.push({happysad:child.val().name})
+            insidesnapshot.forEach((child)=>{
+                coolarray.push({
+                    location:child.key,
+                    switched:child.val().toggle,
+                    ref:'groups/' + snap.val().activegroup + '/dropoffloc/',
+                })
             })
-            this.setState({dropofflocdata:coolarray})
-        })
+            this.setState({data:coolarray})
+        });
     });
+}
 
+componentWillUnmount() {
+    if(this.ref) {
+        this.ref.off();
+    }
 }
 
 render() {
@@ -162,11 +178,26 @@ render() {
 
         <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor: '#e6ddd1', }}>
             <FlatList
-                data={this.state.dropofflocdata}
-                renderItem={({item}) => {
-                    <Text>{item.happysad}</Text>
-                }}
-                keyExtractor={item => item.happysad}
+                data={this.state.data}
+                renderItem={({item}) => (
+                    <ToggleListItem 
+                        title={item.location}
+                        switched={item.switched}
+                        onSwitch={() => {
+                            if(item.switched){
+                                
+                                firebase.database().ref(item.ref + item.location)
+                                    .update({toggle:false})
+
+                            } else {
+                                firebase.database().ref(item.ref + item.location)
+                                    .update({toggle:true})
+
+                            }
+                        }}
+                    />
+                )}
+                keyExtractor={item => item.location}
             />
         </List>
     </View>

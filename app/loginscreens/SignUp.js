@@ -34,6 +34,7 @@ _SignUpProcess(email,password){
                     lastname: this.state.lastname,
                     email: email,
                     username: this.state.username,
+                    refreshflag: true,
                 })
 
                 firebase.database().ref('defaults/' + uid)
