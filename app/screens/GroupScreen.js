@@ -117,7 +117,7 @@ constructor(props) {
 componentWillMount() {
 
     //Grabbing name of Active Group
-    this.ref.once('value', snap => {
+    this.ref.on('value', snap => {
 
         this.setState({refreshflag: snap.val().refreshflag});
 
@@ -131,7 +131,7 @@ componentWillMount() {
 
         //Pull the list of Drop off Locations
         firebase.database().ref('groups/' + snap.val().activegroup + '/dropoffloc/')
-        .on('value', insidesnapshot => {
+        .once('value', insidesnapshot => {
 
             const coolarray = [];
             insidesnapshot.forEach((child)=>{
@@ -189,10 +189,20 @@ render() {
                                 firebase.database().ref(item.ref + item.location)
                                     .update({toggle:false})
 
+                                if(this.state.refreshflag){
+                                    this.ref.update({refreshflag:false})
+                                } else {
+                                    this.ref.update({refreshflag:true})
+                                }
                             } else {
                                 firebase.database().ref(item.ref + item.location)
                                     .update({toggle:true})
 
+                                if(this.state.refreshflag){
+                                    this.ref.update({refreshflag:false})
+                                } else {
+                                    this.ref.update({refreshflag:true})
+                                }
                             }
                         }}
                     />
