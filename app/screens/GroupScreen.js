@@ -106,6 +106,7 @@ constructor(props) {
 
         activegroupname: '',
         activegroupid: '',
+        activegrouptype: '',
 
         refreshflag: '',
     };
@@ -126,11 +127,13 @@ componentWillMount() {
             this.setState({
                 activegroupname: snapshot.val().displayname,
                 activegroupid: snapshot.key,
+                activegrouptype: snapshot.val().type,
             })
         });
 
         //Pull the list of Drop off Locations
-        firebase.database().ref('groups/' + snap.val().activegroup + '/dropoffloc/')
+        firebase.database().ref('locations/' + firebase.auth().currentUser.uid 
+            + '/' + snap.val().activegroup)
         .once('value', insidesnapshot => {
 
             const coolarray = [];
@@ -138,7 +141,8 @@ componentWillMount() {
                 coolarray.push({
                     location:child.key,
                     switched:child.val().toggle,
-                    ref:'groups/' + snap.val().activegroup + '/dropoffloc/',
+                    ref: 'locations/' + firebase.auth().currentUser.uid 
+                        + '/' + snap.val().activegroup + '/',
                 })
             })
             this.setState({data:coolarray})
@@ -163,8 +167,8 @@ render() {
         borderWidth: 1,
         margin: 10,
     }}>
-        <Text>{this.state.activegroupname}</Text>
-        <Text>{this.state.activegroupid}</Text>
+        <Text>{this.state.activegroupname + ' - ' + this.state.activegroupid}</Text>
+        <Text>{this.state.activegrouptype + ' group'}</Text>
         <Text>Group Background</Text>
         <Text>Edit button for Owner</Text>
     </View>
@@ -189,20 +193,16 @@ render() {
                                 firebase.database().ref(item.ref + item.location)
                                     .update({toggle:false})
 
-                                if(this.state.refreshflag){
-                                    this.ref.update({refreshflag:false})
-                                } else {
-                                    this.ref.update({refreshflag:true})
-                                }
+                                //Temporary Workaround - to refresh the first listener
+                                if(this.state.refreshflag){this.ref.update({refreshflag:false})} 
+                                else {this.ref.update({refreshflag:true})}
+
                             } else {
                                 firebase.database().ref(item.ref + item.location)
                                     .update({toggle:true})
 
-                                if(this.state.refreshflag){
-                                    this.ref.update({refreshflag:false})
-                                } else {
-                                    this.ref.update({refreshflag:true})
-                                }
+                                if(this.state.refreshflag){this.ref.update({refreshflag:false})} 
+                                else {this.ref.update({refreshflag:true})}
                             }
                         }}
                     />
@@ -210,6 +210,13 @@ render() {
                 keyExtractor={item => item.location}
             />
         </List>
+    </View>
+
+    <View style = {{
+        flex:2,
+        borderWidth: 1,
+        margin: 10,
+    }}>
     </View>
     
     <ActionButton
@@ -357,6 +364,7 @@ constructor(props){
         groupdisplayname: '',
         groupowner: '',
         grouptype: '',           //Security
+        dropoffloc: '',
     }
     this.ref = null;
 }
@@ -370,7 +378,7 @@ componentWillMount() {
     })
 }
 
-_makeGroupDB(displayname,id,type,owner) {
+_makeGroupDB(displayname,id,type,owner,location) {
 
     //Create the group and add the owner
     firebase.database().ref('groups/' + id).set({
@@ -378,9 +386,12 @@ _makeGroupDB(displayname,id,type,owner) {
         type:type,
         owner:owner,
     })
-    firebase.database().ref('groups/' + id + '/' + owner).set(owner)
+    firebase.database().ref('groups/' + id + '/locations/' + location).set(true)
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/' + id).set(displayname)
+
+    firebase.database().ref('locations/' + firebase.auth().currentUser.uid 
+        + '/' + id + '/' + location).set({toggle:true})
 }
 
 render() {
@@ -419,6 +430,16 @@ render() {
                 textAlign: 'center'
             }}/>
 
+        <FormInput
+            value={this.state.dropoffloc}
+            placeholder="Drop off Location"
+            onChangeText={dropoffloc => this.setState({ dropoffloc })}
+            style={{
+                width: 180,
+                alignSelf: 'center',
+                textAlign: 'center'
+            }}/>
+
         <Button
             backgroundColor='#b18d77'
             borderRadius={15}
@@ -426,7 +447,7 @@ render() {
             title="Create Group"
             onPress={() => {
                 this._makeGroupDB(this.state.groupdisplayname,this.state.groupid,
-                    this.state.grouptype,this.state.groupowner)
+                    this.state.grouptype,this.state.groupowner,this.state.dropoffloc)
                 this.props.navigation.dispatch(NavigationActions.reset(
                  {index: 1,
                     actions: [
@@ -438,7 +459,8 @@ render() {
             }}
             style={{
                 width: 200,
-                alignSelf: 'center'
+                marginTop: 20,
+                alignSelf: 'center',
             }}
         />
     </View>

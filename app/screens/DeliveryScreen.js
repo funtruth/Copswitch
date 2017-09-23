@@ -525,7 +525,7 @@ componentWillMount() {
     
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).once('value', snapshot => {
         
-        firebase.database().ref('groups/' + snapshot.val().activegroup + '/locations/')
+        firebase.database().ref('groups/' + snapshot.val().activegroup + '/coffeeshops/')
             .once('value', snapshot2 => {
 
                 const coffeeshops = [];
