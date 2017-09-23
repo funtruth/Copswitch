@@ -243,12 +243,16 @@ constructor(props) {
         username: '',
         firstname: '',
         lastname: '',
+
+        activegroup: '',
+        refreshflag: true,
+
         coffeeshop: '', 
         coffeeorder: '',
         size: '',
         drinktype: '',
-        dropoffloc: '',
         comment: '',
+
         loading: false,
 
         currentuid: '',
@@ -258,25 +262,22 @@ constructor(props) {
 }
 
 //Makes an order 
-_createOrder(uid,coffeeshop,coffeeorder,comment,size,dropoffloc,username,drinktype,firstname,lastname) {
-    firebase.database().ref('orders/' + uid)
+_createOrder(groupid,uid,firstname,lastname,username,coffeeshop,drinktype,size,coffeeorder,dropoffloc,comment) {
+    firebase.database().ref('orders/' + groupid + '/' + dropoffloc + '/' + uid)
     .set({
+        firstname,
+        lastname,
+        username,
         coffeeshop,
         drinktype,
-        coffeeorder,
-        dropoffloc,
         size,
-        comment,
-        username,
-        firstname,
-        lastname
+        coffeeorder,
+        comment
     })
 }
 
 componentWillMount() {
-    //Grabs the username and email of current user
     const uid = firebase.auth().currentUser.uid
-
     this.setState({currentuid:uid})
 
     this.ref = firebase.database().ref("users/" + uid)
@@ -284,7 +285,10 @@ componentWillMount() {
         this.setState({
             username: snapshot.val().username,
             firstname: snapshot.val().firstname,
-            lastname: snapshot.val().lastname
+            lastname: snapshot.val().lastname,
+
+            activegroup: snapshot.val().activegroup,
+            refreshflag: snapshot.val().refreshflag,
         })
     })
 
@@ -305,21 +309,16 @@ componentWillMount() {
                 drinktype: snapshot.val().drinktype,
             })
         }
-        if(snapshot.val()._dropoffloc){
-            this.setState({
-                dropoffloc: snapshot.val().dropoffloc,
-            })
-        }
-        if(snapshot.val()._dropofftime){
-            this.setState({
-                dropofftime: snapshot.val().dropofftime,
-            })
-        }
         if(snapshot.val()._size){
             this.setState({
                 size: snapshot.val().size,
             })
-        }     
+        }
+        if(snapshot.val()._dropoffloc){
+            this.setState({
+                dropoffloc: snapshot.val().dropoffloc,
+            })
+        }      
     })
 }
 
@@ -350,7 +349,6 @@ render(){
     const shops = [
         { key: index++, section: true, label: 'Coffeeshops' },
         { key: index++, label: "Tim Horton's" },
-        { key: index++, label: "William's" },
         { key: index++, label: "Starbucks" },
         { key: index++, label: "Second Cup" },
     ];
@@ -366,6 +364,11 @@ render(){
         { key: index3++, section: true, label: 'Choose a Drink' },
         { key: index3++, label: "Coffee" },
         { key: index3++, label: "Tea" },
+    ];
+    let index4 = 0;
+    const locations = [
+        { key: index4++, section: true, label: 'Choose a Location' },
+        { key: index4++, label: "room1" },
     ];
 
     return <View style={{
@@ -434,15 +437,22 @@ render(){
                     }}
                 />
 
-                <FormInput
-                    placeholder="Drop-off Location ..."
-                    value={this.state.dropoffloc}
-                    onChangeText={dropoffloc => this.setState({ dropoffloc })}
-                    style={{
-                        width: 250,
-                        alignSelf: 'center'
-                    }}
-                />
+                <ModalPicker
+                    data={locations}
+                    initValue="LOL"
+                    onChange={(option)=>{ this.setState({dropoffloc:option.label})}}>
+                        <TextInput
+                            style={{
+                                color:'#666b75',
+                                padding:10, 
+                                height:50,
+                                width: 250,
+                                alignSelf: 'center',
+                                textAlign: 'center'}}
+                            editable={false}
+                            placeholder="Select a Location ..."
+                            value={this.state.dropoffloc} />
+                </ModalPicker>
 
                 <FormInput
                     placeholder="Comments ..."
@@ -465,11 +475,11 @@ render(){
                     color='white'
                     title="Create Order"
                     onPress={() => {
-                        this._createOrder(this.state.currentuid,this.state.coffeeshop,
-                        this.state.coffeeorder,this.state.comment,this.state.size,this.state.dropoffloc,
-                        this.state.username, this.state.drinktype,this.state.firstname,this.state.lastname)
+                        this._createOrder(this.state.activegroup,this.state.currentuid,this.state.firstname,
+                            this.state.lastname,this.state.username,this.state.coffeeshop,
+                            this.state.drinktype,this.state.size,this.state.coffeeorder,
+                            this.state.dropoffloc,this.state.comment)
 
-                        this.props.navigation.navigate('ViewOrder_Screen')
                         this._resetStack()
                         Keyboard.dismiss()
                     }}

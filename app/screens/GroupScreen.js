@@ -108,6 +108,8 @@ constructor(props) {
         activegroupid: '',
         activegrouptype: '',
 
+        newlocation: '',
+
         refreshflag: '',
     };
 
@@ -154,6 +156,35 @@ componentWillUnmount() {
     if(this.ref) {
         this.ref.off();
     }
+}
+
+//Function that should be used for Edit Screen
+_renderFooter(){
+    return (
+        <View style = {{
+            marginTop: 15,
+            flexDirection: 'row',
+        }}>
+
+            <FormInput
+                value={this.state.newlocation}
+                placeholder="New Location ..."
+                onChangeText={newlocation => this.setState({ newlocation })}
+                style={{
+                    width: 180,
+                    alignSelf: 'center',
+                    textAlign: 'center'
+            }}/>
+
+            <ProfileButton
+                title='Add Location'
+                icon={{name: 'add', size: 16}}
+                onPress={()=> {
+                    alert('debug')
+                }}
+            />
+        </View>
+    )
 }
 
 render() {
