@@ -138,14 +138,33 @@ componentWillMount() {
             + '/' + snap.val().activegroup)
         .once('value', insidesnapshot => {
 
+            const activelocation = insidesnapshot.val().activelocation;
+
             const coolarray = [];
             insidesnapshot.forEach((child)=>{
-                coolarray.push({
-                    location:child.key,
-                    switched:child.val().toggle,
-                    ref: 'locations/' + firebase.auth().currentUser.uid 
-                        + '/' + snap.val().activegroup + '/',
-                })
+                //Only render children that have a toggle child
+                if(child.val().toggle != null){
+                    
+                    //Checks if the location is ACTIVE LOCATION, sets toggle correspondingly
+                    const togglevalue = true;
+                    if(child.key != activelocation){
+                        firebase.database().ref('locations/' + firebase.auth().currentUser.uid
+                            + '/' + snap.val().activegroup + '/' + child.key).update({toggle:false})
+                        togglevalue = false
+                    } else {
+                        firebase.database().ref('locations/' + firebase.auth().currentUser.uid
+                            + '/' + snap.val().activegroup + '/' + child.key).update({toggle:true})
+                        togglevalue = true
+                    }
+
+                    coolarray.push({
+                        location:child.key,
+                        switched:togglevalue,
+                        ref: 'locations/' + firebase.auth().currentUser.uid 
+                            + '/' + snap.val().activegroup + '/',
+                    })
+
+                }
             })
             this.setState({data:coolarray})
         });
@@ -221,16 +240,19 @@ render() {
                         onSwitch={() => {
                             if(item.switched){
                                 
+                                alert('choose another location')
+                                /*
                                 firebase.database().ref(item.ref + item.location)
                                     .update({toggle:false})
 
                                 //Temporary Workaround - to refresh the first listener
                                 if(this.state.refreshflag){this.ref.update({refreshflag:false})} 
                                 else {this.ref.update({refreshflag:true})}
+                                */
 
                             } else {
-                                firebase.database().ref(item.ref + item.location)
-                                    .update({toggle:true})
+                                firebase.database().ref(item.ref)
+                                    .update({activelocation: item.location})
 
                                 if(this.state.refreshflag){this.ref.update({refreshflag:false})} 
                                 else {this.ref.update({refreshflag:true})}
@@ -423,6 +445,9 @@ _makeGroupDB(displayname,id,type,owner,location) {
 
     firebase.database().ref('locations/' + firebase.auth().currentUser.uid 
         + '/' + id + '/' + location).set({toggle:true})
+
+    firebase.database().ref('locations/'+ firebase.auth().currentUser.uid 
+        + '/' + id).update({activelocation:location})
 }
 
 render() {

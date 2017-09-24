@@ -92,7 +92,6 @@ _makeRemoteRequest = () => {
             "drinktype": child.val().drinktype,
             "coffeeshop": child.val().coffeeshop,
             "size": child.val().size,
-            "dropoffloc": child.val().dropoffloc,
             "comment": child.val().comment,
             "username": child.val().username,
             "firstname":child.val().firstname,
