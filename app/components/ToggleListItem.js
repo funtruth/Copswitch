@@ -49,6 +49,8 @@ render() {
             switched={this.props.switched}
             onSwitch={this.props.onSwitch}
             onPress={this.props.onPress}
+            
+            onLongPress={()=>{alert('owner options')}}
       />
     )
 }

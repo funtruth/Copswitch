@@ -63,7 +63,8 @@ constructor(props) {
     };
 
     this.ref = firebase.database().ref('rooms/' + firebase.auth().currentUser.uid);
-    this.ref2 = firebase.database().ref('orders/');
+    this.filterRef = firebase.database().ref('filters/' + firebase.auth().currentUser.uid);
+    this.userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
 
   }
 
@@ -80,32 +81,42 @@ _makeRemoteRequest = () => {
         }
     })
 
-    firebase.database().ref('filters/' + firebase.auth().currentUser.uid).once('value',snapshot => {
-        this.ref2.orderByChild("coffeeshop")
-        .equalTo(snapshot.val().coffeeshop).once('value', (dataSnapshot) => {
+    //Listens for active group and location -> Looks at filter
+    this.userRef.on('value',snap => {
+        firebase.database().ref('locations/' + firebase.auth().currentUser.uid + '/' 
+        + snap.val().activegroup).once('value', insidesnap => {
+            
+            this.filterRef.once('value', filtersnap => {
 
-        var tasks = [];
+            
+                    firebase.database().ref('orders/' + snap.val().activegroup + '/' 
+                        + insidesnap.val().activelocation).orderByChild("coffeeshop")
+                        .equalTo(filtersnap.val().coffeeshop).once('value', (deepsnap) => {
+                            
+                            var tasks = [];
+                            
+                                    deepsnap.forEach((child) => {
+                                        tasks.push({
+                                        "coffeeorder": child.val().coffeeorder,
+                                        "drinktype": child.val().drinktype,
+                                        "coffeeshop": child.val().coffeeshop,
+                                        "size": child.val().size,
+                                        "comment": child.val().comment,
+                                        "username": child.val().username,
+                                        "firstname":child.val().firstname,
+                                        "lastname":child.val().lastname,
+                                        "_key": child.key
+                                        });
+                                    });
+                                
+                                    this.setState({
+                                        data: tasks
+                                    });
+                        });
 
-        dataSnapshot.forEach((child) => {
-            tasks.push({
-            "coffeeorder": child.val().coffeeorder,
-            "drinktype": child.val().drinktype,
-            "coffeeshop": child.val().coffeeshop,
-            "size": child.val().size,
-            "comment": child.val().comment,
-            "username": child.val().username,
-            "firstname":child.val().firstname,
-            "lastname":child.val().lastname,
-            "_key": child.key
             });
         });
-    
-        this.setState({
-            data: tasks
-        });
-
-        }); 
-    })  
+    });
 
 };
 
@@ -113,7 +124,9 @@ componentWillUnmount() {
     if(this.ref){
         this.ref.off();
     }
-    alert('unmounting')
+    if(this.userRef){
+        this.userRef.off();
+    }
 }
 
 //Used to Add orders to your own room
@@ -266,7 +279,8 @@ constructor(props) {
 }
 
 //Makes an order 
-_createOrder(groupid,uid,firstname,lastname,username,coffeeshop,drinktype,size,coffeeorder,dropoffloc,comment) {
+_createOrder(groupid,uid,firstname,lastname,username,coffeeshop,drinktype,
+size,coffeeorder,dropoffloc,comment) {
     firebase.database().ref('orders/' + groupid + '/' + dropoffloc + '/' + uid)
     .set({
         firstname,
@@ -579,7 +593,6 @@ render(){
                                     this._resetStack();
                                 }}
                             />
-                        
                         )}
                         keyExtractor={item => item.name} 
                     />

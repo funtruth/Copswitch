@@ -108,6 +108,7 @@ constructor(props) {
         activegroupname: '',
         activegroupid: '',
         activegrouptype: '',
+        activelocation: '',
 
         newlocation: '',
 
@@ -140,6 +141,7 @@ componentWillMount() {
         .once('value', insidesnapshot => {
 
             const activelocation = insidesnapshot.val().activelocation;
+            this.setState({activelocation: activelocation})
 
             const coolarray = [];
             insidesnapshot.forEach((child)=>{
@@ -209,35 +211,6 @@ componentWillUnmount() {
     }
 }
 
-//Function that should be used for Edit Screen
-_renderFooter(){
-    return (
-        <View style = {{
-            marginTop: 15,
-            flexDirection: 'row',
-        }}>
-
-            <FormInput
-                value={this.state.newlocation}
-                placeholder="New Location ..."
-                onChangeText={newlocation => this.setState({ newlocation })}
-                style={{
-                    width: 180,
-                    alignSelf: 'center',
-                    textAlign: 'center'
-            }}/>
-
-            <ProfileButton
-                title='Add Location'
-                icon={{name: 'add', size: 16}}
-                onPress={()=> {
-                    alert('debug')
-                }}
-            />
-        </View>
-    )
-}
-
 render() {
     return <View style = {{
         backgroundColor: '#e6ddd1',
@@ -259,6 +232,7 @@ render() {
         margin: 10,
     }}>
         <Text>Locations</Text>
+        <Text>{'Current Location: ' + this.state.activelocation}</Text>
         <ScrollView>
         <List style={{ borderWidth: 0, backgroundColor: '#e6ddd1', }}>
             <FlatList
@@ -301,6 +275,7 @@ render() {
         margin: 10,
     }}>
         <Text>My Groups</Text>
+        <Text>{'Current Group: ' + this.state.activegroupname}</Text>
         <ScrollView>
         <List style={{ borderWidth: 0, backgroundColor: '#e6ddd1', }}>
             <FlatList
@@ -313,21 +288,10 @@ render() {
                             if(item.switched){
                                 
                                 alert('choose another location')
-                                /*
-                                firebase.database().ref(item.ref + item.location)
-                                    .update({toggle:false})
-
-                                //Temporary Workaround - to refresh the first listener
-                                if(this.state.refreshflag){this.ref.update({refreshflag:false})} 
-                                else {this.ref.update({refreshflag:true})}
-                                */
 
                             } else {
                                 this.ref
                                     .update({activegroup: item.groupid})
-
-                                if(this.state.refreshflag){this.ref.update({refreshflag:false})} 
-                                else {this.ref.update({refreshflag:true})}
                             }
                         }}
                     />
@@ -362,15 +326,6 @@ render() {
 
         <ActionButton.Item
             buttonColor='#b18d77' 
-            title="My Groups" 
-            hideShadow
-            onPress={() => {
-                this.props.navigation.navigate('MyGroups_Screen')}}>
-            <MaterialIcons name="group" style={styles.actionButtonItem} />
-        </ActionButton.Item>
-
-        <ActionButton.Item
-            buttonColor='#b18d77' 
             title="Create a Group" 
             hideShadow
             onPress={() => {
@@ -382,129 +337,7 @@ render() {
 
     </View>
 }
-
 }
-
-class MyGroups_Screen extends React.Component {
-
-static navigationOptions = ({navigation}) => ({
-  headerTitle: 'My Groups',
-  headerTintColor: 'white',
-  headerStyle: {
-      backgroundColor: '#b18d77',
-  },
-})
-
-constructor(props) {
-    super(props);
-
-    const dataSource = new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-    });
-
-    this.state = {
-        loading: false,
-        data: dataSource,
-
-        refreshflag: true,
-    };
-
-    this.ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups');
-
-}
-
-_pullGroupDataDB() {
-    
-    this.setState({ loading: true });
-    const groups = [];
-
-    this.ref.on('value', (snapshot) => {
-        
-        const activegroup = snapshot.val().activegroup;
-
-        this.setState({refreshflag:snapshot.val().refreshflag})
-        
-        snapshot.forEach((child) => {
-            if(child.val().toggle != null){
-
-                const toggle = true;
-                
-                if(child.key != activegroup){
-                    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/'
-                        + child.key).update({toggle: false})
-                    toggle = false
-                } else {
-                    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/'
-                        + child.key).update({toggle: true})
-                    toggle = true
-                }
-
-                groups.push({
-                    groupname: child.val().displayname,
-                    toggle: toggle,
-                    groupid: child.key,
-                })
-            }
-        });
-
-        this.setState({data:groups,})
-    });
-};
-
-componentWillMount() {
-    this._pullGroupDataDB();
-}
-
-componentWillUnmount() {
-    if(this.ref) {
-        this.ref.off();
-    }
-}
-
-render() {
-  return <View style = {{
-      backgroundColor: '#e6ddd1',
-      flex: 1,
-  }}>
-
-    <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor:'#e6ddd1' }}>
-        <FlatList
-            data={this.state.data}
-            renderItem={({item}) => (
-                <ToggleListItem 
-                    title={item.groupid}
-                    subtitle={item.groupname}
-                    switched={item.toggle}
-                    onSwitch={()=> {
-                        if(item.toggle){
-                            alert('select another')
-                        } else {
-                            firebase.database().ref('users/' + firebase.auth().currentUser.uid)
-                                .update({activegroup: item.groupid});
-
-                            firebase.database().ref('users/' + firebase.auth().currentUser.uid
-                                + '/groups/').update({activegroup: item.groupid});
-
-                            if(this.state.refreshflag){this.ref.update({refreshflag:false})} 
-                            else {this.ref.update({refreshflag:true})}
-                        }
-                    }}
-                    
-                />
-            )}
-            keyExtractor={item => item.groupid}
-        />
-    </List>
-
-    <Button 
-            title='no'
-            onPress={()=>{
-                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups')
-                    .update({refreshflag:true})
-            }}/>
-
-  </View>
-}}
 
 class CreateGroup_Screen extends React.Component {
     
@@ -628,13 +461,15 @@ render() {
             onPress={() => {
                 this._makeGroupDB(this.state.groupdisplayname,this.state.groupid,
                     this.state.grouptype,this.state.groupowner,this.state.dropoffloc)
+
+                //Must navigate and then reset for no error
+                this.props.navigation.navigate('ActiveGroup_Screen')
                 this.props.navigation.dispatch(NavigationActions.reset(
-                 {index: 1,
-                    actions: [
-                      NavigationActions.navigate({ routeName: 'ActiveGroup_Screen'}),
-                      NavigationActions.navigate({ routeName: 'MyGroups_Screen'})
-                    ]
-                  }));
+                    {index: 0,
+                        actions: [
+                        NavigationActions.navigate({ routeName: 'ActiveGroup_Screen'})
+                        ]
+                    }));
                 Keyboard.dismiss()
             }}
             style={{
@@ -656,9 +491,6 @@ export default stackNav = StackNavigator(
       },
       FindGroups_Screen: {
           screen: FindGroups_Screen,
-      },
-      MyGroups_Screen: {
-          screen: MyGroups_Screen,
       },
       CreateGroup_Screen: {
           screen: CreateGroup_Screen,

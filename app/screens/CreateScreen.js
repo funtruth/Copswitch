@@ -36,34 +36,36 @@ static navigationOptions = {
     }
 }
 
-//Initial Room Creation -> Makes a room in Database
-_MakeRoomDB(roomname,coffeeshop,roomsize,dropoffloc,dropofftime,uid,cups,owner){
-    firebase.database().ref('rooms/' + uid)
-    .set({
-        roomname,
-        owner,
-        coffeeshop,
-        dropoffloc,
-        dropofftime,
-        roomsize,
-        cups,
-        spot1: '',
-        spot2: '',
-        spot3: '',
-        drinktype1: '',
-        drinktype2: '',
-        drinktype3: '',
-        size1: '',
-        size2: '',
-        size3: '',
-        coffeeorder1: '',
-        coffeeorder2: '',
-        coffeeorder3: '',
-        comment1: '',
-        comment2: '',
-        comment3: '',
-    })
-}
+//Makes an order 
+_createRoom(groupid,dropoffloc,uid,roomname,owner,firstname,lastname,coffeeshop,roomsize,cups) {
+        firebase.database().ref('rooms/' + groupid + '/' + dropoffloc + '/' + uid)
+        .set({
+            roomname,
+            owner,
+            firstname,
+            lastname,
+            coffeeshop,
+            dropoffloc,
+            roomsize,
+            cups,
+
+            spot1: '',
+            spot2: '',
+            spot3: '',
+            drinktype1: '',
+            drinktype2: '',
+            drinktype3: '',
+            size1: '',
+            size2: '',
+            size3: '',
+            coffeeorder1: '',
+            coffeeorder2: '',
+            coffeeorder3: '',
+            comment1: '',
+            comment2: '',
+            comment3: '',
+        })
+    }
 
 constructor(props) {
     super(props);
@@ -76,50 +78,65 @@ constructor(props) {
         coffeeshop: '', 
         roomsize: '',
         dropoffloc: '', 
-        dropofftime: '',
         cups: '',
         loading: false,
 
+        activegroup: '',
+        activelocation: '',
+
         currentuid: '',
+
+        coffeeshopsarray: [
+            { key: 1, section: true, label: 'Coffeeshops' },
+            { key: 2, label: "Tim Horton's" },
+            { key: 3, label: "William's" },
+            { key: 4, label: "Starbucks" },
+            { key: 5, label: "Second Cup" },
+        ],
+        roomsizearray: [
+            { key: 1, section: true, label: 'How many more Cups?' },
+            { key: 2, label: "1" },
+            { key: 3, label: "2" },
+            { key: 4, label: "3" },
+        ],
+        locationsarray: [
+            { key: 1, section: true, label: 'Choose a Location:'},
+        ],
+
     }
+
+    this.UserDB = firebase.database().ref("users/" + firebase.auth().currentUser.uid);
   }
 
 componentWillMount() {
-    const uid = firebase.auth().currentUser.uid
-    const UserDB = firebase.database().ref("users/" + uid)
 
-    UserDB.once('value',snapshot => {
+    this.UserDB.once('value',snapshot => {
+
         this.setState({
             username: snapshot.val().username,
             firstname: snapshot.val().firstname,
             lastname: snapshot.val().lastname,
+            activegroup: snapshot.val().activegroup,
+            roomname: snapshot.val().firstname + " " + snapshot.val().lastname + "'s Room"
         })
+
+        //Draw list of Locations for Active Group
+        firebase.database().ref('groups/' + snapshot.val().activegroup + '/locations')
+            .once('value', snap => {
+
+                var counter = 2;
+                snap.forEach((child)=> {
+                    this.state.locationsarray.push({key: counter, label: child.key})
+                    counter = counter + 1
+                })
+            })
     })
 
     this.setState({currentuid: firebase.auth().currentUser.uid});
+
 }
 
 render(){
-
-    //Arrays with Dropdown menu options
-    let index = 0;
-    const shops = [
-        { key: index++, section: true, label: 'Coffeeshops' },
-        { key: index++, label: "Tim Horton's" },
-        { key: index++, label: "William's" },
-        { key: index++, label: "Starbucks" },
-        { key: index++, label: "Second Cup" },
-    ];
-    let index2 = 0;
-    const cups = [
-        { key: index2++, section: true, label: 'How many more Cups?' },
-        { key: index2++, label: "1" },
-        { key: index2++, label: "2" },
-        { key: index2++, label: "3" },
-    ];
-
-
-    this.state.roomname = this.state.firstname + " " + this.state.lastname + "'s Room"
 
     return <View style={{
                 flex: 1,
@@ -139,8 +156,7 @@ render(){
                 />
                 
                 <ModalPicker
-                    data={shops}
-                    initValue="LOL"
+                    data={this.state.coffeeshopsarray}
                     onChange={(option)=>{ this.setState({coffeeshop:option.label})}}>
                         <TextInput
                             style={{
@@ -155,8 +171,7 @@ render(){
                 </ModalPicker>
 
                 <ModalPicker
-                    data={cups}
-                    initValue="LOL"
+                    data={this.state.roomsizearray}
                     onChange={(option)=>{ this.setState({roomsize:option.label})}}>
                         <TextInput
                             style={{
@@ -170,17 +185,20 @@ render(){
                             value={this.state.roomsize} />
                 </ModalPicker>
 
-                <FormInput
-                    placeholder="Location ..."
-                    value={this.state.dropoffloc}
-                    onChangeText={dropoffloc => this.setState({ dropoffloc })}
-                />
-
-                <FormInput
-                    placeholder="Time ..."
-                    value={this.state.dropofftime}
-                    onChangeText={dropofftime => this.setState({ dropofftime })}
-                />
+                <ModalPicker
+                    data={this.state.locationsarray}
+                    onChange={(option)=>{ this.setState({dropoffloc:option.label})}}>
+                        <TextInput
+                            style={{
+                                padding:10, 
+                                height:50,
+                                width: 250,
+                                alignSelf: 'center',
+                                textAlign: 'center'}}
+                            editable={false}
+                            placeholder="Location ..."
+                            value={this.state.dropoffloc} />
+                </ModalPicker>
 
                 <View style = {{marginTop:20, width: 180}}>
                 <Button
@@ -188,13 +206,15 @@ render(){
                     color='white'
                     title="Create Room"
                     onPress={() => {
-                        this._MakeRoomDB(this.state.roomname,this.state.coffeeshop,
-                            this.state.roomsize,this.state.dropoffloc,this.state.dropofftime,
-                            this.state.currentuid,1,this.state.username);
+                        this._createRoom(this.state.activegroup,this.state.dropoffloc,
+                            this.state.currentuid,this.state.roomname,this.state.username,
+                            this.state.firstname,this.state.lastname,this.state.coffeeshop,
+                            this.state.roomsize,1);
 
                         this.props.navigation.navigate('ViewRoom_Screen',{uid: this.state.currentuid,
                             roomname: this.state.roomname})
                         Keyboard.dismiss() }
+
                     }
                 />
                 </View>
