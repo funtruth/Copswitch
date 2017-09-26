@@ -213,24 +213,22 @@ render() {
     }}>
 
     <View style = {{
-        flex:3,
+        flex:1,
         borderWidth: 1,
         margin: 10,
     }}>
         <Text>{this.state.activegroupname + ' - ' + this.state.activegroupid}</Text>
         <Text>{this.state.activegrouptype + ' group'}</Text>
-        <Text>Group Background</Text>
-        <Text>Edit button for Owner</Text>
     </View>
 
     <View style = {{
-        flex:5,
+        flex:3,
         borderWidth:1,
         margin: 10,
     }}>
         <Text>Locations</Text>
-
-        <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor: '#e6ddd1', }}>
+        <ScrollView>
+        <List style={{ borderWidth: 0, backgroundColor: '#e6ddd1', }}>
             <FlatList
                 data={this.state.data}
                 renderItem={({item}) => (
@@ -262,7 +260,15 @@ render() {
                 )}
                 keyExtractor={item => item.location}
             />
-        </List>
+        </List></ScrollView>
+    </View>
+
+    <View style = {{
+        flex:3,
+        borderWidth: 1,
+        margin: 10,
+    }}>
+        <Text>My Groups</Text>
     </View>
 
     <View style = {{
@@ -270,6 +276,7 @@ render() {
         borderWidth: 1,
         margin: 10,
     }}>
+        <Text>Quick Order</Text>
     </View>
     
     <ActionButton
@@ -332,9 +339,12 @@ constructor(props) {
     this.state = {
         loading: false,
         data: dataSource,
+
+        refreshflag: true,
     };
 
     this.ref = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups');
+
 }
 
 _pullGroupDataDB() {
@@ -344,11 +354,31 @@ _pullGroupDataDB() {
 
     this.ref.on('value', (snapshot) => {
         
+        const activegroup = snapshot.val().activegroup;
+
+        this.setState({refreshflag:snapshot.val().refreshflag})
+        
         snapshot.forEach((child) => {
-            groups.push({
-                groupname: child.val(),
-                groupid: child.key,
-            })
+            if(child.val().toggle != null){
+
+                const toggle = true;
+                
+                if(child.key != activegroup){
+                    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/'
+                        + child.key).update({toggle: false})
+                    toggle = false
+                } else {
+                    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/'
+                        + child.key).update({toggle: true})
+                    toggle = true
+                }
+
+                groups.push({
+                    groupname: child.val().displayname,
+                    toggle: toggle,
+                    groupid: child.key,
+                })
+            }
         });
 
         this.setState({data:groups,})
@@ -375,19 +405,23 @@ render() {
         <FlatList
             data={this.state.data}
             renderItem={({item}) => (
-                <NormalListItem 
+                <ToggleListItem 
                     title={item.groupid}
                     subtitle={item.groupname}
-                    onPress={()=> {
-                        firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
-                            activegroup: item.groupid,
-                        })
-                        this.props.navigation.dispatch(NavigationActions.reset({
-                            index: 0,
-                            actions: [
-                                NavigationActions.navigate({ routeName: 'ActiveGroup_Screen'})
-                            ]
-                        }));
+                    switched={item.toggle}
+                    onSwitch={()=> {
+                        if(item.toggle){
+                            alert('select another')
+                        } else {
+                            firebase.database().ref('users/' + firebase.auth().currentUser.uid)
+                                .update({activegroup: item.groupid});
+
+                            firebase.database().ref('users/' + firebase.auth().currentUser.uid
+                                + '/groups/').update({activegroup: item.groupid});
+
+                            if(this.state.refreshflag){this.ref.update({refreshflag:false})} 
+                            else {this.ref.update({refreshflag:true})}
+                        }
                     }}
                     
                 />
@@ -395,6 +429,13 @@ render() {
             keyExtractor={item => item.groupid}
         />
     </List>
+
+    <Button 
+            title='no'
+            onPress={()=>{
+                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups')
+                    .update({refreshflag:true})
+            }}/>
 
   </View>
 }}
@@ -441,13 +482,30 @@ _makeGroupDB(displayname,id,type,owner,location) {
     })
     firebase.database().ref('groups/' + id + '/locations/' + location).set(true)
 
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/' + id).set(displayname)
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/' + id)
+        .set({displayname:displayname, toggle: false})
 
     firebase.database().ref('locations/' + firebase.auth().currentUser.uid 
         + '/' + id + '/' + location).set({toggle:true})
 
     firebase.database().ref('locations/'+ firebase.auth().currentUser.uid 
         + '/' + id).update({activelocation:location})
+
+    firebase.database().ref('defaults/' + firebase.auth().currentUser.uid + '/' + id)
+    .set({
+        coffeeshop: 'None',
+        _coffeeshop: false,
+        drinktype: 'None',
+        _drinktype: false,
+        coffeeorder: 'None',
+        _coffeeorder: false,
+        size: 'None',
+        _size: false,
+        dropoffloc: 'None',
+        _dropoffloc: false,
+        dropofftime: 'None',
+        _dropofftime: false,
+    })
 }
 
 render() {

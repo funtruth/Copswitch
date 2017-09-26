@@ -37,21 +37,6 @@ _SignUpProcess(email,password){
                     refreshflag: true,
                 })
 
-                firebase.database().ref('defaults/' + uid)
-                .set({
-                    coffeeshop: 'None',
-                    _coffeeshop: false,
-                    drinktype: 'None',
-                    _drinktype: false,
-                    coffeeorder: 'None',
-                    _coffeeorder: false,
-                    size: 'None',
-                    _size: false,
-                    dropoffloc: 'None',
-                    _dropoffloc: false,
-                    dropofftime: 'None',
-                    _dropofftime: false,
-                })
                 firebase.database().ref('settings/' + uid)
                 .set({
                     settings1: '',

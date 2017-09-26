@@ -255,6 +255,11 @@ constructor(props) {
         loading: false,
 
         currentuid: '',
+
+        modal_coffeeshop: [],
+        modal_size: [],
+        modal_drinktype: [],
+        modal_location: [],
     }
     this.ref = null;
     this.ref2 = null;
