@@ -78,22 +78,31 @@ componentWillUnmount() {
             
             <View style = {{
               flex: 1,
-              alignItems: 'center'
+              alignItems: 'center',
+              flexDirection: 'row',
             }}>
-              <Avatar
-                large
-                rounded
-                containerStyle={{
-                  marginTop: 15,
-                  borderWidth: 2,
-                  borderColor: '#b18d77',
-                }}
-              />
-              <Text style={{ color:'#b18d77', fontSize: 24}}>{this.state.firstname 
-                  + " " + this.state.lastname}</Text>
-              <Text style={{ color: '#b18d77', fontSize: 12}}>{this.state.email}</Text>
-              <Text style={{ color:'#b18d77', fontSize: 18}}>{this.state.username}</Text>
+                <View style = {{
+                  flex: 1,
+                  alignItems: 'center',
+                }}>
+                    <Avatar
+                      large
+                      rounded
+                      containerStyle={{
+                        borderWidth: 2,
+                        borderColor: '#b18d77',
+                      }}
+                    />
+                </View>
               
+                <View style = {{
+                    flex: 1,
+                  }}>
+                    <Text style={{ color:'#b18d77', fontSize: 24}}>{this.state.firstname 
+                        + " " + this.state.lastname}</Text>
+                    <Text style={{ color: '#b18d77', fontSize: 12}}>{this.state.email}</Text>
+                    <Text style={{ color:'#b18d77', fontSize: 18}}>{this.state.username}</Text>
+                </View>
             </View>
 
             <View style = {{

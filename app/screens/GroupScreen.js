@@ -102,7 +102,8 @@ constructor(props) {
     });
 
     this.state = {
-        data: dataSource,
+        locationdata: dataSource,
+        groupdata: dataSource,
 
         activegroupname: '',
         activegroupid: '',
@@ -166,8 +167,39 @@ componentWillMount() {
 
                 }
             })
-            this.setState({data:coolarray})
+            this.setState({locationdata:coolarray})
         });
+
+        //Pull the list of Groups
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups')
+            .once('value', groupsnap => {
+
+                const grouparray = [];
+                groupsnap.forEach((child) => {
+                    
+                    var grouptoggle = true;
+
+                    if(snap.val().activegroup != child.key) {
+                        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/' 
+                            + child.key).update({toggle:false})
+                        grouptoggle = false
+                    } else {
+                        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/groups/' 
+                            + child.key).update({toggle:true})
+                        grouptoggle = true
+                    }
+
+                    grouparray.push({
+                        displayname: child.val().displayname,
+                        groupid: child.key,
+                        switched: grouptoggle,
+                    })
+
+                })
+
+                this.setState({groupdata:grouparray})
+            })
+
     });
 }
 
@@ -230,7 +262,7 @@ render() {
         <ScrollView>
         <List style={{ borderWidth: 0, backgroundColor: '#e6ddd1', }}>
             <FlatList
-                data={this.state.data}
+                data={this.state.locationdata}
                 renderItem={({item}) => (
                     <ToggleListItem 
                         title={item.location}
@@ -269,6 +301,40 @@ render() {
         margin: 10,
     }}>
         <Text>My Groups</Text>
+        <ScrollView>
+        <List style={{ borderWidth: 0, backgroundColor: '#e6ddd1', }}>
+            <FlatList
+                data={this.state.groupdata}
+                renderItem={({item}) => (
+                    <ToggleListItem 
+                        title={item.displayname}
+                        switched={item.switched}
+                        onSwitch={() => {
+                            if(item.switched){
+                                
+                                alert('choose another location')
+                                /*
+                                firebase.database().ref(item.ref + item.location)
+                                    .update({toggle:false})
+
+                                //Temporary Workaround - to refresh the first listener
+                                if(this.state.refreshflag){this.ref.update({refreshflag:false})} 
+                                else {this.ref.update({refreshflag:true})}
+                                */
+
+                            } else {
+                                this.ref
+                                    .update({activegroup: item.groupid})
+
+                                if(this.state.refreshflag){this.ref.update({refreshflag:false})} 
+                                else {this.ref.update({refreshflag:true})}
+                            }
+                        }}
+                    />
+                )}
+                keyExtractor={item => item.groupid}
+            />
+        </List></ScrollView>
     </View>
 
     <View style = {{
