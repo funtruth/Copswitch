@@ -285,10 +285,6 @@ constructor(props) {
     _coffeeorder: false,
     size: '',
     _size: false,
-    dropoffloc: '',
-    _dropoffloc: false,
-    dropofftime: '',
-    _dropofftime: false,
   }
   this.ref = null;
 
@@ -309,10 +305,6 @@ _pullDefaultsDB() {
       _coffeeorder: snapshot.val()._coffeeorder,
       size: snapshot.val().size,
       _size: snapshot.val()._size,
-      dropoffloc: snapshot.val().dropoffloc,
-      _dropoffloc: snapshot.val()._dropoffloc,
-      dropofftime: snapshot.val().dropofftime,
-      _dropofftime: snapshot.val()._dropofftime,
     })
   })
 }
@@ -328,10 +320,6 @@ _handleSavePress() {
     _coffeeorder: this.state._coffeeorder,
     size: this.state.size,
     _size: this.state._size,
-    dropoffloc: this.state.dropoffloc,
-    _dropoffloc: this.state._dropoffloc,
-    dropofftime: this.state.dropofftime,
-    _dropofftime: this.state._dropofftime,
   });
 
   this.props
@@ -381,13 +369,6 @@ render() {
   ];
   const locations = [
     { key: 1, section: true, label: 'Locations' },
-    { key: 2, label: "Placeholder" },
-    { key: 3, label: "Placeholder" },
-    { key: 4, label: "Placeholder" },
-    { key: 5, label: "Placeholder" },
-  ];
-  const times = [
-    { key: 1, section: true, label: 'Time' },
     { key: 2, label: "Placeholder" },
     { key: 3, label: "Placeholder" },
     { key: 4, label: "Placeholder" },
@@ -492,25 +473,6 @@ render() {
           if(this.state._dropoffloc){this.setState({_dropoffloc:false})} 
           else {this.setState({_dropoffloc : true})} 
         }}/>
-      
-      <ToggleListItem
-        title='Time:'
-        subtitle={
-          <ModalPicker
-              data={times}
-              initValue={this.state.dropofftime}
-              onChange={(option)=>{ this.setState({dropofftime: option.label,_dropofftime:true}) }}>
-                  <TextInput
-                      style={{marginLeft:20, height:35, width: 150,}}
-                      editable={false}
-                      value={this.state.dropofftime} />
-          </ModalPicker>}
-        switched={this.state._dropofftime}
-        onSwitch={() => {
-          if(this.state._dropofftime){this.setState({_dropofftime:false})} 
-          else {this.setState({_dropofftime: true})} 
-        }}
-      />
       
     </List> 
   </ScrollView>

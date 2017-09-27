@@ -25,6 +25,7 @@ import firebase from '../firebase/FirebaseController.js';
 
 //Components
 import HeaderButton from '../components/HeaderButton.js';
+import ProfileButton from '../components/ProfileButton.js';
 
 class CreateRoom_Screen extends Component {
 
@@ -48,22 +49,6 @@ _createRoom(groupid,dropoffloc,uid,roomname,owner,firstname,lastname,coffeeshop,
             dropoffloc,
             roomsize,
             cups,
-
-            spot1: '',
-            spot2: '',
-            spot3: '',
-            drinktype1: '',
-            drinktype2: '',
-            drinktype3: '',
-            size1: '',
-            size2: '',
-            size3: '',
-            coffeeorder1: '',
-            coffeeorder2: '',
-            coffeeorder3: '',
-            comment1: '',
-            comment2: '',
-            comment3: '',
         })
     }
 
@@ -90,10 +75,10 @@ constructor(props) {
             { key: 1, section: true, label: 'Coffeeshops' },
         ],
         roomsizearray: [
-            { key: 1, section: true, label: 'How many more Cups?' },
-            { key: 2, label: "1" },
-            { key: 3, label: "2" },
-            { key: 4, label: "3" },
+            { key: 1, section: true, label: 'How many Cups?' },
+            { key: 2, label: "2" },
+            { key: 3, label: "3" },
+            { key: 4, label: "4" },
         ],
         locationsarray: [
             { key: 1, section: true, label: 'Choose a Location:'},
@@ -218,8 +203,8 @@ render(){
                             this.state.firstname,this.state.lastname,this.state.coffeeshop,
                             this.state.roomsize,1);
 
-                        this.props.navigation.navigate('ViewRoom_Screen',{uid: this.state.currentuid,
-                            roomname: this.state.roomname})
+                        alert('navigate to MyRoom')
+
                         Keyboard.dismiss() }
 
                     }
@@ -260,167 +245,99 @@ constructor(props) {
     this.state = {
         roomname: '',
         owner: '',
+        firstname: '',
+        lastname: '',
         coffeeshop: '',
         dropoffloc: '',
         dropofftime: '',
         roomsize: '',
         cups: '',
-        spot1: '',
-        spot2: '',
-        spot3: '',
         loading: false,
-
-        drinktype1: '',
-        size1: '',
-        coffeeorder1: '',
-        comment1: '',
-        drinktype2: '',
-        size2: '',
-        coffeeorder2: '',
-        comment2: '',
-        drinktype3: '',
-        size3: '',
-        coffeeorder3: '',
-        comment3: '',
 
         currentuid: '',
 
         //Passed uid from navigation
         passeduid: '',
+        passedgroup: '',
+        passedlocation: '',
+
+        drinktype: '',
+        size: '',
+        coffeeorder: '',
+        comment: '',
+
     }
-    this.ref = null;
+
+    this.ref=null;
+
 }
 
 //Sets all the this.state values that are necessary for viewing your own room
 //listens for changes and updates
 _compileRoomDB(){
+
     const { params } = this.props.navigation.state;
-    const uid = params.uid
+    const uid = params.uid;
+    const activegroup = params.group;
+    const activelocation = params.location;
     
-    this.setState({passeduid: uid})
-    this.ref = firebase.database().ref('rooms/huddle/room1/' + uid)
-    
-    this.ref.on('value', (snapshot) => {
-        if(snapshot.exists()){
+    this.setState({passeduid: uid, currentuid: firebase.auth().currentUser.uid,
+        passedgroup: activegroup, passedlocation: activelocation});
+
+    this.ref = firebase.database().ref('rooms/' + activegroup + '/' 
+    + activelocation + '/' + uid)
+
+    this.ref.on('value', datasnap => {
+
             this.setState({
-                roomname: snapshot.val().roomname,
-                owner: snapshot.val().owner,
-                coffeeshop: snapshot.val().coffeeshop,
-                dropoffloc: snapshot.val().dropoffloc,
-                roomsize: snapshot.val().roomsize,
-                cups: snapshot.val().cups,
-                spot1: snapshot.val().spot1,
-                spot2: snapshot.val().spot2,
-                spot3: snapshot.val().spot3,
 
-                drinktype1: snapshot.val().drinktype1,
-                size1: snapshot.val().size1,
-                coffeeorder1: snapshot.val().coffeeorder1,
-                comment1: snapshot.val().comment1,
-                drinktype2: snapshot.val().drinktype2,
-                size2: snapshot.val().size2,
-                coffeeorder2: snapshot.val().coffeeorder2,
-                comment2: snapshot.val().comment2,
-                drinktype3: snapshot.val().drinktype3,
-                size3: snapshot.val().size3,
-                coffeeorder3: snapshot.val().coffeeorder3,
-                comment3: snapshot.val().comment3,
+                roomname: datasnap.val().roomname,
+                owner: datasnap.val().owner,
+                firstname: datasnap.val().firstname,
+                lastname: datasnap.val().lastname,
+                coffeeshop: datasnap.val().coffeeshop,
+                dropoffloc: datasnap.val().dropoffloc,
+                roomsize: datasnap.val().roomsize,
+                cups: datasnap.val().cups,
 
-                _key: snapshot.key
+                _key: datasnap.key
+
             })
-        }
-    })
+        })
+  
 }
 
 componentWillUnmount(){
-    if(this.ref){
+
+    if(this.ref) {
         this.ref.off();
     }
 }
-
-//Renders the Order
-_renderActiveOrder(username,drinktype,size,coffeeorder,comment,owneruid,currentuid) {
-if(username){
-    return <View style={styles.orderDetails}>
-        <Text style={styles.orderDetailCoffee}>{size + " " + drinktype}</Text>
-        <Text style={styles.orderDetailOrder}>{coffeeorder}</Text>
-        <Text style={{flex:5,textAlignVertical:'center'}}>picture</Text>
-        <Text style={styles.orderDetailUsername}>{username}</Text>
-        <Text style={styles.orderDetailComment}>{comment}</Text>
-    </View>
-} else {
-        if(owneruid != currentuid){
-            return <View 
-                    style={styles.orderDetails}>
-                    <Button 
-                        color='white'
-                        title="Add an Order!"
-                        borderRadius={17}
-                        backgroundColor='#b18d77'
-                        onPress = {() => {
-                            this.props.navigation.navigate('MakeOrder_Screen')
-                        }}
-                    />
-                </View> 
-        } else {
-            return <View 
-                    style={styles.orderDetails}>
-                    <Button 
-                        color='white'
-                        title="Add an Order!"
-                        borderRadius={17}
-                        backgroundColor='#b18d77'
-                        onPress = {() => {
-                            this.props.navigation.navigate('ViewOrder_Screen')
-                        }}
-                    />
-            </View> 
-        }
-}}
-
-
-_DeleteRoomDB(uid){
-    firebase.database().ref('rooms/' + uid).remove()
-}
-
-_resetStack(){
-    return this.props
-               .navigation
-               .dispatch(NavigationActions.reset(
-                 {
-                    index: 0,
-                    actions: [
-                      NavigationActions.navigate({ routeName: 'JoinRoom_Screen'})
-                    ]
-                  }));
-  }
 
 //Renders a different button based on whether the uid of the room
 //matches the current user.
 _renderDeleteButton(owneruid,currentuid) {
 
-if(owneruid==currentuid){
-    return <View
-    ><Button
-        color='white'
-        backgroundColor='#b18d77'
-        title="Delete"
-        borderRadius={16}
-        fontSize={15}
-        buttonStyle={{marginTop: 5, marginBottom: 5, paddingTop: 5, paddingBottom: 5, paddingLeft: 8, paddingRight: 8}}
-        onPress={() => {
-            this._DeleteRoomDB(currentuid)
-            this.props.navigation.navigate('JoinRoom_Screen')
-            this._resetStack()
-
-        }}
-    />
-</View>      
-}}
+    if(owneruid==currentuid){
+        return <View><Button
+            color='white'
+            backgroundColor='#b18d77'
+            title="Delete"
+            borderRadius={16}
+            fontSize={15}
+            buttonStyle={{marginTop: 5, marginBottom: 5, paddingTop: 5, paddingBottom: 5, 
+                paddingLeft: 8, paddingRight: 8}}
+            onPress={() => {
+                this._DeleteRoomDB(currentuid)
+                this.props.navigation.navigate('JoinRoom_Screen')
+                this._resetStack()
+        }}/>
+    </View>      
+    }
+}
 
 
 componentWillMount() {
-    this.setState({currentuid: firebase.auth().currentUser.uid});
     this._compileRoomDB();
 }
 
@@ -433,97 +350,65 @@ componentWillMount() {
                 backgroundColor: '#e6ddd1',
                 }}>
                     <View style = {{
+                        borderWidth: 1,
                         flex: 1,
+                        flexDirection: 'row',
                     }}>
-                        <View style ={{
-                            flexDirection: 'row',
-                            backgroundColor: '#DECFC6',
-                        }}>
-                            <View style={{
-                                flex: 2,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                <Text style={{fontSize: 16}}>{this.state.coffeeshop}</Text>
-                            </View>
+                        <View style = {{flex:2.4,borderWidth:1,}}>
+                            <Text>{'Coffeeshop: ' + this.state.coffeeshop}</Text>
+                            <Text>{'Location: ' + this.state.dropoffloc}</Text>
+                            <Text>{'Owner: ' + this.state.firstname + ' ' + this.state.lastname}</Text>
+                            <Text>{'Username: ' + this.state.owner}</Text>
+                        </View>
 
-                            <View style={{
-                                flex: 1.6,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                <Text 
-                                    style={{fontSize: 16}}
-                                    numberOfLines= {2}>
-                                {this.state.dropoffloc + "\n" + this.state.dropofftime}</Text>
-                            </View>
-
-                            <View style={{
-                                flex: 1,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                <Text style={{fontSize: 16}}>{this.state.owner}</Text>
-                            </View>
-
-                            <View style ={{
-                                flex: 2,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                            }}>
-                                {this._renderDeleteButton(this.state._key,this.state.currentuid)}
-                            </View>
+                        <View style = {{flex:1,borderWidth:1,}}>
+                            <Text>LOGO</Text>
                         </View>
                     </View>
 
-                    {/*order boxes*/}
-                    <View style={{
-                        flex: 9,
-                        marginBottom: 5,
+                    <View style = {{
+                        borderWidth: 1,
+                        flex: 3,
+                        flexDirection: 'row',
                     }}>
-                        {/*first row*/}
-                        <View style={{
-                            flex: 1,
-                            flexDirection: 'row',
-                        }}>
-                            {/*first order*/}
-                            <View style={styles.orderBox}>
-                                <View style={styles.orderDetails}>
-                                    <Text>{this.state.owner}</Text>
-                                </View>
-                            </View >
-
-                            {/*second order*/}
-                            <View style={styles.orderBox}>
-                                {this._renderActiveOrder(this.state.spot1,this.state.drinktype1,
-                                this.state.size1,this.state.coffeeorder1,this.state.comment1,
-                                this.state._key,this.state.currentuid)}
-                            </View>
-
+                        <View style = {{flex:1.2,borderWidth:1,}}>
+                            <Text style = {{ flex:3 }}>Order Picture</Text>
+                            
+                            <View style = {{flex:1}}><ProfileButton 
+                                title = "Add Order!"
+                                icon={{name: 'add-circle', size: 18}}
+                                onPress = {() => {alert('hi')}}
+                            /></View>
                         </View>
 
-                        {/*second row*/}
-                        <View style={{
-                            flex: 1,
-                            flexDirection: 'row',
-                        }}>
-
-                            {/*3rd order*/}
-                            <View style={styles.orderBox}>
-                                {this._renderActiveOrder(this.state.spot2,this.state.drinktype2,
-                                this.state.size2,this.state.coffeeorder2,this.state.comment2,
-                                this.state._key,this.state.currentuid)}
-                            </View>
-
-                            {/*4th order*/}
-                            <View style={styles.orderBox}>
-                                {this._renderActiveOrder(this.state.spot3,this.state.drinktype3,
-                                this.state.size3,this.state.coffeeorder3,this.state.comment3,
-                                this.state._key,this.state.currentuid)}
-                            </View>
-
+                        <View style = {{flex:1,borderWidth:1,}}>
+                            <View style = {{flex:0.3,borderWidth:1}}></View>
+                            <Text style = {{flex:1}}>Order Details</Text>
+                            <View style = {{flex:0.3,borderWidth:1}}></View>
                         </View>
+                    </View>
 
+                    <View style = {{
+                        borderWidth: 1,
+                        flex: 1.5,
+                    }}>
+                        <View style = {{flex:1,justifyContent:'center'}}>
+                            <TextInput
+                                placeholder='Comment ...'
+                                style={{
+                                    backgroundColor: '#decfc6',
+                                    borderRadius: 10,
+                                    marginLeft: 10,
+                                    marginRight: 10,
+                                    fontSize: 10,
+                                }}
+                                value = {this.state.comment}
+                                onChangeText = {(text) => {this.setState({comment: text})}}
+                            />
+                        </View>
+                        <View style = {{flex:1,borderWidth:1,}}>
+                            <Text>Blank Space?</Text>
+                        </View>
                     </View>
             </View>
 }}
@@ -552,6 +437,9 @@ constructor(props) {
 
         roomflag: '',
         currentuid: '',
+
+        activegroup: '',
+        activelocation: '',
     };
 
     this.userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
@@ -567,8 +455,8 @@ _doIHaveARoom(checkuid) {
             title="My Room" 
             hideShadow
             onPress={() => {
-                this.props.navigation.navigate('ViewRoom_Screen',{uid:checkuid,
-                    roomname:'My Room'})}}>
+                alert('Navigate to My Room')    
+            }}>
             <MaterialIcons name="home" style={styles.actionButtonItem} />
         </ActionButton.Item>
     } else {
@@ -593,10 +481,12 @@ _makeRoomRequest = () => {
     this.userRef.on('value', snapshot => {
 
         //Check if user has a room
-        this.setState({roomflag: snapshot.val().roomflag})
+        this.setState({roomflag: snapshot.val().roomflag, activegroup: snapshot.val().activegroup})
 
         firebase.database().ref('locations/' + firebase.auth().currentUser.uid
             + '/' + snapshot.val().activegroup).once('value', snap => {
+
+                this.setState({activelocation: snap.val().activelocation})
 
                 this.filterRef.once('value', filtersnap => {
 
@@ -650,12 +540,21 @@ componentWillUnmount() {
 render(){
     return <View style={{ backgroundColor: '#e6ddd1',flex: 1 }}>
 
-            <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor: '#e6ddd1', }}>
+            <Button
+            title={'Group: ' + this.state.activegroup + ' / ' + 'Location: ' + this.state.activelocation}
+            onPress={()=>{}}
+            backgroundColor= '#b18d77'
+            borderRadius= {10}
+            buttonStyle={{marginTop:5,marginBottom:5, height:23}}
+            fontSize={12}
+            />
+
+            <List style={{ borderRadius:10,marginLeft:10,marginRight:10,marginBottom:10,
+                backgroundColor: '#b18d77',}}>
                 <FlatList
                     data={this.state.datac}
                     renderItem={({item}) => (
                         <ListItem 
-                            containerStyle={{backgroundColor:'#b18d77'}}
                             title={item.roomname}
                             titleStyle={{
                                 fontWeight: 'bold',
@@ -669,7 +568,8 @@ render(){
                             }}
                             onPress={() => {
                                 this.props.navigation.navigate('ViewRoom_Screen',
-                                    { uid: item._key,roomname:item.roomname })
+                                    { uid: item._key,roomname:item.roomname,
+                                    group:this.state.activegroup, location: this.state.activelocation })
                             }}
                         />
 

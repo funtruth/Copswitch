@@ -9,7 +9,7 @@ import {
     ListView,
     FlatList,
     StyleSheet,
-    TextInput
+    TextInput,
 }   from 'react-native';
 import { Card, FormInput, List, ListItem, Button } from "react-native-elements";
 import ActionButton from "react-native-action-button";
@@ -55,6 +55,8 @@ constructor(props) {
         roomname: '',
 
         activecoffeeshop: '',
+        activegroup: '',
+        activelocation: '',
     };
 
     this.state = {
@@ -83,9 +85,14 @@ _makeRemoteRequest = () => {
 
     //Listens for active group and location -> Looks at filter
     this.userRef.on('value',snap => {
+
+        this.setState({activegroup: snap.val().activegroup})
+
         firebase.database().ref('locations/' + firebase.auth().currentUser.uid + '/' 
         + snap.val().activegroup).once('value', insidesnap => {
             
+            this.setState({activelocation: insidesnap.val().activelocation})
+
             this.filterRef.once('value', filtersnap => {
             
                     firebase.database().ref('orders/' + snap.val().activegroup + '/' 
@@ -194,7 +201,17 @@ render(){
             backgroundColor:'#e6ddd1'
         }}>
 
-        <List style={{ borderTopWidth:0, borderBottomWidth:0, backgroundColor:'#b18d77' }}>
+        <Button
+            title={'Group: ' + this.state.activegroup + ' / ' + 'Location: ' + this.state.activelocation}
+            onPress={()=>{}}
+            backgroundColor= '#b18d77'
+            borderRadius= {10}
+            buttonStyle={{marginTop:5,marginBottom:5, height:23}}
+            fontSize={12}
+        />
+
+        <List style={{ borderRadius:10,marginLeft:10,marginRight:10,
+            backgroundColor:'#b18d77' }}>
             <FlatList
                 data={this.state.data}
                 renderItem={({item}) => (

@@ -219,22 +219,29 @@ render() {
 
     <View style = {{
         flex:1,
-        borderWidth: 1,
         margin: 10,
+        borderRadius: 10,
+        backgroundColor: '#b18d77',
+        justifyContent: 'center',
     }}>
-        <Text>{this.state.activegroupname + ' - ' + this.state.activegroupid}</Text>
-        <Text>{this.state.activegrouptype + ' group'}</Text>
+        <Text style = {{color:'white', marginLeft:20, fontWeight: 'bold',}}>
+            {this.state.activegroupname + ' - ' + this.state.activegroupid}
+        </Text><Text style = {{color:'white', marginLeft:20,}}>
+            {this.state.activegrouptype + ' group'}
+        </Text>
     </View>
 
     <View style = {{
         flex:3,
-        borderWidth:1,
         margin: 10,
+        borderRadius: 10,
+        backgroundColor: '#b18d77',
     }}>
-        <Text>Locations</Text>
-        <Text>{'Current Location: ' + this.state.activelocation}</Text>
+
+        <Text style = {{color:'white', marginLeft:20, fontWeight: 'bold',}}>
+            {'Current Location: ' + this.state.activelocation}</Text>
         <ScrollView>
-        <List style={{ borderWidth: 0, backgroundColor: '#e6ddd1', }}>
+        <List style={{ borderWidth: 0, backgroundColor: '#decfc6', }}>
             <FlatList
                 data={this.state.locationdata}
                 renderItem={({item}) => (
@@ -271,13 +278,15 @@ render() {
 
     <View style = {{
         flex:3,
-        borderWidth: 1,
         margin: 10,
+        borderRadius: 10,
+        backgroundColor: '#b18d77',
     }}>
-        <Text>My Groups</Text>
-        <Text>{'Current Group: ' + this.state.activegroupname}</Text>
+
+        <Text style = {{color:'white', marginLeft:20, fontWeight: 'bold',}}>
+            {'Current Group: ' + this.state.activegroupname}</Text>
         <ScrollView>
-        <List style={{ borderWidth: 0, backgroundColor: '#e6ddd1', }}>
+        <List style={{ borderWidth: 0, backgroundColor: '#decfc6',}}>
             <FlatList
                 data={this.state.groupdata}
                 renderItem={({item}) => (
@@ -303,10 +312,13 @@ render() {
 
     <View style = {{
         flex:2,
-        borderWidth: 1,
         margin: 10,
+        borderRadius: 10,
+        backgroundColor: '#b18d77',
     }}>
-        <Text>Quick Order</Text>
+        <Text style = {{color:'white', marginLeft:20, fontWeight: 'bold',}}>
+            Quick Order
+        </Text>
     </View>
     
     <ActionButton
@@ -400,10 +412,6 @@ _makeGroupDB(displayname,id,type,owner,location) {
         _coffeeorder: false,
         size: 'None',
         _size: false,
-        dropoffloc: 'None',
-        _dropoffloc: false,
-        dropofftime: 'None',
-        _dropofftime: false,
     })
 }
 
