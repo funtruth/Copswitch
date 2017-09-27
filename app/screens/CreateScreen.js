@@ -88,10 +88,6 @@ constructor(props) {
 
         coffeeshopsarray: [
             { key: 1, section: true, label: 'Coffeeshops' },
-            { key: 2, label: "Tim Horton's" },
-            { key: 3, label: "William's" },
-            { key: 4, label: "Starbucks" },
-            { key: 5, label: "Second Cup" },
         ],
         roomsizearray: [
             { key: 1, section: true, label: 'How many more Cups?' },
@@ -120,7 +116,18 @@ componentWillMount() {
             roomname: snapshot.val().firstname + " " + snapshot.val().lastname + "'s Room"
         })
 
-        //Draw list of Locations for Active Group
+        //Draw list of coffeeshops for Active Group
+        firebase.database().ref('groups/' + snapshot.val().activegroup + '/coffeeshops')
+        .once('value', snap => {
+
+            var counter = 2;
+            snap.forEach((child)=> {
+                this.state.coffeeshopsarray.push({key: counter, label: child.key})
+                counter = counter + 1
+            })
+        })
+
+        //Draw list of Drop-off Locations for Active Group
         firebase.database().ref('groups/' + snapshot.val().activegroup + '/locations')
             .once('value', snap => {
 
@@ -129,7 +136,7 @@ componentWillMount() {
                     this.state.locationsarray.push({key: counter, label: child.key})
                     counter = counter + 1
                 })
-            })
+        })
     })
 
     this.setState({currentuid: firebase.auth().currentUser.uid});
@@ -291,7 +298,7 @@ _compileRoomDB(){
     const uid = params.uid
     
     this.setState({passeduid: uid})
-    this.ref = firebase.database().ref('rooms/' + uid)
+    this.ref = firebase.database().ref('rooms/huddle/room1/' + uid)
     
     this.ref.on('value', (snapshot) => {
         if(snapshot.exists()){
@@ -300,7 +307,6 @@ _compileRoomDB(){
                 owner: snapshot.val().owner,
                 coffeeshop: snapshot.val().coffeeshop,
                 dropoffloc: snapshot.val().dropoffloc,
-                dropofftime: snapshot.val().dropofftime,
                 roomsize: snapshot.val().roomsize,
                 cups: snapshot.val().cups,
                 spot1: snapshot.val().spot1,
@@ -539,28 +545,30 @@ constructor(props) {
     const dataSource = new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
     });
+
     this.state = {
         datac: dataSource,
         loading: false,
 
-        myroomname: '',
+        roomflag: '',
         currentuid: '',
     };
-    this.ref = null;
-    this.ref2 = null;
+
+    this.userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
+    this.filterRef = firebase.database().ref('filters/' + firebase.auth().currentUser.uid);
 }
 
 //Renders the Appropriate Action Button
-_doIHaveARoom(checkuid,myroomname) {
+_doIHaveARoom(checkuid) {
 
-    if(myroomname){
+    if(this.state.roomflag == true){
         return <ActionButton.Item
             buttonColor='#b18d77' 
             title="My Room" 
             hideShadow
             onPress={() => {
                 this.props.navigation.navigate('ViewRoom_Screen',{uid:checkuid,
-                    roomname:myroomname})}}>
+                    roomname:'My Room'})}}>
             <MaterialIcons name="home" style={styles.actionButtonItem} />
         </ActionButton.Item>
     } else {
@@ -582,65 +590,60 @@ _makeRoomRequest = () => {
         currentuid: firebase.auth().currentUser.uid 
     });
 
-    this.ref = firebase.database().ref('rooms/')
-    this.ref.on('value', (dataSnapshot) => {  
-        if(dataSnapshot.exists()){
-            var tasks = [];
-            dataSnapshot.forEach((child) => {
-            if(child.key != this.state.currentuid){
-                tasks.push({
-                    "owner": child.val().owner,
-                    "coffeeshop": child.val().coffeeshop,
-                    "dropoffloc": child.val().dropoffloc,
-                    "dropofftime": child.val().dropofftime,
-                    "roomname": child.val().roomname,
-                    "roomsize": child.val().roomsize,
-                    "spot1": child.val().spot1,
-                    "spot2": child.val().spot2,
-                    "spot3": child.val().spot3,
-                    "cups": child.val().cups,
-                    "_key": child.key
-                });
-            }
-    });
-        
-        this.setState({
-            datac: tasks,
-        });
-        
-    } else {
-        this.setState({
-            datac: [],
-        })
-    }
-    });
+    this.userRef.on('value', snapshot => {
 
-    //Grab the name of my Room
-    this.ref2 = firebase.database().ref('rooms/' + firebase.auth().currentUser.uid  + '/roomname/')
-    this.ref2
-        .on('value',(snapshot) => {
-            if(snapshot.exists()){
-                this.setState({
-                    myroomname: snapshot.val(),
+        //Check if user has a room
+        this.setState({roomflag: snapshot.val().roomflag})
+
+        firebase.database().ref('locations/' + firebase.auth().currentUser.uid
+            + '/' + snapshot.val().activegroup).once('value', snap => {
+
+                this.filterRef.once('value', filtersnap => {
+
+                    firebase.database().ref('rooms/' + snapshot.val().activegroup + '/'
+                        + snap.val().activelocation).orderByChild("coffeeshop")
+                        .equalTo(filtersnap.val().roomfilter).once('value', insidesnap => {
+
+                            var tasks = [];
+                            insidesnap.forEach((child) => {
+                            
+                                //Set to != for non-debugging purposes
+                                if(child.key == this.state.currentuid){
+                                    tasks.push({
+                                        "owner": child.val().owner,
+                                        "coffeeshop": child.val().coffeeshop,
+                                        "dropoffloc": child.val().dropoffloc,
+                                        "roomname": child.val().roomname,
+                                        "roomsize": child.val().roomsize,
+                                        "spot1": child.val().spot1,
+                                        "spot2": child.val().spot2,
+                                        "spot3": child.val().spot3,
+                                        "cups": child.val().cups,
+                                        "_key": child.key
+                                    });
+                                }
+
+                            })
+                    
+                            this.setState({
+                                datac: tasks,
+                            });
+                    })
+
                 })
-            } else {
-                this.setState({myroomname: null})
-            }
-        })
-    
 
-};
+        })
+
+    });
+}
 
 componentWillMount() {
     this._makeRoomRequest();
 };
 
 componentWillUnmount() {
-    if (this.ref) {
-        this.ref.off();
-      }
-    if (this.ref2) {
-        this.ref2.off();
+    if (this.userRef) {
+        this.userRef.off();
     }
 };
 
@@ -651,60 +654,24 @@ render(){
                 <FlatList
                     data={this.state.datac}
                     renderItem={({item}) => (
-
-                        <TouchableOpacity style = {{
-                            backgroundColor: '#decfc6', 
-                            borderRadius: 15,
-                            margin: 15,}}
+                        <ListItem 
+                            containerStyle={{backgroundColor:'#b18d77'}}
+                            title={item.roomname}
+                            titleStyle={{
+                                fontWeight: 'bold',
+                                color: 'white',
+                            }}
+                            subtitle={item.coffeeshop + "\n" + item.dropoffloc + "\n" 
+                                + item.firstname+" "+item.lastname+" ("+item.owner+")"}
+                            subtitleNumberOfLines={4}
+                            subtitleStyle={{
+                                color: '#decfc6'
+                            }}
                             onPress={() => {
                                 this.props.navigation.navigate('ViewRoom_Screen',
                                     { uid: item._key,roomname:item.roomname })
-                            }}>
-                            <Text style = {{
-                                backgroundColor:'#b18d77',
-                                borderTopLeftRadius:15,
-                                borderTopRightRadius:15,
-                                color: 'white',
-                                textAlign: 'center',}}>{item.roomname}</Text>
-                            
-                            <View style = {{flexDirection: 'row'}} >
-                                <View style = {{flex:1}} >
-                                </View>
-
-                                <View style = {{ flex:3,borderWidth:1}}>
-                                    <Text>{item.coffeeshop}</Text>
-                                    <Text>{item.dropoffloc}</Text>
-                                    <Text>{item.dropofftime}</Text>
-                                    <Text>{item.owner}</Text>
-                                </View>
-
-                                <View style = {{flex:1, justifyContent: 'center'}}>
-                                    <Button
-                                        title='A'
-                                        color='white'
-                                        backgroundColor='#b18d77'
-                                        borderRadius={4}
-                                        fontSize={11}
-                                        buttonStyle={{
-                                            paddingTop: 5, paddingBottom: 5, paddingLeft: 8, paddingRight: 8,
-                                            marginTop: 5, marginBottom:5,
-                                            }}
-                                        onPress={()=>{alert('hi')}}
-                                    />
-                                    <Button
-                                        title='Q'
-                                        color='white'
-                                        backgroundColor='#b18d77'
-                                        borderRadius={4}
-                                        fontSize={11}
-                                        buttonStyle={{
-                                            paddingTop: 5, paddingBottom: 5, paddingLeft: 8, paddingRight: 8,
-                                            marginBottom:5,}}
-                                        onPress={()=>{alert('hi')}}
-                                    />
-                                </View>
-                            </View>
-                        </TouchableOpacity>
+                            }}
+                        />
 
                     )}
                     keyExtractor={item => item._key}
@@ -717,7 +684,7 @@ render(){
                 useNativeFeedback = {false} 
                 icon={<MaterialIcons name="menu" style={styles.actionButtonIcon }/>}>
                 
-                    {this._doIHaveARoom(this.state.currentuid,this.state.myroomname)}
+                    {this._doIHaveARoom(this.state.currentuid)}
 
              </ActionButton>
              

@@ -87,7 +87,6 @@ _makeRemoteRequest = () => {
         + snap.val().activegroup).once('value', insidesnap => {
             
             this.filterRef.once('value', filtersnap => {
-
             
                     firebase.database().ref('orders/' + snap.val().activegroup + '/' 
                         + insidesnap.val().activelocation).orderByChild("coffeeshop")
@@ -199,11 +198,7 @@ render(){
             <FlatList
                 data={this.state.data}
                 renderItem={({item}) => (
-                    <ListItem 
-                        containerStyle={{
-                            marginLeft: 5,
-                            
-                        }}
+                    <ListItem
                         title={`${item.size} ${item.drinktype} (${item.coffeeorder})`}
                         titleStyle={{
                             fontWeight: 'bold',
