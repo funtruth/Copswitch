@@ -31,7 +31,7 @@ static navigationOptions = {
   headerTitle: 'My Profile',
   headerTintColor: 'white',
   headerStyle: {
-      backgroundColor: '#9373d9',
+      backgroundColor: 'black',
   }
 }
 
@@ -42,11 +42,13 @@ static navigationOptions = {
       username:null,
       email:null,
       loading: true,
+
+      role: '',
+      description: '',
     }
     this.ref = null;
   }
 
-  /*
 componentWillMount() {
   //Grabs the username and email of current user
   this.setState({uid:firebase.auth().currentUser.uid})
@@ -59,6 +61,9 @@ componentWillMount() {
       lastname: snapshot.val().lastname,
       username: snapshot.val().username,
       email: snapshot.val().email,
+
+      role: snapshot.val().role,
+      description: snapshot.val().description,
     })
   })
 }
@@ -66,119 +71,69 @@ componentWillMount() {
 componentWillUnmount() {
   this.ref.off();
 }
-*/
+
   render(){
     return <View style={{
               flex: 1,
               backgroundColor: 'white',
           }}>
-            
-            <View style = {{
-              flex: 1,
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}>
-                <View style = {{
-                  flex: 1,
-                  alignItems: 'center',
+
+              <View style = {{flex:1.5}}/>
+
+              <View style = {{flex:1,borderWidth:1, alignItems: 'center',justifyContent:'center'}}>
+                  <Text>My Role:</Text>
+                  <Text style={{fontWeight:'bold',fontSize:20}}>{this.state.role}</Text>
+              </View>
+
+              <View style = {{flex:2,borderWidth:1, alignItems: 'center',justifyContent:'center'}}>
+                  <Text>{this.state.description}</Text>
+              </View>
+
+              <View style = {{
+                  flex: 1.1,
+                  alignItems:'center',
+                  borderWidth: 1,
                 }}>
-                    <Avatar
-                      large
-                      rounded
-                      containerStyle={{
-                        borderWidth: 2,
-                        borderColor: '#9373d9',
-                      }}
-                    />
-                </View>
-              
-                <View style = {{
-                    flex: 1,
-                  }}>
-                    <Text style={{ color: '#9373d9', fontSize: 24}}>{this.state.firstname 
-                        + " " + this.state.lastname}</Text>
-                    <Text style={{ color: '#9373d9', fontSize: 12}}>{this.state.email}</Text>
-                    <Text style={{ color:'#9373d9', fontSize: 18}}>{this.state.username}</Text>
-                </View>
-            </View>
+                  <Text style={{ color: 'black', fontSize: 24}}>{this.state.firstname 
+                      + " " + this.state.lastname}</Text>
+                  <Text style={{ color: 'black', fontSize: 12}}>{this.state.email}</Text>
+                  <Text style={{ color:'black', fontSize: 18}}>{this.state.username}</Text>
+              </View>
 
-            <View style = {{
-              flex: 2,
-              backgroundColor: 'white',
-            }}>
-
-              <ScrollView style = {{
+              <View style = {{
                 flex: 1,
+                flexDirection: 'row',
+                backgroundColor: 'white',
               }}>
                 <View style = {{
                   flex: 1,
-                  flexDirection: 'row',
-                  backgroundColor: 'white',
+                  margin: 5,
+                  justifyContent:'center',
                 }}>
-                  <View style = {{
-                    flex: 1,
-                    margin: 5,
-                  }}>
-                    <ProfileButton title="Settings" 
-                      icon={{name: 'settings', size: 16}}
-                      onPress={() => {
-                        this.props.navigation.navigate('SettingsScreen')
-                      }}/>
-                  </View>
-                  <View style = {{
-                    flex: 1,
-                    margin: 5,
-                  }}>
-                    <ProfileButton
-                      title="Defaults"
-                      icon={{name: 'menu', size: 16}}
-                      onPress={() => {
-                        this.props.navigation.navigate('DefaultsScreen')
-                      }}/>
-                    </View>
+                  <ProfileButton title="Settings" 
+                    icon={{name: 'settings', size: 16}}
+                    onPress={() => {
+                      this.props.navigation.navigate('SettingsScreen')
+                    }}/>
                 </View>
 
                 <View style = {{
-                  flex: 1,
-                  flexDirection: 'row',
-                  backgroundColor: 'white',
+                  flex:1,
+                  margin: 5,
+                  justifyContent:'center',
                 }}>
-                  <View style = {{
-                    flex: 1,
-                    margin: 5,
-                  }}>
-                    <ProfileButton
-                      title="Log Out"
-                      icon={{name: 'subdirectory-arrow-left', size: 16}}
-                      onPress={() => {
-                        this.props.navigation.navigate('SignedOut');
-                      
-                        //onSignOut().then(() => {
-                          //firebase.auth().signOut();
-                        //this.props.navigation.navigate('SignedOut');
-                        //}) 
-                    }}/>
-                  </View>
-                  <View style = {{
-                    flex: 1,
-                    margin: 5
-                  }}>
-                    <ProfileButton
-                      title="Delete Account"
-                      icon={{name: 'delete', size: 16}}
-                      onPress={() => {
-                        firebase.database().ref('users/' + this.state.uid).remove();
-                        firebase.auth().currentUser.delete().then(() => {
-                          this.props.navigation.navigate('SignedOut');
-                        }).catch(() => {
-                          alert('Failed to Delete');
-                        })
-                      }}/>
-                    </View>
+                  <ProfileButton
+                    title="Log Out"
+                    icon={{name: 'subdirectory-arrow-left', size: 16}}
+                    onPress={() => {
+                      this.props.navigation.navigate('SignedOut');
+                    
+                      //onSignOut().then(() => {
+                        //firebase.auth().signOut();
+                      //this.props.navigation.navigate('SignedOut');
+                      //}) 
+                  }}/>
                 </View>
-
-
-                </ScrollView>
             </View>
     </View>
 }};
@@ -484,9 +439,6 @@ export default stackNav = StackNavigator(
       },
       SettingsScreen: {
         screen: SettingsScreen,
-      },
-      DefaultsScreen: {
-          screen: DefaultsScreen,
       },
   },
       {
