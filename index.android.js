@@ -5,8 +5,6 @@ import { AppRegistry } from 'react-native';
 import { createRootNavigator } from "./router";
 import { isSignedIn } from "./app/auth";
 
-import CreateScreen from './app/screens/CreateScreen';
-
 export default class App extends React.Component {
     constructor(props) {
         super(props);

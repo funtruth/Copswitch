@@ -11,10 +11,9 @@ import styles from "./app/styles/Styles";
 import SignUp from "./app/loginscreens/SignUp";
 import SignIn from "./app/loginscreens/SignIn";
 
-import Rooms from "./app/screens/CreateScreen";
-import Deliver from "./app/screens/DeliveryScreen";
-import Profile from "./app/screens/ProfileScreen";
-import Group from "./app/screens/GroupScreen.js";
+import Lists from "./app/screens/ListsScreen";
+import Board from "./app/screens/BoardScreen";
+import Profile from "./app/screens/ProfileScreen.js";
 
 export const SignedOut = StackNavigator(
   {
@@ -32,29 +31,20 @@ export const SignedOut = StackNavigator(
   
   export const SignedIn = TabNavigator(
     {
-      Rooms: {
-        screen: Rooms,
+      Lists: {
+        screen: Lists,
         navigationOptions: {
-          tabBarIcon: ({ tintColor }) => (
-            <MaterialIcons name="home" style={styles.icon}/>
-          ),
-          
-        }
-      },
-      Deliver: {
-        screen: Deliver,
-        navigationOptions: {
-          tabBarIcon: ({ tintColor }) => (
-            <MaterialIcons name="shopping-cart" style={styles.icon}/>
-          ),
-          
-        }
-      },
-      Group: {
-        screen: Group,
-        navigationOptions : {
           tabBarIcon: ({ tintColor }) => (
             <MaterialIcons name="group" style={styles.icon}/>
+          ),
+          
+        }
+      },
+      Board: {
+        screen: Board,
+        navigationOptions : {
+          tabBarIcon: ({ tintColor }) => (
+            <MaterialIcons name="home" style={styles.icon}/>
           ),
         }
       },
@@ -72,21 +62,21 @@ export const SignedOut = StackNavigator(
       tabBarOptions: {
         showIcon: true,
         showLabel: false,
-        activeTintColor:'#8b6f4b',
-        inactiveTintColor:'#b89d7a',
+        activeTintColor:'#9373d9',
+        inactiveTintColor:'#9373d9',
         style: {
-          backgroundColor: '#DECFC6',
+          backgroundColor: 'black',
         },
         indicatorStyle: {
-          backgroundColor: '#b18d77',
+          backgroundColor: 'white',
           height:5,
         }
       },
-      initialRouteName: 'Rooms',
+      initialRouteName: 'Board',
     }
   );
   
-  export const createRootNavigator = (signedIn = true) => {
+  export const createRootNavigator = (signedIn) => {
     
     return StackNavigator(
       {

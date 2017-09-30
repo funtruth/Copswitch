@@ -58,7 +58,7 @@ export default StyleSheet.create({
     //Tab
     icon: {
       height: 26,
-      color: '#b18d77',
+      color: '#ffffff',
       fontSize: 20
     },
     

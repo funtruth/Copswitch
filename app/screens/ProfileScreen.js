@@ -22,11 +22,6 @@ import HeaderButton from '../components/HeaderButton.js';
 import ToggleListItem from '../components/ToggleListItem.js';
 import NormalListItem from '../components/NormalListItem.js';
 
-//import { onSignOut } from "../auth";
-
-//Facebook
-import { LoginManager } from 'react-native-fbsdk'
-
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
@@ -36,7 +31,7 @@ static navigationOptions = {
   headerTitle: 'My Profile',
   headerTintColor: 'white',
   headerStyle: {
-      backgroundColor: '#b18d77',
+      backgroundColor: '#9373d9',
   }
 }
 
@@ -51,6 +46,7 @@ static navigationOptions = {
     this.ref = null;
   }
 
+  /*
 componentWillMount() {
   //Grabs the username and email of current user
   this.setState({uid:firebase.auth().currentUser.uid})
@@ -70,10 +66,11 @@ componentWillMount() {
 componentWillUnmount() {
   this.ref.off();
 }
+*/
   render(){
     return <View style={{
               flex: 1,
-              backgroundColor: '#e6ddd1',
+              backgroundColor: 'white',
           }}>
             
             <View style = {{
@@ -90,7 +87,7 @@ componentWillUnmount() {
                       rounded
                       containerStyle={{
                         borderWidth: 2,
-                        borderColor: '#b18d77',
+                        borderColor: '#9373d9',
                       }}
                     />
                 </View>
@@ -98,16 +95,16 @@ componentWillUnmount() {
                 <View style = {{
                     flex: 1,
                   }}>
-                    <Text style={{ color:'#b18d77', fontSize: 24}}>{this.state.firstname 
+                    <Text style={{ color: '#9373d9', fontSize: 24}}>{this.state.firstname 
                         + " " + this.state.lastname}</Text>
-                    <Text style={{ color: '#b18d77', fontSize: 12}}>{this.state.email}</Text>
-                    <Text style={{ color:'#b18d77', fontSize: 18}}>{this.state.username}</Text>
+                    <Text style={{ color: '#9373d9', fontSize: 12}}>{this.state.email}</Text>
+                    <Text style={{ color:'#9373d9', fontSize: 18}}>{this.state.username}</Text>
                 </View>
             </View>
 
             <View style = {{
               flex: 2,
-              backgroundColor: '#e6ddd1',
+              backgroundColor: 'white',
             }}>
 
               <ScrollView style = {{
@@ -116,7 +113,7 @@ componentWillUnmount() {
                 <View style = {{
                   flex: 1,
                   flexDirection: 'row',
-                  backgroundColor: '#e6ddd1',
+                  backgroundColor: 'white',
                 }}>
                   <View style = {{
                     flex: 1,
@@ -144,7 +141,7 @@ componentWillUnmount() {
                 <View style = {{
                   flex: 1,
                   flexDirection: 'row',
-                  backgroundColor: '#e6ddd1',
+                  backgroundColor: 'white',
                 }}>
                   <View style = {{
                     flex: 1,
@@ -192,7 +189,7 @@ static navigationOptions = ({navigation}) => ({
   headerTitle: 'Settings',
   headerTintColor: 'white',
   headerStyle: {
-      backgroundColor: '#b18d77',
+      backgroundColor: '#9373d9',
   },
   headerRight: 
   <HeaderButton
@@ -209,7 +206,7 @@ static navigationOptions = ({navigation}) => ({
 
 render() {
   return <ScrollView style = {{
-      backgroundColor: '#e6ddd1',
+      backgroundColor: 'white',
       flex: 1,
   }}>
     <Text style={{
@@ -264,7 +261,7 @@ static navigationOptions = ({navigation}) => {
       headerTitle: 'Defaults',
       headerTintColor: 'white',
       headerStyle: {
-          backgroundColor: '#b18d77',
+          backgroundColor: '#9373d9',
       },
       headerRight: 
       <HeaderButton
@@ -332,14 +329,14 @@ _handleSavePress() {
           ]
         }));
 }
-
+/*
 componentWillMount() {
   this._pullDefaultsDB();
   this.props.navigation.setParams({ 
     handleSave: this._handleSavePress,
   });
 }
-
+*/
 render() {
 
   const coffeeshops = [
@@ -376,7 +373,7 @@ render() {
   ];
 
   return <ScrollView style = {{
-      backgroundColor: '#e6ddd1',
+      backgroundColor: 'white',
       flex: 1,
   }}>
     <List style = {{borderTopWidth: 0, borderBottomWidth: 0}}>
