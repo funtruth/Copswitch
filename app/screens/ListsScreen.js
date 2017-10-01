@@ -23,8 +23,7 @@ import { NavigationActions } from 'react-navigation';
 import firebase from '../firebase/FirebaseController.js';
 
 //Components
-import HeaderButton from '../components/HeaderButton.js';
-import ProfileButton from '../components/ProfileButton.js';
+import CountListItem from '../components/CountListItem.js';
 
 class Roles_Screen extends Component {
 
@@ -45,32 +44,74 @@ constructor(props) {
 
     this.state = {
 
-        vanillaroles: dataSource,
-        normalroles: dataSource,
-        specialroles: dataSource,
+        roles: dataSource,
 
     }
+
+    this.roomTypeRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/roomtype')
 }
 
 
 componentWillMount() {
 
+    this.roomTypeRef.on('value', snap=> {
+        firebase.database().ref('games/' + snap.val()).once('value', snapshot => {
 
+            var roles = [];
+
+            snapshot.forEach((child)=> {
+
+                roles.push({
+                    name: child.val().name,
+                    desc: child.val().desc,
+                    image: child.val().image,
+                    type: child.val().type,
+                    color: child.val().color,
+
+                    key: child.key,
+                })
+            })
+
+            this.setState({
+                roles:roles
+            })
+
+        })
+    })
+
+}
+
+componentWillUnmount() {
+    if(this.roomTypeRef){
+        this.roomTypeRef.off();
+    }
 }
 
 render(){
 
     return <View style={{
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-                backgroundColor: 'white'        
-            }}>
+        flex: 1,
+        backgroundColor: 'white'        
+    }}>
+        <FlatList
+            data={this.state.roles}
+            renderItem={({item}) => (
+                <CountListItem
+                    title={item.name}
+                    color= {item.color}
+                    subtitle={item.desc}
+                    onPress={() => {}}
+                />
 
+            )}
+            style = {{
+                flex:2
+            }}
+            keyExtractor={item => item.key}
+        /> 
+    </View>
+    }
 
- 
-            </View>
-        }
 }
 
 

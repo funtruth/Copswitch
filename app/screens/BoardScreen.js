@@ -69,10 +69,14 @@ _createRoom() {
 
     //TODO: Check if room already exists
 
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({roomname:roomname});
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
+        roomname:roomname,
+        roomtype: 'Mafia',
+    });
     firebase.database().ref('rooms/' + roomname).set({
         phase: 1,
         owner: firebase.auth().currentUser.uid,
+        roomtype: 'Mafia',
     });
     firebase.database().ref('rooms/' + roomname + '/listofplayers/' + this.state.creatorname).set({
         immune: false,
