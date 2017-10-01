@@ -48,36 +48,63 @@ constructor(props) {
 
     }
 
-    this.roomTypeRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/roomtype')
+    this.userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
 }
 
 
 componentWillMount() {
 
-    this.roomTypeRef.on('value', snap=> {
-        firebase.database().ref('games/' + snap.val()).once('value', snapshot => {
+    this.userRef.on('value',snap => {
+        if(snap.val().roomname){
+            
+            firebase.database().ref('games/' + snap.val().roomtype).once('value', snapshot => {
 
-            var roles = [];
+                var roles = [];
+                
+                snapshot.forEach((child)=> {
 
-            snapshot.forEach((child)=> {
+                    roles.push({
+                        name: child.val().name,
+                        desc: child.val().desc,
+                        image: child.val().image,
+                        type: child.val().type,
+                        color: child.val().color,
+                        hideChevron: false,
 
-                roles.push({
-                    name: child.val().name,
-                    desc: child.val().desc,
-                    image: child.val().image,
-                    type: child.val().type,
-                    color: child.val().color,
+                        key: child.key,
+                    })
+                })
 
-                    key: child.key,
+                this.setState({
+                    roles:roles
+                })
+
+            })
+
+        } else {
+            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/games').once('value', snapshot => {
+                var games = [];
+
+                snapshot.forEach((child)=> {
+
+                    games.push({
+                        name: child.key,
+                        desc: child.val().desc,
+                        hideChevron: true,
+                        color: 'black',
+                        onPress: ()=>{firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({roomtype:child.key})},
+
+                        key: child.key,
+                    })
+                })
+
+                this.setState({
+                    roles:games
                 })
             })
-
-            this.setState({
-                roles:roles
-            })
-
-        })
+        }
     })
+
 
 }
 
@@ -100,7 +127,9 @@ render(){
                     title={item.name}
                     color= {item.color}
                     subtitle={item.desc}
-                    onPress={() => {}}
+                    count = {1}
+                    hideChevron={item.hideChevron}
+                    onPress={item.onPress}
                 />
 
             )}

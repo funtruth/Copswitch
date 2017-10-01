@@ -40,6 +40,7 @@ render() {
                 borderBottomWidth: 0,
             }}
             onPress={this.props.onPress}
+            hideChevron={this.props.hideChevron}
 
             rightIcon={
                 <View style = {{flexDirection:'row', alignItems:'center',justifyContent:'center'}}>
@@ -55,7 +56,7 @@ render() {
                             }}
                         />
                         <Text style={{fontWeight:'bold',color:'black',fontSize:24}}>
-                            hi</Text>
+                            {this.props.count}</Text>
                         <MaterialIcons         
                             name= 'remove-circle-outline'
                             style={{                           
