@@ -28,8 +28,6 @@ import HeaderButton from '../components/HeaderButton.js';
 import NormalListItem from '../components/NormalListItem.js';
 import ToggleListItem from '../components/ToggleListItem.js';
 
-import MafiaScreen from './MafiaScreen.js';
-
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
@@ -43,16 +41,16 @@ constructor(props) {
         creatorname:'',
         alias:'',
 
-        roomtype:'',
+        roomtype:'Mafia',    
     };
 
-    this.roomTypeRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/roomtype');
 
 }
 
 componentWillMount() {
+
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-    
+    /*
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).once('value',snap=>{
         if(snap.val().roomname){
             firebase.database().ref('rooms/' + snap.val().roomname).once('value',snapshot=>{
@@ -67,14 +65,13 @@ componentWillMount() {
                 
         }
     })
+    */
 
-    this.roomTypeRef.on('value', snap => {
-        this.setState({roomtype:snap.val()})
-    })
 }
 
 componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
+
 }
 
 _handleBackButton() {
@@ -306,6 +303,8 @@ constructor(props) {
 }
 
 componentWillMount() {
+
+    alert('lobby mount')
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
     this._pullListOfPlayers();
     this._count();
@@ -508,9 +507,6 @@ export default stackNav = StackNavigator(
       },
       Lobby_Screen: {
         screen: Lobby_Screen,
-      },
-      Mafia_Screen: {
-        screen: MafiaScreen,
       },
   },
       {

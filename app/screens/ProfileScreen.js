@@ -25,7 +25,7 @@ import NormalListItem from '../components/NormalListItem.js';
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
-class ProfileScreen extends React.Component {
+export default class ProfileScreen extends React.Component {
 
 static navigationOptions = {
   headerTitle: 'My Profile',
@@ -40,6 +40,8 @@ static navigationOptions = {
     this.state = {
       uid:null,
       username:null,
+      firstname: '',
+      lastname:'',
       email:null,
       loading: true,
 
@@ -50,12 +52,13 @@ static navigationOptions = {
   }
 
 componentWillMount() {
+
   //Grabs the username and email of current user
   this.setState({uid:firebase.auth().currentUser.uid})
   const uid = firebase.auth().currentUser.uid 
   this.ref = firebase.database().ref("users/" + uid)
 
-  this.ref.on('value',snapshot => {
+  this.ref.once('value',snapshot => {
       this.setState({
         firstname: snapshot.val().firstname,
         lastname: snapshot.val().lastname,
@@ -138,6 +141,7 @@ componentWillUnmount() {
     </View>
 }};
 
+/*
 class SettingsScreen extends React.Component {
 
 static navigationOptions = ({navigation}) => ({
@@ -284,14 +288,14 @@ _handleSavePress() {
           ]
         }));
 }
-/*
+
 componentWillMount() {
   this._pullDefaultsDB();
   this.props.navigation.setParams({ 
     handleSave: this._handleSavePress,
   });
 }
-*/
+
 render() {
 
   const coffeeshops = [
@@ -447,6 +451,7 @@ export default stackNav = StackNavigator(
       }
   );
 
+  */
 
   const styles = StyleSheet.create({
     actionButtonIcon: {

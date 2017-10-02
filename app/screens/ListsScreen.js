@@ -23,9 +23,9 @@ import { NavigationActions } from 'react-navigation';
 import firebase from '../firebase/FirebaseController.js';
 
 //Components
-import CountListItem from '../components/CountListItem.js';
+import RulebookListItem from '../components/RulebookListItem.js';
 
-class Roles_Screen extends Component {
+export default class Roles_Screen extends Component {
 
 static navigationOptions = {
     headerTitle: 'Game',
@@ -34,6 +34,7 @@ static navigationOptions = {
         backgroundColor: 'black',
     }
 }
+
 
 constructor(props) {
     super(props);
@@ -48,118 +49,51 @@ constructor(props) {
 
     }
 
-    this.listRef = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
-    this.roomListener = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
+    this.roomTypeListener = firebase.database().ref('users/' 
+        + firebase.auth().currentUser.uid + '/roomtype');
 }
 
 
 componentWillMount() {
 
-    this.listRef.on('value',snap=>{
+        this.roomTypeListener.on('value', snapshot => {
 
-        this.roomListener.once('value', snapshot => {
-
-            if(snap.exists()){
-
-                    var roles = [];
-                    snap.forEach((child) => {
-                        roles.push({
-                            name: child.key,
-                            desc: child.val().desc,
-                            image: child.val().image,
-                            type: child.val().type,
-                            color: child.val().color,
-                            count: child.val().count,
-                            hideChevron: false,
-        
-                            key: child.key,
-                        })
-                    })
-                    this.setState({ roles:roles })
-
-            } else if (snapshot.val().roomname) {
-
-                firebase.database().ref('games/' + snapshot.val().roomtype).once('value',innersnap=>{
-                    var rules = [];
-                    innersnap.forEach((child)=>{
-                        rules.push({
-                            name: child.val().name,
-                            desc: child.val().rules,
-                            image: child.val().image,
-                            type: child.val().type,
-                            color: child.val().color,
-                            count: 1,
-                            hideChevron: true,
-        
-                            key: child.key, 
-                        })
-                    })
-
-                    this.setState({ roles: rules })
-
-                })
-            } else {
-                firebase.database().ref('users/' + firebase.auth().currentUser.uid 
-                + '/games').once('value', deepshot => {
+                firebase.database().ref('games/' + snapshot.val()).once('value', deepshot => {
                 
-                var games = [];
+                var roles = [];
                 deepshot.forEach((child)=> {
-                    games.push({
-                        name: child.key,
+                    roles.push({
+                        name: child.val().name,
                         desc: child.val().desc,
-                        hideChevron: true,
-                        color: 'black',
-                        count: 1,
-                        onPress: ()=>{firebase.database().ref('users/' 
-                            + firebase.auth().currentUser.uid).update({roomtype:child.key})},
+                        color: child.val().color,
 
                         key: child.key,
                     })
                 })
-                    this.setState({ roles:games })
+                    this.setState({ roles:roles })
                 })
-            }
         })
 
-    })
-}
-
-componentWillUnmount() {
-    if(this.listRef){
-        this.listRef.off();
-    }
 }
 
 render(){
-
-    return <View style={{
-        flex: 1,
-        backgroundColor: 'white'        
-    }}>
-        <FlatList
+    //return <View><Text>hi</Text></View>
+    return <View><FlatList
             data={this.state.roles}
             renderItem={({item}) => (
-                <CountListItem
+                <RulebookListItem
                     title={item.name}
                     color= {item.color}
                     subtitle={item.desc}
-                    count = {item.count}
-                    hideChevron={item.hideChevron}
-                    onPress={item.onPress}
                 />
 
             )}
-            style = {{
-                flex:2
-            }}
             keyExtractor={item => item.key}
-        /> 
-    </View>
+        /></View>
     }
-
 }
 
-
+/*
 class ViewRoom_Screen extends Component {
 
 static navigationOptions = ({navigation}) => ({
@@ -251,13 +185,13 @@ _compileRoomDB(){
         })
   
 }
-/*
+
 componentWillUnmount(){
 
     if(this.ref) {
         this.ref.off();
     }
-}*/
+}
 
 //Renders a different button based on whether the uid of the room
 //matches the current user.
@@ -281,10 +215,10 @@ _renderDeleteButton(owneruid,currentuid) {
     }
 }
 
-/*
+
 componentWillMount() {
     this._compileRoomDB();
-}*/
+}
 
     render(){
         
@@ -471,7 +405,7 @@ _makeRoomRequest = () => {
 
     });
 }
-/*
+
 componentWillMount() {
     this._makeRoomRequest();
 };
@@ -480,7 +414,7 @@ componentWillUnmount() {
     if (this.userRef) {
         this.userRef.off();
     }
-};*/
+};
 
 
 render(){
@@ -526,34 +460,5 @@ render(){
              
         </View>
 }};
+*/
 
-export default stackNav = StackNavigator(
-{
-    Roles_Screen: {
-        screen: Roles_Screen,
-    },
-    ViewRoom_Screen: {
-        screen: ViewRoom_Screen,
-    },
-    JoinRoom_Screen: {
-        screen: JoinRoom_Screen,
-    },
-},
-    {
-        headerMode: 'screen',
-        initialRouteName: 'Roles_Screen',
-    }
-);
-
-const styles = StyleSheet.create({
-    actionButtonIcon: {
-        fontSize: 20,
-        height: 22,
-        color: '#8b6f4b',
-    },
-    actionButtonItem: {
-        fontSize: 20,
-        height: 22,
-        color: 'white',
-    },
-});

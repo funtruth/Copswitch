@@ -24,7 +24,6 @@ import randomize from 'randomatic';
 
 import { Button, List, ListItem, FormInput } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
-import HeaderButton from '../components/HeaderButton.js';
 import NormalListItem from '../components/NormalListItem.js';
 import ToggleListItem from '../components/ToggleListItem.js';
 
@@ -40,21 +39,28 @@ constructor(props) {
         rowHasChanged: (row1, row2) => row1 !== row2,
     });
 
-    const { params } = this.props.navigation.state;
 
     this.state = {
-        roomname: params.roomname,
+        roomname: '',
         phase: '',
 
         rightlist: dataSource,
         leftlist: dataSource,
     };
 
-}
+    //this.ref = firebase.database().ref('rooms/' + params.roomname.toUpperCase());
+    //this.playersRef = firebase.database().ref('rooms/' + params.roomname.toUpperCase() 
+    //    + '/listofplayers');
 
+}
+ /*
 componentWillMount() {
 
-    firebase.database().ref('rooms/' + this.state.roomname).on('value',snap=>{
+    alert('mafia mount')
+
+    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
+
+    this.ref.on('value',snap=>{
         this.setState({phase:snap.val().phase})
     })
 
@@ -62,12 +68,15 @@ componentWillMount() {
     
 }
 
-componentDidMount() {
-    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-}
-
 componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
+
+    if(this.ref){
+        this.ref.off();
+    }
+    if(this.playersRef){
+        this.playersRef.off();
+    }
 }
 
 _handleBackButton() {
@@ -76,8 +85,7 @@ _handleBackButton() {
 
 _pullListOfPlayers() {
     
-    firebase.database().ref('rooms/' + this.state.roomname.toUpperCase() 
-        + '/listofplayers').on('value',snap => {
+    this.playersRef.on('value',snap => {
         
         var leftlist = [];
         var rightlist = [];
@@ -104,7 +112,7 @@ _pullListOfPlayers() {
 }
 
 _renderComponent(phase) {
-    alert('hi')
+    
     if(phase == 2){
         return <View style = {{
             backgroundColor: 'white',
@@ -297,12 +305,20 @@ _renderComponent(phase) {
     }
 }
 
+*/
 render() {
-    return <View style = {{
+/*    return <View style = {{
         backgroundColor: 'white',
         flex: 1,
         flexDirection: 'row',
     }}>
         {this._renderComponent(this.state.phase)}
+    </View>*/
+    return <View style = {{
+        backgroundColor: 'white',
+        flex: 1,
+        flexDirection: 'row',
+    }}>
+        <Text>hi</Text>
     </View>
 }}
