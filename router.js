@@ -35,7 +35,7 @@ export const SignedOut = StackNavigator(
         screen: Lists,
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => (
-            <MaterialIcons name="group" style={styles.icon}/>
+            <MaterialIcons name="assignment" style={styles.icon}/>
           ),
           
         }

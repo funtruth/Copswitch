@@ -55,7 +55,16 @@ componentWillMount() {
     
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).once('value',snap=>{
         if(snap.val().roomname){
-            this.props.navigation.navigate('Lobby_Screen', {roomname:snap.val().roomname})
+            firebase.database().ref('rooms/' + snap.val().roomname).once('value',snapshot=>{
+
+                if(snapshot.val().phase > 1){
+                    this.props.navigation.navigate('Mafia_Screen', {roomname:snap.val().roomname})
+                } else {
+                    this.props.navigation.navigate('Lobby_Screen', {roomname:snap.val().roomname})
+                }
+
+            })
+                
         }
     })
 
@@ -93,6 +102,8 @@ _createRoom() {
         + firebase.auth().currentUser.uid).set({
             name: this.state.creatorname,
             immune: false,
+            healed: false,
+            shot: false,
             votes: 0,
     });
 
@@ -131,7 +142,8 @@ _joinRoom(joincode) {
                 .update({
                     roomtype:snap.val().roomtype,
                 })
-            this.props.navigation.navigate('Lobby_Screen', { roomname: this.state.joincode});
+            
+                this.props.navigation.navigate('Lobby_Screen', { roomname: this.state.joincode});
         } else {
             alert('Room does not Exist.')
         }
@@ -381,6 +393,9 @@ _startGame(rolecount,playercount,roomname) {
 
     if(rolecount==playercount){
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
+
+        firebase.database().ref('rooms/' + roomname).update({phase:2});
+
         this.props.navigation.navigate('Mafia_Screen', { roomname:roomname })
     } else {
         alert('The number of players does not match the Game set-up.');

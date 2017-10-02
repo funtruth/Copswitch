@@ -60,6 +60,7 @@ componentWillMount() {
         this.roomListener.once('value', snapshot => {
 
             if(snap.exists()){
+
                     var roles = [];
                     snap.forEach((child) => {
                         roles.push({
@@ -75,7 +76,9 @@ componentWillMount() {
                         })
                     })
                     this.setState({ roles:roles })
-            } else if (snapshot.val().roomtype) {
+
+            } else if (snapshot.val().roomname) {
+
                 firebase.database().ref('games/' + snapshot.val().roomtype).once('value',innersnap=>{
                     var rules = [];
                     innersnap.forEach((child)=>{
@@ -100,7 +103,7 @@ componentWillMount() {
                 + '/games').once('value', deepshot => {
                 
                 var games = [];
-                sdeepshot.forEach((child)=> {
+                deepshot.forEach((child)=> {
                     games.push({
                         name: child.key,
                         desc: child.val().desc,
@@ -122,8 +125,8 @@ componentWillMount() {
 }
 
 componentWillUnmount() {
-    if(this.roomListener){
-        this.roomListener.off();
+    if(this.listRef){
+        this.listRef.off();
     }
 }
 

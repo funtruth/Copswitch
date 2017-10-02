@@ -31,86 +31,34 @@ import ToggleListItem from '../components/ToggleListItem.js';
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
-class Day_Screen extends React.Component {
+export default class Day_Screen extends React.Component {
 
 constructor(props) {
     super(props);
 
-    this.state = {
-        joincode: '',
-    };
+    const dataSource = new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+    });
 
-}
-
-componentWillMount() {
     const { params } = this.props.navigation.state;
-    const roomname = params.roomname
-    
-}
-
-componentDidMount() {
-    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-}
-
-componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-}
-
-_handleBackButton() {
-    return true;
-}
-
-_makeRoom() {
-    
-}
-
-render() {
-    return <View style = {{
-        backgroundColor: 'white',
-        flex: 1,
-        flexDirection: 'row',
-    }}>
-        <View style = {{flex:1}}>
-
-        </View>
-
-        <View style = {{flex:2}}>
-            <View style = {{
-                flex:1,
-                borderBottomLeftRadius: 10,
-                borderBottomRightRadius: 10,
-                backgroundColor: 'black',
-                justifyContent: 'center',
-            }}> 
-                <Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
-                    Day Phase
-                </Text>
-            </View>
-
-            <View style = {{flex:8}}/>
-        </View>
-
-        <View style = {{flex:1}}>
-
-        </View>
-
-    </View>
-}
-}
-    
-class Nomination_Screen extends React.Component {
-
-constructor(props) {
-    super(props);
 
     this.state = {
-        joincode: '',
+        roomname: params.roomname,
+        phase: '',
+
+        rightlist: dataSource,
+        leftlist: dataSource,
     };
 
 }
 
 componentWillMount() {
 
+    firebase.database().ref('rooms/' + this.state.roomname).on('value',snap=>{
+        this.setState({phase:snap.val().phase})
+    })
+
+    this._pullListOfPlayers();
     
 }
 
@@ -126,125 +74,227 @@ _handleBackButton() {
     return true;
 }
 
-_makeRoom() {
+_pullListOfPlayers() {
     
+    firebase.database().ref('rooms/' + this.state.roomname.toUpperCase() 
+        + '/listofplayers').on('value',snap => {
+        
+        var leftlist = [];
+        var rightlist = [];
+        var counter = 1;
+
+        snap.forEach((child)=> {
+            if((counter%2) == 1){
+                leftlist.push({
+                    name: child.val().name,
+                    key: child.key,
+                })
+            } else {
+                rightlist.push({
+                    name: child.val().name,
+                    key: child.key,
+                })
+            }
+            counter++;
+        })
+
+        this.setState({leftlist:leftlist})
+        this.setState({rightlist:rightlist})
+    })
 }
 
-render() {
-    return <View style = {{
-        backgroundColor: 'white',
-        flex: 1,
-    }}>
-
-        <View style = {{
-            flex:1,
-            margin: 10,
-            borderRadius: 10,
-            backgroundColor: 'black',
-            justifyContent: 'center',
+_renderComponent(phase) {
+    alert('hi')
+    if(phase == 2){
+        return <View style = {{
+            backgroundColor: 'white',
+            flex: 1,
         }}>
-            <Text style = {{color:'white', marginLeft:20, fontWeight: 'bold',}}>
-                Active Game
-            </Text>
-        </View>
-
-        <View style = {{flex:1.5}}/>
-
-        <View style = {{
-            flex:1.5,
-            margin: 5,
-            borderWidth: 1,
-            justifyContent: 'center',
-            flexDirection: 'row',
-        }}>
+            <View style = {{flex:1,flexDirection:'row'}}>
                 <View style = {{flex:1}}/>
-                <View style = {{flex:4}}>
-                <ProfileButton
-                    title="Create Room"
-                    onPress={()=>{alert('hi')}}
-                /></View>
-                <View style = {{flex:1}}/>
-
-        </View>
-        
-        <View style = {{flex:1}}/>
-
-        <View style = {{
-            flex:1,
-            margin: 5,
-            borderWidth: 1,
-            justifyContent: 'center',
-            flexDirection: 'row',
-        }}>
-            <View style = {{flex:1}}/>
-            <TextInput
-                placeholder="Room Code ..."
-                style={{
-                    backgroundColor: 'white',
-                    borderWidth:2,
+                <View style = {{
                     flex:2,
-                }}
-                value={this.state.joincode}
-                onChangeText = {(text) => {this.setState({joincode: text})}}
-            />
+                    borderBottomLeftRadius: 10,
+                    borderBottomRightRadius: 10,
+                    backgroundColor: 'black',
+                    justifyContent: 'center',
+                }}> 
+                    <Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
+                        Day Phase
+                    </Text>
+                    <Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
+                        {this.state.roomname}
+                    </Text>
+                </View>
+                <View style = {{flex:1}}/>
+            </View>
+    
+            <View style = {{flex:0.2}}/>
+    
+            <View style = {{flex:7,flexDirection: 'row'}}>
+                <View style = {{flex:3}}>
+                    <FlatList
+                        data={this.state.leftlist}
+                        renderItem={({item}) => (
+                            <TouchableOpacity 
+                                onPress={() => {alert('dumb')}}
+                                style = {{
+                                    height:40,
+                                    backgroundColor: 'black',
+                                    borderBottomRightRadius: 10,
+                                    borderTopRightRadius: 10,
+                                    marginBottom: 10,
+                                    justifyContent:'center'
+                            }}> 
+                                <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>
+                            </TouchableOpacity>
+    
+                        )}
+                        keyExtractor={item => item.key}
+                    />
+                </View>
+                <View style = {{flex:2}}/>
+                <View style = {{flex:3}}>
+                    <FlatList
+                        data={this.state.rightlist}
+                        renderItem={({item}) => (
+                            <TouchableOpacity 
+                                onPress={() => {alert('dumb')}}
+                                style = {{
+                                    height:40,
+                                    backgroundColor: 'black',
+                                    borderBottomLeftRadius: 10,
+                                    borderTopLeftRadius: 10,
+                                    marginBottom: 10,
+                                    justifyContent:'center'
+                            }}> 
+                                <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>
+                            </TouchableOpacity>
+    
+                        )}
+                        keyExtractor={item => item.key}
+                    />
+                </View>
+            </View>
+    
+            <View style = {{flex:0.2}}/>
+    
             <View style = {{flex:1}}/>
-        </View>
-
-        <View style = {{
-            flex:1.5,
-            margin: 5,
-            borderWidth: 1,
-            justifyContent: 'center',
-            flexDirection: 'row',
+    
+        </View>   
+    } 
+    if(phase == 3) {
+        return <View style = {{
+            backgroundColor: 'white',
+            flex: 1,
         }}>
-        
+            <View style = {{flex:1,flexDirection:'row'}}>
+                <View style = {{flex:1}}/>
+                <View style = {{
+                    flex:2,
+                    borderBottomLeftRadius: 10,
+                    borderBottomRightRadius: 10,
+                    backgroundColor: 'black',
+                    justifyContent: 'center',
+                }}> 
+                    <Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
+                        Nomination Phase
+                    </Text>
+                    <Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
+                        {this.state.roomname}
+                    </Text>
+                </View>
+                <View style = {{flex:1}}/>
+            </View>
+    
+            <View style = {{flex:0.2}}/>
+    
+            <View style = {{flex:7}}/>
+    
+            <View style = {{flex:0.2}}/>
+    
             <View style = {{flex:1}}/>
-            <View style = {{flex:4}}>
-            <ProfileButton
-                title="Join Room"
-                onPress={()=>{alert('hi')}}
-            /></View>
+    
+        </View>   
+    }
+    if(phase==4){
+        return <View style = {{
+            backgroundColor: 'white',
+            flex: 1,
+        }}>
+            <View style = {{flex:1,flexDirection:'row'}}>
+                <View style = {{flex:1}}/>
+                <View style = {{
+                    flex:2,
+                    borderBottomLeftRadius: 10,
+                    borderBottomRightRadius: 10,
+                    backgroundColor: 'black',
+                    justifyContent: 'center',
+                }}> 
+                    <Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
+                        Night Phase
+                    </Text>
+                    <Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
+                        {this.state.roomname}
+                    </Text>
+                </View>
+                <View style = {{flex:1}}/>
+            </View>
+    
+            <View style = {{flex:0.2}}/>
+    
+            <View style = {{flex:7,flexDirection: 'row'}}>
+                <View style = {{flex:3}}>
+                    <FlatList
+                        data={this.state.leftlist}
+                        renderItem={({item}) => (
+                            <TouchableOpacity 
+                                onPress={() => {alert('dumb')}}
+                                style = {{
+                                    height:40,
+                                    backgroundColor: 'black',
+                                    borderBottomRightRadius: 10,
+                                    borderTopRightRadius: 10,
+                                    marginBottom: 10,
+                                    justifyContent:'center'
+                            }}> 
+                                <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>
+                            </TouchableOpacity>
+    
+                        )}
+                        keyExtractor={item => item.key}
+                    />
+                </View>
+                <View style = {{flex:2}}/>
+                <View style = {{flex:3}}>
+                    <FlatList
+                        data={this.state.rightlist}
+                        renderItem={({item}) => (
+                            <TouchableOpacity 
+                                onPress={() => {alert('dumb')}}
+                                style = {{
+                                    height:40,
+                                    backgroundColor: 'black',
+                                    borderBottomLeftRadius: 10,
+                                    borderTopLeftRadius: 10,
+                                    marginBottom: 10,
+                                    justifyContent:'center'
+                            }}> 
+                                <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>
+                            </TouchableOpacity>
+    
+                        )}
+                        keyExtractor={item => item.key}
+                    />
+                </View>
+            </View>
+    
+            <View style = {{flex:0.2}}/>
+    
             <View style = {{flex:1}}/>
-
+    
         </View>
-
-        <View style = {{flex:3}}/>
-
-
-    </View>
-}
-}
-
-class Night_Screen extends React.Component {
-
-constructor(props) {
-    super(props);
-
-    this.state = {
-        joincode: '',
-    };
-
-}
-
-componentWillMount() {
-
-    
-}
-
-componentDidMount() {
-    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-}
-
-componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-}
-
-_handleBackButton() {
-    return true;
-}
-
-_makeRoom() {
-    
+    }
 }
 
 render() {
@@ -253,62 +303,6 @@ render() {
         flex: 1,
         flexDirection: 'row',
     }}>
-        <View style = {{flex:1}}>
-
-        </View>
-
-        <View style = {{flex:2}}>
-            <View style = {{
-                flex:1,
-                borderBottomLeftRadius: 10,
-                borderBottomRightRadius: 10,
-                backgroundColor: 'black',
-                justifyContent: 'center',
-            }}> 
-                <Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
-                    Day Phase
-                </Text>
-            </View>
-
-            <View style = {{flex:8}}/>
-        </View>
-
-        <View style = {{flex:1}}>
-
-        </View>
-
+        {this._renderComponent(this.state.phase)}
     </View>
 }}
-
-export default stackNav = StackNavigator(
-  {
-      Day_Screen: {
-        screen: Day_Screen,
-      },
-      Nomination_Screen: {
-        screen: Nomination_Screen,
-      },
-      Night_Screen: {
-        screen: Night_Screen,
-      },
-  },
-      {
-          headerMode: 'none',
-          initialRouteName: 'Day_Screen',
-      }
-  );
-
-
-  const styles = StyleSheet.create({
-    actionButtonIcon: {
-        fontSize: 20,
-        height: 22,
-        color: '#a98fe0',
-    },
-    actionButtonItem: {
-        fontSize: 20,
-        height: 22,
-        color: 'white',
-    },
-
-});
