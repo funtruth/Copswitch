@@ -63,7 +63,7 @@ componentWillMount() {
                 if(snapshot.exists()){
                     
                     var roles = [];
-                    snap.forEach((child)=> {
+                    snapshot.forEach((child)=> {
                         roles.push({
                             name: child.key,
                             desc: child.val().desc,
