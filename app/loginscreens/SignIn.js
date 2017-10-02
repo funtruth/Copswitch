@@ -80,6 +80,14 @@ render(){
                 title="Continue Anonymously"
                 onPress={() => {
                     firebase.auth().signInAnonymously().then(() => {
+                        firebase.database().ref('users/' + firebase.auth().currentUser.uid)
+                            .set({
+                                firstname: 'Anon',
+                                lastname: 'ymous',
+                                email: 'anonymous@anonymous.com',
+                                username: 'anonymous',
+                            })
+                        onSignIn();
                         this.props.navigation.navigate("SignedIn")
                     })
                 }}

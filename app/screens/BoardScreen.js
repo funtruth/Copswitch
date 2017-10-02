@@ -42,7 +42,11 @@ constructor(props) {
         joincode: '',
         creatorname:'',
         username:'',
+
+        roomtype:'',
     };
+
+    this.roomTypeRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/roomtype');
 
 }
 
@@ -50,9 +54,13 @@ componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
     
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).once('value',snap=>{
-        if(snap.val().roomname != null){
+        if(snap.val().roomname){
             this.props.navigation.navigate('Lobby_Screen', {roomname:snap.val().roomname})
         }
+    })
+
+    this.roomTypeRef.on('value', snap => {
+        this.setState({roomtype:snap.val()})
     })
 }
 
@@ -71,17 +79,37 @@ _createRoom() {
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
         roomname:roomname,
-        roomtype: 'Mafia',
+        roomtype: this.state.roomtype,
     });
+    
     firebase.database().ref('rooms/' + roomname).set({
         phase: 1,
         owner: firebase.auth().currentUser.uid,
-        roomtype: 'Mafia',
+        roomtype: this.state.roomtype,
     });
+
+    //Set up list of players
     firebase.database().ref('rooms/' + roomname + '/listofplayers/' + this.state.creatorname).set({
         immune: false,
         votes: 0,
     });
+
+    //Set up temporary list of roles
+    firebase.database().ref('games/' + this.state.roomtype).once('value',snap => {
+        snap.forEach((child)=>{
+
+            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+            + '/' + child.val().name).set({
+                count:0,
+                color: child.val().color,
+                desc: child.val().desc,
+                type: child.val().type,
+                image: child.val().image,
+            })
+
+        })
+    })
+
     this.props.navigation.navigate('Lobby_Screen', {roomname: roomname})
 }
 
@@ -95,6 +123,8 @@ _joinRoom(joincode) {
                 votes: 0,
             });        
 
+            firebase.database().ref('users/' + firebase.auth().currentUser.uid)
+                .update({roomtype:snap.val().roomtype})
             this.props.navigation.navigate('Lobby_Screen', { roomname: this.state.joincode});
         } else {
             alert('Room does not Exist.')
@@ -116,7 +146,7 @@ render() {
             justifyContent: 'center',
         }}>
             <Text style = {{color:'white', marginLeft:20, fontWeight: 'bold',}}>
-                Active Game
+                {'Selected Game: ' + this.state.roomtype}
             </Text>
         </View>
 
@@ -238,23 +268,47 @@ constructor(props) {
         rowHasChanged: (row1, row2) => row1 !== row2,
     });
 
+    //Navigation parameters
+    const { params } = this.props.navigation.state;
+    const roomname = params.roomname;
+
     this.state = {
-        roomname: '',
+        roomname: params.roomname,
 
         leftlist:dataSource,
         rightlist:dataSource,
+
+        rolecount:0,
+        playercount:0,
     };
+
+    this.roleCount = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
+    this.playerCount = firebase.database().ref('rooms/' + roomname + '/listofplayers');
 
 }
 
 componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
+    this._pullListOfPlayers();
+    this._count();
 
-    const { params } = this.props.navigation.state;
-    const roomname = params.roomname;
-    this.setState({roomname: roomname})
+}
 
-    firebase.database().ref('rooms/' + roomname.toUpperCase() + '/listofplayers').on('value',snap => {
+componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
+
+    if(this.roleCount){
+        this.roleCount.off();
+    }
+    if(this.playerCount){
+        this.playerCount.off();
+    }
+}
+
+_pullListOfPlayers() {
+
+    firebase.database().ref('rooms/' + this.state.roomname.toUpperCase() 
+        + '/listofplayers').on('value',snap => {
         
         var leftlist = [];
         var rightlist = [];
@@ -278,18 +332,50 @@ componentWillMount() {
     })
 }
 
-componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-}
-
 _handleBackButton() {
     return true;
 }
 
 _deleteRoom() {
-    firebase.database().ref('rooms/' + this.state.roomname).remove()
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({roomname:null})
-    this.props.navigation.navigate('Room_Screen')
+    firebase.database().ref('rooms/' + this.state.roomname).remove();
+    firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({roomname:null});
+    this.props.navigation.navigate('Room_Screen');
+}
+
+_count() {
+
+    //Role Count
+    this.roleCount.on('value',snap=>{
+        var rolecount = 0;
+
+        snap.forEach((child)=>{
+            rolecount = rolecount + child.val().count;
+        })
+        
+        this.setState({rolecount:rolecount})
+    });
+
+    //Player Count
+    this.playerCount.on('value',snap=>{
+        var playercount = 0;
+
+        snap.forEach((child)=>{
+            playercount++;
+        })
+
+        this.setState({playercount:playercount})
+    });
+}
+
+_startGame(rolecount,playercount,roomname) {
+
+    if(rolecount==playercount){
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
+        this.props.navigation.navigate('Mafia_Screen', { roomname:roomname })
+    } else {
+        alert('The number of players does not match the Game set-up.');
+    }
 }
 
 render() {
@@ -381,14 +467,11 @@ render() {
             <View style = {{flex:2}}>
                 <ProfileButton
                     title='Start Game'
-                    onPress={()=> {
-                        this.props.navigation.navigate('Mafia_Screen', { roomname: this.state.roomname})
-                    }}
+                    onPress={()=> {this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)}}
                 />
             </View>
             <View style = {{flex:1}}/>
         </View>
-
 
     </View>
 }}

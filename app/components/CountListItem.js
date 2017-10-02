@@ -52,7 +52,8 @@ render() {
                                 color: 'black',
                             }}
                             onPress={()=>{
-                                alert('hi')
+                                firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+                                    + '/' + this.props.title).update({count:this.props.count + 1})
                             }}
                         />
                         <Text style={{fontWeight:'bold',color:'black',fontSize:24}}>
@@ -64,7 +65,9 @@ render() {
                                 color: 'black',
                             }}
                             onPress={()=>{
-                                alert('hi')
+                                if(this.props.count>0){firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+                                    + '/' + this.props.title).update({count:this.props.count - 1})
+                                }
                             }}
                         />
                    

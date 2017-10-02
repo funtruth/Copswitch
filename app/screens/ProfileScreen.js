@@ -56,15 +56,15 @@ componentWillMount() {
   this.ref = firebase.database().ref("users/" + uid)
 
   this.ref.on('value',snapshot => {
-    this.setState({
-      firstname: snapshot.val().firstname,
-      lastname: snapshot.val().lastname,
-      username: snapshot.val().username,
-      email: snapshot.val().email,
+      this.setState({
+        firstname: snapshot.val().firstname,
+        lastname: snapshot.val().lastname,
+        username: snapshot.val().username,
+        email: snapshot.val().email,
 
-      role: snapshot.val().role,
-      description: snapshot.val().description,
-    })
+        role: snapshot.val().role,
+        description: snapshot.val().description,
+      })
   })
 }
 

@@ -28,7 +28,7 @@ import CountListItem from '../components/CountListItem.js';
 class Roles_Screen extends Component {
 
 static navigationOptions = {
-    headerTitle: 'Roles',
+    headerTitle: 'Game',
     headerTintColor: 'white',
     headerStyle: {
         backgroundColor: 'black',
@@ -48,69 +48,71 @@ constructor(props) {
 
     }
 
-    this.userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
+    this.listRef = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
+    this.roomListener = firebase.database().ref('users/' + firebase.auth().currentUser.uid);
 }
 
 
 componentWillMount() {
 
-    this.userRef.on('value',snap => {
+    this.roomListener.on('value', snap => {
         if(snap.val().roomname){
             
-            firebase.database().ref('games/' + snap.val().roomtype).once('value', snapshot => {
-
-                var roles = [];
-                
-                snapshot.forEach((child)=> {
-
-                    roles.push({
-                        name: child.val().name,
-                        desc: child.val().desc,
-                        image: child.val().image,
-                        type: child.val().type,
-                        color: child.val().color,
-                        hideChevron: false,
-
-                        key: child.key,
+            this.listRef.on('value',snapshot => {
+                //If there is a listofroles ...
+                if(snapshot.exists()){
+                    
+                    var roles = [];
+                    snap.forEach((child)=> {
+                        roles.push({
+                            name: child.key,
+                            desc: child.val().desc,
+                            image: child.val().image,
+                            type: child.val().type,
+                            color: child.val().color,
+                            count: child.val().count,
+                            hideChevron: false,
+        
+                            key: child.key,
+                        })
                     })
-                })
+                    this.setState({ roles:roles })
+        
+                } else {
 
-                this.setState({
-                    roles:roles
-                })
-
+                }
             })
 
+
+
         } else {
-            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/games').once('value', snapshot => {
+            firebase.database().ref('users/' + firebase.auth().currentUser.uid 
+                + '/games').once('value', snapshot => {
+                
                 var games = [];
-
                 snapshot.forEach((child)=> {
-
                     games.push({
                         name: child.key,
                         desc: child.val().desc,
                         hideChevron: true,
                         color: 'black',
-                        onPress: ()=>{firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({roomtype:child.key})},
+                        count: 1,
+                        onPress: ()=>{firebase.database().ref('users/' 
+                            + firebase.auth().currentUser.uid).update({roomtype:child.key})},
 
                         key: child.key,
                     })
                 })
-
-                this.setState({
-                    roles:games
-                })
+                this.setState({ roles:games })
             })
         }
     })
 
-
 }
 
 componentWillUnmount() {
-    if(this.roomTypeRef){
-        this.roomTypeRef.off();
+    if(this.userRef){
+        this.userRef.off();
     }
 }
 
@@ -127,7 +129,7 @@ render(){
                     title={item.name}
                     color= {item.color}
                     subtitle={item.desc}
-                    count = {1}
+                    count = {item.count}
                     hideChevron={item.hideChevron}
                     onPress={item.onPress}
                 />
