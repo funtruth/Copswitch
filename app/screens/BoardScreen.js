@@ -41,7 +41,7 @@ constructor(props) {
     this.state = {
         joincode: '',
         creatorname:'',
-        username:'',
+        alias:'',
 
         roomtype:'',
     };
@@ -89,9 +89,11 @@ _createRoom() {
     });
 
     //Set up list of players
-    firebase.database().ref('rooms/' + roomname + '/listofplayers/' + this.state.creatorname).set({
-        immune: false,
-        votes: 0,
+    firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+        + firebase.auth().currentUser.uid).set({
+            name: this.state.creatorname,
+            immune: false,
+            votes: 0,
     });
 
     //Set up temporary list of roles
@@ -109,7 +111,7 @@ _createRoom() {
 
         })
     })
-
+    
     this.props.navigation.navigate('Lobby_Screen', {roomname: roomname})
 }
 
@@ -118,13 +120,17 @@ _joinRoom(joincode) {
         if(snap.exists()){
 
             firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({roomname:joincode});
-            firebase.database().ref('rooms/' + joincode.toUpperCase() + '/listofplayers/' + this.state.username).set({
-                immune: false,
-                votes: 0,
+            firebase.database().ref('rooms/' + joincode.toUpperCase() 
+                + '/listofplayers/' + firebase.auth().currentUser.uid).set({
+                    name: this.state.alias,
+                    immune: false,
+                    votes: 0,
             });        
 
             firebase.database().ref('users/' + firebase.auth().currentUser.uid)
-                .update({roomtype:snap.val().roomtype})
+                .update({
+                    roomtype:snap.val().roomtype,
+                })
             this.props.navigation.navigate('Lobby_Screen', { roomname: this.state.joincode});
         } else {
             alert('Room does not Exist.')
@@ -207,8 +213,8 @@ render() {
                     borderWidth:2,
                     flex:2,
                 }}
-                value={this.state.username}
-                onChangeText = {(text) => {this.setState({username: text})}}
+                value={this.state.alias}
+                onChangeText = {(text) => {this.setState({alias: text})}}
             />
             <View style = {{flex:1}}/>
         </View>
@@ -317,11 +323,13 @@ _pullListOfPlayers() {
         snap.forEach((child)=> {
             if((counter%2) == 1){
                 leftlist.push({
-                    name: child.key,
+                    name: child.val().name,
+                    key: child.key,
                 })
             } else {
                 rightlist.push({
-                    name: child.key,
+                    name: child.val().name,
+                    key: child.key,
                 })
             }
             counter++;
@@ -340,6 +348,7 @@ _deleteRoom() {
     firebase.database().ref('rooms/' + this.state.roomname).remove();
     firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({roomname:null});
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/bookflag').remove();
     this.props.navigation.navigate('Room_Screen');
 }
 
@@ -433,7 +442,7 @@ render() {
                         </TouchableOpacity>
 
                     )}
-                    keyExtractor={item => item.name}
+                    keyExtractor={item => item.key}
                 />
             </View>
             <View style = {{flex:2}}/>
@@ -455,7 +464,7 @@ render() {
                         </TouchableOpacity>
 
                     )}
-                    keyExtractor={item => item.name}
+                    keyExtractor={item => item.key}
                 />
             </View>
         </View>

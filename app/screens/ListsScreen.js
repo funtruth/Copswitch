@@ -55,15 +55,13 @@ constructor(props) {
 
 componentWillMount() {
 
-    this.roomListener.on('value', snap => {
-        if(snap.val().roomname){
-            
-            this.listRef.on('value',snapshot => {
-                //If there is a listofroles ...
-                if(snapshot.exists()){
-                    
+    this.listRef.on('value',snap=>{
+
+        this.roomListener.once('value', snapshot => {
+
+            if(snap.exists()){
                     var roles = [];
-                    snapshot.forEach((child)=> {
+                    snap.forEach((child) => {
                         roles.push({
                             name: child.key,
                             desc: child.val().desc,
@@ -77,38 +75,32 @@ componentWillMount() {
                         })
                     })
                     this.setState({ roles:roles })
+            } else if (snapshot.val().roomtype) {
+                firebase.database().ref('games/' + snapshot.val().roomtype).once('value',innersnap=>{
+                    var rules = [];
+                    innersnap.forEach((child)=>{
+                        rules.push({
+                            name: child.val().name,
+                            desc: child.val().rules,
+                            image: child.val().image,
+                            type: child.val().type,
+                            color: child.val().color,
+                            count: 1,
+                            hideChevron: true,
         
-                } else {
-                    firebase.database().ref('games/' + snap.val().roomtype).once('value',innersnap=>{
-                        var rules = [];
-                        innersnap.forEach((child)=>{
-                            rules.push({
-                                name: child.val().name,
-                                desc: child.val().rules,
-                                image: child.val().image,
-                                type: child.val().type,
-                                color: child.val().color,
-                                count: 1,
-                                hideChevron: true,
-            
-                                key: child.key, 
-                            })
+                            key: child.key, 
                         })
-
-                        this.setState({ roles: rules })
-
                     })
-                }
-            })
 
+                    this.setState({ roles: rules })
 
-
-        } else {
-            firebase.database().ref('users/' + firebase.auth().currentUser.uid 
-                + '/games').once('value', snapshot => {
+                })
+            } else {
+                firebase.database().ref('users/' + firebase.auth().currentUser.uid 
+                + '/games').once('value', deepshot => {
                 
                 var games = [];
-                snapshot.forEach((child)=> {
+                sdeepshot.forEach((child)=> {
                     games.push({
                         name: child.key,
                         desc: child.val().desc,
@@ -121,16 +113,17 @@ componentWillMount() {
                         key: child.key,
                     })
                 })
-                this.setState({ roles:games })
-            })
-        }
-    })
+                    this.setState({ roles:games })
+                })
+            }
+        })
 
+    })
 }
 
 componentWillUnmount() {
-    if(this.userRef){
-        this.userRef.off();
+    if(this.roomListener){
+        this.roomListener.off();
     }
 }
 
