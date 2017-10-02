@@ -79,7 +79,25 @@ componentWillMount() {
                     this.setState({ roles:roles })
         
                 } else {
+                    firebase.database().ref('games/' + snap.val().roomtype).once('value',innersnap=>{
+                        var rules = [];
+                        innersnap.forEach((child)=>{
+                            rules.push({
+                                name: child.val().name,
+                                desc: child.val().rules,
+                                image: child.val().image,
+                                type: child.val().type,
+                                color: child.val().color,
+                                count: 1,
+                                hideChevron: true,
+            
+                                key: child.key, 
+                            })
+                        })
 
+                        this.setState({ roles: rules })
+
+                    })
                 }
             })
 
