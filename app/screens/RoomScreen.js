@@ -24,9 +24,8 @@ import randomize from 'randomatic';
 
 import { Button, List, ListItem, FormInput } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
-import HeaderButton from '../components/HeaderButton.js';
-import NormalListItem from '../components/NormalListItem.js';
-import ToggleListItem from '../components/ToggleListItem.js';
+
+import Mafia_Screen from './MafiaScreen.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -50,22 +49,15 @@ constructor(props) {
 componentWillMount() {
 
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-    /*
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid).once('value',snap=>{
-        if(snap.val().roomname){
-            firebase.database().ref('rooms/' + snap.val().roomname).once('value',snapshot=>{
-
-                if(snapshot.val().phase > 1){
-                    this.props.navigation.navigate('Mafia_Screen', {roomname:snap.val().roomname})
-                } else {
-                    this.props.navigation.navigate('Lobby_Screen', {roomname:snap.val().roomname})
-                }
-
-            })
-                
+    
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').once('value',snap=>{
+        if(snap.val().phase > 1){
+            this.props.navigation.navigate('Mafia_Screen', {roomname:snap.val().name})
+        } else if (snap.val().name){
+            this.props.navigation.navigate('Lobby_Screen', {roomname:snap.val().name})
         }
     })
-    */
+    
 
 }
 
@@ -84,8 +76,11 @@ _createRoom() {
     //TODO: Check if room already exists
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
-        roomname:roomname,
         roomtype: this.state.roomtype,
+    });
+    
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({
+        name: roomname,
     });
     
     firebase.database().ref('rooms/' + roomname).set({
@@ -98,9 +93,7 @@ _createRoom() {
     firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
         + firebase.auth().currentUser.uid).set({
             name: this.state.creatorname,
-            immune: false,
-            healed: false,
-            shot: false,
+            status: 0,
             votes: 0,
     });
 
@@ -114,7 +107,7 @@ _createRoom() {
                 color: child.val().color,
                 desc: child.val().desc,
                 type: child.val().type,
-                image: child.val().image,
+                roleid: child.key,
             })
 
         })
@@ -131,16 +124,17 @@ _joinRoom(joincode) {
             firebase.database().ref('rooms/' + joincode.toUpperCase() 
                 + '/listofplayers/' + firebase.auth().currentUser.uid).set({
                     name: this.state.alias,
-                    immune: false,
+                    status: 0,
                     votes: 0,
             });        
 
             firebase.database().ref('users/' + firebase.auth().currentUser.uid)
-                .update({
-                    roomtype:snap.val().roomtype,
-                })
+            .update({ roomtype:snap.val().roomtype })
             
-                this.props.navigation.navigate('Lobby_Screen', { roomname: this.state.joincode});
+            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+            .update({ name:joincode })
+
+            this.props.navigation.navigate('Lobby_Screen', { roomname: this.state.joincode});
         } else {
             alert('Room does not Exist.')
         }
@@ -261,7 +255,7 @@ render() {
             <View style = {{flex:4}}>
             <ProfileButton
                 title="Join Room"
-                onPress={()=>{this._joinRoom(this.state.joincode)}}
+                onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
             /></View>
             <View style = {{flex:1}}/>
 
@@ -285,10 +279,10 @@ constructor(props) {
 
     //Navigation parameters
     const { params } = this.props.navigation.state;
-    const roomname = params.roomname;
+    const roomname = params.roomname.toUpperCase();
 
     this.state = {
-        roomname: params.roomname,
+        roomname: params.roomname.toUpperCase(),
 
         leftlist:dataSource,
         rightlist:dataSource,
@@ -299,15 +293,16 @@ constructor(props) {
 
     this.roleCount = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
     this.playerCount = firebase.database().ref('rooms/' + roomname + '/listofplayers');
+    this.gameStart = firebase.database().ref('rooms/' + roomname + '/phase');
 
 }
 
 componentWillMount() {
-
-    alert('lobby mount')
+    
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
     this._pullListOfPlayers();
     this._count();
+    this._checkIfStart();
 
 }
 
@@ -319,6 +314,9 @@ componentWillUnmount() {
     }
     if(this.playerCount){
         this.playerCount.off();
+    }
+    if(this.gameStart){
+        this.gameStart.off();
     }
 }
 
@@ -388,9 +386,22 @@ _count() {
     });
 }
 
+_checkIfStart() {
+    this.gameStart.on('value',snap=> {
+        if(snap.val() > 1 ){
+            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+                .update({phase: snap.val()})
+            this.props.navigation.navigate('Mafia_Screen', {roomname: this.state.roomname})
+        }
+    })
+}
+
 _startGame(rolecount,playercount,roomname) {
 
     if(rolecount==playercount){
+
+        this._handOutRoles(roomname);
+
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
 
         firebase.database().ref('rooms/' + roomname).update({phase:2});
@@ -399,6 +410,42 @@ _startGame(rolecount,playercount,roomname) {
     } else {
         alert('The number of players does not match the Game set-up.');
     }
+}
+
+_handOutRoles(roomname){
+
+    var randomstring = '';
+    var charcount = 0;
+
+    firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).once('value',snap=>{
+
+        snap.forEach((child)=>{
+            if(child.val().count > 0){
+                for(i=0;i<child.val().count;i++){
+                    randomstring = randomstring + child.val().roleid
+                    charcount++
+                }
+            }
+        })
+
+        var min = Math.ceil(1);
+        var max = Math.ceil(charcount);
+
+        firebase.database().ref('rooms/' + roomname + '/listofplayers').once('value',insidesnap=>{
+            insidesnap.forEach((child)=>{
+
+                var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
+
+                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + child.key)
+                    .update({roleid: randomstring.charAt(randomnumber - 1)});
+                
+                max = max - 1;
+                randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);
+
+            })
+        })
+
+    })
 }
 
 render() {
@@ -490,7 +537,8 @@ render() {
             <View style = {{flex:2}}>
                 <ProfileButton
                     title='Start Game'
-                    onPress={()=> {this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)}}
+                    onPress={()=> {this._startGame(this.state.rolecount,this.state.playercount,
+                        this.state.roomname)}}
                 />
             </View>
             <View style = {{flex:1}}/>
@@ -508,6 +556,9 @@ export default stackNav = StackNavigator(
       Lobby_Screen: {
         screen: Lobby_Screen,
       },
+      Mafia_Screen: {
+          screen: Mafia_Screen,
+      }
   },
       {
           headerMode: 'none',

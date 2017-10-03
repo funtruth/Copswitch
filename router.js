@@ -13,7 +13,6 @@ import SignIn from "./app/loginscreens/SignIn";
 
 import Lists from "./app/screens/ListsScreen";
 import Room from "./app/screens/RoomScreen";
-import Game from "./app/screens/MafiaScreen";
 import Profile from "./app/screens/ProfileScreen";
 
 export const SignedOut = StackNavigator(
@@ -43,14 +42,6 @@ export const SignedOut = StackNavigator(
       },
       Room: {
         screen: Room,
-        navigationOptions : {
-          tabBarIcon: ({ tintColor }) => (
-            <MaterialIcons name="home" style={styles.icon}/>
-          ),
-        }
-      },
-      Game: {
-        screen: Game,
         navigationOptions : {
           tabBarIcon: ({ tintColor }) => (
             <MaterialIcons name="gamepad" style={styles.icon}/>

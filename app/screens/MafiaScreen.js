@@ -38,51 +38,63 @@ constructor(props) {
     const dataSource = new ListView.DataSource({
         rowHasChanged: (row1, row2) => row1 !== row2,
     });
-
+    
+    const { params } = this.props.navigation.state;
+    const roomname = params.roomname;
 
     this.state = {
-        roomname: '',
+        roomname: params.roomname,
         phase: '',
 
         rightlist: dataSource,
         leftlist: dataSource,
     };
 
+
     //this.ref = firebase.database().ref('rooms/' + params.roomname.toUpperCase());
     //this.playersRef = firebase.database().ref('rooms/' + params.roomname.toUpperCase() 
     //    + '/listofplayers');
+    
+    this.roomListener = firebase.database().ref('rooms/' + roomname);
 
 }
- /*
+ 
 componentWillMount() {
-
-    alert('mafia mount')
 
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
 
-    this.ref.on('value',snap=>{
-        this.setState({phase:snap.val().phase})
+    this.roomListener.on('value',snap=>{
+        
+        //Keep Phase updated
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+            .update({phase:snap.val().phase});
+        this.setState({phase:snap.val().phase});
+
     })
 
-    this._pullListOfPlayers();
+   // this.ref.on('value',snap=>{
+    //    this.setState({phase:snap.val().phase})
+    //})
+
+    //this._pullListOfPlayers();
     
 }
 
 componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-
+/*
     if(this.ref){
         this.ref.off();
     }
     if(this.playersRef){
         this.playersRef.off();
-    }
+    }*/
 }
 
 _handleBackButton() {
     return true;
 }
-
+/*
 _pullListOfPlayers() {
     
     this.playersRef.on('value',snap => {
@@ -110,12 +122,23 @@ _pullListOfPlayers() {
         this.setState({rightlist:rightlist})
     })
 }
+*/
 
 _renderComponent(phase) {
     
     if(phase == 2){
+        return <View><Text>2</Text></View>
+    }
+    if(phase == 3){
+        return <View><Text>3</Text></View>
+    }
+    if(phase == 4){
+        return <View><Text>4</Text></View>
+    }
+
+    /*if(phase == 2){
         return <View style = {{
-            backgroundColor: 'white',
+            backgroundColor: 'white', 
             flex: 1,
         }}>
             <View style = {{flex:1,flexDirection:'row'}}>
@@ -302,23 +325,16 @@ _renderComponent(phase) {
             <View style = {{flex:1}}/>
     
         </View>
-    }
+    }*/
 }
 
-*/
+
 render() {
-/*    return <View style = {{
-        backgroundColor: 'white',
-        flex: 1,
-        flexDirection: 'row',
-    }}>
-        {this._renderComponent(this.state.phase)}
-    </View>*/
     return <View style = {{
         backgroundColor: 'white',
         flex: 1,
         flexDirection: 'row',
     }}>
-        <Text>hi</Text>
+        {this._renderComponent(this.state.phase)}
     </View>
 }}
