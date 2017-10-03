@@ -46,13 +46,16 @@ componentWillMount() {
         firebase.database().ref('rooms/' + snap.val().name + '/listofplayers/' 
             + firebase.auth().currentUser.uid).once('value',status=> {
 
-                firebase.database().ref('games/Mafia/' + status.val().roleid).once('value',rolesnap=>{
-
                     if(snap.val().phase > 1){
-                        this.setState({
-                            role: rolesnap.val().name,
-                            description: rolesnap.val().desc,
+
+                        firebase.database().ref('rules/' + status.val().roleid).once('value',rolesnap=>{
+
+                            this.setState({
+                                role: rolesnap.val().name,
+                                description: rolesnap.val().desc,
+                            })
                         })
+
                     } else {
                         this.setState({
                             role:'None',
@@ -60,8 +63,6 @@ componentWillMount() {
                         })
                     }
 
-
-                })
         })
 
     })

@@ -39,8 +39,6 @@ constructor(props) {
         joincode: '',
         creatorname:'',
         alias:'',
-
-        roomtype:'Mafia',    
     };
 
 
@@ -74,10 +72,6 @@ _createRoom() {
     const roomname = randomize('A',4);
 
     //TODO: Check if room already exists
-
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({
-        roomtype: this.state.roomtype,
-    });
     
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({
         name: roomname,
@@ -86,7 +80,6 @@ _createRoom() {
     firebase.database().ref('rooms/' + roomname).set({
         phase: 1,
         owner: firebase.auth().currentUser.uid,
-        roomtype: this.state.roomtype,
     });
 
     //Set up list of players
@@ -98,7 +91,7 @@ _createRoom() {
     });
 
     //Set up temporary list of roles
-    firebase.database().ref('games/' + this.state.roomtype).once('value',snap => {
+    firebase.database().ref('rules').once('value',snap => {
         snap.forEach((child)=>{
 
             firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
@@ -118,7 +111,7 @@ _createRoom() {
 
 _joinRoom(joincode) {
     firebase.database().ref('rooms/' + joincode.toUpperCase()).once('value', snap => {
-        if(snap.exists()){
+        if(snap.exists() && (snap.val().phase == 1)){
 
             firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({roomname:joincode});
             firebase.database().ref('rooms/' + joincode.toUpperCase() 
@@ -127,14 +120,13 @@ _joinRoom(joincode) {
                     status: 0,
                     votes: 0,
             });        
-
-            firebase.database().ref('users/' + firebase.auth().currentUser.uid)
-            .update({ roomtype:snap.val().roomtype })
             
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
             .update({ name:joincode })
 
             this.props.navigation.navigate('Lobby_Screen', { roomname: this.state.joincode});
+        } else if (snap.exists() && (snap.val().phase > 1)) {
+            alert('Game has already started.')
         } else {
             alert('Room does not Exist.')
         }
@@ -155,7 +147,7 @@ render() {
             justifyContent: 'center',
         }}>
             <Text style = {{color:'white', marginLeft:20, fontWeight: 'bold',}}>
-                {'Selected Game: ' + this.state.roomtype}
+                {'Mafia'}
             </Text>
         </View>
 
