@@ -52,7 +52,6 @@ constructor(props) {
     this.roomListener = firebase.database().ref('rooms/' + roomname);
 
 }
- 
 componentWillMount() {
  
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
@@ -66,7 +65,32 @@ componentWillMount() {
 
 
     })
-    
+
+    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers').once('value', snap=>{
+
+        var leftlist = [];
+        var rightlist = [];
+        var counter = 1;
+
+        snap.forEach((child)=> {
+            if((counter%2) == 1){
+                leftlist.push({
+                    name: child.val().name,
+                    key: child.key,
+                })
+            } else {
+                rightlist.push({
+                    name: child.val().name,
+                    key: child.key,
+                })
+            }
+            counter++;
+        })
+
+        this.setState({leftlist:leftlist})
+        this.setState({rightlist:rightlist})
+    })
+
 }
 
 componentWillUnmount() {
@@ -97,7 +121,20 @@ _renderComponent(phase) {
 
 
 render() {
-    return <View>{this._renderComponent(this.state.phase)}</View>
+    return <View style = {{
+        flex:1,
+        backgroundColor:'white',
+        flexDirection:'row',
+    }}>
+        <View style = {{flex:3}}/>
+        <View style = {{flex:2}}>
+
+            {this._renderComponent(this.state.phase)}
+
+        </View>
+        <View style = {{flex:3}}/>
+
+    </View>
 
 }
 }

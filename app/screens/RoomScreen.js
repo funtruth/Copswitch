@@ -47,14 +47,14 @@ constructor(props) {
 componentWillMount() {
 
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-    /*
+    
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').once('value',snap=>{
         if(snap.val().phase > 1){
             this.props.navigation.navigate('Mafia_Screen', {roomname:snap.val().name})
         } else if (snap.val().name){
             this.props.navigation.navigate('Lobby_Screen', {roomname:snap.val().name})
         }
-    })*/
+    })
 
 }
 
@@ -293,9 +293,9 @@ constructor(props) {
 componentWillMount() {
     
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-    //this._pullListOfPlayers();
+    this._pullListOfPlayers();
     this._count();
-    //this._checkIfStart();
+    this._checkIfStart();
 
 }
 
@@ -477,8 +477,7 @@ render() {
         <View style = {{flex:0.2}}/>
 
         <View style = {{flex:7,flexDirection: 'row'}}>
-            <View style = {{flex:3}}>
-                <FlatList
+            <View style = {{flex:3}}><FlatList
                     data={this.state.leftlist}
                     renderItem={({item}) => (
                         <TouchableOpacity 
@@ -499,8 +498,7 @@ render() {
                 />
             </View>
             <View style = {{flex:2}}/>
-            <View style = {{flex:3}}>
-                <FlatList
+            <View style = {{flex:3}}><FlatList
                     data={this.state.rightlist}
                     renderItem={({item}) => (
                         <TouchableOpacity 
