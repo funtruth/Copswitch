@@ -94,7 +94,7 @@ componentWillMount() {
 }
 
 render(){
-    return <View><FlatList
+    return <View style = {{flex:1,backgroundColor:'white'}}><FlatList
             data={this.state.roles}
             renderItem={({item}) => (
                 <RulebookListItem

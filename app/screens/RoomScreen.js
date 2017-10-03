@@ -47,15 +47,14 @@ constructor(props) {
 componentWillMount() {
 
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-    
+    /*
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').once('value',snap=>{
         if(snap.val().phase > 1){
             this.props.navigation.navigate('Mafia_Screen', {roomname:snap.val().name})
         } else if (snap.val().name){
             this.props.navigation.navigate('Lobby_Screen', {roomname:snap.val().name})
         }
-    })
-    
+    })*/
 
 }
 
@@ -80,6 +79,7 @@ _createRoom() {
     firebase.database().ref('rooms/' + roomname).set({
         phase: 1,
         owner: firebase.auth().currentUser.uid,
+        playernum: 1,
     });
 
     //Set up list of players
@@ -113,13 +113,14 @@ _joinRoom(joincode) {
     firebase.database().ref('rooms/' + joincode.toUpperCase()).once('value', snap => {
         if(snap.exists() && (snap.val().phase == 1)){
 
-            firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({roomname:joincode});
+            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:joincode});
             firebase.database().ref('rooms/' + joincode.toUpperCase() 
                 + '/listofplayers/' + firebase.auth().currentUser.uid).set({
                     name: this.state.alias,
                     status: 0,
                     votes: 0,
-            });        
+            });   
+            firebase.database().ref('rooms/' + joincode.toUpperCase()).update({playernum:playernum+1});       
             
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
             .update({ name:joincode })
@@ -292,9 +293,9 @@ constructor(props) {
 componentWillMount() {
     
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-    this._pullListOfPlayers();
+    //this._pullListOfPlayers();
     this._count();
-    this._checkIfStart();
+    //this._checkIfStart();
 
 }
 

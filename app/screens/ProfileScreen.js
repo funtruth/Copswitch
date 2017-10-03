@@ -108,10 +108,12 @@ componentWillUnmount() {
                   margin: 5,
                   justifyContent:'center',
                 }}>
-                  <ProfileButton title="Settings" 
-                    icon={{name: 'settings', size: 16}}
+                  <ProfileButton title="Leave Game" 
+                    icon={{name: 'do-not-disturb', size: 16}}
                     onPress={() => {
-                      alert('test')
+                      firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+                        .update({name: null, phase:1})
+                      this.props.navigation.navigate('Room_Screen')
                     }}/>
                 </View>
 
