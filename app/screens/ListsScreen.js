@@ -94,7 +94,8 @@ componentWillMount() {
 }
 
 render(){
-    return <View style = {{flex:1,backgroundColor:'white'}}><FlatList
+    return <View style = {{flex:1, backgroundColor:'white'}}>
+        <View><FlatList
             data={this.state.roles}
             renderItem={({item}) => (
                 <RulebookListItem
@@ -108,6 +109,7 @@ render(){
             )}
             keyExtractor={item => item.key}
         /></View>
+        </View>
     }
 }
 
