@@ -49,31 +49,51 @@ constructor(props) {
 
     }
 
+    this.listListener = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
 }
 
 
 componentWillMount() {
 
+    this.listListener.on('value',snap=>{
 
-                firebase.database().ref('rules').once('value', deepshot => {
-                
+        if(snap.exists()){
+            var roles = [];
+            snap.forEach((child)=> {
+                roles.push({
+                    name: child.key,
+                    desc: child.val().desc,
+                    color: child.val().color,
+                    hideChevron: false,
+                    count:child.val().count,
+
+                    key: child.val().roleid,
+                })
+            })
+            this.setState({ roles:roles })
+        } else {
+            firebase.database().ref('rules').once('value', deepshot => {
                 var roles = [];
                 deepshot.forEach((child)=> {
                     roles.push({
                         name: child.val().name,
                         desc: child.val().desc,
                         color: child.val().color,
+                        hideChevron: true,
+                        count:1,
 
                         key: child.key,
                     })
                 })
-                    this.setState({ roles:roles })
-                })
+                this.setState({ roles:roles }) 
+            })
+        }
+
+    })
 
 }
 
 render(){
-    //return <View><Text>hi</Text></View>
     return <View><FlatList
             data={this.state.roles}
             renderItem={({item}) => (
@@ -81,6 +101,8 @@ render(){
                     title={item.name}
                     color= {item.color}
                     subtitle={item.desc}
+                    hideChevron={item.hideChevron}
+                    count={item.count}
                 />
 
             )}

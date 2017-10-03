@@ -348,8 +348,7 @@ _handleBackButton() {
 _deleteRoom() {
     firebase.database().ref('rooms/' + this.state.roomname).remove();
     firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid).update({roomname:null});
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/bookflag').remove();
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
     this.props.navigation.navigate('Room_Screen');
 }
 

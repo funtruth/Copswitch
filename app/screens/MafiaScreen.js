@@ -25,7 +25,6 @@ import randomize from 'randomatic';
 import { Button, List, ListItem, FormInput } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
 import NormalListItem from '../components/NormalListItem.js';
-import ToggleListItem from '../components/ToggleListItem.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
