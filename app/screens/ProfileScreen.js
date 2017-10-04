@@ -110,6 +110,7 @@ componentWillUnmount() {
                 }}>
                   <ProfileButton title="Leave Game" 
                     icon={{name: 'do-not-disturb', size: 16}}
+                    color='white'
                     onPress={() => {
                       firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
                         .update({name: null, phase:1})
@@ -124,6 +125,7 @@ componentWillUnmount() {
                 }}>
                   <ProfileButton
                     title="Log Out"
+                    color='white'
                     icon={{name: 'subdirectory-arrow-left', size: 16}}
                     onPress={() => {
                       this.props.navigation.navigate('SignedOut');

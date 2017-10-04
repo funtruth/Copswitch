@@ -80,6 +80,7 @@ _createRoom() {
         phase: 1,
         owner: firebase.auth().currentUser.uid,
         playernum: 1,
+        count:0,
     });
 
     //Set up list of players
@@ -186,6 +187,7 @@ render() {
                 <View style = {{flex:4}}>
                 <ProfileButton
                     title="Create Room"
+                    backgroundColor='black'
                     onPress={()=>{this._createRoom()}}
                 /></View>
                 <View style = {{flex:1}}/>
@@ -248,6 +250,7 @@ render() {
             <View style = {{flex:4}}>
             <ProfileButton
                 title="Join Room"
+                backgroundColor='black'
                 onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
             /></View>
             <View style = {{flex:1}}/>
@@ -527,6 +530,7 @@ render() {
             <View style = {{flex:2}}>
                 <ProfileButton
                     title='Start Game'
+                    backgroundColor='black'
                     onPress={()=> {this._startGame(this.state.rolecount,this.state.playercount,
                         this.state.roomname)}}
                 />

@@ -14,8 +14,8 @@ constructor(props) {
 render() {
     return (
         <Button
-            backgroundColor="black"
-            color='white'
+            backgroundColor={this.props.backgroundColor}
+            color={this.props.color}
             title={this.props.title}
             borderRadius={10}
             fontSize={12}
