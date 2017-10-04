@@ -10,8 +10,6 @@ export default class SignUpScreen extends React.Component {
 constructor(props){
   super(props);
   this.state = { 
-    firstname: '',
-    lastname: '',
     email: '', 
     password: '',
     confirmpassword: '',
@@ -28,12 +26,9 @@ _SignUpProcess(email,password){
         email, password).then(() => 
             {
                 firebase.database().ref('users/' + firebase.auth().currentUser.uid)
-                .set({
-                    firstname: this.state.firstname,
-                    lastname: this.state.lastname,
-                    email: email,
-                    username: this.state.username,
-                })
+                  .set({email: email})
+                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+                  .set({phase:1,presseduid:'foo',pressedaction:false})
                 onSignIn();
                 this.props.navigation.navigate("SignedIn");
                 Keyboard.dismiss();
@@ -55,31 +50,11 @@ _SignUpProcess(email,password){
 
   render(){
     return <View style={{
-      backgroundColor: '#e6ddd1',
+      backgroundColor: 'white',
       flex: 1,
       justifyContent: 'center',
       alignSelf: 'center',
       }}>
-    
-        <View style = {{flexDirection: "row"}}>
-            <FormInput 
-              placeholder="First Name ..."
-              value={this.state.firstname}
-              onChangeText={firstname => this.setState({ firstname })}
-              containerStyle={{
-                flex: 0.5,
-              }}
-            />
-            <FormInput 
-              placeholder="Last ..."
-              value={this.state.lastname}
-              onChangeText={lastname => this.setState({ lastname })}
-              containerStyle={{
-                flex:0.5,
-              }}
-            />
-        </View>
-        
         
         <FormInput 
           placeholder="Email address ..."
@@ -101,13 +76,6 @@ _SignUpProcess(email,password){
 
 
         <View style={{flexDirection: 'row', marginTop:25,}}>
-            <View style = {{flex:0.7}}>
-              <FormInput
-                  placeholder="Choose a Username ..."
-                  value = {this.state.username}
-                  onChangeText={username => this.setState({ username })}
-              />
-            </View>
             <View style = {{flex:0.3}}>
                 <Button
                   backgroundColor="#b18d77"

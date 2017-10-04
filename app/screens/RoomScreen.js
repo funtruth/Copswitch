@@ -88,6 +88,7 @@ _createRoom() {
         + firebase.auth().currentUser.uid).set({
             name: this.state.creatorname,
             status: 0,
+            dead:false,
             votes: 0,
     });
 
@@ -119,6 +120,7 @@ _joinRoom(joincode) {
                 + '/listofplayers/' + firebase.auth().currentUser.uid).set({
                     name: this.state.alias,
                     status: 0,
+                    dead:false,
                     votes: 0,
             });   
             firebase.database().ref('rooms/' + joincode.toUpperCase()).update({playernum:playernum+1});       

@@ -20,6 +20,7 @@ render() {
             borderRadius={10}
             fontSize={12}
             icon={this.props.icon}
+            disabled={this.props.disabled}
             onPress={this.props.onPress}
         />
     )

@@ -83,6 +83,8 @@ render(){
                         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
                             .set({
                                 phase: 1,
+                                presseduid: 'foo',
+                                pressedaction: false,
                             })
                         onSignIn();
                         this.props.navigation.navigate("SignedIn")
