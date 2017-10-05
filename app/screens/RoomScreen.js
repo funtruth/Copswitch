@@ -565,7 +565,7 @@ export default stackNav = StackNavigator(
   );
 
 
-  const styles = StyleSheet.create({
+const styles = StyleSheet.create({
     actionButtonIcon: {
         fontSize: 20,
         height: 22,

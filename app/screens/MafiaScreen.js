@@ -286,7 +286,8 @@ _actionBtnPress(actionbtnvalue,triggernum,phase,roomname){
                 if((snap.val().count + 2)>snap.val().playernum){
 
                     //Enter Night phase algorithm 
-                    
+                    this._nightPhase();
+
                     this._changePhase(2);
                 } 
             })
@@ -469,7 +470,7 @@ _renderLeftComponent(){
                 <TouchableOpacity 
                     onPress={() => {this._nameBtnPress(item.key,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.dead : {height:40,
+                    style = {item.dead ? styles.deadleft : {height:40,
                         backgroundColor: item.color,
                         borderBottomRightRadius: 10,
                         borderTopRightRadius: 10,
@@ -489,7 +490,7 @@ _renderLeftComponent(){
             data={this.state.leftlist}
             renderItem={({item}) => (
                 <TouchableOpacity
-                    style = {item.dead ? styles.dead : {height:40,
+                    style = {item.dead ? styles.deadleft : {height:40,
                         backgroundColor: item.lynch ? '#b3192e' :item.color,
                         borderBottomRightRadius: 10,
                         borderTopRightRadius: 10,
@@ -509,7 +510,7 @@ _renderLeftComponent(){
                 <TouchableOpacity 
                     onPress={() => {this._nameBtnPress(item.key,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.dead : {height:40,
+                    style = {item.dead ? styles.deadleft : {height:40,
                         backgroundColor: item.color,
                         borderBottomRightRadius: 10,
                         borderTopRightRadius: 10,
@@ -548,7 +549,7 @@ _renderRightComponent(){
                 <TouchableOpacity 
                     onPress={() => {this._nameBtnPress(item.key,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.dead : {height:40,
+                    style = {item.dead ? styles.deadright : {height:40,
                         backgroundColor: item.color,
                         borderBottomLeftRadius: 10,
                         borderTopLeftRadius: 10,
@@ -568,7 +569,7 @@ _renderRightComponent(){
             data={this.state.rightlist}
             renderItem={({item}) => (
                 <TouchableOpacity 
-                    style = {item.dead ? styles.dead : {height:40,
+                    style = {item.dead ? styles.deadright : {height:40,
                         backgroundColor: item.lynch ? '#b3192e' :item.color,
                         borderBottomLeftRadius: 10,
                         borderTopLeftRadius: 10,
@@ -588,7 +589,7 @@ _renderRightComponent(){
                 <TouchableOpacity 
                     onPress={() => {this._nameBtnPress(item.key,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.dead : {height:40,
+                    style = {item.dead ? styles.deadright : {height:40,
                         backgroundColor: item.color,
                         borderBottomLeftRadius: 10,
                         borderTopLeftRadius: 10,
@@ -604,6 +605,42 @@ _renderRightComponent(){
             keyExtractor={item => item.key}
         />
     }
+}
+
+_nightPhase() {
+
+    firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
+
+        snap.forEach((child)=>{
+
+                //Mafia Kill
+            if(child.key == 'A'){
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
+                    .update({dead:true})
+
+                //Mafia Kill
+            } else if (child.key == 'B') {
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
+                    .update({dead:true})
+
+                //Doctor
+            } else if (child.key == 'F') {
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
+                    .update({dead:false})
+
+                //Detective
+            } else if (child.key == 'G') {
+
+
+                //Villager
+            } else if (child.key == 'G') {
+
+            }
+
+        })
+
+    })
+
 }
 
 render() {
@@ -663,7 +700,7 @@ render() {
 }
 
 const styles = StyleSheet.create({
-    dead: {
+    deadleft: {
         height:40,
         backgroundColor: 'grey',
         borderBottomRightRadius: 10,
@@ -671,5 +708,13 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         justifyContent:'center'
     },
+    deadright: {
+        height:40,
+        backgroundColor: 'grey',
+        borderBottomLeftRadius: 10,
+        borderTopLeftRadius: 10,
+        marginBottom: 10,
+        justifyContent:'center'
+    },    
 
 });

@@ -13,6 +13,7 @@ import { NavigationActions } from 'react-navigation';
 
 import { Button, List, ListItem, Avatar } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
+import { onSignOut } from "../auth";
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -81,25 +82,29 @@ componentWillUnmount() {
               backgroundColor: 'white',
           }}>
 
-              <View style = {{flex:1.5}}/>
+              <View style = {{flex:0.2}}/>
 
-              <View style = {{flex:1,borderWidth:1, alignItems: 'center',justifyContent:'center'}}>
+              <View style = {{flex:0.6,borderWidth:1, alignItems: 'center',justifyContent:'center'}}>
                   <Text>My Role:</Text>
                   <Text style={{fontWeight:'bold',fontSize:20}}>{this.state.role}</Text>
               </View>
 
-              <View style = {{flex:2,borderWidth:1, alignItems: 'center',justifyContent:'center'}}>
+              <View style = {{flex:0.8}}/>
+
+              <View style = {{flex:0.5,borderWidth:1, alignItems: 'center',justifyContent:'center'}}>
                   <Text>{this.state.description}</Text>
               </View>
 
+              <View style = {{flex:0.9}}/>
+
               <View style = {{
-                  flex: 1.1,
+                  flex: 2,
                   alignItems:'center',
                   borderWidth: 1,
                 }}/>
 
               <View style = {{
-                flex: 1,
+                flex: 0.7,
                 flexDirection: 'row',
                 backgroundColor: 'white',
               }}>
@@ -130,9 +135,9 @@ componentWillUnmount() {
                     onPress={() => {
                       this.props.navigation.navigate('SignedOut');
                     
-                      //onSignOut().then(() => {
-                        //firebase.auth().signOut();
-                      //}) 
+                      onSignOut().then(() => {
+                        firebase.auth().signOut();
+                      }) 
                   }}/>
                 </View>
             </View>

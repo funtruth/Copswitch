@@ -1,12 +1,10 @@
 // app/router.js
 
 import React from "react";
-import { Platform, StatusBar, Image } from "react-native";
+import { Platform, StatusBar, Image, StyleSheet } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-
-import styles from "./app/styles/Styles";
 
 import SignUp from "./app/loginscreens/SignUp";
 import SignIn from "./app/loginscreens/SignIn";
@@ -100,3 +98,12 @@ export const SignedOut = StackNavigator(
       }
     );
   };
+
+
+const styles = StyleSheet.create({
+  icon: {
+    height: 26,
+    color: '#ffffff',
+    fontSize: 20
+  },
+});
