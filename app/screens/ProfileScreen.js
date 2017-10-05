@@ -6,6 +6,8 @@ import {
     AsyncStorage,
     BackHandler,
     Text,
+    ListView,
+    FlatList,
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -30,15 +32,22 @@ static navigationOptions = {
 
   constructor(props) {
     super(props);
+    
+    const dataSource = new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+    });
+
     this.state = {
 
       role: '',
       description: '',
 
       roomname:'',
+      messages: dataSource,
 
     }
     this.userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
+    this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
   }
 
 componentWillMount() {
@@ -47,25 +56,38 @@ componentWillMount() {
         firebase.database().ref('rooms/' + snap.val().name + '/listofplayers/' 
             + firebase.auth().currentUser.uid).once('value',status=> {
 
-                    if(snap.val().phase > 1){
+              if(snap.val().phase > 1){
 
-                        firebase.database().ref('rules/' + status.val().roleid).once('value',rolesnap=>{
+                  firebase.database().ref('rules/' + status.val().roleid).once('value',rolesnap=>{
 
-                            this.setState({
-                                role: rolesnap.val().name,
-                                description: rolesnap.val().desc,
-                            })
-                        })
+                      this.setState({
+                          role: rolesnap.val().name,
+                          description: rolesnap.val().desc,
+                      })
+                  })
 
-                    } else {
-                        this.setState({
-                            role:'None',
-                            description: 'There is no Active Game.',
-                        })
-                    }
-
+              } else {
+                  this.setState({
+                      role:'None',
+                      description: 'There is no Active Game.',
+                  })
+              }
         })
+    })
 
+    this.msgRef.on('value',snap=>{
+        var msg = [];
+            snap.forEach((child)=>{
+                if(child.key != 'count'){     
+                    msg.push({
+                        from: child.val().from,
+                        color: child.val().color,
+                        message: child.val().message,
+                        key:child.key,
+                    })
+                }
+            })
+            this.setState({messages:msg})
     })
 }
 
@@ -73,6 +95,9 @@ componentWillUnmount() {
 
     if(this.userRef){
       this.userRef.off();
+    }
+    if(this.msgRef){
+      this.msgRef.off();
     }
 }
 
@@ -99,9 +124,18 @@ componentWillUnmount() {
 
               <View style = {{
                   flex: 2,
-                  alignItems:'center',
                   borderWidth: 1,
-                }}/>
+                }}>
+                <View><FlatList
+                    data={this.state.messages}
+                    renderItem={({item}) => (
+                        <View style = {{flexDirection:'row',marginLeft:15,}}>
+                          <Text style={{color:'black',fontWeight:'bold'}}>{'[ ' + item.from + ' ] '}</Text> 
+                          <Text style={{color:item.color,fontWeight:'bold'}}>{item.message}</Text></View>
+                    )}
+                    keyExtractor={item => item.key}
+                /></View>
+              </View>
 
               <View style = {{
                 flex: 0.7,

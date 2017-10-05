@@ -1,6 +1,6 @@
 
 
-
+//Player can select Players when dead
 
 //Night Phase Algorithm
     //Update playernum properly

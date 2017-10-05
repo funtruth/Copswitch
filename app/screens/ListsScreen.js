@@ -49,7 +49,8 @@ constructor(props) {
 
     }
 
-    this.listListener = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
+    this.listListener = firebase.database()
+        .ref('listofroles/' + firebase.auth().currentUser.uid).orderByChild('roleid');
 }
 
 

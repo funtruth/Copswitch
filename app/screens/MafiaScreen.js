@@ -295,7 +295,7 @@ _actionBtnPress(actionbtnvalue,triggernum,phase,roomname){
     }
 }
 
-_nameBtnPress(uid,triggernum,phase,roomname){
+_nameBtnPress(uid,name,triggernum,phase,roomname){
     if(phase == 2){
 
         firebase.database().ref('rooms/' + roomname + '/listofplayers/' + uid).once('value',snap=>{
@@ -377,7 +377,7 @@ _nameBtnPress(uid,triggernum,phase,roomname){
             firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
                 + firebase.auth().currentUser.uid).once('value',snap=>{
                     firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid)
-                        .update({target:uid, user:snap.key})
+                        .update({target:uid, targetname:name, user:snap.key})
             })
             this._pressedUid(uid)
         //If user is unselecting Player
@@ -392,7 +392,7 @@ _nameBtnPress(uid,triggernum,phase,roomname){
             firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
                 + firebase.auth().currentUser.uid).once('value',snap=>{
                     firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid)
-                        .update({target:uid})
+                        .update({target:uid,targetname:name})
             })
             this._pressedUid(uid)
         }
@@ -468,7 +468,7 @@ _renderLeftComponent(){
             data={this.state.leftlist}
             renderItem={({item}) => (
                 <TouchableOpacity 
-                    onPress={() => {this._nameBtnPress(item.key,this.state.triggernum,
+                    onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.deadleft : {height:40,
                         backgroundColor: item.color,
@@ -508,7 +508,7 @@ _renderLeftComponent(){
             data={this.state.leftlist}
             renderItem={({item}) => (
                 <TouchableOpacity 
-                    onPress={() => {this._nameBtnPress(item.key,this.state.triggernum,
+                    onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.deadleft : {height:40,
                         backgroundColor: item.color,
@@ -547,7 +547,7 @@ _renderRightComponent(){
             data={this.state.rightlist}
             renderItem={({item}) => (
                 <TouchableOpacity 
-                    onPress={() => {this._nameBtnPress(item.key,this.state.triggernum,
+                    onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.deadright : {height:40,
                         backgroundColor: item.color,
@@ -587,7 +587,7 @@ _renderRightComponent(){
             data={this.state.rightlist}
             renderItem={({item}) => (
                 <TouchableOpacity 
-                    onPress={() => {this._nameBtnPress(item.key,this.state.triggernum,
+                    onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.deadright : {height:40,
                         backgroundColor: item.color,
@@ -607,26 +607,72 @@ _renderRightComponent(){
     }
 }
 
+_changePlayerCount(bool){
+    if(bool){
+        firebase.database().ref('rooms/' + this.state.roomname + '/playernum').once('value',snap=>{
+            firebase.database().ref('rooms/' + this.state.roomname).update({playernum:snap.val()+1})
+        })
+    } else {
+        firebase.database().ref('rooms/' + this.state.roomname + '/playernum').once('value',snap=>{
+            firebase.database().ref('rooms/' + this.state.roomname).update({playernum:snap.val()-1})
+        })
+    }
+}
+
+_noticeMsgForTarget(target,color,message){
+    firebase.database().ref('messages/' + target + '/count').once('value',snap=>{
+        firebase.database().ref('messages/' + target + '/' + (snap.val()+1))
+            .update({from: 'Notice', color: color, message: message})
+        firebase.database().ref('messages/' + target).update({count:(snap.val()+1)})
+    })
+}
+
+_noticeMsgForUser(user,color,message){
+    firebase.database().ref('messages/' + user + '/count').once('value',snap=>{
+        firebase.database().ref('messages/' + user + '/' + (snap.val()+1))
+            .update({from: 'Notice', color: color, message: message})
+        firebase.database().ref('messages/' + user).update({count:(snap.val()+1)})
+    })
+}
+
 _nightPhase() {
-
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
-
         snap.forEach((child)=>{
-
                 //Mafia Kill
             if(child.key == 'A'){
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
-                    .update({dead:true})
+                    .update({dead:true});
+
+                this._changePlayerCount(false);
+                this._noticeMsgForTarget(child.val().target,'#d31d1d','You have been stabbed.');
+                this._noticeMsgForUser(child.val().user,'#d31d1d','You have stabbed ' + child.val().targetname);
 
                 //Mafia Kill
             } else if (child.key == 'B') {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
-                    .update({dead:true})
+                    .update({dead:true});
+                    
+                this._changePlayerCount(false);
+                this._noticeMsgForTarget(child.val().target,'#d31d1d','You have been stabbed.');
+                this._noticeMsgForUser(child.val().user,'#d31d1d','You have stabbed ' + child.val().targetname);
 
                 //Doctor
             } else if (child.key == 'F') {
+
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
-                    .update({dead:false})
+                    .once('value',snap=>{
+                        if(snap.val().dead){
+                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
+                                .update({dead:false})
+                            this._changePlayerCount(true);
+                            this._noticeMsgForTarget(child.val().target,'#34cd0e','The Doctor took care of your stab wounds.');
+                            this._noticeMsgForUser(child.val().user,'#34cd0e','You healed ' 
+                                + child.val().targetname +"'s stab wounds.");
+                        } else {
+                            this._noticeMsgForTarget(child.val().target,'#34cd0e','The Doctor gave you a visit.');
+                            this._noticeMsgForUser(child.val().user,'#34cd0e','You visited ' + child.val().targetname);
+                        }
+                    })
 
                 //Detective
             } else if (child.key == 'G') {
@@ -636,9 +682,7 @@ _nightPhase() {
             } else if (child.key == 'G') {
 
             }
-
         })
-
     })
 
 }
