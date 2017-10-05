@@ -8,7 +8,6 @@ import {
 import { Button, FormInput } from "react-native-elements";
 import { onSignIn } from "../auth";
 
-import styles from "../styles/Styles";
 import firebase from '../firebase/FirebaseController.js';
 
 import ProfileButton from '../components/ProfileButton.js';

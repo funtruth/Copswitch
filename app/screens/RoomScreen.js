@@ -90,6 +90,7 @@ _createRoom() {
             status: 0,
             dead:false,
             votes: 0,
+            lynch: false,
     });
 
     //Set up temporary list of roles
@@ -122,8 +123,9 @@ _joinRoom(joincode) {
                     status: 0,
                     dead:false,
                     votes: 0,
+                    lynch: false,
             });   
-            firebase.database().ref('rooms/' + joincode.toUpperCase()).update({playernum:playernum+1});       
+            firebase.database().ref('rooms/' + joincode.toUpperCase()).update({playernum:snap.val().playernum+1});       
             
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
             .update({ name:joincode })
