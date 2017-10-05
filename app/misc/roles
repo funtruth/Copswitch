@@ -1,0 +1,63 @@
+
+-----------Model------------
+X - Name
+    color           #ffffff
+    desc            
+    image
+    rules           
+    type            
+
+-----------Legend-----------
+    type    
+        1 - vanilla
+        2 - experienced
+
+-----------Mafia------------
+
+A - Godfather
+    color           #d31d1d
+    desc            Leader of the Mafia.
+    image
+    rules           
+    type            1
+
+B - Mafia
+    color           #d31d1d
+    desc            Member of the Mafia.
+    image
+    rules           
+    type            1
+
+C - 
+
+D - 
+
+E -
+
+
+------------Town------------
+
+F - Doctor
+    color           #34cd0e
+    desc            PHD in Stab wounds.
+    image
+    rules           
+    type            1
+
+G - Detective
+    color           #34cd0e
+    desc            On the case.
+    image
+    rules           
+    type            1
+
+H - Villager
+    color           #34cd0e
+    desc            Just a normal townsfolk.
+    image
+    rules           
+    type            1
+
+I - 
+
+J -
