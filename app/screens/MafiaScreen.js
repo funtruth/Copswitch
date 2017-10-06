@@ -660,8 +660,8 @@ _nightPhase() {
             } else if (child.key == 'F') {
 
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
-                    .once('value',snap=>{
-                        if(snap.val().dead){
+                    .once('value',insidesnap=>{
+                        if(insidesnap.val().dead){
                             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
                                 .update({dead:false})
                             this._changePlayerCount(true);
@@ -676,10 +676,18 @@ _nightPhase() {
 
                 //Detective
             } else if (child.key == 'G') {
-
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
+                    .once('value',insidesnap=>{
+                        if(insidesnap.val().roleid == 'B'){
+                            this._noticeMsgForUser(child.val().user,'#34cd0e',child.val().targetname + ' is hiding something ...');
+                        } else {
+                            this._noticeMsgForUser(child.val().user,'#34cd0e',
+                                'Nothing was learned from the investigation on ' + child.val().targetname + '.');
+                        }
+                    })
 
                 //Villager
-            } else if (child.key == 'G') {
+            } else if (child.key == 'H') {
 
             }
         })

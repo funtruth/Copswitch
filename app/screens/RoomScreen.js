@@ -39,6 +39,7 @@ constructor(props) {
         joincode: '',
         creatorname:'',
         alias:'',
+        roomtype:'rules',
     };
 
 
@@ -55,6 +56,11 @@ componentWillMount() {
             this.props.navigation.navigate('Lobby_Screen', {roomname:snap.val().name})
         }
     })
+
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
+        .on('value',snap=>{
+            this.setState({roomtype: snap.val()})
+        })
 
 }
 
@@ -94,19 +100,22 @@ _createRoom() {
     });
 
     //Set up temporary list of roles
-    firebase.database().ref('rules').once('value',snap => {
-        snap.forEach((child)=>{
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type').once('value',outsnap=>{
+       
+        firebase.database().ref(outsnap.val()).once('value',snap => {
+            snap.forEach((child)=>{
 
-            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-            + '/' + child.val().name).set({
-                count:0,
-                color: child.val().color,
-                desc: child.val().desc,
-                type: child.val().type,
-                roleid: child.key,
+                firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+                + '/' + child.val().name).set({
+                    count:0,
+                    color: child.val().color,
+                    desc: child.val().desc,
+                    type: child.val().type,
+                    roleid: child.key,
+                })
+
             })
-
-        })
+        }) 
     })
     
     this.props.navigation.navigate('Lobby_Screen', {roomname: roomname})

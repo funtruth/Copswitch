@@ -51,6 +51,7 @@ constructor(props) {
 
     this.listListener = firebase.database()
         .ref('listofroles/' + firebase.auth().currentUser.uid).orderByChild('roleid');
+    
 }
 
 
@@ -73,20 +74,23 @@ componentWillMount() {
             })
             this.setState({ roles:roles })
         } else {
-            firebase.database().ref('rules').once('value', deepshot => {
-                var roles = [];
-                deepshot.forEach((child)=> {
-                    roles.push({
-                        name: child.val().name,
-                        desc: child.val().desc,
-                        color: child.val().color,
-                        hideChevron: true,
-                        count:1,
+            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
+            .once('value',outsnap=>{
+                firebase.database().ref(outsnap.val()).once('value', deepshot => {
+                    var roles = [];
+                    deepshot.forEach((child)=> {
+                        roles.push({
+                            name: child.val().name,
+                            desc: child.val().desc,
+                            color: child.val().color,
+                            hideChevron: true,
+                            count:1,
 
-                        key: child.key,
+                            key: child.key,
+                        })
                     })
+                    this.setState({ roles:roles }) 
                 })
-                this.setState({ roles:roles }) 
             })
         }
 

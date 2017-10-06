@@ -84,6 +84,7 @@ render(){
                                 phase: 1,
                                 presseduid: 'foo',
                                 pressedaction: false,
+                                type:'Original',
                             })
                         onSignIn();
                         this.props.navigation.navigate("SignedIn")

@@ -8,6 +8,7 @@ import {
     Text,
     ListView,
     FlatList,
+    TouchableOpacity
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -16,6 +17,7 @@ import { NavigationActions } from 'react-navigation';
 import { Button, List, ListItem, Avatar } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
 import { onSignOut } from "../auth";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -45,6 +47,8 @@ static navigationOptions = {
       roomname:'',
       messages: dataSource,
 
+      hidden:false,
+
     }
     this.userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
     this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
@@ -57,12 +61,14 @@ componentWillMount() {
             + firebase.auth().currentUser.uid).once('value',status=> {
 
               if(snap.val().phase > 1){
+                  firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
+                  .once('value',outsnap=>{
+                      firebase.database().ref(outsnap.val() + '/' + status.val().roleid).once('value',rolesnap=>{
 
-                  firebase.database().ref('rules/' + status.val().roleid).once('value',rolesnap=>{
-
-                      this.setState({
-                          role: rolesnap.val().name,
-                          description: rolesnap.val().desc,
+                          this.setState({
+                              role: rolesnap.val().name,
+                              description: rolesnap.val().desc,
+                          })
                       })
                   })
 
@@ -109,18 +115,36 @@ componentWillUnmount() {
 
               <View style = {{flex:0.2}}/>
 
-              <View style = {{flex:0.6,borderWidth:1, alignItems: 'center',justifyContent:'center'}}>
-                  <Text>My Role:</Text>
-                  <Text style={{fontWeight:'bold',fontSize:20}}>{this.state.role}</Text>
+              <View style = {{flex:0.6,flexDirection:'row',borderWidth:1}}>
+                  <View style = {{flex:0.75,borderWidth:1,}}/>
+                  <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
+                      <Text>My Role:</Text>
+                      <Text style={{fontWeight:'bold',fontSize:20,color:'black'}}>
+                          {this.state.hidden ? 'Hidden' : this.state.role}</Text>
+                  </View>
+                  <TouchableOpacity
+                      style={{
+                        flex:0.75,justifyContent:'center',borderWidth:1
+                      }}
+                      onPress={()=>{
+                          this.setState({hidden:this.state.hidden ? false:true})
+                      }}>
+                      <MaterialCommunityIcons name={this.state.hidden?'eye-off':'eye'} 
+                          style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                  </TouchableOpacity>
               </View>
 
-              <View style = {{flex:0.8}}/>
+              <View style = {{flex:0.1}}/>
+
+              <View style = {{flex:1.2,borderWidth:1,}}/>
+
+              <View style = {{flex:0.1}}/>
 
               <View style = {{flex:0.5,borderWidth:1, alignItems: 'center',justifyContent:'center'}}>
-                  <Text>{this.state.description}</Text>
+                  <Text>{this.state.hidden ? 'Hidden.' : this.state.description}</Text>
               </View>
 
-              <View style = {{flex:0.9}}/>
+              <View style = {{flex:0.3}}/>
 
               <View style = {{
                   flex: 2,
@@ -129,9 +153,10 @@ componentWillUnmount() {
                 <View><FlatList
                     data={this.state.messages}
                     renderItem={({item}) => (
-                        <View style = {{flexDirection:'row',marginLeft:15,}}>
-                          <Text style={{color:'black',fontWeight:'bold'}}>{'[ ' + item.from + ' ] '}</Text> 
-                          <Text style={{color:item.color,fontWeight:'bold'}}>{item.message}</Text></View>
+                        <View style = {{marginRight:15, marginLeft:15,}}>
+                          <Text style={{color:'black',fontWeight:'bold'}}>
+                              {'[ ' + item.from + ' ] '}</Text> 
+                          <Text style={{color:item.color}}>{item.message}</Text></View>
                     )}
                     keyExtractor={item => item.key}
                 /></View>
