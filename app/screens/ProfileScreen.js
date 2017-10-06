@@ -47,7 +47,8 @@ static navigationOptions = {
       roomname:'',
       messages: dataSource,
 
-      hidden:false,
+      hidden:true,
+      loghidden:false,
 
     }
     this.userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
@@ -113,8 +114,6 @@ componentWillUnmount() {
               backgroundColor: 'white',
           }}>
 
-              <View style = {{flex:0.2}}/>
-
               <View style = {{flex:0.6,flexDirection:'row',borderWidth:1}}>
                   <View style = {{flex:0.75,borderWidth:1,}}/>
                   <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
@@ -134,23 +133,37 @@ componentWillUnmount() {
                   </TouchableOpacity>
               </View>
 
-              <View style = {{flex:0.1}}/>
-
               <View style = {{flex:1.2,borderWidth:1,}}/>
 
               <View style = {{flex:0.1}}/>
 
               <View style = {{flex:0.5,borderWidth:1, alignItems: 'center',justifyContent:'center'}}>
-                  <Text>{this.state.hidden ? 'Hidden.' : this.state.description}</Text>
+                  <Text>{this.state.hidden ? 'Confidential Information.' : this.state.description}</Text>
               </View>
 
-              <View style = {{flex:0.3}}/>
+              <View style = {{flex:0.6,flexDirection:'row'}}>
+                  <View style = {{flex:0.75,borderWidth:1,}}/>
+                  <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
+                      <Text style={{fontWeight:'bold',fontSize:20,color:'black'}}>
+                          Activity Log</Text>
+                  </View>
+                  <TouchableOpacity
+                      style={{
+                        flex:0.75,justifyContent:'center',borderWidth:1
+                      }}
+                      onPress={()=>{
+                          this.setState({loghidden:this.state.loghidden ? false:true})
+                      }}>
+                      <MaterialCommunityIcons name={this.state.loghidden?'eye-off':'eye'} 
+                          style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                  </TouchableOpacity>
+              </View>
 
               <View style = {{
                   flex: 2,
                   borderWidth: 1,
                 }}>
-                <View><FlatList
+                <View>{this.state.loghidden? <View/>:<FlatList
                     data={this.state.messages}
                     renderItem={({item}) => (
                         <View style = {{marginRight:15, marginLeft:15,}}>
@@ -159,7 +172,8 @@ componentWillUnmount() {
                           <Text style={{color:item.color}}>{item.message}</Text></View>
                     )}
                     keyExtractor={item => item.key}
-                /></View>
+                    />}
+                </View>
               </View>
 
               <View style = {{

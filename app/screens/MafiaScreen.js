@@ -422,10 +422,8 @@ _lynchBtnPress() {
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + this.state.choppingblock).update({dead:true,lynch:false})
 
-            firebase.database().ref('rooms/' + this.state.roomname + '/playernum').once('value',snap=>{
-                firebase.database().ref('rooms/' + this.state.roomname).update({playernum:snap.val()-1})
-            })
-            this._changePhase(4)
+            this._changePlayerCount(false);
+            this._changePhase(4);
         }
     })
     
