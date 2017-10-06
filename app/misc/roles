@@ -21,19 +21,33 @@ A - Godfather
     rules           
     type            1
 
-B - Mafia
+B - Underboss
+    color           #d31d1d
+    desc            Second-in-command of the Mafia.
+    image
+    rules           
+    type            1
+
+C - Gangster
     color           #d31d1d
     desc            Member of the Mafia.
     image
     rules           
     type            1
 
-C - 
+D - Robber
+    color           #d31d1d
+    desc            Member of the Mafia.
+    image
+    rules           
+    type            1
 
-D - 
-
-E -
-
+E - Thug
+    color           #d31d1d
+    desc            Member of the Mafia.
+    image
+    rules           
+    type            1
 
 ------------Town------------
 

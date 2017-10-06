@@ -446,6 +446,16 @@ _handOutRoles(roomname){
 
                 firebase.database().ref('rooms/' + roomname + '/listofplayers/' + child.key)
                     .update({roleid: randomstring.charAt(randomnumber - 1)});
+
+                if(randomstring.charAt(randomnumber - 1) == 'A' ||
+                    randomstring.charAt(randomnumber - 1) == 'B' ||
+                    randomstring.charAt(randomnumber - 1) == 'C' ||
+                    randomstring.charAt(randomnumber - 1) == 'D' ||
+                    randomstring.charAt(randomnumber - 1) == 'E'){
+                        firebase.database().ref('rooms/' + roomname + '/mafia/' 
+                            + randomstring.charAt(randomnumber - 1))
+                            .update({uid:child.key,user:child.val().name})
+                }
                 
                 max = max - 1;
                 randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);
