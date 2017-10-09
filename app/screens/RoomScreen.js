@@ -39,7 +39,6 @@ constructor(props) {
         joincode: '',
         creatorname:'',
         alias:'',
-        roomtype:'rules',
     };
 
 

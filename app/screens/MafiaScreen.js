@@ -689,19 +689,13 @@ _nightPhase() {
                 //Doctor
             } else if (child.key == 'F') {
 
-                //Implement similar logic to GodFather
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
+                firebase.database().ref('rooms/' + this.state.roomname + '/actions/A/target')
                     .once('value',insidesnap=>{
-                        if(insidesnap.val().dead){
-                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
-                                .update({dead:false})
-                            this._changePlayerCount(true);
+                        if(insidesnap.val() == child.val().target){
                             this._noticeMsgForTarget(child.val().target,'#34cd0e','The Doctor took care of your stab wounds.');
                             this._noticeMsgForUser(child.val().user,'#34cd0e','You healed ' 
                                 + child.val().targetname +"'s stab wounds.");
                         } else {
-                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
-                                .update({dead:false})
                             this._noticeMsgForTarget(child.val().target,'#34cd0e','The Doctor gave you a visit.');
                             this._noticeMsgForUser(child.val().user,'#34cd0e','You visited ' 
                                 + child.val().targetname + '.');

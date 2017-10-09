@@ -46,6 +46,7 @@ constructor(props) {
     this.state = {
 
         roles: dataSource,
+        loading:true,
 
     }
 
@@ -96,10 +97,17 @@ componentWillMount() {
 
     })
 
+    this.setState({loading:false})
+
 }
 
 render(){
-    return <View style = {{flex:1, backgroundColor:'white'}}>
+    return this.state.loading?
+        <View style = {{
+            flex:1,
+            backgroundColor:'black'}}>
+        </View>
+        :<View style = {{flex:1, backgroundColor:'white'}}>
         <View><FlatList
             data={this.state.roles}
             renderItem={({item}) => (

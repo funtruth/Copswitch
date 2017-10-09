@@ -24,14 +24,6 @@ import firebase from '../firebase/FirebaseController.js';
 
 export default class ProfileScreen extends React.Component {
 
-static navigationOptions = {
-  headerTitle: 'Profile',
-  headerTintColor: 'white',
-  headerStyle: {
-      backgroundColor: 'black',
-  }
-}
-
   constructor(props) {
     super(props);
     
@@ -191,7 +183,12 @@ componentWillUnmount() {
                     color='white'
                     onPress={() => {
                       firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                        .update({name: null, phase:1})
+                        .update({
+                          name: null, 
+                          phase:1,
+                          pressedaction: false,
+                          presseduid: 'foo',
+                        })
                       this.props.navigation.navigate('Room_Screen')
                     }}/>
                 </View>
