@@ -101,7 +101,7 @@ _createRoom() {
     //Set up temporary list of roles
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type').once('value',outsnap=>{
        
-        firebase.database().ref(outsnap.val()).once('value',snap => {
+        firebase.database().ref(outsnap.val() + '/roles').once('value',snap => {
             snap.forEach((child)=>{
 
                 firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 

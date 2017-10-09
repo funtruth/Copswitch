@@ -1,53 +1,38 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- * @flow
- */
-
 import React, { Component } from 'react';
-import {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
 
-export default class Huddle extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
-      </View>
-    );
-  }
+import { AppRegistry } from 'react-native';
+
+import { createRootNavigator } from "./router";
+import { isSignedIn } from "./app/auth";
+
+export default class App extends React.Component {
+    constructor(props) {
+        super(props);
+    
+        this.state = {
+          signedIn: false,
+          checkedSignIn: false
+        };
+      }
+    
+    componentWillMount() {
+    isSignedIn()
+        .then(res => this.setState({ signedIn: res, checkedSignIn: true }))
+        .catch(err => alert("An error occurred"));
+    }
+
+    render(){
+        const { checkedSignIn, signedIn } = this.state;
+        
+        // If we haven't checked AsyncStorage yet, don't render anything (better ways to do this)
+        if (!checkedSignIn) {
+            return null;
+        }
+    
+        const Layout = createRootNavigator(signedIn);
+        return <Layout />;
+    }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
-
-AppRegistry.registerComponent('Huddle', () => Huddle);
+AppRegistry.registerComponent('Huddle', () => App);
+//AppRegistry.registerComponent('Huddle', () => CreateScreen);

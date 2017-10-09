@@ -77,7 +77,7 @@ componentWillMount() {
         } else {
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
             .once('value',outsnap=>{
-                firebase.database().ref(outsnap.val()).once('value', deepshot => {
+                firebase.database().ref(outsnap.val() + '/roles').once('value', deepshot => {
                     var roles = [];
                     deepshot.forEach((child)=> {
                         roles.push({

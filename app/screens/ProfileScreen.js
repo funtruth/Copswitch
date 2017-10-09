@@ -56,7 +56,7 @@ componentWillMount() {
               if(snap.val().phase > 1){
                   firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
                   .once('value',outsnap=>{
-                      firebase.database().ref(outsnap.val() + '/' + status.val().roleid).once('value',rolesnap=>{
+                      firebase.database().ref(outsnap.val() + '/roles/' + status.val().roleid).once('value',rolesnap=>{
 
                           this.setState({
                               role: rolesnap.val().name,
