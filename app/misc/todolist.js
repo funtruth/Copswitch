@@ -16,3 +16,5 @@
 //Chopping Block player Name
 
 //users/uid/active flag to show only the relevant roles
+
+//Global Notifications when Private are hidden

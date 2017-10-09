@@ -43,9 +43,10 @@ constructor(props) {
     this.state = {
         roomname: params.roomname,
         phase: '',
+        layout:'',
+        layoutname:'',
 
-        rightlist: dataSource,
-        leftlist: dataSource,
+        namelist: dataSource,
 
         namesize: 3,
         middlesize:2,
@@ -75,6 +76,12 @@ componentWillMount() {
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
             .update({phase:snap.val().phase});
         
+        //Find layout type of Phase
+        firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val().phase)
+        .once('value',layout=>{
+                this.setState({layout:layout.val().type,layoutname:layout.val().name})
+        })
+
         //Set up Layout based on phase
         if(snap.val().phase==2){
             this.setState({namesize:3, middlesize:2, phase:snap.val().phase})
@@ -121,9 +128,8 @@ componentWillUnmount() {
 _updatePlayerState() {
     firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers').once('value', snap=>{
         
-        var leftlist = [];
+        var list = [];
         var rightlist = [];
-        var counter = 1;
 
         snap.forEach((child)=> {
 
@@ -134,30 +140,17 @@ _updatePlayerState() {
                 namefontcolor = '#74561a'
             }
 
-            if((counter%2) == 1){
-                leftlist.push({
-                    name: child.val().name,
-                    color: namebtncolor,
-                    font: namefontcolor,
-                    dead: child.val().dead,
-                    lynch: child.val().lynch,
-                    key: child.key,
-                })
-            } else {
-                rightlist.push({
-                    name: child.val().name,
-                    color: namebtncolor,
-                    font: namefontcolor,
-                    dead: child.val().dead,
-                    lynch: child.val().lynch,
-                    key: child.key,
-                })
-            }
-            counter++;
+            list.push({
+                name: child.val().name,
+                color: namebtncolor,
+                font: namefontcolor,
+                dead: child.val().dead,
+                lynch: child.val().lynch,
+                key: child.key,
+            })
         })
 
-        this.setState({leftlist:leftlist})
-        this.setState({rightlist:rightlist})
+        this.setState({namelist:list})
     })
 }
 
@@ -177,7 +170,6 @@ _lowerCount() {
         firebase.database().ref('rooms/' + this.state.roomname).update({count:snap.val()-1})
     })
 }
-
 _raiseCount() {
     firebase.database().ref('rooms/' + this.state.roomname + '/count').once('value',snap=>{
         firebase.database().ref('rooms/' + this.state.roomname).update({count:snap.val()+1})
@@ -229,6 +221,7 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
 
     if(actionbtnvalue == true){
 
+        //If you are UN-PRESSING action button, ALSO remove your vote from your selected player
         if(presseduid != 'foo'){
             firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid + '/votes')
             .once('value',snap=>{
@@ -241,6 +234,7 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
         this._lowerCount();
     } else {
 
+        //If you are PRESSING action button, ALSO add your vote to your selected player
         if(presseduid != 'foo'){
             firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid + '/votes')
             .once('value',snap=>{
@@ -271,7 +265,6 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                     if((countsnap.val()+1)>playernum.val()){
                         if(snap.val().action){
                             this._nightPhase();
-                            alert('hiyo')
                         }
                         this._changePhase(snap.val().continue);
                     }
@@ -282,106 +275,25 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
 }
 
 _nameBtnPress(uid,name,triggernum,phase,roomname){
-    if(phase == 2){
-
-        firebase.database().ref('rooms/' + roomname + '/listofplayers/' + uid).once('value',snap=>{
-
-            if(this.state.presseduid == uid){
-
-                //Unselecting the Same Player
-                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + uid)
-                    .update({votes: snap.val().votes - 1})
-                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                    .update({presseduid: 'foo'})
-            
-            } else {
-
-                //Selecting a Player Normally
-                if(this.state.presseduid == 'foo'){
-
-                    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                        .update({presseduid: uid})
-                    this.setState({presseduid: uid})
-
-                    //When Player has pressed the Action button and switches to a Player
-                    if(this.state.actionbtnvalue == true){
-                        this._lowerCount();
-                        this._actionBtnValue(false);
-                    }
-
-                    if((snap.val().votes + 2) > triggernum){
-                        
-                        firebase.database().ref('rooms/' + roomname).update({choppingblock:uid})
-                        this._changePhase(3)
     
-                    } else {
-                        firebase.database().ref('rooms/' + roomname + '/listofplayers/' + uid)
-                            .update({votes: snap.val().votes + 1})
-    
-                        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                            .update({presseduid: uid})
-                    }
+    if(this.state.presseduid != uid){
+        this._pressedUid(uid);
 
-                } else {   
-
-                    firebase.database().ref('rooms/' + roomname + '/listofplayers/' + this.state.presseduid)
-                    .once('value',snapshot=>{
-                        firebase.database().ref('rooms/' + roomname + '/listofplayers/' + snapshot.key)
-                            .update({votes: snapshot.val().votes - 1})
-                    })
-
-                    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                        .update({presseduid: uid})
-                    this.setState({presseduid: uid})
-
-                    if((snap.val().votes + 2) > triggernum){
-                        firebase.database().ref('rooms/' + roomname).update({choppingblock:uid})
-                        this._changePhase(3)
-    
-                    } else {
-                        
-                        firebase.database().ref('rooms/' + roomname + '/listofplayers/' + uid)
-                            .update({votes: snap.val().votes + 1})
-                    }
-                }
-
-                
-
-            }
+        firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+        + firebase.auth().currentUser.uid).once('value',snap=>{
+                firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid).set({
+                    target:uid,
+                    targetname:name,
+                    user:snap.key,
+                })
         })
-    } else if(phase == 3){
-        
-    } else if(phase == 4){
-        //If Player has marked 'ready', unmark.
-        if(this.state.actionbtnvalue){
-            this._lowerCount();
-            this._actionBtnValue(false);
-        }
+    } else {
+        this._pressedUid('foo');
 
-        //If user has not selected another Player yet
-        if(this.state.presseduid == 'foo'){
-            firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
-                + firebase.auth().currentUser.uid).once('value',snap=>{
-                    firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid)
-                        .update({target:uid, targetname:name, user:snap.key})
-            })
-            this._pressedUid(uid)
-        //If user is unselecting Player
-        } else if (this.state.presseduid == uid) {
-            firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
-                + firebase.auth().currentUser.uid).once('value',snap=>{
-                    firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid).remove()
-            })
-            this._pressedUid('foo')
-        //If user is switching his Player selection
-        } else {
-            firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
-                + firebase.auth().currentUser.uid).once('value',snap=>{
-                    firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid)
-                        .update({target:uid,targetname:name})
-            })
-            this._pressedUid(uid)
-        }
+        firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+        + firebase.auth().currentUser.uid).once('value',snap=>{
+                firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid).remove();
+        })
     }
 }
 
@@ -428,37 +340,24 @@ _handleBackButton() {
     return true;
 }
 
-_renderComponent() {
-    
-    if(this.state.phase == 2){
-        return <View><Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
-            Day
-        </Text></View>
-    } else if(this.state.phase == 3){
-        return <View><Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
-            Nomination
-        </Text></View>
-    } else {
-        return <View><Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
-            Night
-        </Text></View>
-    }
+_renderHeader() {
+    return <View><Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
+        {this.state.layoutname}
+    </Text></View>
 }
 
-_renderLeftComponent(){
+_renderListComponent(){
 
     if(this.state.phase==2){
         return <FlatList
-            data={this.state.leftlist}
+            data={this.state.namelist}
             renderItem={({item}) => (
                 <TouchableOpacity 
                     onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.deadleft : {height:40,
                         backgroundColor: item.color,
-                        borderBottomRightRadius: 10,
-                        borderTopRightRadius: 10,
-                        marginBottom: 10,
+                        margin: 10,
                         justifyContent:'center'
                     }}
                     disabled = {item.dead}
@@ -471,14 +370,12 @@ _renderLeftComponent(){
         />
     } else if(this.state.phase==3){
         return <FlatList
-            data={this.state.leftlist}
+            data={this.state.namelist}
             renderItem={({item}) => (
                 <TouchableOpacity
                     style = {item.dead ? styles.deadleft : {height:40,
                         backgroundColor: item.lynch ? '#b3192e' :item.color,
-                        borderBottomRightRadius: 10,
-                        borderTopRightRadius: 10,
-                        marginBottom: 10,
+                        margin: 10,
                         justifyContent:'center'
                     }}
                     > 
@@ -489,16 +386,14 @@ _renderLeftComponent(){
         />
     } else if(this.state.phase==4){
         return <FlatList
-            data={this.state.leftlist}
+            data={this.state.namelist}
             renderItem={({item}) => (
                 <TouchableOpacity 
                     onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.deadleft : {height:40,
                         backgroundColor: item.color,
-                        borderBottomRightRadius: 10,
-                        borderTopRightRadius: 10,
-                        marginBottom: 10,
+                        margin: 10,
                         justifyContent:'center'
                     }}
                     disabled = {item.dead}
@@ -523,73 +418,6 @@ _renderCenterComponent() {
         />
     } else if (this.state.phase == 5){
 
-    }
-}
-
-_renderRightComponent(){
-    
-    if(this.state.phase==2){
-        return <FlatList
-            data={this.state.rightlist}
-            renderItem={({item}) => (
-                <TouchableOpacity 
-                    onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                        this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.deadright : {height:40,
-                        backgroundColor: item.color,
-                        borderBottomLeftRadius: 10,
-                        borderTopLeftRadius: 10,
-                        marginBottom: 10,
-                        justifyContent:'center'
-                    }}
-                    disabled = {item.dead}
-                    > 
-                    <Text style = {{color:item.font, alignSelf: 'center'}}>{item.name}</Text>
-                </TouchableOpacity>
-
-            )}
-            keyExtractor={item => item.key}
-        />
-    } else if(this.state.phase==3){
-        return <FlatList
-            data={this.state.rightlist}
-            renderItem={({item}) => (
-                <TouchableOpacity 
-                    style = {item.dead ? styles.deadright : {height:40,
-                        backgroundColor: item.lynch ? '#b3192e' :item.color,
-                        borderBottomLeftRadius: 10,
-                        borderTopLeftRadius: 10,
-                        marginBottom: 10,
-                        justifyContent:'center'
-                    }}
-                    > 
-                </TouchableOpacity>
-
-            )}
-            keyExtractor={item => item.key}
-        />  
-    } else if(this.state.phase == 4) {
-        return <FlatList
-            data={this.state.rightlist}
-            renderItem={({item}) => (
-                <TouchableOpacity 
-                    onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                        this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.deadright : {height:40,
-                        backgroundColor: item.color,
-                        borderBottomLeftRadius: 10,
-                        borderTopLeftRadius: 10,
-                        marginBottom: 10,
-                        justifyContent:'center'
-                    }}
-                    disabled = {item.dead}
-                    > 
-                    <Text style = {{color:item.font, alignSelf: 'center'}}>{item.name}</Text>
-                </TouchableOpacity>
-
-            )}
-            keyExtractor={item => item.key}
-        />
     }
 }
 
@@ -712,59 +540,56 @@ _nightPhase() {
 }
 
 render() {
-    return <View style = {{
-        flex:1,
-        backgroundColor:'white',
-    }}>
-        <View style = {{flex:1,flexDirection:'row'}}>
-            <View style = {{flex:1}}/>
-            <View style = {{
-                flex:2,
-                borderBottomLeftRadius: 10,
-                borderBottomRightRadius: 10,
-                backgroundColor: 'black',
-                justifyContent: 'center',
-            }}> 
-                {this._renderComponent()}
-            </View>
-            <View style = {{flex:1}}/>
-        </View>
-        
-        <View style = {{flex:0.2}}/>
 
-        <View style = {{flex:7,flexDirection:'row'}}>
-            <View style = {{flex:this.state.namesize}}>
-                {this._renderLeftComponent()}
-            </View>
-            <View style = {{flex:this.state.middlesize,justifyContent:'center'}}>
-                {this._renderCenterComponent()}
-            </View>
-            <View style = {{flex:this.state.namesize}}>
-                {this._renderRightComponent()}
-            </View>
-        </View>
+return <View style = {{
+    flex:1,
+    flexDirection:'row',
+    backgroundColor:'white',
+}}>
 
-
-        <View style = {{flex:0.2}}/>
-
-        <View style = {{flex:1,flexDirection:'row'}}>
-            <View style = {{flex:1}}/>
-            <View style = {{flex:2}}>
-                <ProfileButton
-                    title='Continue'
-                    backgroundColor={this.state.actionbtnvalue ? '#e3c382' : 'black'}
-                    color={this.state.actionbtnvalue ? '#74561a' : 'white'}
-                    disabled={this.state.amidead}
-                    onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
-                        this.state.triggernum,this.state.phase,this.state.roomname)}}
-                />
-            </View>
-            <View style = {{flex:1}}/>
-        </View>
-
+    <View style = {{flex:2,borderWidth:1}}>
+        {this._renderListComponent()}
     </View>
 
+    <View style = {{flex:1,borderWidth:1}}>
+        <View style = {{flex:1,borderWidth:1,backgroundColor: 'black',justifyContent: 'center',}}>  
+            {this._renderHeader()}
+        </View>
+        <View style = {{flex:1,borderWidth:1}}/>
+        <View style = {{flex:0.6,borderWidth:1,justifyContent:'center'}}>
+            <ProfileButton
+                title='Yes'
+                backgroundColor='black'
+                color='white'
+                disabled={this.state.amidead}
+                onPress={()=> {}}
+            />
+        </View>
+        <View style = {{flex:0.6,borderWidth:1,justifyContent:'center'}}>    
+            <ProfileButton
+                title='No'
+                backgroundColor='black'
+                color='white'
+                disabled={this.state.amidead}
+                onPress={()=> {}}
+            />
+        </View>
+        <View style = {{flex:1.8,borderWidth:1}}/>
+        <View style = {{flex:1,borderWidth:1,justifyContent:'center'}}>
+            <ProfileButton
+                title='Continue'
+                backgroundColor={this.state.actionbtnvalue ? '#e3c382' : 'black'}
+                color={this.state.actionbtnvalue ? '#74561a' : 'white'}
+                disabled={this.state.amidead}
+                onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
+                    this.state.triggernum,this.state.phase,this.state.roomname)}}
+            />
+        </View>
+    </View>
+
+</View>
 }
+
 }
 
 const styles = StyleSheet.create({
@@ -784,5 +609,4 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         justifyContent:'center'
     },    
-
 });

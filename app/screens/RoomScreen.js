@@ -121,8 +121,12 @@ _createRoom() {
             snap.forEach((child)=>{
 
                 firebase.database().ref('rooms/' + roomname + '/phases/' + child.key).set({
-                    continue: child.val().continue,
-                    trigger: child.val().trigger,
+                    continue:   child.val().continue,
+                    trigger:    child.val().trigger,
+                    name:       child.val().name,
+                    killing:    child.val().killing,
+                    action:     child.val().action,
+                    type:       child.val().type,
                 })
 
             })
