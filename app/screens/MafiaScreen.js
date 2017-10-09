@@ -225,75 +225,59 @@ _pressedUid(uid){
 }
 
 //Pressing the Action Button at the Bottom of Screen
-_actionBtnPress(actionbtnvalue,triggernum,phase,roomname){
+_actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
 
-    if(phase == 2) {
-        if(actionbtnvalue == true){
-            this._actionBtnValue(false);
-            this._lowerCount();
-        } else {
-            this._actionBtnValue(true);
+    if(actionbtnvalue == true){
 
-            //When Player has pressed a name button and switches to Continue
-            if(this.state.presseduid != 'foo'){
-                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + this.state.presseduid)
-                    .once('value',snap=>{
-                        firebase.database().ref('rooms/' + roomname + '/listofplayers/'
-                            + this.state.presseduid).update({votes:snap.val().votes-1})
-                    })
-                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                    .update({presseduid: 'foo'})
-            }
-
-            firebase.database().ref('rooms/' + roomname).once('value',snap=>{
-                
-                if((snap.val().count + 2) > this.state.triggernum){
-                    firebase.database().ref('rooms/' + roomname + '/actions').remove();
-                    this._changePhase(4);
-                } else {
-                    firebase.database().ref('rooms/' + roomname).update({count:snap.val().count + 1})
-                }
-
-            })
-
-        }
-    } else if(phase == 3) {
-        if(this.state.actionbtnvalue){
-            this._lowerCount();
-            this._actionBtnValue(false);
-        } else {
-
-            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + firebase.auth().currentUser.uid).update({lynch:false})
-
-            this._actionBtnValue(true);
-
-            firebase.database().ref('rooms/' + this.state.roomname + '/count').once('value',snap=>{
-                if((snap.val() + 2)>triggernum){
-                    this._changePhase(2)
-                } else {
-                    firebase.database().ref('rooms/' + roomname).update({count:snap.val().count + 1});
-                }
+        if(presseduid != 'foo'){
+            firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid + '/votes')
+            .once('value',snap=>{
+                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid)
+                .update({votes:(snap.val()-1)})
             })
         }
-    } else if(phase == 4) {
-        if(this.state.actionbtnvalue){
-            this._lowerCount();
-            this._actionBtnValue(false);
-        } else {
-            this._raiseCount();
-            this._actionBtnValue(true);
 
-            firebase.database().ref('rooms/' + this.state.roomname).once('value',snap=>{
-                if((snap.val().count + 2)>snap.val().playernum){
+        this._actionBtnValue(false);
+        this._lowerCount();
+    } else {
 
-                    //Enter Night phase algorithm
-                    this._nightPhase();
-
-                    this._changePhase(2);
-                } 
+        if(presseduid != 'foo'){
+            firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid + '/votes')
+            .once('value',snap=>{
+                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid)
+                .update({votes:(snap.val()+1)})
             })
         }
+
+        this._actionBtnValue(true);
+        this._raiseCount();
+
+        firebase.database().ref('rooms/' + roomname + '/phases/' + phase).once('value',snap=>{
+
+            //Check if trigger happens
+            if(snap.val().trigger){
+                //Check votes
+                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid + '/votes')
+                .once('value',checkvotes=>{
+                    if((checkvotes.val()+1)>triggernum){
+                        this._changePhase(snap.val().trigger);
+                    }
+                })
+            };
+            
+            //Check if continue
+            firebase.database().ref('rooms/' + roomname + '/count').once('value',countsnap=>{
+                firebase.database().ref('rooms/' + roomname + '/playernum').once('value',playernum=>{
+                    if((countsnap.val()+1)>playernum.val()){
+                        if(snap.val().action){
+                            this._nightPhase();
+                            alert('hiyo')
+                        }
+                        this._changePhase(snap.val().continue);
+                    }
+                })
+            });
+        })
     }
 }
 
@@ -771,7 +755,7 @@ render() {
                     backgroundColor={this.state.actionbtnvalue ? '#e3c382' : 'black'}
                     color={this.state.actionbtnvalue ? '#74561a' : 'white'}
                     disabled={this.state.amidead}
-                    onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue,
+                    onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
                         this.state.triggernum,this.state.phase,this.state.roomname)}}
                 />
             </View>

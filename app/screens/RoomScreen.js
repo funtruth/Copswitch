@@ -98,6 +98,7 @@ _createRoom() {
             lynch: false,
     });
 
+    //Set up phases and rules
     //Set up temporary list of roles
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type').once('value',outsnap=>{
        
@@ -115,6 +116,17 @@ _createRoom() {
 
             })
         }) 
+
+        firebase.database().ref(outsnap.val() + '/phases').once('value',snap=>{
+            snap.forEach((child)=>{
+
+                firebase.database().ref('rooms/' + roomname + '/phases/' + child.key).set({
+                    continue: child.val().continue,
+                    trigger: child.val().trigger,
+                })
+
+            })
+        })
     })
     
     this.props.navigation.navigate('Lobby_Screen', {roomname: roomname})
