@@ -43,18 +43,15 @@ constructor(props) {
     this.state = {
         roomname: params.roomname,
         phase: '',
-        layout:'',
+        displaylist: '',
+        voting:'',
         layoutname:'',
 
         namelist: dataSource,
 
-        namesize: 3,
-        middlesize:2,
-
         triggernum:'',
 
         actionbtnvalue: false,
-
         presseduid: '',
 
         amidead:true,
@@ -75,23 +72,13 @@ componentWillMount() {
         //Keep Phase updated for PERSONAL USER
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
             .update({phase:snap.val().phase});
+        this.setState({phase:snap.val().phase})
         
         //Find layout type of Phase
         firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val().phase)
         .once('value',layout=>{
-                this.setState({layout:layout.val().type,layoutname:layout.val().name})
+                this.setState({voting:layout.val().voting,layoutname:layout.val().name})
         })
-
-        //Set up Layout based on phase
-        if(snap.val().phase==2){
-            this.setState({namesize:3, middlesize:2, phase:snap.val().phase})
-        } else if(snap.val().phase == 3){
-            this.setState({namesize:1, middlesize:6, phase:snap.val().phase})
-        } else if(snap.val().phase == 4) {
-            this.setState({namesize:3, middlesize:2, phase:snap.val().phase})
-        } else if (snap.val().phase == 5){
-            this.setState({namesize:3, middlesize:2, phase:snap.val().phase})
-        }
 
         //Update the Trigger Number
         this._updateTrigger(snap.val().playernum)
@@ -129,8 +116,6 @@ _updatePlayerState() {
     firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers').once('value', snap=>{
         
         var list = [];
-        var rightlist = [];
-
         snap.forEach((child)=> {
 
             var namebtncolor = 'black'
@@ -216,6 +201,11 @@ _pressedUid(uid){
     this.setState({presseduid: uid})
 }
 
+_resetActions(){
+    firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove();
+}
+
+
 //Pressing the Action Button at the Bottom of Screen
 _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
 
@@ -254,6 +244,9 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                 firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid + '/votes')
                 .once('value',checkvotes=>{
                     if((checkvotes.val()+1)>triggernum){
+                        if(snap.val().actionreset){
+                            this._resetActions();
+                        };
                         this._changePhase(snap.val().trigger);
                     }
                 })
@@ -264,8 +257,11 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                 firebase.database().ref('rooms/' + roomname + '/playernum').once('value',playernum=>{
                     if((countsnap.val()+1)>playernum.val()){
                         if(snap.val().action){
-                            this._nightPhase();
+                            this._actionPhase();
                         }
+                        if(snap.val().actionreset){
+                            this._resetActions();
+                        };
                         this._changePhase(snap.val().continue);
                     }
                 })
@@ -328,12 +324,10 @@ _lynchBtnPress() {
 }
 
 _updateTrigger(playernum) {
-
     const mod = playernum%2;
     this.setState({
         triggernum: (((playernum - mod)/2)+1)
     })
-
 }
 
 _handleBackButton() {
@@ -348,14 +342,14 @@ _renderHeader() {
 
 _renderListComponent(){
 
-    if(this.state.phase==2){
+    if(this.state.phase==2 || this.state.phase==4){
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
                 <TouchableOpacity 
                     onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.deadleft : {height:40,
+                    style = {item.dead ? styles.dead : {height:40,
                         backgroundColor: item.color,
                         margin: 10,
                         justifyContent:'center'
@@ -373,30 +367,13 @@ _renderListComponent(){
             data={this.state.namelist}
             renderItem={({item}) => (
                 <TouchableOpacity
-                    style = {item.dead ? styles.deadleft : {height:40,
+                    style = {item.dead ? styles.dead : 
+                        {height:40,
                         backgroundColor: item.lynch ? '#b3192e' :item.color,
                         margin: 10,
                         justifyContent:'center'
                     }}
-                    > 
-                </TouchableOpacity>
-
-            )}
-            keyExtractor={item => item.key}
-        />
-    } else if(this.state.phase==4){
-        return <FlatList
-            data={this.state.namelist}
-            renderItem={({item}) => (
-                <TouchableOpacity 
-                    onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                        this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.deadleft : {height:40,
-                        backgroundColor: item.color,
-                        margin: 10,
-                        justifyContent:'center'
-                    }}
-                    disabled = {item.dead}
+                    disabled = {true}
                     > 
                     <Text style = {{color:item.font, alignSelf: 'center'}}>{item.name}</Text>
                 </TouchableOpacity>
@@ -404,7 +381,7 @@ _renderListComponent(){
             )}
             keyExtractor={item => item.key}
         />
-    }
+    } 
 }
 
 _renderCenterComponent() {
@@ -450,7 +427,7 @@ _noticeMsgForUser(user,color,message){
     })
 }
 
-_nightPhase() {
+_actionPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
                 //Mafia Kill
@@ -465,7 +442,7 @@ _nightPhase() {
 
                         firebase.database().ref('rooms/' + this.state.roomname + '/actions/F').once('value',m=>{
                             //maybe check if it exists
-                            if(m.val().target == child.val().target){
+                            if(m.exists() && m.val().target == child.val().target){
                                 this._noticeMsgForUser(underboss.val().uid,'#d31d1d','You failed to kill ' 
                                     + child.val().targetname);
                             } else {
@@ -476,6 +453,7 @@ _nightPhase() {
                                 this._noticeMsgForUser(underboss.val().uid,'#d31d1d','You have stabbed ' 
                                     + child.val().targetname);
                             }
+                            
                         })
                             
 
@@ -561,7 +539,7 @@ return <View style = {{
                 title='Yes'
                 backgroundColor='black'
                 color='white'
-                disabled={this.state.amidead}
+                disabled={this.state.voting?this.state.amidead:true}
                 onPress={()=> {}}
             />
         </View>
@@ -570,7 +548,7 @@ return <View style = {{
                 title='No'
                 backgroundColor='black'
                 color='white'
-                disabled={this.state.amidead}
+                disabled={this.state.voting?this.state.amidead:true}
                 onPress={()=> {}}
             />
         </View>
@@ -593,20 +571,10 @@ return <View style = {{
 }
 
 const styles = StyleSheet.create({
-    deadleft: {
+    dead: {
         height:40,
         backgroundColor: 'grey',
-        borderBottomRightRadius: 10,
-        borderTopRightRadius: 10,
-        marginBottom: 10,
+        margin: 10,
         justifyContent:'center'
     },
-    deadright: {
-        height:40,
-        backgroundColor: 'grey',
-        borderBottomLeftRadius: 10,
-        borderTopLeftRadius: 10,
-        marginBottom: 10,
-        justifyContent:'center'
-    },    
 });
