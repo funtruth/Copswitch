@@ -324,7 +324,6 @@ _voteBtnPress(presseduid,votebtn) {
                 this._voteActionUpdate(snap.val().votingtype,false)
                 this._pressedUid('no');
                 this._voteFinished();
-
             }
         } else if (presseduid == 'no') {
             if(votebtn){
@@ -532,7 +531,7 @@ _actionPhase() {
 
                 //Mafia Kill
             } else if (child.key == 'B') {
-                
+
 
                 //Doctor
             } else if (child.key == 'F') {
@@ -579,8 +578,8 @@ _actionPhase() {
                         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                             + child.key).once('value',namesnap=>{
                                 this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                                    namesnap.val().name + ' voted Guilty.') 
-                        })   
+                                    namesnap.val().name + ' voted against ' + child.val().target) 
+                        })
                     })
                     
                     firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase)
@@ -606,8 +605,7 @@ _actionPhase() {
                                                 + mafia.val().uid).update({roleid:'A'})
 
                                                 firebase.database().ref('rooms/' + this.state.roomname + '/mafia/B').remove();
-                                            
-                                        })
+                                    })
                                 }
                             })
                                 

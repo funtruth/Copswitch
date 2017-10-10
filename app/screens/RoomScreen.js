@@ -124,9 +124,10 @@ _createRoom() {
                     trigger:    child.val().trigger,
                     name:       child.val().name,
                     nominate:   child.val().nominate,
-                    votetype:   child.val().votetype,
+                    votingtype: child.val().votingtype,
                     voting:     child.val().voting,
                     action:     child.val().action,
+                    actionreset:child.val().actionreset,
                     type:       child.val().type,
                 })
 
