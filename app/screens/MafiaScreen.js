@@ -43,9 +43,9 @@ constructor(props) {
     this.state = {
         roomname: params.roomname,
         phase: '',
-        displaylist: '',
+        listingtype: '',
         voting:'',
-        layoutname:'',
+        phasename:'',
 
         namelist: dataSource,
 
@@ -56,7 +56,7 @@ constructor(props) {
 
         amidead:true,
 
-        choppingblock:'',
+        nominate:'',
     };
     
     this.roomListener = firebase.database().ref('rooms/' + roomname);
@@ -77,7 +77,10 @@ componentWillMount() {
         //Find layout type of Phase
         firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val().phase)
         .once('value',layout=>{
-                this.setState({voting:layout.val().voting,layoutname:layout.val().name})
+                this.setState({
+                    listingtype:layout.val().type,
+                    voting:layout.val().voting,
+                    phasename:layout.val().name,})
         })
 
         //Update the Trigger Number
@@ -97,7 +100,7 @@ componentWillMount() {
         //Check if you are alive
         this._lifeStatus();
         //Update who's on the chopping block
-        this._updateChoppingBlock();
+        this._updateNominate();
 
     })
 
@@ -161,9 +164,9 @@ _raiseCount() {
     })
 }
 
-_updateChoppingBlock(){
-    firebase.database().ref('rooms/' + this.state.roomname +'/choppingblock').once('value',snap=>{
-        this.setState({choppingblock: snap.val()})
+_updateNominate(){
+    firebase.database().ref('rooms/' + this.state.roomname +'/nominate').once('value',snap=>{
+        this.setState({nominate: snap.val()})
     })
 }
 
@@ -247,6 +250,9 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                         if(snap.val().actionreset){
                             this._resetActions();
                         };
+                        if(snap.val().nominate){
+                            firebase.database().ref('rooms/' + roomname).update({nominate:presseduid})
+                        };
                         this._changePhase(snap.val().trigger);
                     }
                 })
@@ -314,7 +320,7 @@ _lynchBtnPress() {
         //If the total number reaches the trigger number, player on chopping block is lynched
         if((counter+1)>this.state.triggernum){
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + this.state.choppingblock).update({dead:true,lynch:false})
+                + this.state.nominate).update({dead:true,lynch:false})
 
             this._changePlayerCount(false);
             this._changePhase(4);
@@ -336,13 +342,13 @@ _handleBackButton() {
 
 _renderHeader() {
     return <View><Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
-        {this.state.layoutname}
+        {this.state.phasename}
     </Text></View>
 }
 
 _renderListComponent(){
 
-    if(this.state.phase==2 || this.state.phase==4){
+    if(this.state.listingtype=='normal'){
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
@@ -362,14 +368,14 @@ _renderListComponent(){
             )}
             keyExtractor={item => item.key}
         />
-    } else if(this.state.phase==3){
+    } else if(this.state.listingtype=='voting-person'){
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
                 <TouchableOpacity
                     style = {item.dead ? styles.dead : 
                         {height:40,
-                        backgroundColor: item.lynch ? '#b3192e' :item.color,
+                        backgroundColor: item.key == this.state.nominate ? '#b3192e' :'gray',
                         margin: 10,
                         justifyContent:'center'
                     }}
@@ -381,20 +387,6 @@ _renderListComponent(){
             )}
             keyExtractor={item => item.key}
         />
-    } 
-}
-
-_renderCenterComponent() {
-    if(this.state.phase==3){
-        return <Button
-            title='kill'
-            backgroundColor='black'
-            color='white'
-            borderRadius={15}
-            onPress={()=>{this._lynchBtnPress()}}
-        />
-    } else if (this.state.phase == 5){
-
     }
 }
 
