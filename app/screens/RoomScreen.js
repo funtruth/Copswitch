@@ -41,7 +41,6 @@ constructor(props) {
         alias:'',
     };
 
-
 }
 
 componentWillMount() {
@@ -125,7 +124,7 @@ _createRoom() {
                     trigger:    child.val().trigger,
                     name:       child.val().name,
                     nominate:   child.val().nominate,
-                    killing:    child.val().killing,
+                    votetype:   child.val().votetype,
                     voting:     child.val().voting,
                     action:     child.val().action,
                     type:       child.val().type,

@@ -45,6 +45,7 @@ export default class ProfileScreen extends React.Component {
     }
     this.userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
     this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
+
   }
 
 componentWillMount() {

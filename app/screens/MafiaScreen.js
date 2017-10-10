@@ -171,7 +171,6 @@ _updateNominate(){
 }
 
 _changePhase(newphase){
-    //Wait 1.5 seconds and then switch phase
 
     this.setState({actionbtncolor: 'black', actionfontcolor:'white'});
     
@@ -203,11 +202,6 @@ _pressedUid(uid){
         .update({presseduid: uid})
     this.setState({presseduid: uid})
 }
-
-_resetActions(){
-    firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove();
-}
-
 
 //Pressing the Action Button at the Bottom of Screen
 _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
@@ -248,30 +242,49 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                 .once('value',checkvotes=>{
                     if((checkvotes.val()+1)>triggernum){
                         if(snap.val().actionreset){
-                            this._resetActions();
+                            firebase.database().ref('rooms/' + roomname + '/actions').remove();
                         };
                         if(snap.val().nominate){
                             firebase.database().ref('rooms/' + roomname).update({nominate:presseduid})
                         };
                         this._changePhase(snap.val().trigger);
+                    } else {
+                        //Check if continue
+                        //This is coded in 2 LOCATIONS (Just below)
+                        firebase.database().ref('rooms/' + roomname + '/count').once('value',countsnap=>{
+                            firebase.database().ref('rooms/' + roomname + '/playernum').once('value',playernum=>{
+                                if((countsnap.val()+1)>playernum.val()){
+                                    if(snap.val().action){
+                                        this._actionPhase();
+                                    };
+                                    if(snap.val().actionreset){
+                                        firebase.database().ref('rooms/' + roomname + '/actions').remove();
+                                    };
+                                    this._changePhase(snap.val().continue);
+                                }
+                            })
+                        });
                     }
                 })
-            };
+            }
             
-            //Check if continue
-            firebase.database().ref('rooms/' + roomname + '/count').once('value',countsnap=>{
-                firebase.database().ref('rooms/' + roomname + '/playernum').once('value',playernum=>{
-                    if((countsnap.val()+1)>playernum.val()){
-                        if(snap.val().action){
-                            this._actionPhase();
+            else {
+                //Check if continue
+                //This is coded in 2 LOCATIONS (Just above)
+                firebase.database().ref('rooms/' + roomname + '/count').once('value',countsnap=>{
+                    firebase.database().ref('rooms/' + roomname + '/playernum').once('value',playernum=>{
+                        if((countsnap.val()+1)>playernum.val()){
+                            if(snap.val().action){
+                                this._actionPhase();
+                            };
+                            if(snap.val().actionreset){
+                                firebase.database().ref('rooms/' + roomname + '/actions').remove();
+                            };
+                            this._changePhase(snap.val().continue);
                         }
-                        if(snap.val().actionreset){
-                            this._resetActions();
-                        };
-                        this._changePhase(snap.val().continue);
-                    }
-                })
-            });
+                    })
+                });
+            }
         })
     }
 }
@@ -299,34 +312,73 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     }
 }
 
-_lynchBtnPress() {
-    if(this.state.actionbtnvalue){
-        this._actionBtnValue(false);
-        this._lowerCount();
-    } 
-
-    //Updates the Players Vote on Lynch
-    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-        + firebase.auth().currentUser.uid).update({lynch:true})
-
-    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers').once('value',snap=>{
+_voteBtnPress(presseduid,votebtn) {
+    firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase).once('value',snap=>{
         
-        //Counts the Total number of Players that want to Lynch
-        var counter = 0;
-        snap.forEach((child)=>{
-            if(child.val().lynch){counter++}
+        if(presseduid == 'yes'){
+            if(votebtn){
+                this._voteActionUpdate(snap.val().votingtype,false)
+                this._pressedUid('foo');
+                this._lowerCount();
+            } else {
+                this._voteActionUpdate(snap.val().votingtype,false)
+                this._pressedUid('no');
+                this._voteFinished();
+
+            }
+        } else if (presseduid == 'no') {
+            if(votebtn){
+                this._voteActionUpdate(snap.val().votingtype,true)
+                this._pressedUid('yes');
+                this._voteFinished();
+            } else {
+                this._pressedUid('foo');
+                this._lowerCount();
+            }
+        } else {
+            if(votebtn){
+                this._voteActionUpdate(snap.val().votingtype,true)
+                this._pressedUid('yes');
+                this._raiseCount();
+                this._voteFinished();
+            } else {
+                this._pressedUid('no');
+                this._raiseCount();
+                this._voteFinished();
+            }
+        }
+    })    
+}
+
+_voteFinished(){
+    firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase).once('value',snap=>{
+
+        firebase.database().ref('rooms/' + this.state.roomname).once('value',countsnap=>{
+            if((countsnap.val().count+1)>countsnap.val().playernum){
+                if(snap.val().action){ this._actionPhase() };
+            }
         })
 
-        //If the total number reaches the trigger number, player on chopping block is lynched
-        if((counter+1)>this.state.triggernum){
-            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + this.state.nominate).update({dead:true,lynch:false})
-
-            this._changePlayerCount(false);
-            this._changePhase(4);
-        }
     })
-    
+}
+
+_voteActionUpdate(votetype,status){
+    if(votetype=='killing'){
+        if(status){
+            firebase.database().ref('rooms/'+this.state.roomname+'/actions/X').update({target:this.state.nominate});
+            firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes').once('value',votesnap=>{
+
+                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes/' 
+                    + firebase.auth().currentUser.uid).update({name: 'lol'})
+            })
+        } else {
+            firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes').once('value',votesnap=>{
+
+                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes/' 
+                    + firebase.auth().currentUser.uid).remove()
+            })
+        }
+    }
 }
 
 _updateTrigger(playernum) {
@@ -419,6 +471,20 @@ _noticeMsgForUser(user,color,message){
     })
 }
 
+_noticeMsgGlobal(roomname,color,message){
+    firebase.database().ref('rooms/' + roomname + '/listofplayers').once('value',playersnap=>{
+        playersnap.forEach((child)=>{
+
+            firebase.database().ref('messages/' + child.key + '/count').once('value',snap=>{
+                firebase.database().ref('messages/' + child.key + '/' + (snap.val()+1))
+                    .update({from: 'Public', color: color, message: message})
+                firebase.database().ref('messages/' + child.key).update({count:(snap.val()+1)})
+            })         
+
+        })
+    })
+}
+
 _actionPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
@@ -445,9 +511,7 @@ _actionPhase() {
                                 this._noticeMsgForUser(underboss.val().uid,'#d31d1d','You have stabbed ' 
                                     + child.val().targetname);
                             }
-                            
                         })
-                            
 
                     } else {
                         if(m.val().target == child.val().target){
@@ -503,6 +567,52 @@ _actionPhase() {
                 //Villager
             } else if (child.key == 'H') {
 
+            } else if (child.key == 'X') {
+
+                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes').once('value',count=>{
+                    var counter = 0;
+
+                    count.forEach((child)=>{ 
+                        counter++;
+                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                            + child.key).once('value',namesnap=>{
+                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                                    namesnap.val().name + ' voted Guilty.') 
+                        })   
+                    })
+                    
+                    firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase)
+                    .once('value',phasedata=>{
+                        if((counter+1)>this.state.triggernum){
+                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                                + child.val().target).update({dead:true});
+                            this._changePlayerCount(false);
+
+                            if(phasedata.val().actionreset){
+                                firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove() 
+                            };
+                            firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
+                            +child.val().target).once('value',dead=>{
+                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                                    dead.val().name + ' was hung.')
+                            })
+                                
+                            this._changePhase(phasedata.val().trigger)
+                        } else {
+                            if(phasedata.val().actionreset){
+                                firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove() 
+                            };
+                            firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
+                            +child.val().target).once('value',dead=>{
+                                this._noticeMsgGlobal(this.state.roomname,'#34cd0e',
+                                    dead.val().name + ' was not hung.')
+                            })
+                            this._changePhase(phasedata.val().continue)
+                        }
+                    })
+                })
+                
+
             }
         })
     })
@@ -529,19 +639,19 @@ return <View style = {{
         <View style = {{flex:0.6,borderWidth:1,justifyContent:'center'}}>
             <ProfileButton
                 title='Yes'
-                backgroundColor='black'
-                color='white'
+                backgroundColor={this.state.presseduid == 'yes'?'#e3c382':'black'}
+                color={this.state.presseduid == 'yes' ? '#74561a' : 'white'}
                 disabled={this.state.voting?this.state.amidead:true}
-                onPress={()=> {}}
+                onPress={()=> {this._voteBtnPress(this.state.presseduid,true)}}
             />
         </View>
         <View style = {{flex:0.6,borderWidth:1,justifyContent:'center'}}>    
             <ProfileButton
                 title='No'
-                backgroundColor='black'
-                color='white'
+                backgroundColor={this.state.presseduid == 'no'?'#e3c382':'black'}
+                color={this.state.presseduid == 'no' ? '#74561a' : 'white'}
                 disabled={this.state.voting?this.state.amidead:true}
-                onPress={()=> {}}
+                onPress={()=> {this._voteBtnPress(this.state.presseduid,false)}}
             />
         </View>
         <View style = {{flex:1.8,borderWidth:1}}/>
@@ -550,7 +660,7 @@ return <View style = {{
                 title='Continue'
                 backgroundColor={this.state.actionbtnvalue ? '#e3c382' : 'black'}
                 color={this.state.actionbtnvalue ? '#74561a' : 'white'}
-                disabled={this.state.amidead}
+                disabled={this.state.voting?true:this.state.amidead}
                 onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
                     this.state.triggernum,this.state.phase,this.state.roomname)}}
             />
