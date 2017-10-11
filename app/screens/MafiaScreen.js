@@ -55,8 +55,10 @@ constructor(props) {
         presseduid: '',
 
         amidead:true,
+        amipicking:false,
 
         nominate:'',
+        nominee:'',
     };
     
     this.roomListener = firebase.database().ref('rooms/' + roomname);
@@ -166,7 +168,16 @@ _raiseCount() {
 
 _updateNominate(){
     firebase.database().ref('rooms/' + this.state.roomname +'/nominate').once('value',snap=>{
-        this.setState({nominate: snap.val()})
+        firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'+snap.val()).once('value',sp=>{
+            this.setState({nominate: snap.val(), nominee: sp.val().name})
+        })
+
+        if(snap.val() == firebase.auth().currentUser.uid){
+            this.setState({amipicking:true})
+        } else {
+            this.setState({amipicking:false})
+        }
+
     })
 }
 
@@ -290,25 +301,41 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
 }
 
 _nameBtnPress(uid,name,triggernum,phase,roomname){
-    
-    if(this.state.presseduid != uid){
-        this._pressedUid(uid);
+    if(this.state.listingtype == 'normal-person'){
+        //Check if selected player is a mafia member
+            //change role id on listofplayers
+            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+            + uid).once('value',snap=>{
+                    firebase.database().ref('rooms/'+this.state.roomname+'/mafia/'+snap.val().roleid)
+                        .remove()
+                    firebase.database().ref('rooms/'+this.state.roomname+'/mafia/A')
+                        .update({uid:uid})
+                    firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
+                        + uid).update({roleid:'A'})
+            })
 
-        firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
-        + firebase.auth().currentUser.uid).once('value',snap=>{
-                firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid).set({
-                    target:uid,
-                    targetname:name,
-                    user:snap.key,
-                })
-        })
+            this._changePhase(4)
+        //alert no
     } else {
-        this._pressedUid('foo');
+        if(this.state.presseduid != uid){
+            this._pressedUid(uid);
 
-        firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
-        + firebase.auth().currentUser.uid).once('value',snap=>{
-                firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid).remove();
-        })
+            firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+            + firebase.auth().currentUser.uid).once('value',snap=>{
+                    firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid).set({
+                        target:uid,
+                        targetname:name,
+                        user:snap.key,
+                    })
+            })
+        } else {
+            this._pressedUid('foo');
+
+            firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+            + firebase.auth().currentUser.uid).once('value',snap=>{
+                    firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid).remove();
+            })
+        }
     }
 }
 
@@ -363,20 +390,27 @@ _voteFinished(){
 
 _voteActionUpdate(votetype,status){
     if(votetype=='killing'){
-        if(status){
-            firebase.database().ref('rooms/'+this.state.roomname+'/actions/X').update({target:this.state.nominate});
-            firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes').once('value',votesnap=>{
 
-                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes/' 
-                    + firebase.auth().currentUser.uid).update({name: 'lol'})
-            })
-        } else {
-            firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes').once('value',votesnap=>{
+        firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
+        +firebase.auth().currentUser.uid).once('value',namesnap=>{
 
-                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes/' 
-                    + firebase.auth().currentUser.uid).remove()
-            })
-        }
+            if(status){
+                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X')
+                    .update({target:this.state.nominate, targetname: this.state.nominee});
+                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes').once('value',votesnap=>{
+
+                    firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes/' 
+                        + namesnap.val().name).update({name: 'lol'})
+                })
+            } else {
+                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes').once('value',votesnap=>{
+
+                    firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes/' 
+                        + namesnap.val().name).remove()
+                })
+            }
+        })
+
     }
 }
 
@@ -419,6 +453,27 @@ _renderListComponent(){
             )}
             keyExtractor={item => item.key}
         />
+    } else if (this.state.listingtype=='normal-person'){
+
+        return <FlatList
+            data={this.state.namelist}
+            renderItem={({item}) => (
+                <TouchableOpacity 
+                    onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
+                        this.state.phase,this.state.roomname)}}
+                    style = {item.dead ? styles.dead : {height:40,
+                        backgroundColor: item.color,
+                        margin: 10,
+                        justifyContent:'center'
+                    }}
+                    disabled = {this.state.amipicking?item.dead:true}
+                    > 
+                    <Text style = {{color:item.font, alignSelf: 'center'}}>{item.name}</Text>
+                </TouchableOpacity>
+        )}
+        keyExtractor={item => item.key}
+    />
+
     } else if(this.state.listingtype=='voting-person'){
         return <FlatList
             data={this.state.namelist}
@@ -490,42 +545,17 @@ _actionPhase() {
                 //Mafia Kill
             if(child.key == 'A'){
 
-                firebase.database().ref('rooms/' + this.state.roomname + '/mafia/B').once('value',underboss=>{
-                    if(underboss.exists()){
-                        this._noticeMsgForTarget(underboss.val().uid,'#d31d1d','You were ordered to kill ' 
-                            + child.val().target);
-                        this._noticeMsgForUser(child.val().user,'#d31d1d','You called the hit on ' 
+                firebase.database().ref('rooms/' + this.state.roomname + '/actions/F').once('value',doc=>{
+                    if(doc.val().target == child.val().target){
+                        this._noticeMsgForUser(child.val().user,'#d31d1d','You failed to kill ' 
                             + child.val().targetname);
-
-                        firebase.database().ref('rooms/' + this.state.roomname + '/actions/F').once('value',m=>{
-                            //maybe check if it exists
-                            if(m.exists() && m.val().target == child.val().target){
-                                this._noticeMsgForUser(underboss.val().uid,'#d31d1d','You failed to kill ' 
-                                    + child.val().targetname);
-                            } else {
-                                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                                    + child.val().target).update({dead:true});
-                                this._changePlayerCount(false);
-                                this._noticeMsgForTarget(child.val().target,'#d31d1d','You have been stabbed.');
-                                this._noticeMsgForUser(underboss.val().uid,'#d31d1d','You have stabbed ' 
-                                    + child.val().targetname);
-                            }
-                        })
-
                     } else {
-                        firebase.database().ref('rooms/' + this.state.roomname + '/actions/F').once('value',m=>{
-                            if(m.val().target == child.val().target){
-                                this._noticeMsgForUser(child.key,'#d31d1d','You failed to kill ' 
-                                    + child.val().targetname);
-                            } else {
-                                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                                    + child.val().target).update({dead:true});
-                                this._changePlayerCount(false);
-                                this._noticeMsgForTarget(child.val().target,'#d31d1d','You have been stabbed.');
-                                this._noticeMsgForUser(child.key,'#d31d1d','You have stabbed ' 
-                                    + child.val().targetname);
-                            }
-                        })
+                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                            + child.val().target).update({dead:true});
+                        this._changePlayerCount(false);
+                        this._noticeMsgForTarget(child.val().target,'#d31d1d','You have been stabbed.');
+                        this._noticeMsgForUser(child.val().user,'#d31d1d','You have stabbed ' 
+                            + child.val().targetname);
                     }
                 })
 
@@ -572,16 +602,16 @@ _actionPhase() {
 
                 firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes').once('value',count=>{
                     var counter = 0;
-
-                    count.forEach((child)=>{ 
+                    var names = '';
+                    count.forEach((votechild)=>{ 
                         counter++;
-                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                            + child.key).once('value',namesnap=>{
-                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                                    namesnap.val().name + ' voted against ' + child.val().target) 
-                        })
+                        if(counter==1){names=votechild.key}
+                        else if(counter>1){names=names+', '+votechild.key}
                     })
                     
+                    this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                        names + ' voted against ' + child.val().targetname) 
+
                     firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase)
                     .once('value',phasedata=>{
                         if((counter+1)>this.state.triggernum){
@@ -595,6 +625,7 @@ _actionPhase() {
 
                             firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
                             +child.val().target).once('value',dead=>{
+
                                 this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
                                     dead.val().name + ' was hung.')
                                 
@@ -602,14 +633,21 @@ _actionPhase() {
                                     firebase.database().ref('rooms/' + this.state.roomname + '/mafia/B')
                                         .once('value',mafia=>{
                                             firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
-                                                + mafia.val().uid).update({roleid:'A'})
-
-                                                firebase.database().ref('rooms/' + this.state.roomname + '/mafia/B').remove();
+                                                + mafia.val().uid).update({roleid:'A'});
+                                            firebase.database().ref('rooms/' + this.state.roomname + '/mafia/A')
+                                                .update({uid:mafia.val().uid});
+                                            firebase.database().ref('rooms/' + this.state.roomname + '/mafia/B')
+                                                .remove();
                                     })
+                                    firebase.database().ref('rooms/'+this.state.roomname)
+                                        .update({nominate:dead.key})
+                                    this._changePhase(5)
+                                } else {
+                                    this._changePhase(phasedata.val().trigger)
                                 }
                             })
                                 
-                            this._changePhase(phasedata.val().trigger)
+                            
                         } else {
                             if(phasedata.val().actionreset){
                                 firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove() 

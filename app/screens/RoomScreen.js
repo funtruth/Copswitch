@@ -120,15 +120,15 @@ _createRoom() {
             snap.forEach((child)=>{
 
                 firebase.database().ref('rooms/' + roomname + '/phases/' + child.key).set({
-                    continue:   child.val().continue,
-                    trigger:    child.val().trigger,
-                    name:       child.val().name,
-                    nominate:   child.val().nominate,
-                    votingtype: child.val().votingtype,
-                    voting:     child.val().voting,
                     action:     child.val().action,
                     actionreset:child.val().actionreset,
+                    continue:   child.val().continue,
+                    name:       child.val().name,
+                    nominate:   child.val().nominate,
+                    trigger:    child.val().trigger,
                     type:       child.val().type,
+                    voting:     child.val().voting,
+                    votingtype: child.val().votingtype,
                 })
 
             })
@@ -470,8 +470,7 @@ _handOutRoles(roomname){
                     randomstring.charAt(randomnumber - 1) == 'D' ||
                     randomstring.charAt(randomnumber - 1) == 'E'){
                         firebase.database().ref('rooms/' + roomname + '/mafia/' 
-                            + randomstring.charAt(randomnumber - 1))
-                            .update({uid:child.key,user:child.val().name})
+                            + randomstring.charAt(randomnumber - 1)).update({uid:child.key})
                 }
                 
                 max = max - 1;
