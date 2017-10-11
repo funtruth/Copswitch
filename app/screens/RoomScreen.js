@@ -84,7 +84,6 @@ _createRoom() {
         phase: 1,
         owner: firebase.auth().currentUser.uid,
         playernum: 1,
-        count:0,
     });
 
     //Set up list of players

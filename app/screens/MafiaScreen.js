@@ -61,7 +61,7 @@ constructor(props) {
         nominate:'',
         nominee:'',
     };
-    
+
     this.roomListener = firebase.database().ref('rooms/' + roomname);
 
 }
@@ -144,17 +144,6 @@ _updatePlayerState() {
     })
 }
 
-_lowerCount() {
-    firebase.database().ref('rooms/' + this.state.roomname + '/count').once('value',snap=>{
-        firebase.database().ref('rooms/' + this.state.roomname).update({count:snap.val()-1})
-    })
-}
-_raiseCount() {
-    firebase.database().ref('rooms/' + this.state.roomname + '/count').once('value',snap=>{
-        firebase.database().ref('rooms/' + this.state.roomname).update({count:snap.val()+1})
-    })
-}
-
 _updateNumbers(playernum) {
     const mod = playernum%2;
     this.setState({ 
@@ -189,117 +178,88 @@ _changePhase(newphase){
         snap.forEach((child)=>{
             //Set all votes to 0
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.key)
-                .update({votes:0,lynch:false})
-
-            //Set all Statuses to Neutral
-            firebase.database().ref('users/' + child.key + '/room')
-                .update({presseduid: 'foo', pressedaction: false})
+                .update({actionbtnvalue:false,presseduid:'foo'})
         })
     })
 
     firebase.database().ref('rooms/' + this.state.roomname).update({
-        count:0, phase:newphase
+        phase:newphase
     })
 }
 
 _actionBtnValue(status){
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .update({pressedaction: status})
+    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + firebase.auth().currentUser.uid)
+        .update({actionbtnvalue: status})
     this.setState({actionbtnvalue: status})
 }
 
 _pressedUid(uid){
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + firebase.auth().currentUser.uid)
         .update({presseduid: uid})
     this.setState({presseduid: uid})
 }
 
 //Pressing the Action Button at the Bottom of Screen
 _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
-
+ 
     if(actionbtnvalue == true){
-
-        //If you are UN-PRESSING action button, ALSO remove your vote from your selected player
-        if(presseduid != 'foo'){
-            firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid + '/votes')
-            .once('value',snap=>{
-                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid)
-                .update({votes:(snap.val()-1)})
-            })
-        }
-
         this._actionBtnValue(false);
-        this._lowerCount();
+        this._pressedUid('foo');
     } else {
-
-        //If you are PRESSING action button, ALSO add your vote to your selected player
-        if(presseduid != 'foo'){
-            firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid + '/votes')
-            .once('value',snap=>{
-                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid)
-                .update({votes:(snap.val()+1)})
-            })
-        }
-
         this._actionBtnValue(true);
-        this._raiseCount();
 
         firebase.database().ref('rooms/' + roomname + '/phases/' + phase).once('value',snap=>{
 
-            //Check if trigger happens
-            if(snap.val().trigger){
-                //Check votes
-                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + presseduid + '/votes')
-                .once('value',checkvotes=>{
-                    if((checkvotes.val()+1)>triggernum){
-                        if(snap.val().actionreset){
-                            firebase.database().ref('rooms/' + roomname + '/actions').remove();
-                        };
-                        if(snap.val().nominate){
-                            firebase.database().ref('rooms/' + roomname).update({nominate:presseduid})
-                        };
-                        this._changePhase(snap.val().trigger);
-                    } else {
-                        //Check if continue
-                        //This is coded in 2 LOCATIONS (Just below)
-                        firebase.database().ref('rooms/' + roomname + '/count').once('value',countsnap=>{
-                            if((countsnap.val()+1)>this.state.playernum){
-                                if(snap.val().action){
-                                    this._actionPhase();
-                                };
-                                if(snap.val().actionreset){
-                                    firebase.database().ref('rooms/' + roomname + '/actions').remove();
-                                };
-                                this._changePhase(snap.val().continue);
-                            }
-                        });
-                    }
-                })
-            }
-            
-            else {
-                //Check if continue
-                //This is coded in 2 LOCATIONS (Just above)
-                firebase.database().ref('rooms/' + roomname + '/count').once('value',countsnap=>{
-                    if((countsnap.val()+1)>this.state.playernum){
-                        if(snap.val().action){
-                            this._actionPhase();
-                        };
-                        if(snap.val().actionreset){
-                            firebase.database().ref('rooms/' + roomname + '/actions').remove();
-                        };
-                        this._changePhase(snap.val().continue);
-                    }
-                });
-            }
+            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers')
+            .orderByChild('actionbtnvalue').equalTo(true).once('value',actionbtnsnap=>{
+                    
+                if((actionbtnsnap.numChildren()+1)>this.state.playernum){
+                    if(snap.val().action){
+                        this._actionPhase();
+                    };
+                    if(snap.val().actionreset){
+                        firebase.database().ref('rooms/' + roomname + '/actions').remove();
+                    };
+                    this._changePhase(snap.val().continue);
+                }
+            })    
         })
     }
-}
+
+} 
+
 
 _nameBtnPress(uid,name,triggernum,phase,roomname){
-    if(this.state.listingtype == 'normal-person'){
+    if(phase == 2){
+        if(uid==this.state.presseduid){
+            this._pressedUid('foo');
+        } else {
+            this._pressedUid(uid);
+
+            firebase.database().ref('rooms/' + roomname + '/phases/' + phase).once('value',snap=>{
+                
+                if(snap.val().trigger){
+
+                    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers')
+                    .orderByChild('presseduid').equalTo(uid).once('value',namebtnsnap=>{
+                            
+                        if((namebtnsnap.numChildren()+1)>this.state.triggernum){
+                            if(snap.val().actionreset){
+                                firebase.database().ref('rooms/' + roomname + '/actions').remove();
+                            };
+                            if(snap.val().nominate){
+                                firebase.database().ref('rooms/' + roomname).update({nominate:uid})
+                            };
+                            this._changePhase(snap.val().trigger);
+                        }
+                    })    
+                }
+            })
+        } 
+
+    } else if(phase == 5){
         //Check if selected player is a mafia member
-            //change role id on listofplayers
+        //change role id on listofplayers
         if(true){
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
             + uid).once('value',snap=>{
@@ -310,13 +270,12 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                     firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
                         + uid).update({roleid:'A'})
             })
-        
             this._changePhase(4)
         } else {
             alert('no')
         }
 
-    } else {
+    } else if (phase==4) {
         if(this.state.presseduid != uid){
             this._pressedUid(uid);
 
@@ -346,30 +305,32 @@ _voteBtnPress(presseduid,votebtn) {
             if(votebtn){
                 this._voteActionUpdate(snap.val().votingtype,false)
                 this._pressedUid('foo');
-                this._lowerCount();
+                this._actionBtnValue(false);
             } else {
                 this._voteActionUpdate(snap.val().votingtype,false)
                 this._pressedUid('no');
+                this._actionBtnValue(true);
                 this._voteFinished();
             }
         } else if (presseduid == 'no') {
             if(votebtn){
                 this._voteActionUpdate(snap.val().votingtype,true)
                 this._pressedUid('yes');
+                this._actionBtnValue(true);
                 this._voteFinished();
             } else {
                 this._pressedUid('foo');
-                this._lowerCount();
+                this._actionBtnValue(false);
             }
         } else {
             if(votebtn){
                 this._voteActionUpdate(snap.val().votingtype,true)
                 this._pressedUid('yes');
-                this._raiseCount();
+                this._actionBtnValue(true);
                 this._voteFinished();
             } else {
                 this._pressedUid('no');
-                this._raiseCount();
+                this._actionBtnValue(true);
                 this._voteFinished();
             }
         }
@@ -378,13 +339,12 @@ _voteBtnPress(presseduid,votebtn) {
 
 _voteFinished(){
     firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase).once('value',snap=>{
-
-        firebase.database().ref('rooms/' + this.state.roomname).once('value',countsnap=>{
-            if((countsnap.val().count+1)>this.state.playernum){
-                if(snap.val().action){ this._actionPhase() };
-            }
-        })
-
+        firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers').orderByChild('actionbtnvalue')
+            .equalTo(true).once('value',actioncountsnap=>{
+                if((actioncountsnap.numChildren()+1)>this.state.playernum){
+                    if(snap.val().action){ this._actionPhase() };
+                }
+            })
     })
 }
 
@@ -537,7 +497,7 @@ _actionPhase() {
             if(child.key == 'A'){
 
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/F').once('value',doc=>{
-                    if(doc.val().target == child.val().target){
+                    if(doc.exists() && doc.val().targetdoc.val().target == child.val().target){
                         this._noticeMsgForUser(child.val().user,'#d31d1d','You failed to kill ' 
                             + child.val().targetname);
                     } else {
@@ -559,7 +519,7 @@ _actionPhase() {
 
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/A/target')
                     .once('value',insidesnap=>{
-                        if(insidesnap.val() == child.val().target){
+                        if(insidesnap.exists() && insidesnap.val() == child.val().target){
                             this._noticeMsgForTarget(child.val().target,'#34cd0e','The Doctor took care of your stab wounds.');
                             this._noticeMsgForUser(child.val().user,'#34cd0e','You healed ' 
                                 + child.val().targetname +"'s stab wounds.");
