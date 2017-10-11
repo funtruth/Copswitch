@@ -82,8 +82,6 @@ render(){
                         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
                             .set({
                                 phase: 1,
-                                presseduid: 'foo',
-                                pressedaction: false,
                                 type:'Original',
                             })
                         onSignIn();

@@ -28,7 +28,9 @@ _SignUpProcess(email,password){
                 firebase.database().ref('users/' + firebase.auth().currentUser.uid)
                   .set({email: email})
                 firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                  .set({phase:1,presseduid:'foo',pressedaction:false,type:'Original'})
+                  .set({
+                    phase:1,
+                    type:'Original'})
                 onSignIn();
                 this.props.navigation.navigate("SignedIn");
                 Keyboard.dismiss();

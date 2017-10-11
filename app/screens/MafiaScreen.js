@@ -50,6 +50,7 @@ constructor(props) {
         namelist: dataSource,
 
         triggernum:'',
+        playernum:'',
 
         actionbtnvalue: false,
         presseduid: '',
@@ -85,23 +86,23 @@ componentWillMount() {
                     phasename:layout.val().name,})
         })
 
-        //Update the Trigger Number
-        this._updateTrigger(snap.val().playernum)
+        //this.state.triggernum, playernum
+        this._updateNumbers(snap.val().playernum)
 
-        //Match Button Presses with the Database from PERSONAL USER
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .once('value',snap=>{
-            this.setState({
-                presseduid: snap.val().presseduid,
-                actionbtnvalue: snap.val().pressedaction
-            })
+        //Match Button Presses with the Database
+        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+            + firebase.auth().currentUser.uid).once('value',snap=>{
+                this.setState({
+                    actionbtnvalue: snap.val().actionbtnvalue,
+                    presseduid: snap.val().presseduid,
+                    amidead: snap.val().dead
+                })
         })
 
         //Update colors + options for Player Name Buttons
         this._updatePlayerState();
-        //Check if you are alive
-        this._lifeStatus();
-        //Update who's on the chopping block
+
+        //this.state.nominate, nominee, amipicking
         this._updateNominate();
 
     })
@@ -110,7 +111,6 @@ componentWillMount() {
 
 componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-    alert('umounting')
     if(this.roomListener){
         this.roomListener.off();
     }
@@ -144,17 +144,6 @@ _updatePlayerState() {
     })
 }
 
-_lifeStatus(){
-    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-        + firebase.auth().currentUser.uid).once('value',snap=>{
-            if(snap.val().dead){
-                this.setState({amidead:true})
-            } else {
-                this.setState({amidead:false})
-            }
-        })
-}
-
 _lowerCount() {
     firebase.database().ref('rooms/' + this.state.roomname + '/count').once('value',snap=>{
         firebase.database().ref('rooms/' + this.state.roomname).update({count:snap.val()-1})
@@ -166,18 +155,29 @@ _raiseCount() {
     })
 }
 
+_updateNumbers(playernum) {
+    const mod = playernum%2;
+    this.setState({ 
+        triggernum: (((playernum - mod)/2)+1),
+        playernum:playernum,
+    })
+}
+
 _updateNominate(){
+    //Checks the nominated player and updates state for his uid/name
+    //Then checks if you are the nominated player.
     firebase.database().ref('rooms/' + this.state.roomname +'/nominate').once('value',snap=>{
-        firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'+snap.val()).once('value',sp=>{
-            this.setState({nominate: snap.val(), nominee: sp.val().name})
-        })
+        if(snap.exists()){
+            firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'+snap.val()).once('value',sp=>{
+                this.setState({nominate: snap.val(), nominee: sp.val().name})
+            })
 
-        if(snap.val() == firebase.auth().currentUser.uid){
-            this.setState({amipicking:true})
-        } else {
-            this.setState({amipicking:false})
+            if(snap.val() == firebase.auth().currentUser.uid){
+                this.setState({amipicking:true})
+            } else { 
+                this.setState({amipicking:false}) 
+            }
         }
-
     })
 }
 
@@ -263,17 +263,15 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                         //Check if continue
                         //This is coded in 2 LOCATIONS (Just below)
                         firebase.database().ref('rooms/' + roomname + '/count').once('value',countsnap=>{
-                            firebase.database().ref('rooms/' + roomname + '/playernum').once('value',playernum=>{
-                                if((countsnap.val()+1)>playernum.val()){
-                                    if(snap.val().action){
-                                        this._actionPhase();
-                                    };
-                                    if(snap.val().actionreset){
-                                        firebase.database().ref('rooms/' + roomname + '/actions').remove();
-                                    };
-                                    this._changePhase(snap.val().continue);
-                                }
-                            })
+                            if((countsnap.val()+1)>this.state.playernum){
+                                if(snap.val().action){
+                                    this._actionPhase();
+                                };
+                                if(snap.val().actionreset){
+                                    firebase.database().ref('rooms/' + roomname + '/actions').remove();
+                                };
+                                this._changePhase(snap.val().continue);
+                            }
                         });
                     }
                 })
@@ -283,17 +281,15 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                 //Check if continue
                 //This is coded in 2 LOCATIONS (Just above)
                 firebase.database().ref('rooms/' + roomname + '/count').once('value',countsnap=>{
-                    firebase.database().ref('rooms/' + roomname + '/playernum').once('value',playernum=>{
-                        if((countsnap.val()+1)>playernum.val()){
-                            if(snap.val().action){
-                                this._actionPhase();
-                            };
-                            if(snap.val().actionreset){
-                                firebase.database().ref('rooms/' + roomname + '/actions').remove();
-                            };
-                            this._changePhase(snap.val().continue);
-                        }
-                    })
+                    if((countsnap.val()+1)>this.state.playernum){
+                        if(snap.val().action){
+                            this._actionPhase();
+                        };
+                        if(snap.val().actionreset){
+                            firebase.database().ref('rooms/' + roomname + '/actions').remove();
+                        };
+                        this._changePhase(snap.val().continue);
+                    }
                 });
             }
         })
@@ -304,6 +300,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     if(this.state.listingtype == 'normal-person'){
         //Check if selected player is a mafia member
             //change role id on listofplayers
+        if(true){
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
             + uid).once('value',snap=>{
                     firebase.database().ref('rooms/'+this.state.roomname+'/mafia/'+snap.val().roleid)
@@ -313,9 +310,12 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                     firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
                         + uid).update({roleid:'A'})
             })
-
+        
             this._changePhase(4)
-        //alert no
+        } else {
+            alert('no')
+        }
+
     } else {
         if(this.state.presseduid != uid){
             this._pressedUid(uid);
@@ -380,7 +380,7 @@ _voteFinished(){
     firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase).once('value',snap=>{
 
         firebase.database().ref('rooms/' + this.state.roomname).once('value',countsnap=>{
-            if((countsnap.val().count+1)>countsnap.val().playernum){
+            if((countsnap.val().count+1)>this.state.playernum){
                 if(snap.val().action){ this._actionPhase() };
             }
         })
@@ -412,13 +412,6 @@ _voteActionUpdate(votetype,status){
         })
 
     }
-}
-
-_updateTrigger(playernum) {
-    const mod = playernum%2;
-    this.setState({
-        triggernum: (((playernum - mod)/2)+1)
-    })
 }
 
 _handleBackButton() {
@@ -498,13 +491,11 @@ _renderListComponent(){
 
 _changePlayerCount(bool){
     if(bool){
-        firebase.database().ref('rooms/' + this.state.roomname + '/playernum').once('value',snap=>{
-            firebase.database().ref('rooms/' + this.state.roomname).update({playernum:snap.val()+1})
-        })
+        firebase.database().ref('rooms/' + this.state.roomname)
+            .update({playernum:this.state.playernum+1})
     } else {
-        firebase.database().ref('rooms/' + this.state.roomname + '/playernum').once('value',snap=>{
-            firebase.database().ref('rooms/' + this.state.roomname).update({playernum:snap.val()-1})
-        })
+        firebase.database().ref('rooms/' + this.state.roomname)
+            .update({playernum:this.state.playernum-1})
     }
 }
 

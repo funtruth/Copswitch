@@ -91,10 +91,9 @@ _createRoom() {
     firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
         + firebase.auth().currentUser.uid).set({
             name: this.state.creatorname,
-            status: 0,
             dead:false,
-            votes: 0,
-            lynch: false,
+            actionbtnvalue: false,
+            presseduid: 'foo',
     });
 
     //Set up phases and rules
@@ -146,10 +145,9 @@ _joinRoom(joincode) {
             firebase.database().ref('rooms/' + joincode.toUpperCase() 
                 + '/listofplayers/' + firebase.auth().currentUser.uid).set({
                     name: this.state.alias,
-                    status: 0,
                     dead:false,
-                    votes: 0,
-                    lynch: false,
+                    actionbtnvalue:false,
+                    presseduid:'foo',
             });   
             firebase.database().ref('rooms/' + joincode.toUpperCase()).update({playernum:snap.val().playernum+1});       
             
