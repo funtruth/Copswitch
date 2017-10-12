@@ -25,6 +25,7 @@ import randomize from 'randomatic';
 
 import { Button, List, ListItem } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
+import FadeInView from '../components/FadeInView.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -133,7 +134,7 @@ componentWillMount() {
             } else {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + btnpress.val().presseduid).once('value',uidtoname=>{
-                    this.setState({ phasename: 'You have seleted ' + uidtoname.val().name + '.'})
+                    this.setState({ phasename: 'You have selected ' + uidtoname.val().name + '.'})
                 })
                     
             }
@@ -488,7 +489,8 @@ _renderListComponent(){
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.dead : {height:40,
                         backgroundColor: item.color,
-                        margin: 10,
+                        margin: 3,
+                        borderRadius:5,
                         justifyContent:'center'
                     }}
                     disabled = {item.dead}
@@ -509,7 +511,8 @@ _renderListComponent(){
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.dead : {height:40,
                         backgroundColor: item.color,
-                        margin: 10,
+                        margin: 3,
+                        borderRadius:5,
                         justifyContent:'center'
                     }}
                     disabled = {this.state.amipicking?item.dead:true}
@@ -643,14 +646,14 @@ _actionPhase() {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/F').once('value',doc=>{
                     if(doc.exists() && doc.val().targetdoc.val().target == child.val().target){
                         this._noticeMsgForUser(child.val().user,'#d31d1d','You failed to kill ' 
-                            + child.val().targetname);
+                            + child.val().targetname + '.');
                     } else {
                         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                             + child.val().target).update({dead:true});
                         this._changePlayerCount(false);
                         this._noticeMsgForTarget(child.val().target,'#d31d1d','You have been stabbed.');
                         this._noticeMsgForUser(child.val().user,'#d31d1d','You have stabbed ' 
-                            + child.val().targetname);
+                            + child.val().targetname + '.');
                     }
                 })
 
@@ -712,6 +715,8 @@ return <View style = {{flex:1}}>
     <View style = {{flex:1}}/>
 </View>
 
+<View style = {{flex:0.15,backgroundColor:'white'}}/>
+
 <View style = {{
     flex:10,
     flexDirection:'row',
@@ -733,6 +738,7 @@ return <View style = {{flex:1}}>
     </View>
 
     <View style = {{flex:0.2}}/>
+
     <View style = {{flex:1}}>
         <View style = {{flex:4.4}}/>
         <View style = {{flex:0.6,justifyContent:'center',
@@ -771,17 +777,19 @@ return <View style = {{flex:1}}>
 
 </View>
 
-<View style = {{flex:0.3, backgroundColor:'white'}}/>
+<View style = {{flex:0.15, backgroundColor:'white'}}/>
 </View>
 }
-
 }
 
 const styles = StyleSheet.create({
     dead: {
         height:40,
         backgroundColor: 'grey',
-        margin: 10,
+        margin: 3,
+        marginLeft:10,
+        marginRight:10,
+        borderRadius:5,
         justifyContent:'center'
     },
 });

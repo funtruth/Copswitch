@@ -35,16 +35,15 @@ export default class ProfileScreen extends React.Component {
 
       role: '',
       description: '',
+      inagame:false,
 
       roomname:'',
       messages: dataSource,
 
       hidden:true,
-      loghidden:false,
 
     }
     this.userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
-    this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
 
   }
 
@@ -62,6 +61,7 @@ componentWillMount() {
                           this.setState({
                               role: rolesnap.val().name,
                               description: rolesnap.val().desc,
+                              inagame: true,
                           })
                       })
                   })
@@ -70,24 +70,10 @@ componentWillMount() {
                   this.setState({
                       role:'None',
                       description: 'There is no Active Game.',
+                      inagame:false,
                   })
               }
         })
-    })
-
-    this.msgRef.on('value',snap=>{
-        var msg = [];
-            snap.forEach((child)=>{
-                if(child.key != 'count'){     
-                    msg.push({
-                        from: child.val().from,
-                        color: child.val().color,
-                        message: child.val().message,
-                        key:child.key,
-                    })
-                }
-            })
-            this.setState({messages:msg})
     })
 }
 
@@ -96,121 +82,74 @@ componentWillUnmount() {
     if(this.userRef){
       this.userRef.off();
     }
-    if(this.msgRef){
-      this.msgRef.off();
-    }
 }
 
   render(){
-    return <View style={{
-              flex: 1,
-              backgroundColor: 'white',
-          }}>
+    return <View style={{ flex: 1, backgroundColor: 'white' }}>
 
-              <View style = {{flex:0.6,flexDirection:'row',borderWidth:1}}>
-                  <View style = {{flex:0.75,borderWidth:1,}}/>
-                  <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
-                      <Text>My Role:</Text>
-                      <Text style={{fontWeight:'bold',fontSize:20,color:'black'}}>
-                          {this.state.hidden ? 'Hidden' : this.state.role}</Text>
-                  </View>
-                  <TouchableOpacity
-                      style={{
-                        flex:0.75,justifyContent:'center',borderWidth:1
-                      }}
-                      onPress={()=>{
-                          this.setState({hidden:this.state.hidden ? false:true})
-                      }}>
-                      <MaterialCommunityIcons name={this.state.hidden?'eye-off':'eye'} 
-                          style={{color:'black', fontSize:26,alignSelf:'center'}}/>
-                  </TouchableOpacity>
-              </View>
-
-              <View style = {{flex:1.2,borderWidth:1,}}/>
-
-              <View style = {{flex:0.1}}/>
-
-              <View style = {{flex:0.5,borderWidth:1, alignItems: 'center',justifyContent:'center'}}>
-                  <Text>{this.state.hidden ? 'Confidential Information.' : this.state.description}</Text>
-              </View>
-
-              <View style = {{flex:0.6,flexDirection:'row'}}>
-                  <View style = {{flex:0.75,borderWidth:1,}}/>
-                  <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
-                      <Text style={{fontWeight:'bold',fontSize:20,color:'black'}}>
-                          Activity Log</Text>
-                  </View>
-                  <TouchableOpacity
-                      style={{
-                        flex:0.75,justifyContent:'center',borderWidth:1
-                      }}
-                      onPress={()=>{
-                          this.setState({loghidden:this.state.loghidden ? false:true})
-                      }}>
-                      <MaterialCommunityIcons name={this.state.loghidden?'eye-off':'eye'} 
-                          style={{color:'black', fontSize:26,alignSelf:'center'}}/>
-                  </TouchableOpacity>
-              </View>
-
-              <View style = {{
-                  flex: 2,
-                  borderWidth: 1,
-                }}>
-                <View>{this.state.loghidden? <View/>:<FlatList
-                    data={this.state.messages}
-                    renderItem={({item}) => (
-                        <View style = {{marginRight:15, marginLeft:15,}}>
-                          <Text style={{color:'black',fontWeight:'bold'}}>
-                              {'[ ' + item.from + ' ] '}</Text> 
-                          <Text style={{color:item.color}}>{item.message}</Text></View>
-                    )}
-                    keyExtractor={item => item.key}
-                    />}
-                </View>
-              </View>
-
-              <View style = {{
-                flex: 0.7,
-                flexDirection: 'row',
-                backgroundColor: 'white',
-              }}>
-                <View style = {{
-                  flex: 1,
-                  margin: 5,
-                  justifyContent:'center',
-                }}>
-                  <ProfileButton title="Leave Game" 
-                    icon={{name: 'do-not-disturb', size: 16}}
-                    color='white'
-                    onPress={() => {
-                      firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                        .update({
-                          name: null, 
-                          phase:1,
-                          pressedaction: false,
-                          presseduid: 'foo',
-                        })
-                      this.props.navigation.navigate('Room_Screen')
-                    }}/>
+                <View style = {{flex:1.15,flexDirection:'row' }}>
+                    <View style = {{ flex:0.75 }}/>
+                    <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
+                        <Text>My Role:</Text>
+                        <Text style={{fontWeight:'bold',fontSize:20,color:'black'}}>
+                            {this.state.hidden ? 'Hidden' : this.state.role}</Text>
+                    </View>
+                    <TouchableOpacity
+                        style={{ flex:0.75,justifyContent:'center' }}
+                        onPressIn={()=>{ this.setState({hidden:false}) }}
+                        onPressOut={()=>{ this.setState({hidden:true}) }}>
+                        <MaterialCommunityIcons name='eye'
+                            style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                    </TouchableOpacity>
                 </View>
 
-                <View style = {{
-                  flex:1,
-                  margin: 5,
-                  justifyContent:'center',
-                }}>
-                  <ProfileButton
-                    title="Log Out"
-                    color='white'
-                    icon={{name: 'subdirectory-arrow-left', size: 16}}
-                    onPress={() => {
-                      this.props.navigation.navigate('SignedOut');
-                    
-                      onSignOut().then(() => {
-                        firebase.auth().signOut();
-                      }) 
-                  }}/>
+                <View style = {{flex:10, flexDirection:'row'}}>
+
+                        <View style = {{flex:1}}>
+                            <View style = {{flex:4.4}}/>
+                            <View style = {{flex:2.4}}/>
+                        </View>
+
+                        <View style = {{flex:0.2}}/>
+
+                        <View style = {{flex:5.6}}/>
+
+                        <View style = {{flex:0.2}}/>
+
+                        <View style = {{flex:1}}>
+                            <View style = {{flex:4.4}}/>
+                            <View style = {{flex:0.6,justifyContent:'center',
+                                backgroundColor:'black',borderTopLeftRadius:15}}>
+                                <TouchableOpacity
+                                    disabled={this.state.inagame?false:true}
+                                    onPress={() => {
+                                        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+                                          .update({ name: null, phase:1 })
+                                        this.props.navigation.navigate('Room_Screen') }}>
+                                    <MaterialCommunityIcons name='wrench'
+                                        style={{color:this.state.inagame? 'white' : '#b5b3b0',
+                                            fontSize:26,alignSelf:'center'}}/>
+                                </TouchableOpacity>
+                            </View>
+                            <View style = {{flex:0.6,backgroundColor:'black'}}/>
+                            <View style = {{flex:0.6,backgroundColor:'black'}}/>
+
+                            <View style = {{flex:0.6,justifyContent:'center',
+                                backgroundColor:'black',borderBottomLeftRadius:15}}>
+                                <TouchableOpacity
+                                    disabled={this.state.inagame}
+                                    onPress={() => {
+                                        this.props.navigation.navigate('SignedOut');
+                                      onSignOut().then(() => { firebase.auth().signOut() })  }}>
+                                    <MaterialCommunityIcons name='logout' 
+                                        style={{color:this.state.inagame ?  '#b5b3b0' : 'white',
+                                            fontSize:26,alignSelf:'center'}}/>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+
                 </View>
-            </View>
+
+            <View style = {{ flex: 0.15 }}/>
     </View>
 }};
