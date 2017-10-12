@@ -121,12 +121,11 @@ _createRoom() {
                     action:     child.val().action,
                     actionreset:child.val().actionreset,
                     continue:   child.val().continue,
+                    locked:     child.val().locked,
                     name:       child.val().name,
                     nominate:   child.val().nominate,
                     trigger:    child.val().trigger,
                     type:       child.val().type,
-                    voting:     child.val().voting,
-                    votingtype: child.val().votingtype,
                 })
 
             })

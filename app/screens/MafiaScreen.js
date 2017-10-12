@@ -44,11 +44,13 @@ constructor(props) {
     this.state = {
         roomname: params.roomname,
         phase: '',
-        listingtype: '',
-        voting:'',
+        screentype: '',
         phasename:'',
+        locked:'',
 
         namelist: dataSource,
+        globallist: dataSource,
+        msglist: dataSource,
 
         triggernum:'',
         playernum:'',
@@ -66,12 +68,42 @@ constructor(props) {
     };
 
     this.roomListener = firebase.database().ref('rooms/' + roomname);
+    this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
+    this.globalMsgRef = firebase.database().ref('globalmsgs/' + roomname);
 
 }
 
 componentWillMount() {
  
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
+
+    this.msgRef.on('value',snap=>{
+        var msg = [];
+            snap.forEach((child)=>{
+                if(child.key != 'count'){     
+                    msg.push({
+                        from: child.val().from,
+                        color: child.val().color,
+                        message: child.val().message,
+                        key:child.key,
+                    })
+                }
+            })
+            this.setState({msglist:msg})
+    })
+
+    this.globalMsgRef.on('value',snap=>{
+        var msg = [];
+            snap.forEach((child)=>{   
+                msg.push({
+                    from: child.val().from,
+                    color: child.val().color,
+                    message: child.val().message,
+                    key:child.key,
+                })
+            })
+            this.setState({globallist:msg})
+    })
 
     this.roomListener.on('value',snap=>{
 
@@ -84,8 +116,8 @@ componentWillMount() {
         firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val().phase)
         .once('value',layout=>{
                 this.setState({
-                    listingtype:layout.val().type,
-                    voting:layout.val().voting,
+                    screentype:layout.val().type,
+                    locked:layout.val().locked,
                     phasename:layout.val().name,})
         })
 
@@ -116,6 +148,12 @@ componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
     if(this.roomListener){
         this.roomListener.off();
+    }
+    if(this.msgRef){
+        this.msgRef.off();
+    }
+    if(this.globalMsgRef){
+        this.globalMsgRef.off();
     }
 
 }
@@ -306,18 +344,15 @@ _voteBtnPress(presseduid,votebtn) {
         
         if(presseduid == 'yes'){
             if(votebtn){
-                this._voteActionUpdate(snap.val().votingtype,false)
                 this._pressedUid('foo');
                 this._actionBtnValue(false);
             } else {
-                this._voteActionUpdate(snap.val().votingtype,false)
                 this._pressedUid('no');
                 this._actionBtnValue(true);
                 this._voteFinished();
             }
         } else if (presseduid == 'no') {
             if(votebtn){
-                this._voteActionUpdate(snap.val().votingtype,true)
                 this._pressedUid('yes');
                 this._actionBtnValue(true);
                 this._voteFinished();
@@ -327,7 +362,6 @@ _voteBtnPress(presseduid,votebtn) {
             }
         } else {
             if(votebtn){
-                this._voteActionUpdate(snap.val().votingtype,true)
                 this._pressedUid('yes');
                 this._actionBtnValue(true);
                 this._voteFinished();
@@ -341,40 +375,66 @@ _voteBtnPress(presseduid,votebtn) {
 }
 
 _voteFinished(){
+
     firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase).once('value',snap=>{
+
         firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers').orderByChild('actionbtnvalue')
-            .equalTo(true).once('value',actioncountsnap=>{
-                if((actioncountsnap.numChildren()+1)>this.state.playernum){
-                    if(snap.val().action){ this._actionPhase() };
-                }
-            })
-    })
-}
+        .equalTo(true).once('value',actioncountsnap=>{
+            if((actioncountsnap.numChildren()+1)>this.state.playernum){
+                if(snap.val().actionreset){ 
+                    firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove() 
+                };
 
-_voteActionUpdate(votetype,status){
-    if(votetype=='killing'){
+                firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers')
+                .orderByChild('presseduid').equalTo('no')
+                .once('value',guiltyvotes=>{
+                    var counter = 0;
+                    var names = '';
 
-        firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
-        +firebase.auth().currentUser.uid).once('value',namesnap=>{
+                    guiltyvotes.forEach((votechild)=>{ 
+                        counter++;
+                        if(counter==1){names=votechild.val().name}
+                        else if(counter>1){names=names+', '+votechild.val().name}
+                    })
+                    
+                    this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                        names + ' voted against ' + this.state.nominee + '.',0) 
 
-            if(status){
-                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X')
-                    .update({target:this.state.nominate, targetname: this.state.nominee});
-                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes').once('value',votesnap=>{
+                    firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase)
+                    .once('value',phasedata=>{
+                        if((guiltyvotes.numChildren()+1)>this.state.triggernum){
 
-                    firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes/' 
-                        + namesnap.val().name).update({name: 'lol'})
-                })
-            } else {
-                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes').once('value',votesnap=>{
+                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                                + this.state.nominate).update({dead:true});
+                            this._changePlayerCount(false);
 
-                    firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes/' 
-                        + namesnap.val().name).remove()
+                            firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
+                            +this.state.nominate).once('value',dead=>{
+
+                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                                    dead.val().name + ' was hung.',1)
+                                
+                                if(dead.val().roleid == 'A'){
+                                    this._changePhase(5)
+                                } else {
+                                    this._changePhase(phasedata.val().trigger)
+                                }
+                            })
+                                
+                            
+                        } else {
+                            firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
+                            +this.state.nominate).once('value',dead=>{
+                                this._noticeMsgGlobal(this.state.roomname,'#34cd0e',
+                                    dead.val().name + ' was not hung.',1)
+                            })
+                            this._changePhase(phasedata.val().continue)
+                        }
+                    })
                 })
             }
         })
-
-    }
+    })
 }
 
 _handleBackButton() {
@@ -401,7 +461,7 @@ _renderVoteText(){
 
 _renderListComponent(){
 
-    if(this.state.listingtype=='normal'){
+    if(this.state.screentype=='normal'){
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
@@ -421,7 +481,7 @@ _renderListComponent(){
             )}
             keyExtractor={item => item.key}
         />
-    } else if (this.state.listingtype=='normal-person'){
+    } else if (this.state.screentype=='normal-person'){
 
         return <FlatList
             data={this.state.namelist}
@@ -442,7 +502,7 @@ _renderListComponent(){
         keyExtractor={item => item.key}
     />
 
-    } else if(this.state.listingtype=='voting-person'){
+    } else if(this.state.screentype=='voting-person'){
         return <View style = {{flex:1}}>
 
             <View style = {{flex:4.4,justifyContent:'center'}}>
@@ -473,10 +533,52 @@ _renderListComponent(){
                 <View style = {{flex:1}}/>
             </View>
 
-            <View style = {{flex:2.4,backgroundColor:this.state.messagechat?'black':'white',
-                borderBottomRightRadius:15,borderTopRightRadius:15,}}>
+            <View style = {{flex:this.state.messagechat||this.state.notificationchat?0:2.4
+                ,backgroundColor:'white',borderBottomRightRadius:15,borderTopRightRadius:15,}}>
             </View>
         </View>
+    }
+}
+
+_renderMessageComponent(){
+    if (this.state.notificationchat){
+        return <View style = {{marginTop:10,marginRight:10}}><FlatList
+            data={this.state.globallist}
+            renderItem={({item}) => (
+                <Text style={{color:'white',fontWeight:'bold',marginTop:5}}>
+                    {'[ ' + item.from + ' ] '+ item.message}</Text>
+            )}
+            keyExtractor={item => item.key}
+            /></View>
+    } else if(this.state.messagechat){
+        return <View style = {{marginTop:10,marginRight:10}}><FlatList
+            data={this.state.msglist}
+            renderItem={({item}) => (
+                <Text style={{color:'white',fontWeight:'bold',marginTop:5}}>
+                      {'[ ' + item.from + ' ] ' + item.message}</Text>
+            )}
+            keyExtractor={item => item.key}
+            /></View>
+    } 
+}
+
+_chatPress(chattype){
+    if(chattype=='messages'){
+        if(this.state.messagechat){
+            this.setState({messagechat:false})
+        } else if (this.state.notificationchat){
+            this.setState({messagechat:true,notificationchat:false})
+        } else {
+            this.setState({messagechat:true})
+        }
+    } else if (chattype == 'notifications'){
+        if(this.state.notificationchat){
+            this.setState({notificationchat:false})
+        } else if (this.state.messagechat){
+            this.setState({messagechat:false,notificationchat:true})
+        } else {
+            this.setState({notificationchat:true})
+        }
     }
 }
 
@@ -507,17 +609,10 @@ _noticeMsgForUser(user,color,message){
     })
 }
 
-_noticeMsgGlobal(roomname,color,message){
-    firebase.database().ref('rooms/' + roomname + '/listofplayers').once('value',playersnap=>{
-        playersnap.forEach((child)=>{
-
-            firebase.database().ref('messages/' + child.key + '/count').once('value',snap=>{
-                firebase.database().ref('messages/' + child.key + '/' + (snap.val()+1))
-                    .update({from: 'Public', color: color, message: message})
-                firebase.database().ref('messages/' + child.key).update({count:(snap.val()+1)})
-            })         
-
-        })
+_noticeMsgGlobal(roomname,color,message,num){
+    firebase.database().ref('globalmsgs/' + roomname).once('value',messages=>{
+        firebase.database().ref('globalmsgs/' + roomname + '/' + (messages.numChildren()+1+num))
+            .update({from: 'Public', color: color, message: message})
     })
 }
 
@@ -580,72 +675,7 @@ _actionPhase() {
                 //Villager
             } else if (child.key == 'H') {
 
-            } else if (child.key == 'X') {
-
-                firebase.database().ref('rooms/'+this.state.roomname+'/actions/X/votes').once('value',count=>{
-                    var counter = 0;
-                    var names = '';
-                    count.forEach((votechild)=>{ 
-                        counter++;
-                        if(counter==1){names=votechild.key}
-                        else if(counter>1){names=names+', '+votechild.key}
-                    })
-                    
-                    this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                        names + ' voted against ' + child.val().targetname) 
-
-                    firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase)
-                    .once('value',phasedata=>{
-                        if((counter+1)>this.state.triggernum){
-                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                                + child.val().target).update({dead:true});
-                            this._changePlayerCount(false);
-
-                            if(phasedata.val().actionreset){
-                                firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove() 
-                            };
-
-                            firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
-                            +child.val().target).once('value',dead=>{
-
-                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                                    dead.val().name + ' was hung.')
-                                
-                                if(dead.val().roleid == 'A'){
-                                    firebase.database().ref('rooms/' + this.state.roomname + '/mafia/B')
-                                        .once('value',mafia=>{
-                                            firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
-                                                + mafia.val().uid).update({roleid:'A'});
-                                            firebase.database().ref('rooms/' + this.state.roomname + '/mafia/A')
-                                                .update({uid:mafia.val().uid});
-                                            firebase.database().ref('rooms/' + this.state.roomname + '/mafia/B')
-                                                .remove();
-                                    })
-                                    firebase.database().ref('rooms/'+this.state.roomname)
-                                        .update({nominate:dead.key})
-                                    this._changePhase(5)
-                                } else {
-                                    this._changePhase(phasedata.val().trigger)
-                                }
-                            })
-                                
-                            
-                        } else {
-                            if(phasedata.val().actionreset){
-                                firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove() 
-                            };
-                            firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
-                            +child.val().target).once('value',dead=>{
-                                this._noticeMsgGlobal(this.state.roomname,'#34cd0e',
-                                    dead.val().name + ' was not hung.')
-                            })
-                            this._changePhase(phasedata.val().continue)
-                        }
-                    })
-                })
-                
-
-            }
+            } 
         })
     })
 
@@ -671,10 +701,17 @@ return <View style = {{flex:1}}>
 }}>
     <View style = {{flex:1.2}}>
         <View style = {{flex:4.4}}/>
-        <View style = {{flex:2.4,backgroundColor:this.state.messagechat?'black':'white'}}/>
+        <View style = {{flex:2.4,backgroundColor:this.state.messagechat||this.state.notificationchat?
+            'black':'white'}}/>
     </View>
     <View style = {{flex:5.6}}>
-        {this._renderListComponent()}
+        <View style = {{flex:4.4}}>
+            {this._renderListComponent()}
+        </View>
+        <View style = {{flex:this.state.messagechat||this.state.notificationchat?2.4:0,
+            backgroundColor:'black',borderTopRightRadius:15,borderBottomRightRadius:15}}>
+            {this._renderMessageComponent()}
+        </View>
     </View>
 
     <View style = {{flex:0.2}}/>
@@ -684,10 +721,9 @@ return <View style = {{flex:1}}>
             backgroundColor:'black',borderTopLeftRadius:15}}>
             <TouchableOpacity
                 onPress={()=> {
-                    if(this.state.messagechat){ this.setState({messagechat:false})
-                    } else { this.setState({messagechat:true}) }
+                    this._chatPress('notifications')
                 }}>
-                <MaterialCommunityIcons name={this.state.loghidden?'eye-off':'comment-alert'} 
+                <MaterialCommunityIcons name='eye-off'
                           style={{color:'white', fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
@@ -695,10 +731,9 @@ return <View style = {{flex:1}}>
             backgroundColor:'black'}}>
             <TouchableOpacity
                 onPress={()=> {
-                    if(this.state.messagechat){ this.setState({notificationchat:false})
-                    } else { this.setState({notificationchat:true}) }
+                    this._chatPress('messages')
                 }}>
-                <MaterialCommunityIcons name={this.state.loghidden?'eye-off':'book-open'} 
+                <MaterialCommunityIcons name='book-open' 
                           style={{color:'white', fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
@@ -706,10 +741,10 @@ return <View style = {{flex:1}}>
         <View style = {{flex:0.6,justifyContent:'center',
             backgroundColor:'black',borderBottomLeftRadius:15}}>
             <TouchableOpacity
-                disabled={this.state.voting?true:this.state.amidead}
+                disabled={this.state.locked?true:this.state.amidead}
                 onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
                     this.state.triggernum,this.state.phase,this.state.roomname)}}>
-                <MaterialCommunityIcons name={this.state.loghidden?'eye-off':'check-circle'} 
+                <MaterialCommunityIcons name={this.state.locked?'lock':'check-circle'} 
                           style={{color:this.state.actionbtnvalue ? '#e3c382' : 'white'
                                 , fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
