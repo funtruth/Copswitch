@@ -14,40 +14,35 @@ X - Name
 
 -----------Mafia------------
 
-A - Godfather
+A - Mafia
     color           #d31d1d
     desc            Leader of the Mafia.
     image
     rules           
     type            1
 
-B - Underboss
+B - Schemer
     color           #d31d1d
     desc            Second-in-command of the Mafia.
     image
     rules           
     type            1
 
-C - Gangster
+C - Double-agent
+    color           #d31d1d
+    desc            Informant of the Mafia.
+    image
+    rules           
+    type            1
+
+D - Thug
     color           #d31d1d
     desc            Member of the Mafia.
     image
     rules           
     type            1
 
-D - Robber
-    color           #d31d1d
-    desc            Member of the Mafia.
-    image
-    rules           
-    type            1
-
-E - Thug
-    color           #d31d1d
-    desc            Member of the Mafia.
-    image
-    rules           
-    type            1
+E - 
 
 ------------Town------------
 
@@ -72,9 +67,19 @@ H - Villager
     rules           
     type            1
 
-I - 
+I - Escort
+    color           #34cd0e
+    desc            Distracts their target.
+    image
+    rules           
+    type            1
 
-J -
+J - Analyst/Investigator
+    color           #34cd0e
+    desc            Investigates if the target is bloody.
+    image
+    rules           
+    type            1
 
 ------------Ideas-----------------
 Blood on hands

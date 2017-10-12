@@ -142,6 +142,9 @@ componentWillMount() {
 
         //this.state.nominate, nominee, amipicking
         this._updateNominate();
+        
+        //Update colors + options for Player Name Buttons
+        this._updatePlayerState();
 
     })
 
@@ -160,8 +163,6 @@ componentWillMount() {
                 locked:layout.val().locked })
         })
 
-        //Update colors + options for Player Name Buttons
-        this._updatePlayerState();
     })
 
 }
@@ -190,8 +191,6 @@ _updatePlayerState() {
         snap.forEach((child)=> {
             list.push({
                 name: child.val().name,
-                color: 'black',
-                font: 'white',
                 dead: child.val().dead,
                 key: child.key,
             })
@@ -272,7 +271,9 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                     
                 if((actionbtnsnap.numChildren()+1)>this.state.playernum){
                     if(snap.val().action){
-                        this._actionPhase();
+                        new Promise((resolve)=>(this._modifyPhase())).then(()=>{
+                            this._actionPhase();
+                        })
                     };
                     if(snap.val().actionreset){
                         firebase.database().ref('rooms/' + roomname + '/actions').remove();
@@ -488,14 +489,16 @@ _renderListComponent(){
                     onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.dead : {height:40,
-                        backgroundColor: item.color,
+                        backgroundColor: 'black',
                         margin: 3,
                         borderRadius:5,
                         justifyContent:'center'
                     }}
                     disabled = {item.dead}
-                    > 
-                    <Text style = {{color:item.font, alignSelf: 'center'}}>{item.name}</Text>
+                    >
+                    {item.dead?<MaterialCommunityIcons name='skull'
+                        style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
+                        <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>}
                 </TouchableOpacity>
 
             )}
@@ -510,14 +513,16 @@ _renderListComponent(){
                     onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.dead : {height:40,
-                        backgroundColor: item.color,
+                        backgroundColor: 'black',
                         margin: 3,
                         borderRadius:5,
                         justifyContent:'center'
                     }}
                     disabled = {this.state.amipicking?item.dead:true}
                     > 
-                    <Text style = {{color:item.font, alignSelf: 'center'}}>{item.name}</Text>
+                    {item.dead?<MaterialCommunityIcons name='skull'
+                        style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
+                        <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>}
                 </TouchableOpacity>
         )}
         keyExtractor={item => item.key}
@@ -637,6 +642,21 @@ _noticeMsgGlobal(roomname,color,message,num){
     })
 }
 
+_modifyPhase() {
+    firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
+        snap.forEach((child)=>{
+                //Escort Villager
+            if (child.key == 'H') {
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                    + child.val().target).once('value',findroleid=>{
+                        firebase.database().ref('rooms/' + this.state.roomname + '/actions/'
+                            + findroleid.val().roleid).remove();
+                })
+            }
+        })
+    })
+    
+}
 _actionPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
@@ -671,7 +691,6 @@ _actionPhase() {
                             this._noticeMsgForUser(child.val().user,'#34cd0e','You healed ' 
                                 + child.val().targetname +"'s stab wounds.");
                         } else {
-                            this._noticeMsgForTarget(child.val().target,'#34cd0e','The Doctor gave you a visit.');
                             this._noticeMsgForUser(child.val().user,'#34cd0e','You visited ' 
                                 + child.val().targetname + '.');
                         }
@@ -695,7 +714,7 @@ _actionPhase() {
 
                 //Villager
             } else if (child.key == 'H') {
-
+            
             } 
         })
     })
