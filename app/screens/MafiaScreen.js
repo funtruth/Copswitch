@@ -68,6 +68,7 @@ constructor(props) {
     };
 
     this.roomListener = firebase.database().ref('rooms/' + roomname);
+    this.phaseListener = firebase.database().ref('rooms/' + roomname + '/phase');
     this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
     this.globalMsgRef = firebase.database().ref('globalmsgs/' + roomname);
 
@@ -107,39 +108,59 @@ componentWillMount() {
 
     this.roomListener.on('value',snap=>{
 
-        //Keep Phase updated for PERSONAL USER
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-            .update({phase:snap.val().phase});
-        this.setState({phase:snap.val().phase})
-        
-        //Find layout type of Phase
-        firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val().phase)
-        .once('value',layout=>{
-                this.setState({
-                    screentype:layout.val().type,
-                    locked:layout.val().locked,
-                    phasename:layout.val().name,})
-        })
-
         //this.state.triggernum, playernum
+        //Can possibly be moved to the Phase Change Listener
         this._updateNumbers(snap.val().playernum)
 
         //Match Button Presses with the Database
         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-            + firebase.auth().currentUser.uid).once('value',snap=>{
-                this.setState({
-                    actionbtnvalue: snap.val().actionbtnvalue,
-                    presseduid: snap.val().presseduid,
-                    amidead: snap.val().dead
-                })
-        })
+        + firebase.auth().currentUser.uid).once('value',btnpress=>{
+            this.setState({
+                actionbtnvalue: btnpress.val().actionbtnvalue,
+                presseduid: btnpress.val().presseduid,
+                amidead: btnpress.val().dead
+            })
 
-        //Update colors + options for Player Name Buttons
-        this._updatePlayerState();
+            if(btnpress.val().presseduid == 'foo'){
+                firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val().phase)
+                .once('value',layout=>{
+                    this.setState({ phasename:layout.val().name })
+                })
+            } else if (btnpress.val().presseduid == 'yes'){
+                this.setState({ phasename: 'You have voted Innocent.'})
+            } else if (btnpress.val().presseduid == 'no'){
+                this.setState({ phasename: 'You have voted Guilty.'})
+            } else {
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                + btnpress.val().presseduid).once('value',uidtoname=>{
+                    this.setState({ phasename: 'You have seleted ' + uidtoname.val().name + '.'})
+                })
+                    
+            }
+        })
 
         //this.state.nominate, nominee, amipicking
         this._updateNominate();
 
+    })
+
+    this.phaseListener.on('value',snap=>{
+
+        //Keep Phase updated for PERSONAL USER
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+            .update({phase:snap.val()});
+        this.setState({phase:snap.val()})
+        
+        //Find layout type of Phase
+        firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val())
+        .once('value',layout=>{
+            this.setState({
+                screentype:layout.val().type,
+                locked:layout.val().locked })
+        })
+
+        //Update colors + options for Player Name Buttons
+        this._updatePlayerState();
     })
 
 }
@@ -155,6 +176,9 @@ componentWillUnmount() {
     if(this.globalMsgRef){
         this.globalMsgRef.off();
     }
+    if(this.phaseListener){
+        this.phaseListener.off();
+    }
 
 }
 
@@ -163,20 +187,11 @@ _updatePlayerState() {
         
         var list = [];
         snap.forEach((child)=> {
-
-            var namebtncolor = 'black'
-            var namefontcolor = 'white'
-            if(child.key == this.state.presseduid){
-                namebtncolor = '#e3c382'
-                namefontcolor = '#74561a'
-            }
-
             list.push({
                 name: child.val().name,
-                color: namebtncolor,
-                font: namefontcolor,
+                color: 'black',
+                font: 'white',
                 dead: child.val().dead,
-                lynch: child.val().lynch,
                 key: child.key,
             })
         })
@@ -298,25 +313,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
             })
         } 
 
-    } else if(phase == 5){
-        //Check if selected player is a mafia member
-        //change role id on listofplayers
-        if(true){
-            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-            + uid).once('value',snap=>{
-                    firebase.database().ref('rooms/'+this.state.roomname+'/mafia/'+snap.val().roleid)
-                        .remove()
-                    firebase.database().ref('rooms/'+this.state.roomname+'/mafia/A')
-                        .update({uid:uid})
-                    firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
-                        + uid).update({roleid:'A'})
-            })
-            this._changePhase(4)
-        } else {
-            alert('no')
-        }
-
-    } else if (phase==4) {
+    }  else if (phase==4) {
         if(this.state.presseduid != uid){
             this._pressedUid(uid);
 
@@ -336,6 +333,25 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                     firebase.database().ref('rooms/' + roomname + '/actions/' + snap.val().roleid).remove();
             })
         }
+    } else if(phase == 5){
+        //Check if selected player is a mafia member
+        //change role id on listofplayers
+        firebase.database().ref('rooms/' + roomname + '/mafia/' + uid).once('value',mafiacheck=>{
+            if(mafiacheck.exists()){
+                firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+                + uid).once('value',snap=>{
+                        firebase.database().ref('rooms/'+roomname+'/mafia/' + uid)
+                            .update({roleid:'A'})
+                        firebase.database().ref('rooms/'+roomname+'/listofplayers/'
+                            + uid).update({roleid:'A'})
+                })
+                this._changePhase(4)
+            } else {
+                this.setState({phasename: name + ' is not a member of the Mafia.'})
+            }
+        })
+            
+
     }
 }
 
@@ -344,28 +360,34 @@ _voteBtnPress(presseduid,votebtn) {
         
         if(presseduid == 'yes'){
             if(votebtn){
+                this.setState({phasename:'Nomination'})
                 this._pressedUid('foo');
                 this._actionBtnValue(false);
             } else {
+                this.setState({phasename:'You have voted Guilty.'})
                 this._pressedUid('no');
                 this._actionBtnValue(true);
                 this._voteFinished();
             }
         } else if (presseduid == 'no') {
             if(votebtn){
+                this.setState({phasename:'You have voted Innocent.'})
                 this._pressedUid('yes');
                 this._actionBtnValue(true);
                 this._voteFinished();
             } else {
+                this.setState({phasename:'Nomination'})
                 this._pressedUid('foo');
                 this._actionBtnValue(false);
             }
         } else {
             if(votebtn){
+                this.setState({phasename:'You have voted Innocent.'})
                 this._pressedUid('yes');
                 this._actionBtnValue(true);
                 this._voteFinished();
             } else {
+                this.setState({phasename:'You have voted Guilty.'})
                 this._pressedUid('no');
                 this._actionBtnValue(true);
                 this._voteFinished();
@@ -389,7 +411,7 @@ _voteFinished(){
                 .orderByChild('presseduid').equalTo('no')
                 .once('value',guiltyvotes=>{
                     var counter = 0;
-                    var names = '';
+                    var names = 'Nobody';
 
                     guiltyvotes.forEach((votechild)=>{ 
                         counter++;
@@ -449,13 +471,9 @@ _renderHeader() {
 
 _renderVoteText(){
     if(this.state.actionbtnvalue){
-        if(this.state.presseduid=='yes'){
-            return <Text style = {{fontWeight:'bold'}}>You have voted Innocent.</Text>
-        } else {
-            return <Text style = {{fontWeight:'bold'}}>You have voted Guilty.</Text>
-        }
+        return <Text style = {{fontWeight:'bold'}}>Waiting for Other Players . . .</Text>
     } else {
-        return <Text style = {{fontWeight:'bold'}}>You have not voted yet.</Text>
+        return <Text style = {{fontWeight:'bold'}}>You are required to Vote.</Text>
     }
 }
 
@@ -723,7 +741,7 @@ return <View style = {{flex:1}}>
                 onPress={()=> {
                     this._chatPress('notifications')
                 }}>
-                <MaterialCommunityIcons name='eye-off'
+                <MaterialCommunityIcons name='comment-alert'
                           style={{color:'white', fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>

@@ -466,7 +466,7 @@ _handOutRoles(roomname){
                     randomstring.charAt(randomnumber - 1) == 'D' ||
                     randomstring.charAt(randomnumber - 1) == 'E'){
                         firebase.database().ref('rooms/' + roomname + '/mafia/' 
-                            + randomstring.charAt(randomnumber - 1)).update({uid:child.key})
+                            + child.key).update({roleid:randomstring.charAt(randomnumber - 1)})
                 }
                 
                 max = max - 1;
