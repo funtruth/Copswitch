@@ -20,6 +20,7 @@ import { NavigationActions } from 'react-navigation';
 
 import ModalPicker from 'react-native-modal-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import randomize from 'randomatic';
 
 import { Button, List, ListItem } from "react-native-elements";
@@ -54,6 +55,8 @@ constructor(props) {
 
         actionbtnvalue: false,
         presseduid: '',
+        messagechat: false,
+        notificationchat: false,
 
         amidead:true,
         amipicking:false,
@@ -384,6 +387,18 @@ _renderHeader() {
     </Text></View>
 }
 
+_renderVoteText(){
+    if(this.state.actionbtnvalue){
+        if(this.state.presseduid=='yes'){
+            return <Text style = {{fontWeight:'bold'}}>You have voted Innocent.</Text>
+        } else {
+            return <Text style = {{fontWeight:'bold'}}>You have voted Guilty.</Text>
+        }
+    } else {
+        return <Text style = {{fontWeight:'bold'}}>You have not voted yet.</Text>
+    }
+}
+
 _renderListComponent(){
 
     if(this.state.listingtype=='normal'){
@@ -428,24 +443,40 @@ _renderListComponent(){
     />
 
     } else if(this.state.listingtype=='voting-person'){
-        return <FlatList
-            data={this.state.namelist}
-            renderItem={({item}) => (
-                <TouchableOpacity
-                    style = {item.dead ? styles.dead : 
-                        {height:40,
-                        backgroundColor: item.key == this.state.nominate ? '#b3192e' :'gray',
-                        margin: 10,
-                        justifyContent:'center'
+        return <View style = {{flex:1}}>
+
+            <View style = {{flex:4.4,justifyContent:'center'}}>
+                <View style = {{flex:1}}/>
+                <TouchableOpacity 
+                    style = {{flex:2,justifyContent:'center'}}
+                    onPress={()=>{
+                        this._voteBtnPress(this.state.presseduid,true)
                     }}
-                    disabled = {true}
-                    > 
-                    <Text style = {{color:item.font, alignSelf: 'center'}}>{item.name}</Text>
+                >
+                    <MaterialCommunityIcons name={'thumb-up'} 
+                        style={{color:'black', fontSize:40,alignSelf:'center'}}/>
                 </TouchableOpacity>
 
-            )}
-            keyExtractor={item => item.key}
-        />
+                <View style = {{flex:1,justifyContent:'center',alignSelf:'center'}}>
+                    {this._renderVoteText()}</View>
+
+                <TouchableOpacity 
+                    style = {{flex:2,justifyContent:'center'}}
+                    onPress={()=>{
+                        this._voteBtnPress(this.state.presseduid,false)
+                    }}
+                >
+                    <MaterialCommunityIcons name={'thumb-down'} 
+                        style={{color:'black', fontSize:40,alignSelf:'center'}}/>
+                </TouchableOpacity>
+
+                <View style = {{flex:1}}/>
+            </View>
+
+            <View style = {{flex:2.4,backgroundColor:this.state.messagechat?'black':'white',
+                borderBottomRightRadius:15,borderTopRightRadius:15,}}>
+            </View>
+        </View>
     }
 }
 
@@ -622,52 +653,72 @@ _actionPhase() {
 
 render() {
 
-return <View style = {{
-    flex:1,
+return <View style = {{flex:1}}>
+
+<View style = {{flex:1,flexDirection:'row',backgroundColor:'white'}}>
+    <View style = {{flex:1}}/>
+    <View style = {{flex:15,backgroundColor:'black',justifyContent:'center',
+        borderBottomLeftRadius:15,borderBottomRightRadius:15}}>
+        {this._renderHeader()}
+    </View>
+    <View style = {{flex:1}}/>
+</View>
+
+<View style = {{
+    flex:10,
     flexDirection:'row',
     backgroundColor:'white',
 }}>
-
-    <View style = {{flex:2,borderWidth:1}}>
+    <View style = {{flex:1.2}}>
+        <View style = {{flex:4.4}}/>
+        <View style = {{flex:2.4,backgroundColor:this.state.messagechat?'black':'white'}}/>
+    </View>
+    <View style = {{flex:5.6}}>
         {this._renderListComponent()}
     </View>
 
-    <View style = {{flex:1,borderWidth:1}}>
-        <View style = {{flex:1,borderWidth:1,backgroundColor: 'black',justifyContent: 'center',}}>  
-            {this._renderHeader()}
+    <View style = {{flex:0.2}}/>
+    <View style = {{flex:1}}>
+        <View style = {{flex:4.4}}/>
+        <View style = {{flex:0.6,justifyContent:'center',
+            backgroundColor:'black',borderTopLeftRadius:15}}>
+            <TouchableOpacity
+                onPress={()=> {
+                    if(this.state.messagechat){ this.setState({messagechat:false})
+                    } else { this.setState({messagechat:true}) }
+                }}>
+                <MaterialCommunityIcons name={this.state.loghidden?'eye-off':'comment-alert'} 
+                          style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+            </TouchableOpacity>
         </View>
-        <View style = {{flex:1,borderWidth:1}}/>
-        <View style = {{flex:0.6,borderWidth:1,justifyContent:'center'}}>
-            <ProfileButton
-                title='Yes'
-                backgroundColor={this.state.presseduid == 'yes'?'#e3c382':'black'}
-                color={this.state.presseduid == 'yes' ? '#74561a' : 'white'}
-                disabled={this.state.voting?this.state.amidead:true}
-                onPress={()=> {this._voteBtnPress(this.state.presseduid,true)}}
-            />
+        <View style = {{flex:0.6,justifyContent:'center',
+            backgroundColor:'black'}}>
+            <TouchableOpacity
+                onPress={()=> {
+                    if(this.state.messagechat){ this.setState({notificationchat:false})
+                    } else { this.setState({notificationchat:true}) }
+                }}>
+                <MaterialCommunityIcons name={this.state.loghidden?'eye-off':'book-open'} 
+                          style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+            </TouchableOpacity>
         </View>
-        <View style = {{flex:0.6,borderWidth:1,justifyContent:'center'}}>    
-            <ProfileButton
-                title='No'
-                backgroundColor={this.state.presseduid == 'no'?'#e3c382':'black'}
-                color={this.state.presseduid == 'no' ? '#74561a' : 'white'}
-                disabled={this.state.voting?this.state.amidead:true}
-                onPress={()=> {this._voteBtnPress(this.state.presseduid,false)}}
-            />
-        </View>
-        <View style = {{flex:1.8,borderWidth:1}}/>
-        <View style = {{flex:1,borderWidth:1,justifyContent:'center'}}>
-            <ProfileButton
-                title='Continue'
-                backgroundColor={this.state.actionbtnvalue ? '#e3c382' : 'black'}
-                color={this.state.actionbtnvalue ? '#74561a' : 'white'}
+        <View style = {{flex:0.6,backgroundColor:'black'}}/>
+        <View style = {{flex:0.6,justifyContent:'center',
+            backgroundColor:'black',borderBottomLeftRadius:15}}>
+            <TouchableOpacity
                 disabled={this.state.voting?true:this.state.amidead}
                 onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
-                    this.state.triggernum,this.state.phase,this.state.roomname)}}
-            />
+                    this.state.triggernum,this.state.phase,this.state.roomname)}}>
+                <MaterialCommunityIcons name={this.state.loghidden?'eye-off':'check-circle'} 
+                          style={{color:this.state.actionbtnvalue ? '#e3c382' : 'white'
+                                , fontSize:26,alignSelf:'center'}}/>
+            </TouchableOpacity>
         </View>
     </View>
 
+</View>
+
+<View style = {{flex:0.3, backgroundColor:'white'}}/>
 </View>
 }
 
