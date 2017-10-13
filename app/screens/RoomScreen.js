@@ -91,6 +91,7 @@ _createRoom() {
         + firebase.auth().currentUser.uid).set({
             name: this.state.creatorname,
             dead:false,
+            bloody:false,
             actionbtnvalue: false,
             presseduid: 'foo',
     });
@@ -144,6 +145,7 @@ _joinRoom(joincode) {
                 + '/listofplayers/' + firebase.auth().currentUser.uid).set({
                     name: this.state.alias,
                     dead:false,
+                    bloody:false,
                     actionbtnvalue:false,
                     presseduid:'foo',
             });   
