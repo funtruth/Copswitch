@@ -399,13 +399,7 @@ _count() {
 
     //Player Count
     this.playerCount.on('value',snap=>{
-        var playercount = 0;
-
-        snap.forEach((child)=>{
-            playercount++;
-        })
-
-        this.setState({playercount:playercount})
+        this.setState({playercount:snap.numChildren()})
     });
 }
 

@@ -266,7 +266,7 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
 
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers')
             .orderByChild('actionbtnvalue').equalTo(true).once('value',actionbtnsnap=>{
-                alert(actionbtnsnap.numChildren())
+
                 if((actionbtnsnap.numChildren()+1)>this.state.playernum){
                     if(snap.val().action){
                         new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
