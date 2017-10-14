@@ -271,8 +271,10 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
 
                 if((actionbtnsnap.numChildren()+1)>this.state.playernum){
                     if(snap.val().action){
-                        new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
-                            this._changePhase(snap.val().continue);
+                        new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
+                            new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
+                                this._changePhase(snap.val().continue);
+                            });
                         });
                     };
                     if(snap.val().actionreset){
@@ -668,12 +670,9 @@ _adjustmentPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
 
-                //Escort
-            if (child.val().roleid == 'H' && !child.val().H) {
-                this._noticeMsgForTarget(child.val().target,'#34cd0e',
-                    'You were distracted last night.');
-                this._noticeMsgForUser(child.key,'#34cd0e','You distracted ' 
-                    + child.val().targetname +" last night.");
+            if (child.val().H) {
+                firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target 
+                + '/' + child.val().roleid + '/' + child.key).remove()
             }
             
         })
@@ -759,10 +758,10 @@ _actionPhase() {
                     'You were distracted last night.');
                 this._noticeMsgForUser(child.key,'#34cd0e','You distracted ' 
                     + child.val().targetname +" last night.");
-            }
+
 
                 //Investigator
-            else if (child.val().roleid == 'I' && !child.val().H) {
+            } else if (child.val().roleid == 'I' && !child.val().H) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                     + child.val().target).once('value',innersnap=>{
                         if(innersnap.val().bloody){
