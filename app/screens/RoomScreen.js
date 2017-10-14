@@ -19,7 +19,7 @@ import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
 import ModalPicker from 'react-native-modal-picker';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import randomize from 'randomatic';
 
 import { Button, List, ListItem, FormInput } from "react-native-elements";
@@ -315,11 +315,14 @@ constructor(props) {
 
         rolecount:0,
         playercount:0,
+
+        amiowner:false,
     };
 
     this.roleCount = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
     this.playerCount = firebase.database().ref('rooms/' + roomname + '/listofplayers');
     this.gameStart = firebase.database().ref('rooms/' + roomname + '/phase');
+    this.ownerListener = firebase.database().ref('rooms/' + roomname + '/owner');
 
 }
 
@@ -329,6 +332,14 @@ componentWillMount() {
     this._pullListOfPlayers();
     this._count();
     this._checkIfStart();
+
+    this.ownerListener.on('value',snap=>{
+        if(snap.val() == firebase.auth().currentUser.uid){
+            this.setState({amiowner:true})
+        } else {
+            this.setState({amiowner:false})
+        }
+    })
 
 }
 
@@ -344,34 +355,23 @@ componentWillUnmount() {
     if(this.gameStart){
         this.gameStart.off();
     }
+    if(this.ownerListener){
+        this.ownerListener.off();
+    }
 }
 
 _pullListOfPlayers() {
-
     firebase.database().ref('rooms/' + this.state.roomname.toUpperCase() 
         + '/listofplayers').on('value',snap => {
         
-        var leftlist = [];
-        var rightlist = [];
-        var counter = 1;
-
+        var list = [];
         snap.forEach((child)=> {
-            if((counter%2) == 1){
-                leftlist.push({
-                    name: child.val().name,
-                    key: child.key,
-                })
-            } else {
-                rightlist.push({
-                    name: child.val().name,
-                    key: child.key,
-                })
-            }
-            counter++;
+            list.push({
+                name: child.val().name,
+                key: child.key,
+            })
         })
-
-        this.setState({leftlist:leftlist})
-        this.setState({rightlist:rightlist})
+        this.setState({namelist:list})
     })
 }
 
@@ -386,16 +386,19 @@ _deleteRoom() {
     this.props.navigation.navigate('Room_Screen');
 }
 
+_leaveRoom() {
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
+    this.props.navigation.navigate('Room_Screen');
+}
+
 _count() {
 
     //Role Count
     this.roleCount.on('value',snap=>{
         var rolecount = 0;
-
         snap.forEach((child)=>{
             rolecount = rolecount + child.val().count;
         })
-        
         this.setState({rolecount:rolecount})
     });
 
@@ -441,8 +444,22 @@ _handOutRoles(roomname){
         snap.forEach((child)=>{
             if(child.val().count > 0){
                 for(i=0;i<child.val().count;i++){
-                    randomstring = randomstring + child.val().roleid
-                    charcount++
+                    if(child.val().roleid == 'Q'){
+                        randomstring = randomstring + randomize('?', 1, {chars: 'BC'})
+                        charcount++
+                    } else if (child.val().roleid == 'R'){
+                        randomstring = randomstring + randomize('?', 1, {chars: 'FH'})
+                        charcount++
+                    } else if (child.val().roleid == 'S'){
+                        randomstring = randomstring + randomize('?', 1, {chars: 'GI'})
+                        charcount++
+                    } else if (child.val().roleid == 'T'){
+                        randomstring = randomstring + randomize('?', 1, {chars: 'FGHI'})
+                        charcount++
+                    } else {
+                        randomstring = randomstring + child.val().roleid
+                        charcount++
+                    }
                 }
             }
         })
@@ -484,12 +501,10 @@ render() {
         <View style = {{flex:1,flexDirection:'row'}}>
             <View style = {{flex:1}}/>
             <View style = {{
-                flex:2,
-                borderBottomLeftRadius: 10,
-                borderBottomRightRadius: 10,
-                backgroundColor: 'black',
-                justifyContent: 'center',
-            }}> 
+                flex:15, 
+                borderBottomLeftRadius: 15, borderBottomRightRadius: 15, 
+                backgroundColor: 'black', justifyContent: 'center', }}
+            > 
                 <Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
                     Lobby
                 </Text>
@@ -497,33 +512,23 @@ render() {
                     {this.state.roomname}
                 </Text>
             </View>
-            <TouchableOpacity style = {{
-                    flex:1,
-                    borderBottomLeftRadius: 10,
-                    backgroundColor: 'black',
-                    alignItems: 'center',
-                    justifyContent:'center',
-                    marginLeft:10,
-                    marginBottom:10}}
-                onPress={()=>{this._deleteRoom()}}>
-                <MaterialIcons name="delete" style={{color:'white', fontSize:20}}/>
-            </TouchableOpacity>
+            <View style = {{flex:1}}/>
         </View>
 
-        <View style = {{flex:0.2}}/>
+        <View style = {{flex:0.15}}/>
 
-        <View style = {{flex:7,flexDirection: 'row'}}>
+        <View style = {{flex:10,flexDirection: 'row'}}>
+            <View style = {{flex:0.2}}/>
             <View style = {{flex:3}}><FlatList
-                    data={this.state.leftlist}
+                    data={this.state.namelist}
                     renderItem={({item}) => (
                         <TouchableOpacity 
                             onPress={() => {alert('dumb')}}
-                            style = {{
-                                height:40,
+                            style = {{height:40,
+                                flex:0.5,
+                                borderRadius:5,
                                 backgroundColor: 'black',
-                                borderBottomRightRadius: 10,
-                                borderTopRightRadius: 10,
-                                marginBottom: 10,
+                                margin: 3,
                                 justifyContent:'center'
                         }}> 
                             <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>
@@ -531,45 +536,78 @@ render() {
 
                     )}
                     keyExtractor={item => item.key}
+                    numColumns={2}
                 />
             </View>
-            <View style = {{flex:2}}/>
-            <View style = {{flex:3}}><FlatList
-                    data={this.state.rightlist}
-                    renderItem={({item}) => (
-                        <TouchableOpacity 
-                            onPress={() => {alert('dumb')}}
-                            style = {{
-                                height:40,
-                                backgroundColor: 'black',
-                                borderBottomLeftRadius: 10,
-                                borderTopLeftRadius: 10,
-                                marginBottom: 10,
-                                justifyContent:'center'
-                        }}> 
-                            <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>
-                        </TouchableOpacity>
-
-                    )}
-                    keyExtractor={item => item.key}
-                />
-            </View>
+            <View style = {{flex:0.2}}/>
         </View>
 
-        <View style = {{flex:0.2}}/>
+        <View style = {{flex:0.15}}/>
 
         <View style = {{flex:1,flexDirection:'row'}}>
-            <View style = {{flex:1}}/>
-            <View style = {{flex:2}}>
-                <ProfileButton
-                    title='Start Game'
-                    backgroundColor='black'
-                    onPress={()=> {this._startGame(this.state.rolecount,this.state.playercount,
-                        this.state.roomname)}}
-                />
+            <View style = {{flex:0.2}}/>
+            <View style = {{flex:0.36,justifyContent:'center',
+                backgroundColor:'black',borderTopLeftRadius:15,borderBottomLeftRadius:15}}>
+                <TouchableOpacity
+                    onPress={()=> {
+                        
+                    }}>
+                    <MaterialCommunityIcons name='cursor-pointer'
+                                style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+                </TouchableOpacity>
             </View>
-            <View style = {{flex:1}}/>
+            <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
+                <TouchableOpacity
+                    onPress={()=> {
+                        
+                    }}>
+                    <MaterialCommunityIcons name='dice-5'
+                                style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+                </TouchableOpacity>
+            </View>
+            <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
+                <TouchableOpacity
+                    onPress={()=> {
+                        this._startGame(this.state.rolecount,this.state.playercount,
+                            this.state.roomname);
+                    }}>
+                    <MaterialCommunityIcons name='play-circle'
+                                style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+                </TouchableOpacity>
+            </View>
+            <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
+                <TouchableOpacity
+                    onPress={()=> {
+                        alert(randomize('?', 1, {chars: 'AB'}))
+                    }}>
+                    <MaterialCommunityIcons name='bookmark'
+                                style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+                </TouchableOpacity>
+            </View>
+            <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black',
+                borderTopRightRadius:15,borderBottomRightRadius:15}}>
+                <TouchableOpacity
+                    onPress={()=> {
+                        this.state.amiowner?this._deleteRoom():this._leaveRoom();
+                    }}>
+                    <MaterialCommunityIcons name={this.state.amiowner?'delete-circle':'close-circle'}
+                                style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+                </TouchableOpacity>
+            </View>
+            <View style = {{flex:0.2}}/>
         </View>
+        
+        <View style = {{flex:0.15}}/>
+
+        <View style = {{flex:0.5,flexDirection:'row',backgroundColor:'white'}}>
+            <View style = {{flex:3}}/>
+            <View style = {{flex:15,backgroundColor:'black',borderRadius:10,justifyContent:'center',alignItems:'center'}}>
+                <Text style = {{color:'white',fontSize:12}}>{this.state.bottommessage}</Text>
+            </View>
+            <View style = {{flex:3}}/>
+        </View>
+
+        <View style = {{flex:0.15}}/>
 
     </View>
 }}

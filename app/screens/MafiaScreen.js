@@ -524,7 +524,7 @@ _renderListComponent(){
                         justifyContent:'center',
                         flex:0.5,
                     }}
-                    disabled = {this.state.amidead}
+                    disabled = {this.state.amidead?true:item.dead}
                     >
                     {item.dead?<MaterialCommunityIcons name='skull'
                         style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
@@ -550,7 +550,7 @@ _renderListComponent(){
                         justifyContent:'center',
                         flex:0.5,
                     }}
-                    disabled = {!this.state.amipicking}
+                    disabled = {this.state.amipicking?item.dead:false}
                     > 
                     {item.dead?<MaterialCommunityIcons name='skull'
                         style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
