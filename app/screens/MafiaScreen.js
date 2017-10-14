@@ -47,6 +47,7 @@ constructor(props) {
         phase: '',
         screentype: '',
         phasename:'',
+        bottommessage:'',
         locked:'',
 
         namelist: dataSource,
@@ -113,6 +114,10 @@ componentWillMount() {
         //Can possibly be moved to the Phase Change Listener
         this._updateNumbers(snap.val().playernum)
 
+        //Keep Phase name updated
+        firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val().phase)
+            .once('value',layout=>{ this.setState({ phasename:layout.val().name}) })
+
         //Match Button Presses with the Database
         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
         + firebase.auth().currentUser.uid).once('value',btnpress=>{
@@ -123,18 +128,15 @@ componentWillMount() {
             })
 
             if(btnpress.val().presseduid == 'foo'){
-                firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val().phase)
-                .once('value',layout=>{
-                    this.setState({ phasename:layout.val().name })
-                })
+                    this.setState({ bottommessage: 'You have not selected anything.'})
             } else if (btnpress.val().presseduid == 'yes'){
-                this.setState({ phasename: 'You have voted Innocent.'})
+                this.setState({ bottommessage: 'You have voted Innocent.'})
             } else if (btnpress.val().presseduid == 'no'){
-                this.setState({ phasename: 'You have voted Guilty.'})
+                this.setState({ bottommessage: 'You have voted Guilty.'})
             } else {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + btnpress.val().presseduid).once('value',uidtoname=>{
-                    this.setState({ phasename: 'You have selected ' + uidtoname.val().name + '.'})
+                    this.setState({ bottommessage: 'You have selected ' + uidtoname.val().name + '.'})
                 })
                     
             }
@@ -376,7 +378,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                 })
                 this._changePhase(4)
             } else {
-                this.setState({phasename: name + ' is not a member of the Mafia.'})
+                this.setState({bottommessage: name + ' is not a member of the Mafia.'})
             }
         })
             
@@ -389,34 +391,34 @@ _voteBtnPress(presseduid,votebtn) {
         
         if(presseduid == 'yes'){
             if(votebtn){
-                this.setState({phasename:'Nomination'})
+                this.setState({bottommessage: 'You have not selected anything.'})
                 this._pressedUid('foo');
                 this._actionBtnValue(false);
             } else {
-                this.setState({phasename:'You have voted Guilty.'})
+                this.setState({bottommessage:'You have voted Guilty.'})
                 this._pressedUid('no');
                 this._actionBtnValue(true);
                 this._voteFinished(this.state.roomname);
             }
         } else if (presseduid == 'no') {
             if(votebtn){
-                this.setState({phasename:'You have voted Innocent.'})
+                this.setState({bottommessage:'You have voted Innocent.'})
                 this._pressedUid('yes');
                 this._actionBtnValue(true);
                 this._voteFinished(this.state.roomname);
             } else {
-                this.setState({phasename:'Nomination'})
+                this.setState({bottommessage: 'You have not selected anything.'})
                 this._pressedUid('foo');
                 this._actionBtnValue(false);
             }
         } else {
             if(votebtn){
-                this.setState({phasename:'You have voted Innocent.'})
+                this.setState({bottommessage:'You have voted Innocent.'})
                 this._pressedUid('yes');
                 this._actionBtnValue(true);
                 this._voteFinished(this.state.roomname);
             } else {
-                this.setState({phasename:'You have voted Guilty.'})
+                this.setState({bottommessage:'You have voted Guilty.'})
                 this._pressedUid('no');
                 this._actionBtnValue(true);
                 this._voteFinished(this.state.roomname);
@@ -506,14 +508,6 @@ _renderHeader() {
     </Text></View>
 }
 
-_renderVoteText(){
-    if(this.state.actionbtnvalue){
-        return <Text style = {{fontWeight:'bold'}}>Waiting for Other Players . . .</Text>
-    } else {
-        return <Text style = {{fontWeight:'bold'}}>You are required to Vote.</Text>
-    }
-}
-
 _renderListComponent(){
 
     if(this.state.screentype=='normal'){
@@ -530,7 +524,7 @@ _renderListComponent(){
                         justifyContent:'center',
                         flex:0.5,
                     }}
-                    disabled = {item.dead}
+                    disabled = {this.state.amidead?true:item.dead}
                     >
                     {item.dead?<MaterialCommunityIcons name='skull'
                         style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
@@ -553,9 +547,10 @@ _renderListComponent(){
                         backgroundColor: 'black',
                         margin: 3,
                         borderRadius:5,
-                        justifyContent:'center'
+                        justifyContent:'center',
+                        flex:0.5,
                     }}
-                    disabled = {this.state.amipicking?item.dead:true}
+                    disabled = {this.state.amipicking?(this.state.amidead?true:item.dead):true}
                     > 
                     {item.dead?<MaterialCommunityIcons name='skull'
                         style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
@@ -563,6 +558,7 @@ _renderListComponent(){
                 </TouchableOpacity>
         )}
         keyExtractor={item => item.key}
+        numColumns={2}
     />
 
     } else if(this.state.screentype=='voting-person'){
@@ -575,19 +571,18 @@ _renderListComponent(){
                     onPress={()=>{
                         this._voteBtnPress(this.state.presseduid,true)
                     }}
+                    disabled = {this.state.amidead?true:item.dead}
                 >
                     <MaterialCommunityIcons name={'thumb-up'} 
                         style={{color:'black', fontSize:40,alignSelf:'center'}}/>
                 </TouchableOpacity>
-
-                <View style = {{flex:1,justifyContent:'center',alignSelf:'center'}}>
-                    {this._renderVoteText()}</View>
 
                 <TouchableOpacity 
                     style = {{flex:2,justifyContent:'center'}}
                     onPress={()=>{
                         this._voteBtnPress(this.state.presseduid,false)
                     }}
+                    disabled = {this.state.amidead?true:item.dead}
                 >
                     <MaterialCommunityIcons name={'thumb-down'} 
                         style={{color:'black', fontSize:40,alignSelf:'center'}}/>
@@ -605,7 +600,7 @@ _renderListComponent(){
 
 _renderMessageComponent(){
     if (this.state.notificationchat){
-        return <View style = {{marginTop:10,marginRight:10}}><FlatList
+        return <View style = {{margin:10}}><FlatList
             data={this.state.globallist}
             renderItem={({item}) => (
                 <Text style={{color:'white',fontWeight:'bold',marginTop:5}}>
@@ -614,7 +609,7 @@ _renderMessageComponent(){
             keyExtractor={item => item.key}
             /></View>
     } else if(this.state.messagechat){
-        return <View style = {{marginTop:10,marginRight:10}}><FlatList
+        return <View style = {{margin:10}}><FlatList
             data={this.state.msglist}
             renderItem={({item}) => (
                 <Text style={{color:'white',fontWeight:'bold',marginTop:5}}>
@@ -797,59 +792,67 @@ return <View style = {{flex:1}}>
     flexDirection:'row',
     backgroundColor:'white',
 }}>
-    <View style = {{flex:1.2}}>
-        <View style = {{flex:4.4}}/>
-        <View style = {{flex:2.4,backgroundColor:this.state.messagechat||this.state.notificationchat?
-            'black':'white'}}/>
+    <View style = {{flex:0.2}}>
     </View>
-    <View style = {{flex:5.6}}>
+    <View style = {{flex:15}}>
         <View style = {{flex:4.4}}>
             {this._renderListComponent()}
         </View>
         <View style = {{flex:this.state.messagechat||this.state.notificationchat?2.4:0,
-            backgroundColor:'black',borderTopRightRadius:15,borderBottomRightRadius:15}}>
+            backgroundColor:'black',borderRadius:15,marginLeft:10,marginRight:10}}>
             {this._renderMessageComponent()}
         </View>
     </View>
 
     <View style = {{flex:0.2}}/>
 
-    <View style = {{flex:1}}>
-        <View style = {{flex:4.4}}/>
-        <View style = {{flex:0.6,justifyContent:'center',
-            backgroundColor:'black',borderTopLeftRadius:15}}>
-            <TouchableOpacity
-                onPress={()=> {
-                    this._chatPress('notifications')
-                }}>
-                <MaterialCommunityIcons name='comment-alert'
-                          style={{color:'white', fontSize:26,alignSelf:'center'}}/>
-            </TouchableOpacity>
-        </View>
-        <View style = {{flex:0.6,justifyContent:'center',
-            backgroundColor:'black'}}>
-            <TouchableOpacity
-                onPress={()=> {
-                    this._chatPress('messages')
-                }}>
-                <MaterialCommunityIcons name='book-open' 
-                          style={{color:'white', fontSize:26,alignSelf:'center'}}/>
-            </TouchableOpacity>
-        </View>
-        <View style = {{flex:0.6,backgroundColor:'black'}}/>
-        <View style = {{flex:0.6,justifyContent:'center',
-            backgroundColor:'black',borderBottomLeftRadius:15}}>
-            <TouchableOpacity
-                disabled={this.state.locked?true:this.state.amidead}
-                onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
-                    this.state.triggernum,this.state.phase,this.state.roomname)}}>
-                <MaterialCommunityIcons name={this.state.locked?'lock':'check-circle'} 
-                          style={{color:this.state.actionbtnvalue ? '#e3c382' : 'white'
-                                , fontSize:26,alignSelf:'center'}}/>
-            </TouchableOpacity>
-        </View>
-    </View>
+</View>
 
+<View style = {{flex:0.15, backgroundColor:'white'}}/>
+
+<View style = {{flex:1,backgroundColor:'white',flexDirection:'row'}}>
+    <View style = {{flex:0.2}}/>
+    <View style = {{flex:0.6,justifyContent:'center',
+        backgroundColor:'black',borderTopLeftRadius:15,borderBottomLeftRadius:15}}>
+        <TouchableOpacity
+            onPress={()=> {
+                this._chatPress('notifications')
+            }}>
+            <MaterialCommunityIcons name='comment-alert'
+                        style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+        </TouchableOpacity>
+    </View>
+    <View style = {{flex:0.6,justifyContent:'center', backgroundColor:'black'}}>
+        <TouchableOpacity
+            onPress={()=> {
+                this._chatPress('messages')
+            }}>
+            <MaterialCommunityIcons name='book-open' 
+                        style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+        </TouchableOpacity>
+    </View>
+    <View style = {{flex:0.6,justifyContent:'center',
+        backgroundColor:'black',borderBottomRightRadius:15,borderTopRightRadius:15}}>
+        <TouchableOpacity
+            disabled={this.state.locked?true:this.state.amidead}
+            onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
+                this.state.triggernum,this.state.phase,this.state.roomname)}}>
+            <MaterialCommunityIcons name={this.state.locked?'lock':(this.state.amidead?'lock':'check-circle')} 
+                        style={{color:this.state.actionbtnvalue ? '#e3c382' : 'white'
+                            , fontSize:26,alignSelf:'center'}}/>
+        </TouchableOpacity>
+    </View>
+    <View style = {{flex:0.2}}/>
+</View>
+
+<View style = {{flex:0.15, backgroundColor:'white'}}/>
+
+<View style = {{flex:0.5,flexDirection:'row',backgroundColor:'white'}}>
+    <View style = {{flex:3}}/>
+    <View style = {{flex:15,backgroundColor:'black',borderRadius:10,justifyContent:'center',alignItems:'center'}}>
+        <Text style = {{color:'white',fontSize:12}}>{this.state.bottommessage}</Text>
+    </View>
+    <View style = {{flex:3}}/>
 </View>
 
 <View style = {{flex:0.15, backgroundColor:'white'}}/>
