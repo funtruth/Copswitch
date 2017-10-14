@@ -450,8 +450,7 @@ _voteFinished(roomname){
                         else if(counter>1){names=names+', '+votechild.val().name}
                     })
                     
-                    this._noticeMsgGlobal(roomname,'#d31d1d',
-                        names + ' voted against ' + this.state.nominee + '.',0) 
+                    this._noticeMsgGlobal(roomname,'#d31d1d', names + ' voted against ' + this.state.nominee + '.') 
 
                     firebase.database().ref('rooms/'+ roomname +'/phases/'+this.state.phase)
                     .once('value',phasedata=>{
@@ -464,8 +463,7 @@ _voteFinished(roomname){
                             firebase.database().ref('rooms/'+ roomname +'/listofplayers/'
                             +this.state.nominate).once('value',dead=>{
 
-                                this._noticeMsgGlobal(roomname,'#d31d1d',
-                                    dead.val().name + ' was hung.',1)
+                                this._noticeMsgGlobal(roomname,'#d31d1d', dead.val().name + ' was hung.')
                                 
                                 if(dead.val().roleid == 'A'){
                                     this._changePhase(5)
@@ -475,7 +473,7 @@ _voteFinished(roomname){
                                         + jester.key).update({bloody:true,suspicious:true})
                                     })
                                     this._noticeMsgGlobal(roomname,'#d31d1d',
-                                        names + ' have blood on their hands and look suspicious.',0)
+                                        names + ' have blood on their hands and look suspicious.')
                                     this._changePhase(phasedata.val().trigger)
                                 } else {
                                     this._changePhase(phasedata.val().trigger)
@@ -524,7 +522,7 @@ _renderListComponent(){
                         justifyContent:'center',
                         flex:0.5,
                     }}
-                    disabled = {this.state.amidead?true:item.dead}
+                    disabled = {this.state.amidead}
                     >
                     {item.dead?<MaterialCommunityIcons name='skull'
                         style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
@@ -550,7 +548,7 @@ _renderListComponent(){
                         justifyContent:'center',
                         flex:0.5,
                     }}
-                    disabled = {this.state.amipicking?(this.state.amidead?true:item.dead):true}
+                    disabled = {!this.state.amipicking}
                     > 
                     {item.dead?<MaterialCommunityIcons name='skull'
                         style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
@@ -571,7 +569,7 @@ _renderListComponent(){
                     onPress={()=>{
                         this._voteBtnPress(this.state.presseduid,true)
                     }}
-                    disabled = {this.state.amidead?true:item.dead}
+                    disabled = {this.state.amidead}
                 >
                     <MaterialCommunityIcons name={'thumb-up'} 
                         style={{color:'black', fontSize:40,alignSelf:'center'}}/>
@@ -582,7 +580,7 @@ _renderListComponent(){
                     onPress={()=>{
                         this._voteBtnPress(this.state.presseduid,false)
                     }}
-                    disabled = {this.state.amidead?true:item.dead}
+                    disabled = {this.state.amidead}
                 >
                     <MaterialCommunityIcons name={'thumb-down'} 
                         style={{color:'black', fontSize:40,alignSelf:'center'}}/>
@@ -600,7 +598,7 @@ _renderListComponent(){
 
 _renderMessageComponent(){
     if (this.state.notificationchat){
-        return <View style = {{margin:10}}><FlatList
+        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}><FlatList
             data={this.state.globallist}
             renderItem={({item}) => (
                 <Text style={{color:'white',fontWeight:'bold',marginTop:5}}>
@@ -609,7 +607,7 @@ _renderMessageComponent(){
             keyExtractor={item => item.key}
             /></View>
     } else if(this.state.messagechat){
-        return <View style = {{margin:10}}><FlatList
+        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}><FlatList
             data={this.state.msglist}
             renderItem={({item}) => (
                 <Text style={{color:'white',fontWeight:'bold',marginTop:5}}>
@@ -652,25 +650,33 @@ _changePlayerCount(bool){
 
 
 _noticeMsgForTarget(target,color,message){
-    firebase.database().ref('messages/' + target + '/count').once('value',snap=>{
-        firebase.database().ref('messages/' + target + '/' + (snap.val()+1))
-            .update({from: 'Private', color: color, message: message})
-        firebase.database().ref('messages/' + target).update({count:(snap.val()+1)})
-    })
+    firebase.database().ref('messages/' + target)
+        .push({from: 'Private', color: color, message: message})
 }
 
 _noticeMsgForUser(user,color,message){
-    firebase.database().ref('messages/' + user + '/count').once('value',snap=>{
-        firebase.database().ref('messages/' + user + '/' + (snap.val()+1))
-            .update({from: 'Private', color: color, message: message})
-        firebase.database().ref('messages/' + user).update({count:(snap.val()+1)})
-    })
+    firebase.database().ref('messages/' + user)
+        .push({from: 'Private', color: color, message: message})
 }
 
-_noticeMsgGlobal(roomname,color,message,num){
-    firebase.database().ref('globalmsgs/' + roomname).once('value',messages=>{
-        firebase.database().ref('globalmsgs/' + roomname + '/' + (messages.numChildren()+1+num))
-            .update({from: 'Public', color: color, message: message})
+_noticeMsgGlobal(roomname,color,message){
+    firebase.database().ref('globalmsgs/' + roomname)
+        .push({from: 'Public', color: color, message: message})
+}
+
+_adjustmentPhase() {
+    firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
+        snap.forEach((child)=>{
+
+                //Escort
+            if (child.val().roleid == 'H' && !child.val().H) {
+                this._noticeMsgForTarget(child.val().target,'#34cd0e',
+                    'You were distracted last night.');
+                this._noticeMsgForUser(child.key,'#34cd0e','You distracted ' 
+                    + child.val().targetname +" last night.");
+            }
+            
+        })
     })
 }
 
@@ -683,17 +689,17 @@ _actionPhase() {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',innersnap=>{
                     if(!innersnap.val().F){
-                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                            + child.val().target).update({dead:true});
-                        this._changePlayerCount(false);
-                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                            + firebase.auth().currentUser.uid).update({bloody:true});
-                        this._noticeMsgForTarget(child.val().target,'#d31d1d','You have been stabbed.');
-                        this._noticeMsgForUser(child.key,'#d31d1d','You have stabbed ' 
-                            + child.val().targetname + '.');
+                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                                + child.val().target).update({dead:true});
+                            this._changePlayerCount(false);
+                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                                + firebase.auth().currentUser.uid).update({bloody:true});
+                            this._noticeMsgForTarget(child.val().target,'#d31d1d','You have been stabbed.');
+                            this._noticeMsgForUser(child.key,'#d31d1d','You have stabbed ' 
+                                + child.val().targetname + '.');
                     } else {
-                        this._noticeMsgForUser(child.key,'#d31d1d','You have stabbed ' 
-                            + child.val().targetname + '.');
+                            this._noticeMsgForUser(child.key,'#d31d1d','You have stabbed ' 
+                                + child.val().targetname + '.');
                     }
                 })
 
@@ -737,6 +743,7 @@ _actionPhase() {
                             insidesnap.val().roleid =='C'||
                             insidesnap.val().roleid =='D'||
                             insidesnap.val().roleid =='E'||
+                            insidesnap.val().B           ||
                             insidesnap.val().suspicious){
                             this._noticeMsgForUser(child.key,'#34cd0e',child.val().targetname 
                                 + ' is hiding something ...');

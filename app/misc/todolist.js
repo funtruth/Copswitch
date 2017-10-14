@@ -2,8 +2,6 @@
 
 //Player shouldn't be able to select other Players when dead
 
-//Night Phase Algorithm
-
 //Messaging System
     //Whisper - long press of NameBtn
 
