@@ -92,6 +92,7 @@ _createRoom() {
             name: this.state.creatorname,
             dead:false,
             bloody:false,
+            suspicious:false,
             actionbtnvalue: false,
             presseduid: 'foo',
     });
@@ -146,6 +147,7 @@ _joinRoom(joincode) {
                     name: this.state.alias,
                     dead:false,
                     bloody:false,
+                    suspicious:false,
                     actionbtnvalue:false,
                     presseduid:'foo',
             });   

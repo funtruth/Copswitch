@@ -396,14 +396,14 @@ _voteBtnPress(presseduid,votebtn) {
                 this.setState({phasename:'You have voted Guilty.'})
                 this._pressedUid('no');
                 this._actionBtnValue(true);
-                this._voteFinished();
+                this._voteFinished(this.state.roomname);
             }
         } else if (presseduid == 'no') {
             if(votebtn){
                 this.setState({phasename:'You have voted Innocent.'})
                 this._pressedUid('yes');
                 this._actionBtnValue(true);
-                this._voteFinished();
+                this._voteFinished(this.state.roomname);
             } else {
                 this.setState({phasename:'Nomination'})
                 this._pressedUid('foo');
@@ -414,29 +414,29 @@ _voteBtnPress(presseduid,votebtn) {
                 this.setState({phasename:'You have voted Innocent.'})
                 this._pressedUid('yes');
                 this._actionBtnValue(true);
-                this._voteFinished();
+                this._voteFinished(this.state.roomname);
             } else {
                 this.setState({phasename:'You have voted Guilty.'})
                 this._pressedUid('no');
                 this._actionBtnValue(true);
-                this._voteFinished();
+                this._voteFinished(this.state.roomname);
             }
         }
     })    
 }
 
-_voteFinished(){
+_voteFinished(roomname){
 
-    firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase).once('value',snap=>{
+    firebase.database().ref('rooms/'+ roomname +'/phases/'+this.state.phase).once('value',snap=>{
 
-        firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers').orderByChild('actionbtnvalue')
+        firebase.database().ref('rooms/'+ roomname +'/listofplayers').orderByChild('actionbtnvalue')
         .equalTo(true).once('value',actioncountsnap=>{
             if((actioncountsnap.numChildren()+1)>this.state.playernum){
                 if(snap.val().actionreset){ 
-                    firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove(); 
+                    firebase.database().ref('rooms/' + roomname + '/actions').remove(); 
                 };
 
-                firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers')
+                firebase.database().ref('rooms/'+ roomname +'/listofplayers')
                 .orderByChild('presseduid').equalTo('no')
                 .once('value',guiltyvotes=>{
                     var counter = 0;
@@ -448,25 +448,33 @@ _voteFinished(){
                         else if(counter>1){names=names+', '+votechild.val().name}
                     })
                     
-                    this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                    this._noticeMsgGlobal(roomname,'#d31d1d',
                         names + ' voted against ' + this.state.nominee + '.',0) 
 
-                    firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase)
+                    firebase.database().ref('rooms/'+ roomname +'/phases/'+this.state.phase)
                     .once('value',phasedata=>{
                         if((guiltyvotes.numChildren()+1)>this.state.triggernum){
 
-                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                            firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
                                 + this.state.nominate).update({dead:true});
                             this._changePlayerCount(false);
 
-                            firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
+                            firebase.database().ref('rooms/'+ roomname +'/listofplayers/'
                             +this.state.nominate).once('value',dead=>{
 
-                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                                this._noticeMsgGlobal(roomname,'#d31d1d',
                                     dead.val().name + ' was hung.',1)
                                 
                                 if(dead.val().roleid == 'A'){
                                     this._changePhase(5)
+                                } else if (dead.val().roleid == 'W'){
+                                    guiltyvotes.forEach((jester)=>{ 
+                                        firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+                                        + jester.key).update({bloody:true,suspicious:true})
+                                    })
+                                    this._noticeMsgGlobal(roomname,'#d31d1d',
+                                        names + ' have blood on their hands and look suspicious.',0)
+                                    this._changePhase(phasedata.val().trigger)
                                 } else {
                                     this._changePhase(phasedata.val().trigger)
                                 }
@@ -474,9 +482,9 @@ _voteFinished(){
                                 
                             
                         } else {
-                            firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'
+                            firebase.database().ref('rooms/'+ roomname +'/listofplayers/'
                             +this.state.nominate).once('value',dead=>{
-                                this._noticeMsgGlobal(this.state.roomname,'#34cd0e',
+                                this._noticeMsgGlobal(roomname,'#34cd0e',
                                     dead.val().name + ' was not hung.',1)
                             })
                             this._changePhase(phasedata.val().continue)
@@ -519,7 +527,8 @@ _renderListComponent(){
                         backgroundColor: 'black',
                         margin: 3,
                         borderRadius:5,
-                        justifyContent:'center'
+                        justifyContent:'center',
+                        flex:0.5,
                     }}
                     disabled = {item.dead}
                     >
@@ -529,6 +538,7 @@ _renderListComponent(){
                 </TouchableOpacity>
 
             )}
+            numColumns={2}
             keyExtractor={item => item.key}
         />
     } else if (this.state.screentype=='normal-person'){
@@ -731,7 +741,8 @@ _actionPhase() {
                         if(insidesnap.val().roleid == 'B'||
                             insidesnap.val().roleid =='C'||
                             insidesnap.val().roleid =='D'||
-                            insidesnap.val().roleid == 'E'){
+                            insidesnap.val().roleid =='E'||
+                            insidesnap.val().suspicious){
                             this._noticeMsgForUser(child.key,'#34cd0e',child.val().targetname 
                                 + ' is hiding something ...');
                         } else {
@@ -760,7 +771,7 @@ _actionPhase() {
                                 child.val().targetname +" has blood on their hands.");
                         }
                     })
-            } 
+            }
         })
     })
 
@@ -851,9 +862,8 @@ const styles = StyleSheet.create({
         height:40,
         backgroundColor: 'grey',
         margin: 3,
-        marginLeft:10,
-        marginRight:10,
         borderRadius:5,
-        justifyContent:'center'
+        justifyContent:'center',
+        flex:0.5
     },
 });

@@ -69,7 +69,6 @@ export const SignedOut = StackNavigator(
       tabBarPosition: 'bottom',
       animationEnabled: true,
       swipeEnabled: true,
-      lazy:true,
       tabBarOptions: {
         showIcon: true,
         showLabel: false,

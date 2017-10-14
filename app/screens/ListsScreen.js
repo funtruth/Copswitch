@@ -390,7 +390,7 @@ render(){
     }
 }
 
-export default RuleBook = TabNavigator(
+export default RuleBook = StackNavigator(
     {
       Mafia_Screen: {
         screen: Mafia_Screen,
@@ -434,22 +434,7 @@ export default RuleBook = TabNavigator(
       },
     },
     {
-    tabBarPosition: 'top',
-    animationEnabled: true,
-    swipeEnabled: true,
-    tabBarOptions: {
-        showIcon: true,
-        showLabel: false,
-        activeTintColor:'#9373d9',
-        inactiveTintColor:'#9373d9',
-        style: {
-          backgroundColor: 'black',
-        },
-        indicatorStyle: {
-          backgroundColor: 'white',
-          height:5,
-        }
-      },
       initialRouteName: 'General_Screen',
+      headerMode: 'none',
     }
   );
