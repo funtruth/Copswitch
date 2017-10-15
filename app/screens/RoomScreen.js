@@ -517,7 +517,7 @@ render() {
 
         <View style = {{flex:0.15}}/>
 
-        <View style = {{flex:10,flexDirection: 'row'}}>
+        <View style = {{flex:10.65,flexDirection: 'row'}}>
             <View style = {{flex:0.2}}/>
             <View style = {{flex:3}}><FlatList
                     data={this.state.namelist}
@@ -572,7 +572,7 @@ render() {
                             this.state.roomname);
                     }}>
                     <MaterialCommunityIcons name='play-circle'
-                                style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+                                style={{color:'white', fontSize:32,alignSelf:'center'}}/>
                 </TouchableOpacity>
             </View>
             <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
@@ -595,16 +595,6 @@ render() {
                 </TouchableOpacity>
             </View>
             <View style = {{flex:0.2}}/>
-        </View>
-        
-        <View style = {{flex:0.15}}/>
-
-        <View style = {{flex:0.5,flexDirection:'row',backgroundColor:'white'}}>
-            <View style = {{flex:3}}/>
-            <View style = {{flex:15,backgroundColor:'black',borderRadius:10,justifyContent:'center',alignItems:'center'}}>
-                <Text style = {{color:'white',fontSize:12}}>{this.state.bottommessage}</Text>
-            </View>
-            <View style = {{flex:3}}/>
         </View>
 
         <View style = {{flex:0.15}}/>

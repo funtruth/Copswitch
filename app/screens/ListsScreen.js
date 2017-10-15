@@ -437,7 +437,7 @@ render(){
                 }}>
             <MaterialCommunityIcons 
                 name="emoticon-sad" 
-                style = {{height: 26,color: '#ffffff',fontSize: 20}}/>
+                style = {{color: '#ffffff',fontSize: this.state.mafiaview?30:20}}/>
             </TouchableOpacity>
 
             <TouchableOpacity style = {{flex:1,justifyContent:'center',alignItems:'center'}}
@@ -450,7 +450,7 @@ render(){
                 }}>
             <MaterialCommunityIcons 
                 name="emoticon-happy" 
-                style = {{height: 26,color: '#ffffff',fontSize: 20}}/>
+                style = {{color: '#ffffff', fontSize: this.state.townview?30:20}}/>
             </TouchableOpacity>
 
             <TouchableOpacity style = {{flex:1,justifyContent:'center',alignItems:'center'}}
@@ -463,7 +463,7 @@ render(){
                 }}>
             <MaterialCommunityIcons 
                 name="emoticon-neutral" 
-                style = {{height: 26,color: '#ffffff',fontSize: 20}}/>
+                style = {{color: '#ffffff', fontSize: this.state.neutralview?30:20}}/>
             </TouchableOpacity>
 
         </View>
