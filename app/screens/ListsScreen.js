@@ -311,8 +311,13 @@ constructor(props) {
 
     this.state = {
 
-        roles: dataSource,
-        loading:true,
+        mafialist: dataSource,
+        townlist: dataSource,
+        neutrallist: dataSource,
+        
+        mafiaview: false,
+        townview: true,
+        neutralview: false,
 
     }
 
@@ -325,38 +330,88 @@ constructor(props) {
 componentWillMount() {
 
     this.listListener.on('value',snap=>{
-
         if(snap.exists()){
-            var roles = [];
+            var mafia = [];
+            var town = [];
+            var neutral = [];
             snap.forEach((child)=> {
-                roles.push({
-                    name: child.key,
-                    desc: child.val().desc,
-                    color: child.val().color,
-                    hideChevron: false,
-                    count:child.val().count,
+                if(child.val().type == 1){
+                    mafia.push({
+                        name: child.key,
+                        desc: child.val().desc,
+                        color: child.val().color,
+                        count:child.val().count,
+                        hideChevron:false,
 
-                    key: child.val().roleid,
-                })
+                        key: child.val().roleid,
+                    })
+                } else if (child.val().type == 2){
+                    town.push({
+                        name: child.key,
+                        desc: child.val().desc,
+                        color: child.val().color,
+                        count:child.val().count,
+                        hideChevron:false,
+
+                        key: child.val().roleid,
+                    })
+                } else if (child.val().type == 3){
+                    neutral.push({
+                        name: child.key,
+                        desc: child.val().desc,
+                        color: child.val().color,
+                        count:child.val().count,
+                        hideChevron:false,
+
+                        key: child.val().roleid,
+                    })
+                }
+                    
             })
-            this.setState({ roles:roles })
+            this.setState({ mafialist:mafia, townlist:town, neutrallist:neutral })
+
         } else {
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
             .once('value',outsnap=>{
                 firebase.database().ref(outsnap.val() + '/roles').once('value', deepshot => {
-                    var roles = [];
+                    var mafia = [];
+                    var town = [];
+                    var neutral = [];
                     deepshot.forEach((child)=> {
-                        roles.push({
-                            name: child.val().name,
-                            desc: child.val().desc,
-                            color: child.val().color,
-                            hideChevron: true,
-                            count:1,
+                        if(child.val().type == 1){
+                            mafia.push({
+                                name: child.val().name,
+                                desc: child.val().desc,
+                                color: child.val().color,
+                                count:1,
+                                hideChevron:true,
 
-                            key: child.key,
-                        })
+                                key: child.key,
+                            })
+                        } else if (child.val().type == 2){
+                            town.push({
+                                name: child.val().name,
+                                desc: child.val().desc,
+                                color: child.val().color,
+                                count:1,
+                                hideChevron:true,
+
+                                key: child.key,
+                            })
+                        } else if (child.val().type == 3){
+                            neutral.push({
+                                name: child.val().name,
+                                desc: child.val().desc,
+                                color: child.val().color,
+                                count:1,
+                                hideChevron:true,
+
+                                key: child.key,
+                            })
+                        }
+                            
                     })
-                    this.setState({ roles:roles }) 
+                    this.setState({ mafialist:mafia, townlist:town, neutrallist:neutral }) 
                 })
             })
         }
@@ -370,9 +425,53 @@ componentWillMount() {
 render(){
     return <View style = {{flex:1, backgroundColor:'white'}}>
 
+        <View style = {{flex:1,flexDirection:'row',backgroundColor:'black'}}>
+
+            <TouchableOpacity style = {{flex:1,justifyContent:'center',alignItems:'center'}}
+                onPress = {()=>{
+                    this.setState({
+                        mafiaview:true,
+                        townview:false,
+                        neutralview:false,
+                    })  
+                }}>
+            <MaterialCommunityIcons 
+                name="emoticon-sad" 
+                style = {{height: 26,color: '#ffffff',fontSize: 20}}/>
+            </TouchableOpacity>
+
+            <TouchableOpacity style = {{flex:1,justifyContent:'center',alignItems:'center'}}
+                onPress = {()=>{
+                    this.setState({
+                        mafiaview:false,
+                        townview:true,
+                        neutralview:false,
+                    })
+                }}>
+            <MaterialCommunityIcons 
+                name="emoticon-happy" 
+                style = {{height: 26,color: '#ffffff',fontSize: 20}}/>
+            </TouchableOpacity>
+
+            <TouchableOpacity style = {{flex:1,justifyContent:'center',alignItems:'center'}}
+                onPress = {()=>{
+                    this.setState({
+                        mafiaview:false,
+                        townview:false,
+                        neutralview:true,
+                    })  
+                }}>
+            <MaterialCommunityIcons 
+                name="emoticon-neutral" 
+                style = {{height: 26,color: '#ffffff',fontSize: 20}}/>
+            </TouchableOpacity>
+
+        </View>
+
         <View style = {{flex:9}}>
         <View><FlatList
-            data={this.state.roles}
+            data={this.state.townview?this.state.townlist:
+                (this.state.mafiaview?this.state.mafialist:this.state.neutrallist)}
             renderItem={({item}) => (
                 <RulebookListItem
                     title={item.name}
