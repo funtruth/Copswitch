@@ -444,17 +444,23 @@ _handOutRoles(roomname){
         snap.forEach((child)=>{
             if(child.val().count > 0){
                 for(i=0;i<child.val().count;i++){
-                    if(child.val().roleid == 'Q'){
-                        randomstring = randomstring + randomize('?', 1, {chars: 'BC'})
+                    if(child.val().roleid == 'E'){
+                        randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
                         charcount++
-                    } else if (child.val().roleid == 'R'){
-                        randomstring = randomstring + randomize('?', 1, {chars: 'FH'})
+                    } else if (child.val().roleid == 'I'){ //Random Mischeif Mafia
+                        randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
                         charcount++
-                    } else if (child.val().roleid == 'S'){
-                        randomstring = randomstring + randomize('?', 1, {chars: 'GI'})
+                    } else if (child.val().roleid == 'M'){ //Random Inspective Town
+                        randomstring = randomstring + randomize('?', 1, {chars: 'KL'})
                         charcount++
-                    } else if (child.val().roleid == 'T'){
-                        randomstring = randomstring + randomize('?', 1, {chars: 'FGHI'})
+                    } else if (child.val().roleid == 'P'){ //Random Stalling Town
+                        randomstring = randomstring + randomize('?', 1, {chars: 'NO'})
+                        charcount++
+                    } else if (child.val().roleid == 'S'){ //Random Specialist Town
+                        randomstring = randomstring + randomize('?', 1, {chars: 'QR'})
+                        charcount++
+                    } else if (child.val().roleid == 'T'){ //Random Town
+                        randomstring = randomstring + randomize('?', 1, {chars: 'KLNOQR'})
                         charcount++
                     } else {
                         randomstring = randomstring + child.val().roleid
@@ -479,7 +485,7 @@ _handOutRoles(roomname){
                     randomstring.charAt(randomnumber - 1) == 'B' ||
                     randomstring.charAt(randomnumber - 1) == 'C' ||
                     randomstring.charAt(randomnumber - 1) == 'D' ||
-                    randomstring.charAt(randomnumber - 1) == 'E'){
+                    randomstring.charAt(randomnumber - 1) == 'J'){
                         firebase.database().ref('rooms/' + roomname + '/mafia/' 
                             + child.key).update({roleid:randomstring.charAt(randomnumber - 1)})
                 }
