@@ -1,6 +1,6 @@
 
-
 //Player shouldn't be able to select other Players when dead
+    //Holding for DAY Abilities?
 
 //Messaging System
     //Whisper - long press of NameBtn

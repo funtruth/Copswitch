@@ -784,7 +784,7 @@ _actionPhase() {
                         + ' did not leave their house last night.');
                     }
                 })
-                    
+
                 //Forensic
             } else if (child.val().roleid == 'R' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 

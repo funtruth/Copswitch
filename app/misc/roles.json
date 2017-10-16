@@ -1,0 +1,169 @@
+{
+  "A" : {
+    "category" : "killing",
+    "color" : "#d31d1d",
+    "desc" : "Murderer of the Mafia.",
+    "image" : "hehee",
+    "name" : "Murderer",
+    "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "type" : 1
+  },
+  "B" : {
+    "category" : "mischief",
+    "color" : "#d31d1d",
+    "desc" : "Skilled framer of the Mafia.",
+    "image" : "https://static.planetminecraft.com/files/resource_media/screenshot/1322/530b5668481765b8fac21343989c1668_5603805_lrg.jpg",
+    "name" : "Schemer",
+    "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "type" : 1
+  },
+  "C" : {
+    "category" : "mischief",
+    "color" : "#d31d1d",
+    "desc" : "Informant of the Mafia.",
+    "image" : "lol",
+    "name" : "Spy",
+    "rules" : "rulesrules",
+    "type" : 1
+  },
+  "D" : {
+    "category" : "mischief",
+    "color" : "#d31d1d",
+    "desc" : "Explosives expert of the Mafia.",
+    "image" : "lkjkl",
+    "name" : "Bomber",
+    "rules" : "lkjlj",
+    "type" : 1
+  },
+  "E" : {
+    "category" : "mischief",
+    "color" : "#d31d1d",
+    "desc" : "A Random Mafia with a Mischief Role.",
+    "image" : "lkjkl",
+    "name" : "Random Mischievous",
+    "rules" : "lkjlj",
+    "type" : 1
+  },
+  "I" : {
+    "category" : "killing",
+    "color" : "#d31d1d",
+    "desc" : "A Random Mafia member.",
+    "image" : "lkjkl",
+    "name" : "Random Mafia",
+    "rules" : "lkjlj",
+    "type" : 1
+  },
+  "J" : {
+    "category" : "none",
+    "color" : "#d31d1d",
+    "desc" : "A low-level mafia recruit.",
+    "image" : "lkjkl",
+    "name" : "Thug",
+    "rules" : "lkjlj",
+    "type" : 1
+  },
+  "K" : {
+    "category" : "inspective",
+    "color" : "#34cd0e",
+    "desc" : "On the case.",
+    "image" : "google.comlol",
+    "name" : "Detective",
+    "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "type" : 2
+  },
+  "L" : {
+    "category" : "inspective",
+    "color" : "#34cd0e",
+    "desc" : "Investigates the house of another Player.",
+    "image" : "lkjdsf",
+    "name" : "Investigator",
+    "rules" : "lkjlkj",
+    "type" : 2
+  },
+  "M" : {
+    "category" : "inspective",
+    "color" : "#34cd0e",
+    "desc" : "A random Inspective Town member.",
+    "image" : "lkjl",
+    "name" : "Random Inspective",
+    "rules" : "lkjl",
+    "type" : 2
+  },
+  "N" : {
+    "category" : "stalling",
+    "color" : "#34cd0e",
+    "desc" : "PHD in Stab wounds.",
+    "image" : "https://static.planetminecraft.com/files/resource_media/screenshot/1322/530b5668481765b8fac21343989c1668_5603805_lrg.jpg",
+    "name" : "Doctor",
+    "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "type" : 2
+  },
+  "O" : {
+    "category" : "stalling",
+    "color" : "#34cd0e",
+    "desc" : "Distracts a lucky player for the Night.",
+    "image" : "https://static.planetminecraft.com/files/resource_media/screenshot/1322/530b5668481765b8fac21343989c1668_5603805_lrg.jpg",
+    "name" : "Escort",
+    "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "type" : 2
+  },
+  "P" : {
+    "category" : "stalling",
+    "color" : "#34cd0e",
+    "desc" : "A random protective Town member.",
+    "image" : "lkjl",
+    "name" : "Random Stalling",
+    "type" : 2
+  },
+  "Q" : {
+    "category" : "specialist",
+    "color" : "#34cd0e",
+    "desc" : "An observant Town member.",
+    "image" : "lkjl",
+    "name" : "Bird Watcher",
+    "type" : 2
+  },
+  "R" : {
+    "category" : "specialist",
+    "color" : "#34cd0e",
+    "desc" : "A Town member that examines dead bodies.",
+    "image" : "lkjl",
+    "name" : "Forensic",
+    "type" : 2
+  },
+  "S" : {
+    "category" : "specialist",
+    "color" : "#34cd0e",
+    "desc" : "A random specialist Town member.",
+    "image" : "lkjl",
+    "name" : "Random Specialist",
+    "type" : 2
+  },
+  "T" : {
+    "category" : "killing",
+    "color" : "#34cd0e",
+    "desc" : "A random Town member.",
+    "image" : "lkjlk",
+    "name" : "Random Town",
+    "rules" : "lkjlk",
+    "type" : 2
+  },
+  "U" : {
+    "category" : "normal",
+    "color" : "#34cd0e",
+    "desc" : "A normal Town member.",
+    "image" : "lkjlk",
+    "name" : "Villager",
+    "rules" : "lkjlk",
+    "type" : 2
+  },
+  "W" : {
+    "category" : "chaos",
+    "color" : "#c7c4cf",
+    "desc" : "A psychopath who is trying to get hung.",
+    "image" : "lkjlk",
+    "name" : "Psychopath",
+    "rules" : "kjlkj",
+    "type" : 3
+  }
+}
