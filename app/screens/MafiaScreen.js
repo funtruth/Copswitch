@@ -6,9 +6,7 @@ import {
     AsyncStorage,
     BackHandler,
     Text,
-    ScrollView,
     StyleSheet,
-    TextInput,
     Keyboard,
     FlatList,
     ListView,
@@ -18,14 +16,9 @@ import {
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
-import ModalPicker from 'react-native-modal-picker';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import randomize from 'randomatic';
-
-import { Button, List, ListItem } from "react-native-elements";
-import ProfileButton from '../components/ProfileButton.js';
-import FadeInView from '../components/FadeInView.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -61,6 +54,7 @@ constructor(props) {
         presseduid: '',
         messagechat: false,
         notificationchat: false,
+        disabled:false,
 
         amidead:true,
         amipicking:false,
@@ -70,6 +64,7 @@ constructor(props) {
     };
 
     this.roomListener = firebase.database().ref('rooms/' + roomname);
+    this.userRoomRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
     this.phaseListener = firebase.database().ref('rooms/' + roomname + '/phase');
     this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
     this.globalMsgRef = firebase.database().ref('globalmsgs/' + roomname);
@@ -108,6 +103,27 @@ componentWillMount() {
             this.setState({globallist:msg})
     })
 
+    //Match Button Presses with the Database
+    this.userRoomRef.on('value',snap=>{
+        this.setState({
+            actionbtnvalue: snap.val().actionbtnvalue,
+            presseduid: snap.val().presseduid,
+        })
+
+        if (snap.val().presseduid == 'foo'){
+            this.setState({ bottommessage: 'You have not selected anything.'})
+        } else if (snap.val().presseduid == 'yes'){
+            this.setState({ bottommessage: 'You have voted Innocent.'})
+        } else if (snap.val().presseduid == 'no'){
+            this.setState({ bottommessage: 'You have voted Guilty.'})
+        } else {
+            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+            + snap.val().presseduid).once('value',uidtoname=>{
+                this.setState({ bottommessage: 'You have selected ' + uidtoname.val().name + '.'})
+            }) 
+        }
+    })
+
     this.roomListener.on('value',snap=>{
         
         //this.state.triggernum, playernum
@@ -118,28 +134,12 @@ componentWillMount() {
         firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val().phase)
             .once('value',layout=>{ this.setState({ phasename:layout.val().name}) })
 
-        //Match Button Presses with the Database
+        //Check if you are alive
         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-        + firebase.auth().currentUser.uid).once('value',btnpress=>{
+        + firebase.auth().currentUser.uid).once('value',amidead=>{  
             this.setState({
-                actionbtnvalue: btnpress.val().actionbtnvalue,
-                presseduid: btnpress.val().presseduid,
-                amidead: btnpress.val().dead
+                amidead: amidead.val().dead
             })
-
-            if(btnpress.val().presseduid == 'foo'){
-                    this.setState({ bottommessage: 'You have not selected anything.'})
-            } else if (btnpress.val().presseduid == 'yes'){
-                this.setState({ bottommessage: 'You have voted Innocent.'})
-            } else if (btnpress.val().presseduid == 'no'){
-                this.setState({ bottommessage: 'You have voted Guilty.'})
-            } else {
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + btnpress.val().presseduid).once('value',uidtoname=>{
-                    this.setState({ bottommessage: 'You have selected ' + uidtoname.val().name + '.'})
-                })
-                    
-            }
         })
 
         //this.state.nominate, nominee, amipicking
@@ -150,7 +150,6 @@ componentWillMount() {
     })
 
     this.phaseListener.on('value',snap=>{
-
 
         //Keep Phase updated for PERSONAL USER
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
@@ -173,6 +172,9 @@ componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
     if(this.roomListener){
         this.roomListener.off();
+    }
+    if(this.userRoomRef){
+        this.userRoomRef.off();
     }
     if(this.msgRef){
         this.msgRef.off();
@@ -238,38 +240,50 @@ _changePhase(newphase){
         })
     })
 
+
     firebase.database().ref('rooms/' + this.state.roomname).update({
-        phase:newphase
+        phase:newphase,
+        count:0,
     })
 }
 
 _actionBtnValue(status){
-    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + firebase.auth().currentUser.uid)
-        .update({actionbtnvalue: status})
-    this.setState({actionbtnvalue: status})
+    this.userRoomRef.update({actionbtnvalue: status})
 }
 
 _pressedUid(uid){
-    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + firebase.auth().currentUser.uid)
-        .update({presseduid: uid})
-    this.setState({presseduid: uid})
+    this.userRoomRef.update({presseduid: uid})
+}
+
+_decreaseCount(){
+    firebase.database().ref('rooms/' + this.state.roomname + '/count').transaction((count)=>{
+        return count - 1;
+    })
+}
+_increaseCount(){
+    firebase.database().ref('rooms/' + this.state.roomname + '/count').transaction((count)=>{
+        return count + 1;
+    })
 }
 
 //Pressing the Action Button at the Bottom of Screen
 _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
  
+    //Stops the user from clicking multiple times
+    this.setState({disabled:true});
+    setTimeout(() => {this.setState({disabled: false})}, 1000);
+
     if(actionbtnvalue == true){
         this._actionBtnValue(false);
         this._pressedUid('foo');
+        this._decreaseCount();
     } else {
         this._actionBtnValue(true);
 
         firebase.database().ref('rooms/' + roomname + '/phases/' + phase).once('value',snap=>{
 
-            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers')
-            .orderByChild('actionbtnvalue').equalTo(true).once('value',actionbtnsnap=>{
-
-                if((actionbtnsnap.numChildren()+1)>this.state.playernum){
+            firebase.database().ref('rooms/' + roomname + '/count').transaction((count)=>{
+                if((count+2)>this.state.playernum){
                     if(snap.val().action){
                         new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
                             new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
@@ -281,8 +295,10 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                         firebase.database().ref('rooms/' + roomname + '/actions').remove();
                         this._changePhase(snap.val().continue);
                     };
+                } else {
+                    this._increaseCount();
                 }
-            })    
+            })
         })
     }
 
@@ -290,6 +306,11 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
 
 
 _nameBtnPress(uid,name,triggernum,phase,roomname){
+    
+    //Stops the user from clicking multiple times
+    this.setState({disabled:true});
+    setTimeout(() => {this.setState({disabled: false})}, 1000);
+
     if(phase == 2){
         if(uid==this.state.presseduid){
             this._pressedUid('foo');
@@ -312,7 +333,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                             };
                             this._changePhase(snap.val().trigger);
                         }
-                    })    
+                    })
                 }
             })
         } 
@@ -389,40 +410,35 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
 }
 
 _voteBtnPress(presseduid,votebtn) {
+
+    //Stops the user from clicking multiple times
+    this.setState({disabled:true});
+    setTimeout(() => {this.setState({disabled: false})}, 1000);
+
     firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase).once('value',snap=>{
         
         if(presseduid == 'yes'){
             if(votebtn){
-                this.setState({bottommessage: 'You have not selected anything.'})
-                this._pressedUid('foo');
-                this._actionBtnValue(false);
+                this.userRoomRef.update({actionbtnvalue:false, presseduid:'foo'})
+                this._decreaseCount();
             } else {
-                this.setState({bottommessage:'You have voted Guilty.'})
-                this._pressedUid('no');
-                this._actionBtnValue(true);
-                this._voteFinished(this.state.roomname);
+                this.userRoomRef.update({actionbtnvalue:true, presseduid:'no'})
             }
         } else if (presseduid == 'no') {
             if(votebtn){
-                this.setState({bottommessage:'You have voted Innocent.'})
-                this._pressedUid('yes');
-                this._actionBtnValue(true);
-                this._voteFinished(this.state.roomname);
+                this.userRoomRef.update({actionbtnvalue:true, presseduid:'yes'})
             } else {
-                this.setState({bottommessage: 'You have not selected anything.'})
-                this._pressedUid('foo');
-                this._actionBtnValue(false);
+                this.userRoomRef.update({actionbtnvalue:false, presseduid:'foo'})
+                this._decreaseCount();
             }
         } else {
             if(votebtn){
-                this.setState({bottommessage:'You have voted Innocent.'})
-                this._pressedUid('yes');
-                this._actionBtnValue(true);
+                this.userRoomRef.update({actionbtnvalue:true, presseduid:'yes'})
+                this._increaseCount();
                 this._voteFinished(this.state.roomname);
             } else {
-                this.setState({bottommessage:'You have voted Guilty.'})
-                this._pressedUid('no');
-                this._actionBtnValue(true);
+                this.userRoomRef.update({actionbtnvalue:true, presseduid:'no'})
+                this._increaseCount();
                 this._voteFinished(this.state.roomname);
             }
         }
@@ -433,9 +449,9 @@ _voteFinished(roomname){
 
     firebase.database().ref('rooms/'+ roomname +'/phases/'+this.state.phase).once('value',snap=>{
 
-        firebase.database().ref('rooms/'+ roomname +'/listofplayers').orderByChild('actionbtnvalue')
-        .equalTo(true).once('value',actioncountsnap=>{
-            if((actioncountsnap.numChildren()+1)>this.state.playernum){
+        firebase.database().ref('rooms/' + roomname + '/count').transaction((count)=>{
+        
+            if((count+1)>this.state.playernum){
                 if(snap.val().actionreset){ 
                     firebase.database().ref('rooms/' + roomname + '/actions').remove(); 
                 };
@@ -523,7 +539,6 @@ _renderListComponent(){
                         borderRadius:5,
                         justifyContent:'center',
                         flex:0.5,
-                        opacity:this.state.amidead?0.75:1,
                     }}
                     disabled = {this.state.amidead?true:item.dead}
                     >
@@ -572,7 +587,7 @@ _renderListComponent(){
                     onPress={()=>{
                         this._voteBtnPress(this.state.presseduid,true)
                     }}
-                    disabled = {this.state.amidead}
+                    disabled = {this.state.disabled?true:this.state.amidead}
                 >
                     <MaterialCommunityIcons name={'thumb-up'} 
                         style={{color:'black', fontSize:40,alignSelf:'center',
@@ -584,7 +599,7 @@ _renderListComponent(){
                     onPress={()=>{
                         this._voteBtnPress(this.state.presseduid,false)
                     }}
-                    disabled = {this.state.amidead}
+                    disabled = {this.state.disabled?true:this.state.amidead}
                 >
                     <MaterialCommunityIcons name={'thumb-down'} 
                         style={{color:'black', fontSize:40,alignSelf:'center',
@@ -866,7 +881,7 @@ return <View style = {{flex:1}}>
     <View style = {{flex:0.6,justifyContent:'center',
         backgroundColor:'black',borderBottomRightRadius:15,borderTopRightRadius:15}}>
         <TouchableOpacity
-            disabled={this.state.locked?true:this.state.amidead}
+            disabled={this.state.disabled?true:(this.state.locked?true:this.state.amidead)}
             onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
                 this.state.triggernum,this.state.phase,this.state.roomname)}}>
             <MaterialCommunityIcons name={!this.state.locked && !this.state.amidead?'check-circle':'lock'} 

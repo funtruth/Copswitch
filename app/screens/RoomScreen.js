@@ -93,8 +93,6 @@ _createRoom() {
             dead:false,
             bloody:false,
             suspicious:false,
-            actionbtnvalue: false,
-            presseduid: 'foo',
     });
 
     //Set up phases and rules
@@ -148,10 +146,11 @@ _joinRoom(joincode) {
                     dead:false,
                     bloody:false,
                     suspicious:false,
-                    actionbtnvalue:false,
-                    presseduid:'foo',
             });   
-            firebase.database().ref('rooms/' + joincode.toUpperCase()).update({playernum:snap.val().playernum+1});       
+
+            firebase.database().ref('rooms/' + joincode.toUpperCase() + '/playernum').transaction((playernum) => {
+                return (playernum + 1);
+            });       
             
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
             .update({ name:joincode })
@@ -386,8 +385,11 @@ _deleteRoom() {
     this.props.navigation.navigate('Room_Screen');
 }
 
-_leaveRoom() {
+_leaveRoom(roomname) {
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
+    firebase.database().ref('rooms/' + roomname.toUpperCase() + '/playernum').transaction((playernum) => {
+        return (playernum - 1);
+    });  
     this.props.navigation.navigate('Room_Screen');
 }
 
@@ -594,7 +596,7 @@ render() {
                 borderTopRightRadius:15,borderBottomRightRadius:15}}>
                 <TouchableOpacity
                     onPress={()=> {
-                        this.state.amiowner?this._deleteRoom():this._leaveRoom();
+                        this.state.amiowner?this._deleteRoom():this._leaveRoom(this.state.roomname);
                     }}>
                     <MaterialCommunityIcons name={this.state.amiowner?'delete-circle':'close-circle'}
                                 style={{color:'white', fontSize:26,alignSelf:'center'}}/>
