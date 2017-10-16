@@ -109,7 +109,7 @@ componentWillMount() {
     })
 
     this.roomListener.on('value',snap=>{
-
+        
         //this.state.triggernum, playernum
         //Can possibly be moved to the Phase Change Listener
         this._updateNumbers(snap.val().playernum)
@@ -147,10 +147,10 @@ componentWillMount() {
         
         //Update colors + options for Player Name Buttons
         this._updatePlayerState();
-
     })
 
     this.phaseListener.on('value',snap=>{
+
 
         //Keep Phase updated for PERSONAL USER
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
@@ -523,6 +523,7 @@ _renderListComponent(){
                         borderRadius:5,
                         justifyContent:'center',
                         flex:0.5,
+                        opacity:this.state.amidead?0.75:1,
                     }}
                     disabled = {this.state.amidead?true:item.dead}
                     >
@@ -574,7 +575,8 @@ _renderListComponent(){
                     disabled = {this.state.amidead}
                 >
                     <MaterialCommunityIcons name={'thumb-up'} 
-                        style={{color:'black', fontSize:40,alignSelf:'center'}}/>
+                        style={{color:'black', fontSize:40,alignSelf:'center',
+                            opacity:this.state.amidead?0.25:1}}/>
                 </TouchableOpacity>
 
                 <TouchableOpacity 
@@ -585,7 +587,8 @@ _renderListComponent(){
                     disabled = {this.state.amidead}
                 >
                     <MaterialCommunityIcons name={'thumb-down'} 
-                        style={{color:'black', fontSize:40,alignSelf:'center'}}/>
+                        style={{color:'black', fontSize:40,alignSelf:'center',
+                            opacity:this.state.amidead?0.25:1}}/>
                 </TouchableOpacity>
 
                 <View style = {{flex:1}}/>
@@ -866,8 +869,8 @@ return <View style = {{flex:1}}>
             disabled={this.state.locked?true:this.state.amidead}
             onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
                 this.state.triggernum,this.state.phase,this.state.roomname)}}>
-            <MaterialCommunityIcons name={this.state.locked?'lock':(this.state.amidead?'lock':'check-circle')} 
-                        style={{color:this.state.actionbtnvalue ? '#e3c382' : 'white'
+            <MaterialCommunityIcons name={!this.state.locked && !this.state.amidead?'check-circle':'lock'} 
+                        style={{color:!this.state.locked && this.state.actionbtnvalue?'#e3c382':'white'
                             , fontSize:26,alignSelf:'center'}}/>
         </TouchableOpacity>
     </View>
@@ -896,6 +899,6 @@ const styles = StyleSheet.create({
         margin: 3,
         borderRadius:5,
         justifyContent:'center',
-        flex:0.5
+        flex:0.5,
     },
 });
