@@ -6,15 +6,13 @@ import {
     Image,
     BackHandler,
     AsyncStorage,
-    TextInput,
     StyleSheet,
     Keyboard,
     ListView,
     FlatList,
     TouchableOpacity
 }   from 'react-native';
-import { FormInput, List, ListItem, Button } from "react-native-elements";
-import ModalPicker from 'react-native-modal-picker';
+
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 

@@ -14,8 +14,7 @@ import {
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
-import { Button, List, ListItem, Avatar } from "react-native-elements";
-import ProfileButton from '../components/ProfileButton.js';
+import { Button, List } from "react-native-elements";
 import { onSignOut } from "../auth";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 

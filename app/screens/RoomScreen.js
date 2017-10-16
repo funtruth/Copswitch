@@ -22,7 +22,7 @@ import ModalPicker from 'react-native-modal-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import randomize from 'randomatic';
 
-import { Button, List, ListItem, FormInput } from "react-native-elements";
+import { Button, List } from "react-native-elements";
 import ProfileButton from '../components/ProfileButton.js';
 
 import Mafia_Screen from './MafiaScreen.js';
