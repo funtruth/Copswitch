@@ -84,6 +84,7 @@ _createRoom() {
         phase: 1,
         owner: firebase.auth().currentUser.uid,
         playernum: 1,
+        daycounter:1,
     });
 
     //Set up list of players
@@ -612,6 +613,7 @@ render() {
 
 
 export default stackNav = StackNavigator(
+
   {
       Room_Screen: {
           screen: Room_Screen,

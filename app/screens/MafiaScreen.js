@@ -68,8 +68,11 @@ constructor(props) {
     };
 
     this.roomListener = firebase.database().ref('rooms/' + roomname);
+    this.listListener = this.roomListener.child('listofplayers');
     this.userRoomRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
-    this.phaseListener = firebase.database().ref('rooms/' + roomname + '/phase');
+    this.phaseListener = this.roomListener.child('phase');
+    this.playernumListener = this.roomListener.child('playernum');
+    this.nominationListener = this.roomListener.child('nominate');
     this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
     this.globalMsgRef = firebase.database().ref('globalmsgs/' + roomname);
 
@@ -128,14 +131,9 @@ componentWillMount() {
         }
     })
 
-    this.roomListener.on('value',snap=>{
-        
-        //this.state.triggernum, playernum
-        this._updateNumbers(snap.val().playernum)
-
-        //Keep Phase name updated
-        firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val().phase)
-            .once('value',layout=>{ this.setState({ phasename:layout.val().name}) })
+    this.listListener.on('value',snap=>{
+        //Update colors + options for Player Name Buttons
+        this._updatePlayerState();
 
         //Check if you are alive
         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
@@ -144,15 +142,27 @@ componentWillMount() {
                 amidead: amidead.val().dead
             })
         })
+    })
 
+    this.playernumListener.on('value',snap=>{
+        //this.state.triggernum, playernum
+        this._updateNumbers(snap.val());
+    })
+
+    this.nominationListener.on('value',snap=>{
         //this.state.nominate, nominee, amipicking
         this._updateNominate();
-        
-        //Update colors + options for Player Name Buttons
-        this._updatePlayerState();
     })
 
     this.phaseListener.on('value',snap=>{
+
+        this.roomListener.once('value',roomsnap=>{
+            //Keep Phase name updated
+            firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + roomsnap.val().phase)
+            .once('value',layout=>{ 
+                this.setState({ phasename:layout.val().name}) 
+            })
+        })
 
         this.props.navigation.navigate('Transition_Screen',{
             roomname:this.state.roomname,
@@ -179,6 +189,15 @@ componentWillMount() {
 componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
     if(this.roomListener){
+        this.roomListener.off();
+    }
+    if(this.listListener){
+        this.listListener.off();
+    }
+    if(this.playernumListener){
+        this.roomListener.off();
+    }
+    if(this.nominationListener){
         this.roomListener.off();
     }
     if(this.userRoomRef){
