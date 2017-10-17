@@ -83,6 +83,17 @@ componentWillUnmount() {
     }
 }
 
+_logOutPress() {
+    if(firebase.auth().currentUser.isAnonymous){
+        alert('hello')
+        onSignOut().then(() => { firebase.auth().currentUser.delete() })
+        this.props.navigation.navigate('SignedOut');
+    } else {
+        onSignOut().then(() => { firebase.auth().signOut() }) 
+        this.props.navigation.navigate('SignedOut');
+    }
+}
+
   render(){
     return <View style={{ flex: 1, backgroundColor: 'white' }}>
 
@@ -137,9 +148,7 @@ componentWillUnmount() {
                                 backgroundColor:'black',borderBottomLeftRadius:15}}>
                                 <TouchableOpacity
                                     disabled={this.state.inagame}
-                                    onPress={() => {
-                                        this.props.navigation.navigate('SignedOut');
-                                      onSignOut().then(() => { firebase.auth().signOut() })  }}>
+                                    onPress={() => { this._logOutPress() }}>
                                     <MaterialCommunityIcons name='logout' 
                                         style={{color:this.state.inagame ?  '#b5b3b0' : 'white',
                                             fontSize:26,alignSelf:'center'}}/>

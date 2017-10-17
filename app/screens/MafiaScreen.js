@@ -315,6 +315,11 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     this.setState({disabled:true});
     setTimeout(() => {this.setState({disabled: false})}, 200);
 
+    if(this.state.actionbtnvalue){
+        this._actionBtnValue(false);
+        this._decreaseCount();
+    }
+
     if(phase == 2){
         if(uid==this.state.presseduid){
 
@@ -674,22 +679,16 @@ _chatPress(chattype){
 
 _changePlayerCount(bool){
     if(bool){
-        firebase.database().ref('rooms/' + this.state.roomname)
-            .update({playernum:this.state.playernum+1})
+        firebase.database().ref('rooms/' + this.state.roomname + '/playernum')
+            .transaction((playernum)=>{return playernum+1})
     } else {
-        firebase.database().ref('rooms/' + this.state.roomname)
-            .update({playernum:this.state.playernum-1})
+        firebase.database().ref('rooms/' + this.state.roomname + '/playernum')
+            .transaction((playernum)=>{return playernum-1})
     }
 }
 
-
-_noticeMsgForTarget(target,color,message){
+_noticeMsg(target,color,message){
     firebase.database().ref('messages/' + target)
-        .push({from: 'Private', color: color, message: message})
-}
-
-_noticeMsgForUser(user,color,message){
-    firebase.database().ref('messages/' + user)
         .push({from: 'Private', color: color, message: message})
 }
 
@@ -701,12 +700,12 @@ _noticeMsgGlobal(roomname,color,message){
 _adjustmentPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
-
+            
             if (child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target 
                 + '/' + child.val().roleid + '/' + child.key).remove()
             }
-            
+
         })
     })
 }
@@ -720,23 +719,23 @@ _actionPhase() {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',innersnap=>{
                     if(!innersnap.val().N){
-                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                                + child.val().target).update({dead:true});
-                            this._changePlayerCount(false);
-                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                                + firebase.auth().currentUser.uid).update({bloody:true});
-                            this._noticeMsgForTarget(child.val().target,'#d31d1d','You have been stabbed.');
-                            this._noticeMsgForUser(child.key,'#d31d1d','You have stabbed ' 
-                                + child.val().targetname + '.');
+                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                            + child.val().target).update({dead:true});
+                        this._changePlayerCount(false);
+                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                            + firebase.auth().currentUser.uid).update({bloody:true});
+                        this._noticeMsg(child.val().target,'#d31d1d','You have been stabbed.');
+                        this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
+                            + child.val().targetname + '.');
                     } else {
-                            this._noticeMsgForUser(child.key,'#d31d1d','You have stabbed ' 
-                                + child.val().targetname + '.');
+                        this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
+                            + child.val().targetname + '.');
                     }
                 })
 
                 //Schemer
             } else if (child.val().roleid == 'B' && !child.val().O) {
-                this._noticeMsgForUser(child.key,'#34cd0e','You attempted to frame ' 
+                this._noticeMsg(child.key,'#34cd0e','You attempted to frame ' 
                     + child.val().targetname +" last night.");
 
                 //Spy
@@ -744,7 +743,7 @@ _actionPhase() {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     firebase.database().ref('Original/roles/' + innersnap.val().roleid).once('value',rolename=>{
-                        this._noticeMsgForUser(child.key,'#34cd0e','You spied on ' 
+                        this._noticeMsg(child.key,'#34cd0e','You spied on ' 
                             + child.val().targetname +". Their role is the " + rolename.val().name);
                     })
                 })
@@ -753,66 +752,62 @@ _actionPhase() {
             } else if (child.val().roleid == 'K' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
                 .once('value',insidesnap=>{
-                        if(insidesnap.val().roleid == 'B'||
-                            insidesnap.val().roleid =='C'||
-                            insidesnap.val().roleid =='D'||
-                            insidesnap.val().roleid =='J'||
-                            insidesnap.val().B           ||
-                            insidesnap.val().suspicious){
-                            this._noticeMsgForUser(child.key,'#34cd0e',child.val().targetname 
-                                + ' is hiding something ...');
-                        } else {
-                            this._noticeMsgForUser(child.key,'#34cd0e',
-                                'Nothing was learned from the investigation on ' + child.val().targetname + '.');
-                        }
+                    if(insidesnap.val().roleid == 'B'||
+                        insidesnap.val().roleid =='C'||
+                        insidesnap.val().roleid =='D'||
+                        insidesnap.val().roleid =='J'||
+                        insidesnap.val().B           ||
+                        insidesnap.val().suspicious){
+                        this._noticeMsg(child.key,'#34cd0e',child.val().targetname +' is hiding something ...');
+                    } else {
+                        this._noticeMsg(child.key,'#34cd0e',
+                            'Nothing was learned from the investigation on ' + child.val().targetname + '.');
+                    }
                 })
 
                 //Investigator
             } else if (child.val().roleid == 'L' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
-                        if(innersnap.val().bloody){
-                            this._noticeMsgForUser(child.key,'#34cd0e', 
-                                child.val().targetname +" has blood on their hands.");
-                        } else {
-                            this._noticeMsgForUser(child.key,'#34cd0e',
-                                child.val().targetname +" has blood on their hands.");
-                        }
+                    if(innersnap.val().bloody){
+                        this._noticeMsg(child.key,'#34cd0e', 
+                            child.val().targetname +" has blood on their hands.");
+                    } else {
+                        this._noticeMsg(child.key,'#34cd0e',
+                            child.val().targetname +" has blood on their hands.");
+                    }
                 })
 
                 //Doctor
             } else if (child.val().roleid == 'N' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',insidesnap=>{
-                        if(insidesnap.val().A){
-                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                                + firebase.auth().currentUser.uid).update({bloody:true});
-                            this._noticeMsgForTarget(child.val().target,'#34cd0e',
-                                'The Doctor took care of your stab wounds.');
-                            this._noticeMsgForUser(child.key,'#34cd0e','You healed ' 
-                                + child.val().targetname +"'s stab wounds.");
-                        } else {
-                            this._noticeMsgForUser(child.key,'#34cd0e','You visited ' 
-                                + child.val().targetname + '.');
-                        }
+                    if(insidesnap.val().A){
+                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                            + firebase.auth().currentUser.uid).update({bloody:true});
+                        this._noticeMsg(child.val().target,'#34cd0e','The Doctor took care of your stab wounds.');
+                        this._noticeMsg(child.key,'#34cd0e','You healed ' 
+                            + child.val().targetname +"'s stab wounds.");
+                    } else {
+                        this._noticeMsg(child.key,'#34cd0e','You visited '+ child.val().targetname + '.');
+                    }
                 })
 
                 //Escort
             } else if (child.val().roleid == 'O' && !child.val().O) {
-                this._noticeMsgForTarget(child.val().target,'#34cd0e',
+                this._noticeMsg(child.val().target,'#34cd0e',
                     'You were distracted last night.');
-                this._noticeMsgForUser(child.key,'#34cd0e','You distracted ' 
-                    + child.val().targetname +" last night.");
+                this._noticeMsg(child.key,'#34cd0e','You distracted '+ child.val().targetname +" last night.");
 
                 //Bird Watcher
             } else if (child.val().roleid == 'Q' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
                 + child.val().target).once('value',wheredhego=>{
                     if(wheredhego.val().targetname){
-                        this._noticeMsgForUser(child.key,'#34cd0e', child.val().targetname + ' visited ' 
+                        this._noticeMsg(child.key,'#34cd0e', child.val().targetname + ' visited ' 
                         + wheredhego.val().targetname +"'s house last night.");
                     } else {
-                        this._noticeMsgForUser(child.key,'#34cd0e', child.val().targetname 
+                        this._noticeMsg(child.key,'#34cd0e', child.val().targetname 
                         + ' did not leave their house last night.');
                     }
                 })
@@ -822,7 +817,7 @@ _actionPhase() {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     firebase.database().ref('Original/roles/' + innersnap.val().roleid).once('value',rolename=>{
-                        this._noticeMsgForUser(child.key,'#34cd0e','You examined the body of ' 
+                        this._noticeMsg(child.key,'#34cd0e','You examined the body of ' 
                         + child.val().targetname + ', the ' + rolename.val().name + '.');
                     })
                 })

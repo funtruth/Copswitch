@@ -1,5 +1,5 @@
 
-//Player shouldn't be able to select other Players when dead
+//Name Button Bug - MultiPress
     //Holding for DAY Abilities?
 
 //Messaging System
@@ -12,4 +12,7 @@
 
 //users/uid/active flag to show only the relevant roles
 
-//Continue Button should LOCK ALL PLAYER BTNS
+//Game CleanUp
+    //Leaving a game 
+    //Turning off listeners
+    //Ending a game
