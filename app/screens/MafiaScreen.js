@@ -16,6 +16,8 @@ import {
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
+import Transition_Screen from './TransitionScreen.js';
+
 import FadeInView from '../components/FadeInView.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -25,7 +27,7 @@ import randomize from 'randomatic';
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
-export default class Day_Screen extends React.Component {
+class Mafia_Screen extends React.Component {
 
 constructor(props) {
     super(props);
@@ -74,7 +76,7 @@ constructor(props) {
 }
 
 componentWillMount() {
- 
+
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
 
     this.msgRef.on('value',snap=>{
@@ -112,7 +114,7 @@ componentWillMount() {
             presseduid: snap.val().presseduid,
         })
 
-        if (snap.val().presseduid == 'foo'){
+        if (snap.val().presseduid == 'foo' || !snap.val().presseduid){
             this.setState({ bottommessage: 'You have not selected anything.'})
         } else if (snap.val().presseduid == 'yes'){
             this.setState({ bottommessage: 'You have voted Innocent.'})
@@ -151,6 +153,11 @@ componentWillMount() {
     })
 
     this.phaseListener.on('value',snap=>{
+
+        this.props.navigation.navigate('Transition_Screen',{
+            roomname:this.state.roomname,
+            phase:snap.val(),
+        })
 
         //Keep Phase updated for PERSONAL USER
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
@@ -700,7 +707,7 @@ _noticeMsgGlobal(roomname,color,message){
 _adjustmentPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
-            
+
             if (child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target 
                 + '/' + child.val().roleid + '/' + child.key).remove()
@@ -915,6 +922,22 @@ return <View style = {{flex:1}}>
 </View>
 }
 }
+
+
+export default stackNav = StackNavigator(
+    {
+        Mafia_Screen: {
+            screen: Mafia_Screen,
+        },
+        Transition_Screen: {
+            screen: Transition_Screen,
+        },
+    },
+        {
+            headerMode: 'none',
+            initialRouteName: 'Mafia_Screen',
+        }
+);
 
 const styles = StyleSheet.create({
     dead: {
