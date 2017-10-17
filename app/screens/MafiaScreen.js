@@ -16,6 +16,8 @@ import {
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
+import FadeInView from '../components/FadeInView.js';
+
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import randomize from 'randomatic';
@@ -127,7 +129,6 @@ componentWillMount() {
     this.roomListener.on('value',snap=>{
         
         //this.state.triggernum, playernum
-        //Can possibly be moved to the Phase Change Listener
         this._updateNumbers(snap.val().playernum)
 
         //Keep Phase name updated
@@ -236,6 +237,10 @@ _changePhase(newphase){
         snap.forEach((child)=>{
             //Set all votes to 0
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.key)
+                .update({votes:0})
+
+            //Set all btn values to neutral
+            firebase.database().ref('users/' + child.key + '/room')
                 .update({actionbtnvalue:false,presseduid:'foo'})
         })
     })
@@ -250,7 +255,6 @@ _changePhase(newphase){
 _actionBtnValue(status){
     this.userRoomRef.update({actionbtnvalue: status})
 }
-
 _pressedUid(uid){
     this.userRoomRef.update({presseduid: uid})
 }
@@ -309,22 +313,29 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     
     //Stops the user from clicking multiple times
     this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 1000);
+    setTimeout(() => {this.setState({disabled: false})}, 200);
 
     if(phase == 2){
         if(uid==this.state.presseduid){
+
+            firebase.database().ref('rooms/' + roomname + '/listofplayers/' + uid + '/votes')
+            .transaction((votes)=>{ return votes - 1 })
+
             this._pressedUid('foo');
         } else {
             this._pressedUid(uid);
 
-            firebase.database().ref('rooms/' + roomname + '/phases/' + phase).once('value',snap=>{
-                
-                if(snap.val().trigger){
+            if(this.state.presseduid != 'foo'){
+                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + this.state.presseduid + '/votes')
+                .transaction((votes)=>{ return votes - 1 })
+            }
 
-                    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers')
-                    .orderByChild('presseduid').equalTo(uid).once('value',namebtnsnap=>{
-                            
-                        if((namebtnsnap.numChildren()+1)>this.state.triggernum){
+            firebase.database().ref('rooms/' + roomname + '/listofplayers/' + uid + '/votes')
+            .transaction((votes)=>{ 
+            
+                firebase.database().ref('rooms/' + roomname + '/phases/' + phase).once('value',snap=>{
+                    if(snap.val().trigger){
+                        if((votes+2)>triggernum){
                             if(snap.val().actionreset){
                                 firebase.database().ref('rooms/' + roomname + '/actions').remove();
                             };
@@ -332,9 +343,13 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                                 firebase.database().ref('rooms/' + roomname).update({nominate:uid})
                             };
                             this._changePhase(snap.val().trigger);
+                        } else {
+                            firebase.database().ref('rooms/' + roomname + '/listofplayers/' + uid + '/votes')
+                            .transaction((votes)=>{ return votes + 1 })
                         }
-                    })
-                }
+                    }
+                })
+
             })
         } 
 
@@ -546,7 +561,6 @@ _renderListComponent(){
                         style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
                         <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>}
                 </TouchableOpacity>
-
             )}
             numColumns={2}
             keyExtractor={item => item.key}
