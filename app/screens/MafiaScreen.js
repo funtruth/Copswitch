@@ -450,10 +450,14 @@ _voteBtnPress(presseduid,votebtn) {
                 this._decreaseCount();
             } else {
                 this.userRoomRef.update({actionbtnvalue:true, presseduid:'no'})
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                    + firebase.auth().currentUser.uid).update({vote:false})
             }
         } else if (presseduid == 'no') {
             if(votebtn){
                 this.userRoomRef.update({actionbtnvalue:true, presseduid:'yes'})
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                    + firebase.auth().currentUser.uid).update({vote:true})
             } else {
                 this.userRoomRef.update({actionbtnvalue:false, presseduid:'foo'})
                 this._decreaseCount();
@@ -461,10 +465,14 @@ _voteBtnPress(presseduid,votebtn) {
         } else {
             if(votebtn){
                 this.userRoomRef.update({actionbtnvalue:true, presseduid:'yes'})
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                    + firebase.auth().currentUser.uid).update({vote:true})
                 this._increaseCount();
                 this._voteFinished(this.state.roomname);
             } else {
                 this.userRoomRef.update({actionbtnvalue:true, presseduid:'no'})
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                    + firebase.auth().currentUser.uid).update({vote:false})
                 this._increaseCount();
                 this._voteFinished(this.state.roomname);
             }
@@ -477,15 +485,17 @@ _voteFinished(roomname){
     firebase.database().ref('rooms/'+ roomname +'/phases/'+this.state.phase).once('value',snap=>{
 
         firebase.database().ref('rooms/' + roomname + '/count').transaction((count)=>{
-        
+            
             if((count+1)>this.state.playernum){
+
                 if(snap.val().actionreset){ 
                     firebase.database().ref('rooms/' + roomname + '/actions').remove(); 
                 };
 
                 firebase.database().ref('rooms/'+ roomname +'/listofplayers')
-                .orderByChild('presseduid').equalTo('no')
+                .orderByChild('vote').equalTo(false)
                 .once('value',guiltyvotes=>{
+
                     var counter = 0;
                     var names = 'Nobody';
 
