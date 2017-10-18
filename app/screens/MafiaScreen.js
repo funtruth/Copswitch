@@ -136,8 +136,7 @@ componentWillMount() {
         this._updatePlayerState();
 
         //Check if you are alive
-        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-        + firebase.auth().currentUser.uid).once('value',amidead=>{  
+        this.listListener.child(firebase.auth().currentUser.uid).once('value',amidead=>{  
             this.setState({
                 amidead: amidead.val().dead
             })
@@ -318,6 +317,9 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                         new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
                             new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
                                 this._changePhase(snap.val().continue);
+                                this.roomListener.child('daycounter').transaction((daycounter)=>{
+                                    return daycounter + 1;
+                                })
                             });
                         });
                     };
