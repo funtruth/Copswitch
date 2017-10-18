@@ -11,11 +11,12 @@ export default class App extends React.Component {
     
         this.state = {
           signedIn: false,
-          checkedSignIn: false
+          checkedSignIn: false,
         };
       }
     
     componentWillMount() {
+
     isSignedIn()
         .then(res => this.setState({ signedIn: res, checkedSignIn: true }))
         .catch(err => alert("An error occurred"));
@@ -35,4 +36,3 @@ export default class App extends React.Component {
 }
 
 AppRegistry.registerComponent('Huddle', () => App);
-//AppRegistry.registerComponent('Huddle', () => CreateScreen);

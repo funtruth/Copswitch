@@ -18,11 +18,19 @@ import {
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
-import ModalPicker from 'react-native-modal-picker';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import randomize from 'randomatic';
 
 import { Button, List } from "react-native-elements";
+
+import { isInGame } from "../auth";
+import { onJoinGame } from "../auth";
+import { onLeaveGame } from "../auth";
+
+import { isInRoom } from "../auth";
+import { onJoinRoom } from "../auth";
+import { onLeaveRoom } from "../auth";
+
 import ProfileButton from '../components/ProfileButton.js';
 
 import Mafia_Screen from './MafiaScreen.js';
@@ -46,14 +54,6 @@ constructor(props) {
 componentWillMount() {
 
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-    
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').once('value',snap=>{
-        if(snap.val().phase > 1){
-            this.props.navigation.navigate('Mafia_Screen', {roomname:snap.val().name})
-        } else if (snap.val().name){
-            this.props.navigation.navigate('Lobby_Screen', {roomname:snap.val().name})
-        }
-    })
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
         .on('value',snap=>{
@@ -76,6 +76,8 @@ _createRoom() {
 
     //TODO: Check if room already exists
     
+    onJoinRoom(roomname);
+
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({
         name: roomname,
     });
@@ -140,6 +142,8 @@ _joinRoom(joincode) {
     firebase.database().ref('rooms/' + joincode.toUpperCase()).once('value', snap => {
         if(snap.exists() && (snap.val().phase == 1)){
 
+            onJoinRoom(joincode);
+
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:joincode});
             firebase.database().ref('rooms/' + joincode.toUpperCase() 
                 + '/listofplayers/' + firebase.auth().currentUser.uid).set({
@@ -192,18 +196,16 @@ render() {
             justifyContent: 'center',
             flexDirection: 'row',
         }}>
-            <View style = {{flex:1}}/>
             <TextInput
                 placeholder="Who are you? ..."
                 style={{
                     backgroundColor: 'white',
                     borderWidth:2,
-                    flex:2,
+                    flex:0.5,
                 }}
                 value={this.state.creatorname}
                 onChangeText = {(text) => {this.setState({creatorname: text})}}
             />
-            <View style = {{flex:1}}/>
         </View>
 
         <View style = {{
@@ -233,18 +235,16 @@ render() {
             justifyContent: 'center',
             flexDirection: 'row',
         }}>
-            <View style = {{flex:1}}/>
             <TextInput
                 placeholder="Who are you? ..."
                 style={{
                     backgroundColor: 'white',
                     borderWidth:2,
-                    flex:2,
+                    flex:0.5,
                 }}
                 value={this.state.alias}
                 onChangeText = {(text) => {this.setState({alias: text})}}
             />
-            <View style = {{flex:1}}/>
         </View>
 
         <View style = {{
@@ -254,18 +254,16 @@ render() {
             justifyContent: 'center',
             flexDirection: 'row',
         }}>
-            <View style = {{flex:1}}/>
             <TextInput
                 placeholder="Room Code ..."
                 style={{
                     backgroundColor: 'white',
                     borderWidth:2,
-                    flex:2,
+                    flex:0.5,
                 }}
                 value={this.state.joincode}
                 onChangeText = {(text) => {this.setState({joincode: text})}}
             />
-            <View style = {{flex:1}}/>
         </View>
 
         <View style = {{
@@ -380,6 +378,9 @@ _handleBackButton() {
 }
 
 _deleteRoom() {
+
+    AsyncStorage.removeItem('ROOM-KEY');
+
     firebase.database().ref('rooms/' + this.state.roomname).remove();
     firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
@@ -387,6 +388,9 @@ _deleteRoom() {
 }
 
 _leaveRoom(roomname) {
+
+    AsyncStorage.removeItem('ROOM-KEY');
+
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
     firebase.database().ref('rooms/' + roomname.toUpperCase() + '/playernum').transaction((playernum) => {
         return (playernum - 1);
@@ -414,6 +418,9 @@ _count() {
 _checkIfStart() {
     this.gameStart.on('value',snap=> {
         if(snap.val() > 1 ){
+            
+            AsyncStorage.setItem('GAME-KEY',this.state.roomname);
+
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
                 .update({phase: snap.val()})
             this.props.navigation.navigate('Mafia_Screen', {roomname: this.state.roomname})
@@ -424,6 +431,8 @@ _checkIfStart() {
 _startGame(rolecount,playercount,roomname) {
 
     if(rolecount==playercount){
+
+        AsyncStorage.setItem('GAME-KEY',roomname);
 
         this._handOutRoles(roomname);
 
@@ -560,6 +569,8 @@ render() {
                 <TouchableOpacity
                     onPress={()=> {
                         
+                        AsyncStorage.removeItem('ROOM-KEY');
+                        AsyncStorage.removeItem('GAME-KEY');
                     }}>
                     <MaterialCommunityIcons name='cursor-pointer'
                                 style={{color:'white', fontSize:26,alignSelf:'center'}}/>
@@ -568,7 +579,9 @@ render() {
             <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
                 <TouchableOpacity
                     onPress={()=> {
-                        
+                        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+                            alert(result)
+                        })
                     }}>
                     <MaterialCommunityIcons name='dice-5'
                                 style={{color:'white', fontSize:26,alignSelf:'center'}}/>
@@ -612,24 +625,68 @@ render() {
 }}
 
 
-export default stackNav = StackNavigator(
+export default class App extends React.Component {
+    constructor(props) {
+        super(props);
+    
+        this.state = {
+          inGame:           false,
+          checkedInGame:    false,
 
-  {
-      Room_Screen: {
-          screen: Room_Screen,
-      },
-      Lobby_Screen: {
-        screen: Lobby_Screen,
-      },
-      Mafia_Screen: {
-          screen: Mafia_Screen,
+          inRoom:           false,
+          checkedInRoom:    false,
+
+        };
+
+        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+            this.state.roomname = result;
+        })
       }
-  },
-      {
-          headerMode: 'none',
-          initialRouteName: 'Room_Screen',
-      }
-  );
+    
+    componentWillMount() {
+        isInGame()
+            .then(res => this.setState({ inGame: res, checkedInGame: true }))
+            .catch(err => alert("is In Game error"));
+            
+        isInRoom()
+            .then(res => this.setState({ inRoom: res, checkedInRoom: true }))
+            .catch(err => alert("is In Room error"));
+    }
+
+    render(){
+        const { checkedInGame, inGame, checkedInRoom, inRoom, roomname } = this.state;
+        
+        // If we haven't checked AsyncStorage yet, don't render anything (better ways to do this)
+        if (!checkedInGame || !checkedInRoom) {
+            return null;
+        }
+
+        const Layout = createRoomNavigator(inGame,inRoom,roomname);
+        return <Layout />;
+    }
+}
+
+export const createRoomNavigator = (inGame,inRoom,key) => {
+    return StackNavigator(
+    
+        {
+            Room_Screen: {
+                screen: Room_Screen,
+            },
+            Lobby_Screen: {
+            screen: Lobby_Screen,
+            },
+            Mafia_Screen: {
+                screen: Mafia_Screen,
+            }
+        },
+            {
+                headerMode: 'none',
+                initialRouteName: inRoom?(inGame?'Mafia_Screen':'Lobby_Screen'):'Room_Screen',
+                initialRouteParams: {roomname:key,phase:2}
+            }
+        );
+} 
 
 
 const styles = StyleSheet.create({

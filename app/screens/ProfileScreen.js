@@ -83,6 +83,14 @@ componentWillUnmount() {
     }
 }
 
+_leaveGame() {
+
+
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+        .update({ name: null, phase:1 })
+    this.props.navigation.navigate('Room_Screen')
+}
+
 _logOutPress() {
     if(firebase.auth().currentUser.isAnonymous){
         alert('hello')
@@ -133,9 +141,8 @@ _logOutPress() {
                         <TouchableOpacity
                             disabled={this.state.inagame?false:true}
                             onPress={() => {
-                                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                                    .update({ name: null, phase:1 })
-                                this.props.navigation.navigate('Room_Screen') }}>
+                                this._leaveGame();     
+                            }}>
                             <MaterialCommunityIcons name='wrench'
                                 style={{color:this.state.inagame? 'white' : '#b5b3b0',
                                     fontSize:26,alignSelf:'center'}}/>
