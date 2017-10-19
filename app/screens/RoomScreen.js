@@ -34,7 +34,6 @@ import { onLeaveRoom } from "../auth";
 import ProfileButton from '../components/ProfileButton.js';
 
 import Mafia_Screen from './MafiaScreen.js';
-import Transition_Screen from './TransitionScreen.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
