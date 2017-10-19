@@ -682,7 +682,7 @@ export const createRoomNavigator = (inGame,inRoom,key) => {
             {
                 headerMode: 'none',
                 initialRouteName: inRoom?(inGame?'Mafia_Screen':'Lobby_Screen'):'Room_Screen',
-                initialRouteParams: {roomname:key,phase:2}
+                initialRouteParams: {roomname:key}
             }
         );
 } 

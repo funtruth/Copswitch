@@ -353,7 +353,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     
     //Stops the user from clicking multiple times
     this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 200);
+    setTimeout(() => {this.setState({disabled: false})}, 1000);
 
     if(this.state.actionbtnvalue){
         this._actionBtnValue(false);
@@ -605,7 +605,8 @@ _renderListComponent(){
             data={this.state.namelist}
             renderItem={({item}) => (
                 <TouchableOpacity 
-                    onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
+                    onPress={() => {this.state.disabled?{}:
+                        this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.dead : {height:40,
                         backgroundColor: 'black',
@@ -630,7 +631,8 @@ _renderListComponent(){
             data={this.state.namelist}
             renderItem={({item}) => (
                 <TouchableOpacity 
-                    onPress={() => {this._nameBtnPress(item.key,item.name,this.state.triggernum,
+                    onPress={() => {
+                        this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? styles.dead : {height:40,
                         backgroundColor: 'black',
