@@ -348,7 +348,7 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
 
 } 
 
-
+//Pressing any name button
 _nameBtnPress(uid,name,triggernum,phase,roomname){
     
     //Stops the user from clicking multiple times
@@ -469,6 +469,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     }
 }
 
+//Pressing a Voting BUtton
 _voteBtnPress(presseduid,votebtn) {
 
     //Stops the user from clicking multiple times
@@ -513,6 +514,7 @@ _voteBtnPress(presseduid,votebtn) {
     })    
 }
 
+//Checks if the Voting Phase has finished 
 _voteFinished(roomname){
 
     firebase.database().ref('rooms/'+ roomname +'/phases/'+this.state.phase).once('value',snap=>{
@@ -588,12 +590,14 @@ _handleBackButton() {
     return true;
 }
 
+//Rendering the Main Game Header
 _renderHeader() {
     return <View><Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
         {this.state.phasename}
     </Text></View>
 }
 
+//Rendering Main Visuals of Game Board
 _renderListComponent(){
 
     if(this.state.screentype=='normal'){
@@ -685,6 +689,7 @@ _renderListComponent(){
     }
 }
 
+//Rendering Message Boxes
 _renderMessageComponent(){
     if (this.state.notificationchat){
         return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}><FlatList
@@ -707,6 +712,7 @@ _renderMessageComponent(){
     } 
 }
 
+//Rendering the Transition Header
 _renderTransitionHeader() {
     if(this.state.phase == 2){
         return <Text style = {{color:'white',alignSelf:'center',}}>
@@ -728,6 +734,7 @@ _renderTransitionHeader() {
         
 }
 
+//Rendering the Transition Screen Message
 _renderTransitionMessage(){
     if(this.state.phase == 2){
         return <Text style = {{color:'black',alignSelf:'center',}}>
@@ -743,6 +750,7 @@ _renderTransitionMessage(){
         
 }
 
+//Pressing a chat button
 _chatPress(chattype){
     if(chattype=='messages'){
         if(this.state.messagechat){
@@ -763,6 +771,8 @@ _chatPress(chattype){
     }
 }
 
+//true  -> increase player count by 1
+//false -> decrease player count by 1
 _changePlayerCount(bool){
     if(bool){
         firebase.database().ref('rooms/' + this.state.roomname + '/playernum')
@@ -773,16 +783,19 @@ _changePlayerCount(bool){
     }
 }
 
+//Sends a private notice message
 _noticeMsg(target,color,message){
     firebase.database().ref('messages/' + target)
         .push({from: 'Private', color: color, message: message})
 }
 
+//Creates a public notice message
 _noticeMsgGlobal(roomname,color,message){
     firebase.database().ref('globalmsgs/' + roomname)
         .push({from: 'Public', color: color, message: message})
 }
 
+//Action Roles that adjust
 _adjustmentPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
@@ -796,6 +809,7 @@ _adjustmentPhase() {
     })
 }
 
+//Action Roles
 _actionPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
@@ -920,9 +934,9 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
 
     <View style = {{flex:3}}/>
     
-    <View style = {{flex:1.5,backgroundColor:'black',justifyContent:'center'}}>
+    <FadeInView style = {{flex:1.5,backgroundColor:'black',justifyContent:'center'}}>
         {this._renderTransitionHeader()}
-    </View>
+    </FadeInView>
     
     <View style = {{flex:2.5,justifyContent:'center'}}>
         {this._renderTransitionMessage()}
