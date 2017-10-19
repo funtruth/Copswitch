@@ -39,42 +39,46 @@ constructor(props) {
 
     this.state = {
         roomname: params.roomname,
-        phase: '',
-        screentype: '',
-        phasename:'',
-        bottommessage:'',
-        locked:'',
+        phase:              '',
+        screentype:         '',
+        phasename:          '',
+        bottommessage:      '',
+        locked:             '',
 
-        namelist: dataSource,
-        globallist: dataSource,
-        msglist: dataSource,
+        namelist:           dataSource,
+        globallist:         dataSource,
+        msglist:            dataSource,
+        eventlist:          dataSource,
 
-        triggernum:'',
-        playernum:'',
+        triggernum:         '',
+        playernum:          '',
 
-        actionbtnvalue: false,
-        presseduid: '',
-        messagechat: false,
-        notificationchat: false,
-        disabled:false,
+        actionbtnvalue:     false,
+        presseduid:         '',
+        messagechat:        false,
+        notificationchat:   false,
+        disabled:           false,
 
-        amidead:true,
-        amipicking:false,
+        amidead:            true,
+        amipicking:         false,
 
-        nominate:'',
-        nominee:'',
+        nominate:           '',
+        nominee:            '',
 
-        cover: true,
+        gameover:           false,
+        townwin:            false,
+        cover:              true,
     };
 
-    this.roomListener = firebase.database().ref('rooms/' + roomname);
-    this.listListener = this.roomListener.child('listofplayers');
+    this.roomRef = firebase.database().ref('rooms/' + roomname);
+    this.listListener = this.roomRef.child('listofplayers');
     this.userRoomRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
-    this.phaseListener = this.roomListener.child('phase');
-    this.playernumListener = this.roomListener.child('playernum');
-    this.nominationListener = this.roomListener.child('nominate');
+    this.phaseListener = this.roomRef.child('phase');
+    this.playernumListener = this.roomRef.child('playernum');
+    this.nominationListener = this.roomRef.child('nominate');
     this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
     this.globalMsgRef = firebase.database().ref('globalmsgs/' + roomname);
+    this.eventsRef = this.roomRef.child('events');
 
     //Transition Screen
     this.dayCounterRef = firebase.database().ref('rooms/' + roomname + '/daycounter');
@@ -87,15 +91,13 @@ componentWillMount() {
 
     this.msgRef.on('value',snap=>{
         var msg = [];
-            snap.forEach((child)=>{
-                if(child.key != 'count'){     
-                    msg.push({
-                        from: child.val().from,
-                        color: child.val().color,
-                        message: child.val().message,
-                        key:child.key,
-                    })
-                }
+            snap.forEach((child)=>{   
+                msg.push({
+                    from:       child.val().from,
+                    color:      child.val().color,
+                    message:    child.val().message,
+                    key:        child.key,
+                })
             })
             this.setState({msglist:msg})
     })
@@ -104,13 +106,26 @@ componentWillMount() {
         var msg = [];
             snap.forEach((child)=>{   
                 msg.push({
-                    from: child.val().from,
-                    color: child.val().color,
-                    message: child.val().message,
-                    key:child.key,
+                    from:       child.val().from,
+                    color:      child.val().color,
+                    message:    child.val().message,
+                    key:        child.key,
                 })
             })
             this.setState({globallist:msg})
+    })
+
+    this.eventsRef.on('value',snap=>{
+        var msg = [];
+            snap.forEach((child)=>{
+                msg.push({
+                    name:       child.val().name,
+                    message:    child.val().message,
+                    color:      child.val().color,
+                    key:        child.key,
+                })
+            })
+            this.setState({eventlist:msg})
     })
 
     //Match Button Presses with the Database
@@ -149,6 +164,14 @@ componentWillMount() {
     this.playernumListener.on('value',snap=>{
         //this.state.triggernum, playernum
         this._updateNumbers(snap.val());
+
+        this.roomRef.child('mafia').once('value',mafia=>{
+            if(mafia.numChildren() == 0){
+                this.props.navigation.navigate('Option_Screen',{roomname:this.state.roomname})
+            } else if(mafia.numChildren()*2+1 > snap.val()){
+                this.props.navigation.navigate('Option_Screen',{roomname:this.state.roomname})
+            } 
+        })
     })
 
     this.nominationListener.on('value',snap=>{
@@ -160,7 +183,7 @@ componentWillMount() {
 
         this.setState({cover:true})
 
-        this.roomListener.once('value',roomsnap=>{
+        this.roomRef.once('value',roomsnap=>{
             //Keep Phase name updated
             firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + roomsnap.val().phase)
             .once('value',layout=>{ 
@@ -194,17 +217,17 @@ componentWillMount() {
 
 componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-    if(this.roomListener){
-        this.roomListener.off();
+    if(this.roomRef){
+        this.roomRef.off();
     }
     if(this.listListener){
         this.listListener.off();
     }
     if(this.playernumListener){
-        this.roomListener.off();
+        this.playernumListener.off();
     }
     if(this.nominationListener){
-        this.roomListener.off();
+        this.nominationListener.off();
     }
     if(this.userRoomRef){
         this.userRoomRef.off();
@@ -217,6 +240,9 @@ componentWillUnmount() {
     }
     if(this.phaseListener){
         this.phaseListener.off();
+    }
+    if(this.eventsRef){
+        this.eventsRef.off();
     }
     //Transition Screen
     if(this.dayCounterRef){
@@ -321,22 +347,28 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
     } else {
         this._actionBtnValue(true);
 
-        firebase.database().ref('rooms/' + roomname + '/phases/' + phase).once('value',snap=>{
+        this.roomRef.child('phases').child(phase).once('value',snap=>{
 
-            firebase.database().ref('rooms/' + roomname + '/count').transaction((count)=>{
+            this.roomRef.child('count').transaction((count)=>{
                 if((count+2)>this.state.playernum){
                     if(snap.val().action){
                         new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
                             new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
+                                
+                                this.eventsRef.remove();
+                                
                                 this._changePhase(snap.val().continue);
-                                this.roomListener.child('daycounter').transaction((daycounter)=>{
+
+                                //After Night, the day count increases
+                                this.roomRef.child('daycounter').transaction((daycounter)=>{
                                     return daycounter + 1;
                                 })
                             });
                         });
                     };
                     if(snap.val().actionreset){
-                        firebase.database().ref('rooms/' + roomname + '/actions').remove();
+                        this.roomRef.child('actions').remove();
+                        this.roomRef.child('events').remove();
                         this._changePhase(snap.val().continue);
                     };
                 } else {
@@ -363,7 +395,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     if(phase == 2){
         if(uid==this.state.presseduid){
 
-            firebase.database().ref('rooms/' + roomname + '/listofplayers/' + uid + '/votes')
+            this.roomRef.child('listofplayers').child(uid).child('votes')
             .transaction((votes)=>{ return votes - 1 })
 
             this._pressedUid('foo');
@@ -385,7 +417,13 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                                 firebase.database().ref('rooms/' + roomname + '/actions').remove();
                             };
                             if(snap.val().nominate){
-                                firebase.database().ref('rooms/' + roomname).update({nominate:uid})
+                                this.roomRef.update({nominate:uid});
+                                this.eventsRef.remove();
+                                this.roomRef.child('events').push({
+                                    name:       name,
+                                    message:    'has been nominated',
+                                    color:      '#d31d1d',
+                                })
                             };
                             this._changePhase(snap.val().trigger);
                         } else {
@@ -556,16 +594,35 @@ _voteFinished(roomname){
                                 this._noticeMsgGlobal(roomname,'#d31d1d', dead.val().name + ' was hung.')
                                 
                                 if(dead.val().roleid == 'A'){
-                                    this._changePhase(5)
+
+                                    this._nominationMsg(this.state.nominee,'was hung','#d31d1d');
+                                    this.roomRef.child('mafia').child(this.state.nominate).remove();
+                                    this._changePhase(5);
+
+                                } else if (dead.val().roleid == 'B' ||
+                                        dead.val().roleid == 'C'    ||
+                                        dead.val().roleid == 'D'    ||
+                                        dead.val().roleid == 'J'    
+                                    ){
+
+                                    this._nominationMsg(this.state.nominee,'was hung','#d31d1d');
+                                    this.roomRef.child('mafia').child(this.state.nominate).remove();
+                                    this._changePhase(phasedata.val().trigger)
+
                                 } else if (dead.val().roleid == 'W'){
                                     guiltyvotes.forEach((jester)=>{ 
                                         firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
                                         + jester.key).update({bloody:true,suspicious:true})
                                     })
+
+                                    this._nominationMsg(this.state.nominee,'was hung','#d31d1d')
                                     this._noticeMsgGlobal(roomname,'#d31d1d',
                                         names + ' have blood on their hands and look suspicious.')
                                     this._changePhase(phasedata.val().trigger)
+
                                 } else {
+
+                                    this._nominationMsg(this.state.nominee,'was hung','#d31d1d')
                                     this._changePhase(phasedata.val().trigger)
                                 }
                             })
@@ -577,6 +634,8 @@ _voteFinished(roomname){
                                 this._noticeMsgGlobal(roomname,'#34cd0e',
                                     dead.val().name + ' was not hung.',1)
                             })
+
+                            this._nominationMsg(this.state.nominee,'was not hung','#34cd0e')
                             this._changePhase(phasedata.val().continue)
                         }
                     })
@@ -738,17 +797,20 @@ _renderTransitionHeader() {
 
 //Rendering the Transition Screen Message
 _renderTransitionMessage(){
-    if(this.state.phase == 2){
-        return <Text style = {{color:'black',alignSelf:'center',}}>
-            Nothing happened.
-        </Text>
-    } else if (this.state.phase == 3) {
-        
-    } else if (this.state.phase == 4) {
-
-    } else if (this.state.phase == 5) {
-
-    }
+    return <FlatList
+            data={this.state.eventlist}
+            renderItem={({item}) => (
+                <View style = {{alignItems:'center',justifyContent:'center'}}>
+                    <Text style={{fontWeight:'bold',fontSize:26}}>{item.name}</Text>
+                    <Text style={{fontWeight:'bold',fontSize:20,color:item.color}}>{item.message}</Text>
+                </View>
+            )}
+            ListEmptyComponent={
+                <Text style = {{alignSelf:'center',justifyContent:'center',fontSize:20}}>
+                Nothing happened.</Text>
+            }
+            keyExtractor={item => item.key}
+        />
         
 }
 
@@ -797,6 +859,16 @@ _noticeMsgGlobal(roomname,color,message){
         .push({from: 'Public', color: color, message: message})
 }
 
+//Nomination Results Message
+_nominationMsg(name,message,color){
+    this.eventsRef.remove();
+    this.roomRef.child('events').push({
+        name:       name,
+        message:    message,
+        color:      color,
+    })
+}
+
 //Action Roles that adjust
 _adjustmentPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
@@ -824,6 +896,13 @@ _actionPhase() {
                         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                             + child.val().target).update({dead:true});
                         this._changePlayerCount(false);
+
+                        this.roomRef.child('events').push({
+                            name:       child.val().targetname,
+                            message:    'has been stabbed by the Mafia.',
+                            color:      '#d31d1d',
+                        })
+
                         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                             + firebase.auth().currentUser.uid).update({bloody:true});
                         this._noticeMsg(child.val().target,'#d31d1d','You have been stabbed.');
@@ -934,13 +1013,15 @@ render() {
 
 return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
 
-    <View style = {{flex:3}}/>
+    <View style = {{flex:2}}/>
     
     <FadeInView style = {{flex:1.5,backgroundColor:'black',justifyContent:'center'}}>
         {this._renderTransitionHeader()}
     </FadeInView>
+
+    <View style = {{flex:0.5}}/>
     
-    <View style = {{flex:2.5,justifyContent:'center'}}>
+    <View style = {{flex:3}}>
         {this._renderTransitionMessage()}
     </View>
     

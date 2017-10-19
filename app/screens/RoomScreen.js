@@ -34,6 +34,7 @@ import { onLeaveRoom } from "../auth";
 import ProfileButton from '../components/ProfileButton.js';
 
 import Mafia_Screen from './MafiaScreen.js';
+import Option_Screen from './OptionScreen.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -677,6 +678,9 @@ export const createRoomNavigator = (inGame,inRoom,key) => {
             },
             Mafia_Screen: {
                 screen: Mafia_Screen,
+            },
+            Option_Screen: {
+                screen: Option_Screen,
             },
         },
             {
