@@ -644,6 +644,7 @@ export default class App extends React.Component {
       }
     
     componentWillMount() {
+
         isInGame()
             .then(res => this.setState({ inGame: res, checkedInGame: true }))
             .catch(err => alert("is In Game error"));
@@ -685,7 +686,7 @@ export const createRoomNavigator = (inGame,inRoom,key) => {
         },
             {
                 headerMode: 'none',
-                initialRouteName: inRoom?(inGame?'Mafia_Screen':'Lobby_Screen'):'Room_Screen',
+                initialRouteName: inRoom?(inGame?'Option_Screen':'Lobby_Screen'):'Room_Screen',
                 initialRouteParams: {roomname:key}
             }
         );

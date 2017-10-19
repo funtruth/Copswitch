@@ -68,6 +68,9 @@ constructor(props) {
         gameover:           false,
         townwin:            false,
         cover:              true,
+
+        //Tagged onto Grabbing the PHASE NAME CURRENTLY because it takes the longest.
+        loaded:             false,
     };
 
     this.roomRef = firebase.database().ref('rooms/' + roomname);
@@ -187,7 +190,7 @@ componentWillMount() {
             //Keep Phase name updated
             firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + roomsnap.val().phase)
             .once('value',layout=>{ 
-                this.setState({ phasename:layout.val().name}) 
+                this.setState({ phasename:layout.val().name,loaded:true}) 
             })
         })
 
@@ -1010,6 +1013,10 @@ _actionPhase() {
 }
 
 render() {
+
+if(!this.state.loaded){
+    return null
+}
 
 return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
 
