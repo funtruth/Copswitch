@@ -16,8 +16,6 @@ import {
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
-import Transition_Screen from './TransitionScreen.js';
-
 import FadeInView from '../components/FadeInView.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -27,7 +25,7 @@ import randomize from 'randomatic';
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
-class Mafia_Screen extends React.Component {
+export default class Mafia_Screen extends React.Component {
 
 constructor(props) {
     super(props);
@@ -65,6 +63,8 @@ constructor(props) {
 
         nominate:'',
         nominee:'',
+
+        cover: true,
     };
 
     this.roomListener = firebase.database().ref('rooms/' + roomname);
@@ -75,6 +75,9 @@ constructor(props) {
     this.nominationListener = this.roomListener.child('nominate');
     this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
     this.globalMsgRef = firebase.database().ref('globalmsgs/' + roomname);
+
+    //Transition Screen
+    this.dayCounterRef = firebase.database().ref('rooms/' + roomname + '/daycounter');
 
 }
 
@@ -155,17 +158,14 @@ componentWillMount() {
 
     this.phaseListener.on('value',snap=>{
 
+        this.setState({cover:true})
+
         this.roomListener.once('value',roomsnap=>{
             //Keep Phase name updated
             firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + roomsnap.val().phase)
             .once('value',layout=>{ 
                 this.setState({ phasename:layout.val().name}) 
             })
-        })
-
-        this.props.navigation.navigate('Transition_Screen',{
-            roomname:this.state.roomname,
-            phase:snap.val(),
         })
 
         //Keep Phase updated for PERSONAL USER
@@ -181,6 +181,13 @@ componentWillMount() {
                 locked:layout.val().locked })
         })
 
+    })
+
+    //For Transition Screen
+    this.dayCounterRef.on('value',snap=>{
+        this.setState({
+            daycounter: snap.val(),
+        })
     })
 
 }
@@ -211,6 +218,11 @@ componentWillUnmount() {
     if(this.phaseListener){
         this.phaseListener.off();
     }
+    //Transition Screen
+    if(this.dayCounterRef){
+        this.dayCounterRef.off();
+    }
+
 
 }
 
@@ -695,6 +707,42 @@ _renderMessageComponent(){
     } 
 }
 
+_renderTransitionHeader() {
+    if(this.state.phase == 2){
+        return <Text style = {{color:'white',alignSelf:'center',}}>
+            {this.state.phasename + ' ' + this.state.daycounter}
+        </Text>
+    } else if (this.state.phase == 3) {
+        return <Text style = {{color:'white',alignSelf:'center',}}>
+            {this.state.phasename}
+        </Text>
+    } else if (this.state.phase == 4) {
+        return <Text style = {{color:'white',alignSelf:'center',}}>
+            {this.state.phasename + ' ' + this.state.daycounter}
+        </Text>
+    } else if (this.state.phase == 5) {
+        return <Text style = {{color:'white',alignSelf:'center',}}>
+            {this.state.phasename}
+        </Text>
+    }
+        
+}
+
+_renderTransitionMessage(){
+    if(this.state.phase == 2){
+        return <Text style = {{color:'black',alignSelf:'center',}}>
+            Nothing happened.
+        </Text>
+    } else if (this.state.phase == 3) {
+        
+    } else if (this.state.phase == 4) {
+
+    } else if (this.state.phase == 5) {
+
+    }
+        
+}
+
 _chatPress(chattype){
     if(chattype=='messages'){
         if(this.state.messagechat){
@@ -868,7 +916,35 @@ _actionPhase() {
 
 render() {
 
-return <View style = {{flex:1}}>
+return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
+
+    <View style = {{flex:3}}/>
+    
+    <View style = {{flex:1.5,backgroundColor:'black',justifyContent:'center'}}>
+        {this._renderTransitionHeader()}
+    </View>
+    
+    <View style = {{flex:2.5,justifyContent:'center'}}>
+        {this._renderTransitionMessage()}
+    </View>
+    
+    <View style = {{flex:4}}/>
+    
+    <View style = {{flex:1.5,flexDirection:'row',alignContent:'center',justifyContent:'center'}}>
+        <TouchableOpacity 
+            style = {{flex:0.7,backgroundColor:'black',borderRadius:15,justifyContent:'center'}}
+            onPress = {() => {
+                this.setState({cover:false})
+            }}
+        >
+            <Text style = {{color:'white',alignSelf:'center'}}>Continue</Text>
+        </TouchableOpacity>
+    </View>
+    
+    <View style = {{flex:2}}/>
+
+</View>:
+<View style = {{flex:1}}>
 
 <View style = {{flex:1,flexDirection:'row',backgroundColor:'white'}}>
     <View style = {{flex:1}}/>
@@ -953,22 +1029,6 @@ return <View style = {{flex:1}}>
 </View>
 }
 }
-
-
-export default stackNav = StackNavigator(
-    {
-        Mafia_Screen: {
-            screen: Mafia_Screen,
-        },
-        Transition_Screen: {
-            screen: Transition_Screen,
-        },
-    },
-        {
-            headerMode: 'none',
-            initialRouteName: 'Mafia_Screen',
-        }
-);
 
 const styles = StyleSheet.create({
     dead: {

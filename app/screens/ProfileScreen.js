@@ -85,10 +85,12 @@ componentWillUnmount() {
 
 _leaveGame() {
 
+    AsyncStorage.removeItem('ROOM-KEY');
+    AsyncStorage.removeItem('GAME-KEY');
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
         .update({ name: null, phase:1 })
-    this.props.navigation.navigate('Room_Screen')
+    this.props.navigation.navigate('SignedIn')
 }
 
 _logOutPress() {

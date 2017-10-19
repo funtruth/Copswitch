@@ -34,6 +34,7 @@ import { onLeaveRoom } from "../auth";
 import ProfileButton from '../components/ProfileButton.js';
 
 import Mafia_Screen from './MafiaScreen.js';
+import Transition_Screen from './TransitionScreen.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -541,7 +542,7 @@ render() {
                     data={this.state.namelist}
                     renderItem={({item}) => (
                         <TouchableOpacity 
-                            onPress={() => {alert('dumb')}}
+                            onPress={() => { }}
                             style = {{height:40,
                                 flex:0.5,
                                 borderRadius:5,
@@ -568,7 +569,6 @@ render() {
                 backgroundColor:'black',borderTopLeftRadius:15,borderBottomLeftRadius:15}}>
                 <TouchableOpacity
                     onPress={()=> {
-                        
                         AsyncStorage.removeItem('ROOM-KEY');
                         AsyncStorage.removeItem('GAME-KEY');
                     }}>
@@ -590,8 +590,8 @@ render() {
             <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
                 <TouchableOpacity
                     onPress={()=> {
-                        this._startGame(this.state.rolecount,this.state.playercount,
-                            this.state.roomname);
+                        this.state.amiowner?this._startGame(this.state.rolecount,this.state.playercount,
+                            this.state.roomname):alert('You are not the Owner');
                     }}>
                     <MaterialCommunityIcons name='play-circle'
                                 style={{color:'white', fontSize:32,alignSelf:'center'}}/>
@@ -678,7 +678,7 @@ export const createRoomNavigator = (inGame,inRoom,key) => {
             },
             Mafia_Screen: {
                 screen: Mafia_Screen,
-            }
+            },
         },
             {
                 headerMode: 'none',
