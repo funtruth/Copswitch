@@ -93,7 +93,8 @@ componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
 
     this.msgRef.on('value',snap=>{
-        var msg = [];
+        if(snap.exists()){
+            var msg = [];
             snap.forEach((child)=>{   
                 msg.push({
                     from:       child.val().from,
@@ -103,10 +104,12 @@ componentWillMount() {
                 })
             })
             this.setState({msglist:msg})
+        }
     })
 
     this.globalMsgRef.on('value',snap=>{
-        var msg = [];
+        if(snap.exists()){
+            var msg = [];
             snap.forEach((child)=>{   
                 msg.push({
                     from:       child.val().from,
@@ -116,10 +119,12 @@ componentWillMount() {
                 })
             })
             this.setState({globallist:msg})
+        }
     })
 
     this.eventsRef.on('value',snap=>{
-        var msg = [];
+        if(snap.exists()){
+            var msg = [];
             snap.forEach((child)=>{
                 msg.push({
                     name:       child.val().name,
@@ -129,89 +134,103 @@ componentWillMount() {
                 })
             })
             this.setState({eventlist:msg})
+        } else {
+            this.setState({eventlist:[]})
+        }
     })
 
     //Match Button Presses with the Database
     this.userRoomRef.on('value',snap=>{
-        this.setState({
-            actionbtnvalue: snap.val().actionbtnvalue,
-            presseduid: snap.val().presseduid,
-        })
+        if(snap.exists()){
+            this.setState({
+                actionbtnvalue: snap.val().actionbtnvalue,
+                presseduid: snap.val().presseduid,
+            })
 
-        if (snap.val().presseduid == 'foo' || !snap.val().presseduid){
-            this.setState({ bottommessage: 'You have not selected anything.'})
-        } else if (snap.val().presseduid == 'yes'){
-            this.setState({ bottommessage: 'You have voted Innocent.'})
-        } else if (snap.val().presseduid == 'no'){
-            this.setState({ bottommessage: 'You have voted Guilty.'})
-        } else {
-            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-            + snap.val().presseduid).once('value',uidtoname=>{
-                this.setState({ bottommessage: 'You have selected ' + uidtoname.val().name + '.'})
-            }) 
+            if (snap.val().presseduid == 'foo' || !snap.val().presseduid){
+                this.setState({ bottommessage: 'You have not selected anything.'})
+            } else if (snap.val().presseduid == 'yes'){
+                this.setState({ bottommessage: 'You have voted Innocent.'})
+            } else if (snap.val().presseduid == 'no'){
+                this.setState({ bottommessage: 'You have voted Guilty.'})
+            } else {
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                + snap.val().presseduid).once('value',uidtoname=>{
+                    this.setState({ bottommessage: 'You have selected ' + uidtoname.val().name + '.'})
+                }) 
+            }
         }
     })
 
     this.listListener.on('value',snap=>{
-        //Update colors + options for Player Name Buttons
-        this._updatePlayerState();
+        if(snap.exists()){
+            //Update colors + options for Player Name Buttons
+            this._updatePlayerState();
 
-        //Check if you are alive
-        this.listListener.child(firebase.auth().currentUser.uid).once('value',amidead=>{  
-            this.setState({
-                amidead: amidead.val().dead
+            //Check if you are alive
+            this.listListener.child(firebase.auth().currentUser.uid).once('value',amidead=>{  
+                this.setState({
+                    amidead: amidead.val().dead
+                })
             })
-        })
+        }
     })
 
     this.playernumListener.on('value',snap=>{
-        //this.state.triggernum, playernum
-        this._updateNumbers(snap.val());
+        if(snap.exists()){
+            //this.state.triggernum, playernum
+            this._updateNumbers(snap.val());
 
-        this.roomRef.child('mafia').once('value',mafia=>{
-            if(mafia.numChildren() == 0 || mafia.numChildren()*2+1 > snap.val()){
-                this.props.navigation.navigate('Option_Screen',{roomname:this.state.roomname})
-            }
-        })
+            this.roomRef.child('mafia').once('value',mafia=>{
+                if(mafia.numChildren() == 0 || mafia.numChildren()*2+1 > snap.val()){
+                    this.props.navigation.navigate('Option_Screen',{roomname:this.state.roomname})
+                }
+            })
+        }
     })
 
     this.nominationListener.on('value',snap=>{
-        //this.state.nominate, nominee, amipicking
-        this._updateNominate();
+        if(snap.exists()){
+            //this.state.nominate, nominee, amipicking
+            this._updateNominate();
+        }
     })
 
     this.phaseListener.on('value',snap=>{
+        if(snap.exists()){
 
-        this.setState({cover:true})
+            this.setState({cover:true})
 
-        this.roomRef.once('value',roomsnap=>{
-            //Keep Phase name updated
-            firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + roomsnap.val().phase)
-            .once('value',layout=>{ 
-                this.setState({ phasename:layout.val().name,loaded:true}) 
+            this.roomRef.once('value',roomsnap=>{
+                //Keep Phase name updated
+                firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + roomsnap.val().phase)
+                .once('value',layout=>{ 
+                    this.setState({ phasename:layout.val().name,loaded:true}) 
+                })
             })
-        })
 
-        //Keep Phase updated for PERSONAL USER
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-            .update({phase:snap.val()});
-        this.setState({phase:snap.val()})
-        
-        //Find layout type of Phase
-        firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val())
-        .once('value',layout=>{
-            this.setState({
-                screentype:layout.val().type,
-                locked:layout.val().locked })
-        })
-
+            //Keep Phase updated for PERSONAL USER
+            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+                .update({phase:snap.val()});
+            this.setState({phase:snap.val()})
+            
+            //Find layout type of Phase
+            firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val())
+            .once('value',layout=>{
+                this.setState({
+                    screentype:layout.val().type,
+                    locked:layout.val().locked })
+            })
+        }
     })
 
     //For Transition Screen
     this.dayCounterRef.on('value',snap=>{
-        this.setState({
-            daycounter: snap.val(),
-        })
+        if(snap.exists()){
+            this.setState({
+                daycounter: snap.val(),
+            })
+        }
     })
 
 }

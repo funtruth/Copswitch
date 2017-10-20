@@ -87,12 +87,23 @@ _returnGame(){
     
 }
 
-_resetGame(){
+_leaveGame(){
     AsyncStorage.removeItem('ROOM-KEY');
     AsyncStorage.removeItem('GAME-KEY');
 
+    //Either remove yourself from the room or delete it
+    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers').once('value',snap=>{
+        if(snap.numChildren() < 2){
+            firebase.database().ref('rooms/' + this.state.roomname).remove();
+        } else {
+            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                + firebase.auth().currentUser.uid).remove();
+        }
+    })
+
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
         .update({ name: null, phase:1 })
+      
     this.props.navigation.navigate('Room_Screen')
 }
 
@@ -135,7 +146,7 @@ render() {
         </View>
         <View style = {{flex:0.5,justifyContent:'center',flexDirection:'row'}}>
             <TouchableOpacity
-                onPress={()=>{this._resetGame()}}
+                onPress={()=>{this._leaveGame()}}
                 style={{flex:0.65,justifyContent:'center',backgroundColor:'black',borderRadius:15}}>
             <Text style = {{alignSelf:'center',color:'white',
                 fontFamily:'ConcertOne-Regular',fontSize:20}}>QUIT</Text>

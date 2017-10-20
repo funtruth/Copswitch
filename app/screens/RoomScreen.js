@@ -60,7 +60,7 @@ class Room_Screen extends React.Component {
     }
 
     _handleBackButton() {
-        return true
+        return false
     }
 
     _createRoom() {
