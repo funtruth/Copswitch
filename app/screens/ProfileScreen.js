@@ -110,8 +110,8 @@ _logOutPress() {
             <View style = {{flex:1.15,flexDirection:'row' }}>
                 <View style = {{ flex:0.75 }}/>
                 <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
-                    <Text>My Role:</Text>
-                    <Text style={{fontWeight:'bold',fontSize:20,color:'black'}}>
+                    <Text style = {{fontFamily:'ConcertOne-Regular'}}>My Role:</Text>
+                    <Text style={{fontSize:30,color:'black',fontFamily:'ConcertOne-Regular'}}>
                         {this.state.hidden ? 'Hidden' : this.state.role}</Text>
                 </View>
                 <TouchableOpacity

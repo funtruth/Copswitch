@@ -38,18 +38,6 @@ class Room_Screen extends React.Component {
 
 constructor(props) {
     super(props);
-
-    this.state = {
-        joincode: '',
-        creatorname:'',
-        alias:'',
-
-        createfocus:false,
-        joinfocus:false,
-    };
-
-    this._handleBackButton = this._handleBackButton.bind(this);
-
 }
 
 componentWillMount() {
@@ -72,6 +60,70 @@ _handleBackButton() {
 }
 
 _createRoom() {
+    this.props.navigation.navigate('Create_Screen');
+}
+
+_findRoom() {
+    this.props.navigation.navigate('Search_Screen');
+}
+
+render() {
+    return <View 
+    style = {{
+        flex:1,
+        backgroundColor:'white'
+    }}>
+        <View style = {{flex:1}}> 
+            <TouchableWithoutFeedback 
+                style = {{ flex:1,justifyContent:'center' }}
+                onPress={()=>{ this._createRoom() }}>
+                <View style = {{flex:1,backgroundColor:'black',justifyContent:'center',alignItems:'center'}}>
+                    <Text style = {{
+                        fontFamily:'ConcertOne-Regular',
+                        color:'white',
+                        fontSize:30,
+                        justifyContent:'center'}}>Make a Room</Text>
+                </View>
+            </TouchableWithoutFeedback>
+
+            <TouchableWithoutFeedback 
+                style = {{ flex:1,justifyContent:'center' }}
+                onPress={()=>{ this._findRoom() }}>
+                <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+                    <Text style = {{
+                        fontFamily:'ConcertOne-Regular',
+                        color:'black',
+                        fontSize:30,
+                        justifyContent:'center'}}>Join a Room</Text>
+                </View>
+            </TouchableWithoutFeedback>
+        </View>
+    </View>
+}
+}
+
+class Create_Screen extends React.Component {
+    constructor(props) {
+    super(props);
+
+    this.state = {
+        alias:'',
+    };
+}
+
+componentWillMount() {
+    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
+}
+
+componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
+}
+
+_handleBackButton() {
+    return false
+}
+
+_createRoom() {
     const roomname = randomize('A',4);
 
     //TODO: Check if room already exists
@@ -85,14 +137,14 @@ _createRoom() {
     firebase.database().ref('rooms/' + roomname).set({
         phase: 1,
         owner: firebase.auth().currentUser.uid,
-        playernum: 1,
+        playernum: 0,
         daycounter:1,
     });
 
     //Set up list of players
     firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
         + firebase.auth().currentUser.uid).set({
-            name: this.state.creatorname,
+            name: this.state.alias,
             dead:false,
             bloody:false,
             suspicious:false,
@@ -138,6 +190,157 @@ _createRoom() {
     this.props.navigation.navigate('Lobby_Screen', {roomname: roomname})
 }
 
+render() {
+    return <TouchableWithoutFeedback 
+    style = {{ flex:1 }}
+    onPress={()=>{ Keyboard.dismiss() }}>
+        <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+            <Text style = {{
+                fontFamily:'ConcertOne-Regular',
+                color:'black',
+                fontSize:30}}>Who are you?
+            </Text>
+
+
+            <View style = {{
+                margin: 5,
+                justifyContent: 'center',
+                flexDirection: 'row',
+            }}>
+                <TextInput
+                    placeholder="Who are you? ..."
+                    style={{
+                        backgroundColor: 'white',
+                        flex:0.6,
+                    }}
+                    value={this.state.alias}
+                    onChangeText = {(text) => {this.setState({alias: text})}}
+                />
+            </View>
+
+            <View style = {{
+                margin: 5,
+                justifyContent: 'center',
+                alignItems:'center',
+                flexDirection: 'row',
+            }}>
+                    <View style = {{flex:0.75}}>
+                    <Button
+                        title="Go"
+                        backgroundColor='black'
+                        onPress={()=>{this._createRoom()}}
+                    /></View>
+
+            </View>
+        </View>
+    </TouchableWithoutFeedback>
+}
+}
+
+class Search_Screen extends React.Component {
+    constructor(props) {
+    super(props);
+
+    this.state = {
+        roomname:'',
+    };
+
+}
+
+componentWillMount() {
+
+    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
+
+}
+
+componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
+}
+
+_handleBackButton() {
+    return false
+}
+
+_searchRoom() {
+    this.props.navigation.navigate('Join_Screen',{roomname:this.state.roomname})
+}
+
+render() {
+    return <TouchableWithoutFeedback 
+    style = {{ flex:1 }}
+    onPress={()=>{ Keyboard.dismiss() }}>
+        <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+            <Text style = {{
+                fontFamily:'ConcertOne-Regular',
+                color:'black',
+                fontSize:30}}>Enter the Room Code:
+            </Text>
+
+
+            <View style = {{
+                margin: 5,
+                justifyContent: 'center',
+                flexDirection: 'row',
+            }}>
+                <TextInput
+                    placeholder="Room CODE ..."
+                    style={{
+                        backgroundColor: 'white',
+                        flex:0.6,
+                    }}
+                    value={this.state.roomname}
+                    onChangeText = {(text) => {this.setState({roomname: text})}}
+                />
+            </View>
+
+            <View style = {{
+                margin: 5,
+                justifyContent: 'center',
+                alignItems:'center',
+                flexDirection: 'row',
+            }}>
+                    <View style = {{flex:0.75}}>
+                    <Button
+                        title="Search"
+                        backgroundColor='black'
+                        onPress={()=>{this._searchRoom()}}
+                    /></View>
+
+            </View>
+        </View>
+    </TouchableWithoutFeedback>
+}
+}
+
+class Join_Screen extends React.Component {
+    constructor(props) {
+    super(props);
+
+    //Navigation parameters
+    const { params } = this.props.navigation.state;
+    const roomname = params.roomname.toUpperCase();
+
+    this.state = {
+        roomname: params.roomname,
+        alias:'',
+    };
+
+}
+
+componentWillMount() {
+
+    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
+
+}
+
+componentWillUnmount() {
+    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
+}
+
+_handleBackButton() {
+    return true
+}
+
 _joinRoom(joincode) {
     firebase.database().ref('rooms/' + joincode.toUpperCase()).once('value', snap => {
         if(snap.exists() && (snap.val().phase == 1)){
@@ -171,129 +374,44 @@ _joinRoom(joincode) {
 
 render() {
     return <TouchableWithoutFeedback 
-    style = {{
-        flex:1,
-        backgroundColor:'white'
-    }}
-    onPress={()=>{
-        this.setState({joinfocus:false,createfocus:false})
-        Keyboard.dismiss();
-    }}>
-        <View style = {{flex:1}}> 
+    style = {{ flex:1 }}
+    onPress={()=>{ Keyboard.dismiss() }}>
+        <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+            <Text style = {{
+                fontFamily:'ConcertOne-Regular',
+                color:'black',
+                fontSize:30}}>Who are you?
+            </Text>
+
+
             <View style = {{
-                flex:1,
-                backgroundColor: 'white',
-                flex: this.state.joinfocus?0:1,
+                margin: 5,
+                justifyContent: 'center',
+                flexDirection: 'row',
             }}>
-
-                <View style = {{flex:4}}/>
-
-                <View style = {{
-                    flex:2,
-                    margin: 5,
-                    justifyContent: 'center',
-                    flexDirection: 'row',
-                }}>
-                    <TextInput
-                        placeholder="Who are you? ..."
-                        style={{
-                            backgroundColor: 'white',
-                            flex:0.6,
-                        }}
-                        value={this.state.creatorname}
-                        onChangeText = {(text) => {this.setState({creatorname: text})}}
-                        onFocus = {()=>{
-                            this.setState({createfocus:true})
-                        }}
-                        onBlur= {() => {
-                            this.setState({createfocus:false})
-                        }}
-                    />
-                </View>
-
-                <View style = {{
-                    flex:2,
-                    margin: 5,
-                    justifyContent: 'center',
-                    alignItems:'center',
-                    flexDirection: 'row',
-                }}>
-                        <View style = {{flex:0.75}}>
-                        <Button
-                            title="Create Room"
-                            backgroundColor='black'
-                            onPress={()=>{this._createRoom()}}
-                        /></View>
-
-                </View>
-
-                <View style = {{flex:2}}/>
+                <TextInput
+                    placeholder="Who are you? ..."
+                    style={{
+                        backgroundColor: 'white',
+                        flex:0.6,
+                    }}
+                    value={this.state.alias}
+                    onChangeText = {(text) => {this.setState({alias: text})}}
+                />
             </View>
+
             <View style = {{
-                flex:1,
-                backgroundColor: 'white',
-                flex: this.state.createfocus?0:1,
-            }}
-            >
-                <View style = {{flex:2}}/>
-
-                <View style = {{
-                    flex:2,
-                    margin: 5,
-                    justifyContent: 'center',
-                    flexDirection: 'row',
-                }}>
-                    <TextInput
-                        placeholder="Who are you? ..."
-                        style={{
-                            backgroundColor: 'white',
-                            flex:0.6,
-                        }}
-                        value={this.state.alias}
-                        onChangeText = {(text) => {this.setState({alias: text})}}
-                        onFocus = {()=>{this.setState({joinfocus:true})}}
-                        onBlur= {() => {this.setState({joinfocus:false})}}
-                    />
-                </View>
-
-                <View style = {{
-                    flex:2,
-                    margin: 5,
-                    justifyContent: 'center',
-                    flexDirection: 'row',
-                }}>
-                    <TextInput
-                        placeholder="Room Code ..."
-                        style={{
-                            backgroundColor: 'white',
-                            flex:0.6,
-                        }}
-                        autoCapitalize='characters'
-                        value={this.state.joincode}
-                        onChangeText = {(text) => {this.setState({joincode: text})}}
-                        onFocus = {()=>{this.setState({joinfocus:true})}}
-                        onBlur= {() => {this.setState({joinfocus:false})}}
-                    />
-                </View>
-
-                <View style = {{
-                    flex:2,
-                    margin: 5,
-                    justifyContent: 'center',
-                    alignItems:'center',
-                    flexDirection: 'row',
-                }}>
-                
+                margin: 5,
+                justifyContent: 'center',
+                alignItems:'center',
+                flexDirection: 'row',
+            }}>
                     <View style = {{flex:0.75}}>
                     <Button
-                        title="Join Room"
+                        title="Go"
                         backgroundColor='black'
-                        onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
+                        onPress={()=>{this._joinRoom(this.state.roomname)}}
                     /></View>
-
-                </View>
-
-                <View style = {{flex:2}}/>
 
             </View>
         </View>
@@ -681,6 +799,15 @@ export const createRoomNavigator = (inGame,inRoom,key) => {
         {
             Room_Screen: {
                 screen: Room_Screen,
+            },
+            Create_Screen: {
+            screen: Create_Screen,
+            },
+            Search_Screen: {
+            screen: Search_Screen,
+            },
+            Join_Screen: {
+            screen: Join_Screen,
             },
             Lobby_Screen: {
             screen: Lobby_Screen,

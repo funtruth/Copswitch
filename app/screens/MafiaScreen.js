@@ -779,19 +779,19 @@ _renderMessageComponent(){
 //Rendering the Transition Header
 _renderTransitionHeader() {
     if(this.state.phase == 2){
-        return <Text style = {{color:'white',alignSelf:'center',}}>
+        return <Text style = {styles.headerFont}>
             {this.state.phasename + ' ' + this.state.daycounter}
         </Text>
     } else if (this.state.phase == 3) {
-        return <Text style = {{color:'white',alignSelf:'center',}}>
+        return <Text style = {styles.headerFont}>
             {this.state.phasename}
         </Text>
     } else if (this.state.phase == 4) {
-        return <Text style = {{color:'white',alignSelf:'center',}}>
+        return <Text style = {styles.headerFont}>
             {this.state.phasename + ' ' + this.state.daycounter}
         </Text>
     } else if (this.state.phase == 5) {
-        return <Text style = {{color:'white',alignSelf:'center',}}>
+        return <Text style = {styles.headerFont}>
             {this.state.phasename}
         </Text>
     }
@@ -804,12 +804,13 @@ _renderTransitionMessage(){
             data={this.state.eventlist}
             renderItem={({item}) => (
                 <View style = {{alignItems:'center',justifyContent:'center'}}>
-                    <Text style={{fontWeight:'bold',fontSize:26}}>{item.name}</Text>
-                    <Text style={{fontWeight:'bold',fontSize:20,color:item.color}}>{item.message}</Text>
+                    <Text style={styles.messageFont}>{item.name}</Text>
+                    <Text style={{fontWeight:'bold',fontSize:20,color:item.color,
+                        fontFamily:'ConcertoOne-Regular'}}>{item.message}</Text>
                 </View>
             )}
             ListEmptyComponent={
-                <Text style = {{alignSelf:'center',justifyContent:'center',fontSize:20}}>
+                <Text style = {styles.messageFont}>
                 Nothing happened.</Text>
             }
             keyExtractor={item => item.key}
@@ -1142,5 +1143,17 @@ const styles = StyleSheet.create({
         borderRadius:5,
         justifyContent:'center',
         flex:0.5,
+    },
+    headerFont: {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 30,
+        color: 'white',
+        alignSelf:'center',
+    },
+    messageFont: {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 24,
+        color: 'black',
+        alignSelf:'center',
     },
 });
