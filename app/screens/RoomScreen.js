@@ -25,7 +25,6 @@ import randomize from 'randomatic';
 import { Button, List } from "react-native-elements";
 
 import { isInGame } from "../auth";
-
 import { isInRoom } from "../auth";
 
 import Mafia_Screen from './MafiaScreen.js';
@@ -38,6 +37,10 @@ class Room_Screen extends React.Component {
 
 constructor(props) {
     super(props);
+    
+    this.state = {
+        roomtype:'',
+    };
 }
 
 componentWillMount() {
@@ -261,8 +264,16 @@ _handleBackButton() {
     return false
 }
 
-_searchRoom() {
-    this.props.navigation.navigate('Join_Screen',{roomname:this.state.roomname})
+_searchRoom(joincode) {
+    firebase.database().ref('rooms/' + joincode.toUpperCase()).once('value', snap => {
+        if(snap.exists() && (snap.val().phase == 1)){
+            this.props.navigation.navigate('Join_Screen', { roomname: joincode.toUpperCase()});
+        } else if (snap.exists() && (snap.val().phase > 1)) {
+            alert('Game has already started.')
+        } else {
+            alert('Room does not Exist.')
+        }
+    })
 }
 
 render() {
@@ -303,7 +314,7 @@ render() {
                     <Button
                         title="Search"
                         backgroundColor='black'
-                        onPress={()=>{this._searchRoom()}}
+                        onPress={()=>{this._searchRoom(this.state.roomname)}}
                     /></View>
 
             </View>
@@ -318,23 +329,37 @@ class Join_Screen extends React.Component {
 
     //Navigation parameters
     const { params } = this.props.navigation.state;
-    const roomname = params.roomname.toUpperCase();
+    const roomname = params.roomname;
 
     this.state = {
         roomname: params.roomname,
         alias:'',
     };
 
+    this.roomRef = firebase.database().ref('rooms/' + roomname);
+
 }
 
 componentWillMount() {
-
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
 
+    this.roomRef.on('value',snap=>{
+        if(snap.exists() && (snap.val().phase == 1)){
+            
+        } else if (snap.exists() && (snap.val().phase > 1)) {
+            this.props.navigation.navigate('Search_Screen');
+        } else {
+            this.props.navigation.navigate('Search_Screen');
+        }
+    })
 }
 
 componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
+
+    if(this.roomRef){
+        this.roomRef.off();
+    }
 }
 
 _handleBackButton() {
@@ -342,28 +367,28 @@ _handleBackButton() {
 }
 
 _joinRoom(joincode) {
-    firebase.database().ref('rooms/' + joincode.toUpperCase()).once('value', snap => {
+    firebase.database().ref('rooms/' + joincode).once('value', snap => {
         if(snap.exists() && (snap.val().phase == 1)){
 
             AsyncStorage.setItem('ROOM-KEY', joincode);
 
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:joincode});
-            firebase.database().ref('rooms/' + joincode.toUpperCase() 
-                + '/listofplayers/' + firebase.auth().currentUser.uid).set({
+            firebase.database().ref('rooms/' + joincode 
+                + '/listofplayers/' + firebase.auth().currentUser.uid).update({
                     name: this.state.alias,
                     dead:false,
                     bloody:false,
                     suspicious:false,
             });   
 
-            firebase.database().ref('rooms/' + joincode.toUpperCase() + '/playernum').transaction((playernum) => {
+            firebase.database().ref('rooms/' + joincode + '/playernum').transaction((playernum) => {
                 return (playernum + 1);
             });       
             
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
             .update({ name:joincode })
 
-            this.props.navigation.navigate('Lobby_Screen', { roomname: this.state.joincode});
+            this.props.navigation.navigate('Lobby_Screen', { roomname: joincode});
         } else if (snap.exists() && (snap.val().phase > 1)) {
             alert('Game has already started.')
         } else {
