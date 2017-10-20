@@ -12,7 +12,8 @@ import {
     Keyboard,
     FlatList,
     ListView,
-    TouchableOpacity
+    TouchableOpacity,
+    TouchableWithoutFeedback,
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -24,14 +25,8 @@ import randomize from 'randomatic';
 import { Button, List } from "react-native-elements";
 
 import { isInGame } from "../auth";
-import { onJoinGame } from "../auth";
-import { onLeaveGame } from "../auth";
 
 import { isInRoom } from "../auth";
-import { onJoinRoom } from "../auth";
-import { onLeaveRoom } from "../auth";
-
-import ProfileButton from '../components/ProfileButton.js';
 
 import Mafia_Screen from './MafiaScreen.js';
 import Option_Screen from './OptionScreen.js';
@@ -48,7 +43,12 @@ constructor(props) {
         joincode: '',
         creatorname:'',
         alias:'',
+
+        createfocus:false,
+        joinfocus:false,
     };
+
+    this._handleBackButton = this._handleBackButton.bind(this);
 
 }
 
@@ -65,11 +65,10 @@ componentWillMount() {
 
 componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-
 }
 
 _handleBackButton() {
-    return true;
+    return true
 }
 
 _createRoom() {
@@ -77,7 +76,7 @@ _createRoom() {
 
     //TODO: Check if room already exists
     
-    onJoinRoom(roomname);
+    AsyncStorage.setItem('ROOM-KEY', roomname);
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({
         name: roomname,
@@ -143,7 +142,7 @@ _joinRoom(joincode) {
     firebase.database().ref('rooms/' + joincode.toUpperCase()).once('value', snap => {
         if(snap.exists() && (snap.val().phase == 1)){
 
-            onJoinRoom(joincode);
+            AsyncStorage.setItem('ROOM-KEY', joincode);
 
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:joincode});
             firebase.database().ref('rooms/' + joincode.toUpperCase() 
@@ -171,125 +170,134 @@ _joinRoom(joincode) {
 }
 
 render() {
-    return <View style = {{
-        backgroundColor: 'white',
-        flex: 1,
+    return <TouchableWithoutFeedback 
+    style = {{
+        flex:1,
+        backgroundColor:'white'
+    }}
+    onPress={()=>{
+        this.setState({joinfocus:false,createfocus:false})
+        Keyboard.dismiss();
     }}>
+        <View style = {{flex:1}}> 
+            <View style = {{
+                flex:1,
+                backgroundColor: 'white',
+                flex: this.state.joinfocus?0:1,
+            }}>
 
-        <View style = {{
-            flex:1,
-            margin: 10,
-            borderRadius: 10,
-            backgroundColor: 'black',
-            justifyContent: 'center',
-        }}>
-            <Text style = {{color:'white', marginLeft:20, fontWeight: 'bold',}}>
-                {'Mafia'}
-            </Text>
+                <View style = {{flex:4}}/>
+
+                <View style = {{
+                    flex:2,
+                    margin: 5,
+                    justifyContent: 'center',
+                    flexDirection: 'row',
+                }}>
+                    <TextInput
+                        placeholder="Who are you? ..."
+                        style={{
+                            backgroundColor: 'white',
+                            flex:0.6,
+                        }}
+                        value={this.state.creatorname}
+                        onChangeText = {(text) => {this.setState({creatorname: text})}}
+                        onFocus = {()=>{
+                            this.setState({createfocus:true})
+                        }}
+                        onBlur= {() => {
+                            this.setState({createfocus:false})
+                        }}
+                    />
+                </View>
+
+                <View style = {{
+                    flex:2,
+                    margin: 5,
+                    justifyContent: 'center',
+                    alignItems:'center',
+                    flexDirection: 'row',
+                }}>
+                        <View style = {{flex:0.75}}>
+                        <Button
+                            title="Create Room"
+                            backgroundColor='black'
+                            onPress={()=>{this._createRoom()}}
+                        /></View>
+
+                </View>
+
+                <View style = {{flex:2}}/>
+            </View>
+            <View style = {{
+                flex:1,
+                backgroundColor: 'white',
+                flex: this.state.createfocus?0:1,
+            }}
+            >
+                <View style = {{flex:2}}/>
+
+                <View style = {{
+                    flex:2,
+                    margin: 5,
+                    justifyContent: 'center',
+                    flexDirection: 'row',
+                }}>
+                    <TextInput
+                        placeholder="Who are you? ..."
+                        style={{
+                            backgroundColor: 'white',
+                            flex:0.6,
+                        }}
+                        value={this.state.alias}
+                        onChangeText = {(text) => {this.setState({alias: text})}}
+                        onFocus = {()=>{this.setState({joinfocus:true})}}
+                        onBlur= {() => {this.setState({joinfocus:false})}}
+                    />
+                </View>
+
+                <View style = {{
+                    flex:2,
+                    margin: 5,
+                    justifyContent: 'center',
+                    flexDirection: 'row',
+                }}>
+                    <TextInput
+                        placeholder="Room Code ..."
+                        style={{
+                            backgroundColor: 'white',
+                            flex:0.6,
+                        }}
+                        autoCapitalize='characters'
+                        value={this.state.joincode}
+                        onChangeText = {(text) => {this.setState({joincode: text})}}
+                        onFocus = {()=>{this.setState({joinfocus:true})}}
+                        onBlur= {() => {this.setState({joinfocus:false})}}
+                    />
+                </View>
+
+                <View style = {{
+                    flex:2,
+                    margin: 5,
+                    justifyContent: 'center',
+                    alignItems:'center',
+                    flexDirection: 'row',
+                }}>
+                
+                    <View style = {{flex:0.75}}>
+                    <Button
+                        title="Join Room"
+                        backgroundColor='black'
+                        onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
+                    /></View>
+
+                </View>
+
+                <View style = {{flex:2}}/>
+
+            </View>
         </View>
-
-        <View style = {{flex:1.5}}/>
-
-        <View style = {{
-            flex:1,
-            margin: 5,
-            borderWidth: 1,
-            justifyContent: 'center',
-            flexDirection: 'row',
-        }}>
-            <TextInput
-                placeholder="Who are you? ..."
-                style={{
-                    backgroundColor: 'white',
-                    borderWidth:2,
-                    flex:0.5,
-                }}
-                value={this.state.creatorname}
-                onChangeText = {(text) => {this.setState({creatorname: text})}}
-            />
-        </View>
-
-        <View style = {{
-            flex:1.5,
-            margin: 5,
-            borderWidth: 1,
-            justifyContent: 'center',
-            flexDirection: 'row',
-        }}>
-                <View style = {{flex:1}}/>
-                <View style = {{flex:4}}>
-                <ProfileButton
-                    title="Create Room"
-                    backgroundColor='black'
-                    onPress={()=>{this._createRoom()}}
-                /></View>
-                <View style = {{flex:1}}/>
-
-        </View>
-        
-        <View style = {{flex:1}}/>
-
-        <View style = {{
-            flex:1,
-            margin: 5,
-            borderWidth: 1,
-            justifyContent: 'center',
-            flexDirection: 'row',
-        }}>
-            <TextInput
-                placeholder="Who are you? ..."
-                style={{
-                    backgroundColor: 'white',
-                    borderWidth:2,
-                    flex:0.5,
-                }}
-                value={this.state.alias}
-                onChangeText = {(text) => {this.setState({alias: text})}}
-            />
-        </View>
-
-        <View style = {{
-            flex:1,
-            margin: 5,
-            borderWidth: 1,
-            justifyContent: 'center',
-            flexDirection: 'row',
-        }}>
-            <TextInput
-                placeholder="Room Code ..."
-                style={{
-                    backgroundColor: 'white',
-                    borderWidth:2,
-                    flex:0.5,
-                }}
-                value={this.state.joincode}
-                onChangeText = {(text) => {this.setState({joincode: text})}}
-            />
-        </View>
-
-        <View style = {{
-            flex:1.5,
-            margin: 5,
-            borderWidth: 1,
-            justifyContent: 'center',
-            flexDirection: 'row',
-        }}>
-        
-            <View style = {{flex:1}}/>
-            <View style = {{flex:4}}>
-            <ProfileButton
-                title="Join Room"
-                backgroundColor='black'
-                onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
-            /></View>
-            <View style = {{flex:1}}/>
-
-        </View>
-
-        <View style = {{flex:2}}/>
-
-
-    </View>
+    </TouchableWithoutFeedback>
 }
 }
 

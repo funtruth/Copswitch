@@ -10,8 +10,6 @@ import { onSignIn } from "../auth";
 
 import firebase from '../firebase/FirebaseController.js';
 
-import ProfileButton from '../components/ProfileButton.js';
-
 import { NavigationActions } from 'react-navigation';
 
 export default class SignInScreen extends React.Component {
@@ -19,7 +17,6 @@ export default class SignInScreen extends React.Component {
     constructor(props) {
         super(props);
         this.backButtonListener = null;
-        this.currentRouteName = 'SignIn';
 
         this.state = { 
             email: '', 
@@ -30,7 +27,7 @@ export default class SignInScreen extends React.Component {
 
 render(){
     return <View style={{
-        backgroundColor: '#e6ddd1',
+        backgroundColor: 'white',
         flex: 1,
         justifyContent: 'center',
         alignSelf: 'center',
@@ -51,7 +48,7 @@ render(){
             />
 
             <View style ={{marginTop:10}}>
-            <ProfileButton
+            <Button
                 title="LOG IN"
                 onPress={() => {
                     firebase.auth().signInWithEmailAndPassword(
@@ -70,12 +67,12 @@ render(){
             /></View>
             
             <View style = {{marginTop: 10}}>
-            <ProfileButton
+            <Button
                 title="Sign Up"
                 onPress={() => this.props.navigation.navigate("SignUp")}
             /></View>
             <View style = {{marginTop:10}}>
-            <ProfileButton
+            <Button
                 title="Continue Anonymously"
                 onPress={() => {
                     firebase.auth().signInAnonymously().then(() => {

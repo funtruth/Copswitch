@@ -1,23 +1,12 @@
 import { AsyncStorage } from "react-native";
 import firebase from './firebase/FirebaseController.js';
 
-// We should probably make a hash or something
-export const USER_KEY = "USER-KEY";
-export const GAME_KEY = "GAME-KEY";
-export const ROOM_KEY = "ROOM-KEY";
-
-export const onSignIn = () => AsyncStorage.setItem(USER_KEY, "true");
-export const onSignOut = () => AsyncStorage.removeItem(USER_KEY);
-
-export const onJoinGame = (roomname) => AsyncStorage.setItem(GAME_KEY, roomname);
-export const onLeaveGame = () => AsyncStorage.removeItem(GAME_KEY);
-
-export const onJoinRoom = (roomname) => AsyncStorage.setItem(ROOM_KEY, roomname);
-export const onLeaveRoom = () => AsyncStorage.removeItem(ROOM_KEY);
+export const onSignIn = () => AsyncStorage.setItem('USER-KEY', "true");
+export const onSignOut = () => AsyncStorage.removeItem('USER-KEY');
 
 export const isSignedIn = () => {
   return new Promise((resolve, reject) => {
-    AsyncStorage.getItem(USER_KEY)
+    AsyncStorage.getItem('USER-KEY')
       .then(res => {
         if (res !== null) {
           firebase.auth().onAuthStateChanged(function(user) {
@@ -40,7 +29,7 @@ export const isSignedIn = () => {
 
 export const isInGame = () => {
   return new Promise((resolve, reject) => {
-    AsyncStorage.getItem(GAME_KEY)
+    AsyncStorage.getItem('GAME-KEY')
       .then(res => {
         if (res !== null) {
           resolve(true);
@@ -54,7 +43,7 @@ export const isInGame = () => {
 
 export const isInRoom = () => {
   return new Promise((resolve, reject) => {
-    AsyncStorage.getItem(ROOM_KEY)
+    AsyncStorage.getItem('ROOM-KEY')
       .then(res => {
         if (res !== null) {
           resolve(true);

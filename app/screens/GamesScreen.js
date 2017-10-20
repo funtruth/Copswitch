@@ -12,7 +12,6 @@ import {
 }   from 'react-native';
 
 import { Button, List, ListItem, Avatar } from "react-native-elements";
-import ProfileButton from '../components/ProfileButton.js';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 //Firebase

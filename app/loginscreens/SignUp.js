@@ -8,13 +8,13 @@ import firebase from '../firebase/FirebaseController.js';
 export default class SignUpScreen extends React.Component {
 
 constructor(props){
-  super(props);
-  this.state = { 
-    email: '', 
-    password: '',
-    confirmpassword: '',
-    loading: false,
-  };
+    super(props);
+    this.state = { 
+        email: '', 
+        password: '',
+        confirmpassword: '',
+        loading: false,
+    };
 }
 
 //Creates user and Signs them in

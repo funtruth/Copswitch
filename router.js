@@ -1,7 +1,7 @@
 // app/router.js
 
 import React from "react";
-import { Platform, StatusBar, Image, StyleSheet } from "react-native";
+import { Image, StyleSheet } from "react-native";
 import { StackNavigator, TabNavigator } from "react-navigation";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -21,7 +21,7 @@ export const SignedOut = StackNavigator(
         screen: SignIn,
       },
     SignUp: {
-      screen: SignUp,
+        screen: SignUp,
     },
   },
     {
@@ -67,8 +67,6 @@ export const SignedOut = StackNavigator(
     },
     {
       tabBarPosition: 'bottom',
-      animationEnabled: true,
-      swipeEnabled: true,
       tabBarOptions: {
         showIcon: true,
         showLabel: false,
