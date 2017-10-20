@@ -93,6 +93,10 @@ _handleBackButton() {
     return true;
 }
 
+_returnGame(){
+    this.props.navigation.navigate('Mafia_Screen',{roomname:this.state.roomname})
+}
+
 _resetGame(){
     AsyncStorage.removeItem('ROOM-KEY');
     AsyncStorage.removeItem('GAME-KEY');
@@ -135,24 +139,27 @@ render() {
         </View>
         <View style = {{flex:1,justifyContent:'center'}}>
             <TouchableOpacity
-                onPress={()=>{this.props.navigation.navigate('Mafia_Screen',{roomname:this.state.roomname})}}
+                onPress={()=>{this._returnGame()}}
                 style={{
-                    flex:0.7,
+                    flex:0.8,
                     justifyContent:'center',
                     backgroundColor:'black',
                     opacity:this.state.roomexists?1:0.5
                 }}
                 disabled={!this.state.roomexists}
-            ><Text style = {{alignSelf:'center',color:'white'}}>CONTINUE</Text>
+            ><Text style = {{alignSelf:'center',color:'white',
+                fontFamily:'ConcertOne-Regular',fontSize:25}}>CONTINUE</Text>
             </TouchableOpacity>
         </View>
-        <View style = {{flex:1,justifyContent:'center'}}>
+        <View style = {{flex:0.5,justifyContent:'center',flexDirection:'row'}}>
             <TouchableOpacity
                 onPress={()=>{this._resetGame()}}
-                style={{flex:0.7,justifyContent:'center',backgroundColor:'black'}}
-            ><Text style = {{alignSelf:'center',color:'white'}}>QUIT</Text>
+                style={{flex:0.65,justifyContent:'center',backgroundColor:'black',borderRadius:15}}>
+            <Text style = {{alignSelf:'center',color:'white',
+                fontFamily:'ConcertOne-Regular',fontSize:20}}>QUIT</Text>
             </TouchableOpacity>
         </View>
+        <View style = {{flex:0.2}}/>
     </View>
     }
 }

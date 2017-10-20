@@ -95,7 +95,6 @@ _leaveGame() {
 
 _logOutPress() {
     if(firebase.auth().currentUser.isAnonymous){
-        alert('hello')
         onSignOut().then(() => { firebase.auth().currentUser.delete() })
         this.props.navigation.navigate('SignedOut');
     } else {

@@ -47,6 +47,7 @@ componentWillMount() {
 
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
 
+    //Necessary???
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
         .on('value',snap=>{
             this.setState({roomtype: snap.val()})
@@ -140,7 +141,7 @@ _createRoom() {
     firebase.database().ref('rooms/' + roomname).set({
         phase: 1,
         owner: firebase.auth().currentUser.uid,
-        playernum: 0,
+        playernum: 1,
         daycounter:1,
     });
 
@@ -218,6 +219,8 @@ render() {
                     }}
                     value={this.state.alias}
                     onChangeText = {(text) => {this.setState({alias: text})}}
+                    autoFocus={true}
+                    onSubmitEditing = {()=>{Keyboard.dismiss()}}
                 />
             </View>
 
@@ -318,7 +321,10 @@ render() {
                         flex:0.6,
                     }}
                     value={this.state.alias}
+                    autoFocus = {true}
+                    blurOnSubmit={false}
                     onChangeText = {(text) => {this.setState({alias: text})}}
+                    onSubmitEditing = {()=>this.refs['roomcode'].focus()}
                 />
             </View>
 
@@ -327,13 +333,17 @@ render() {
                 flexDirection: 'row',
             }}>
                 <TextInput
+                    ref='roomcode'
                     placeholder="Room Code ..."
                     style={{
                         backgroundColor: 'white',
                         flex:0.6,
                     }}
                     value={this.state.joincode}
+                    autoCapitalize='characters'
+                    blurOnSubmit={false}
                     onChangeText = {(text) => {this.setState({joincode: text})}}
+                    onSubmitEditing = {()=>{Keyboard.dismiss()}}
                 />
             </View>
 
@@ -372,8 +382,7 @@ constructor(props) {
     this.state = {
         roomname: params.roomname.toUpperCase(),
 
-        leftlist:dataSource,
-        rightlist:dataSource,
+        namelist:dataSource,
 
         rolecount:0,
         playercount:0,
@@ -391,6 +400,7 @@ constructor(props) {
 componentWillMount() {
     
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
+
     this._pullListOfPlayers();
     this._count();
     this._checkIfStart();
@@ -587,11 +597,9 @@ render() {
                 borderBottomLeftRadius: 15, borderBottomRightRadius: 15, 
                 backgroundColor: 'black', justifyContent: 'center', }}
             > 
-                <Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
-                    Lobby
-                </Text>
-                <Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
-                    {this.state.roomname}
+                <Text style = {{color:'white', alignSelf:'center',
+                    fontFamily:'ConcertOne-Regular', fontSize:25}}>
+                    {'Room Name: ' + this.state.roomname}
                 </Text>
             </View>
             <View style = {{flex:1}}/>
@@ -613,7 +621,7 @@ render() {
                                 margin: 3,
                                 justifyContent:'center'
                         }}> 
-                            <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>
+                            <Text style = {styles.concerto}>{item.name}</Text>
                         </TouchableOpacity>
 
                     )}
@@ -632,8 +640,7 @@ render() {
                 backgroundColor:'black',borderTopLeftRadius:15,borderBottomLeftRadius:15}}>
                 <TouchableOpacity
                     onPress={()=> {
-                        AsyncStorage.removeItem('ROOM-KEY');
-                        AsyncStorage.removeItem('GAME-KEY');
+                        alert('does nothing')
                     }}>
                     <MaterialCommunityIcons name='cursor-pointer'
                                 style={{color:'white', fontSize:26,alignSelf:'center'}}/>
@@ -772,6 +779,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         height: 22,
         color: 'white',
+    },
+    concerto: {
+        fontSize:17,
+        fontFamily:'ConcertOne-Regular',
+        color:'white',
+        alignSelf: 'center',
     },
 
 });

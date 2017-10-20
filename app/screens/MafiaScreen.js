@@ -654,7 +654,8 @@ _handleBackButton() {
 
 //Rendering the Main Game Header
 _renderHeader() {
-    return <View><Text style = {{color:'white', alignSelf:'center', fontWeight: 'bold',}}>
+    return <View><Text style = {{color:'white', alignSelf:'center', 
+        fontFamily: 'ConcertOne-Regular', fontSize:25}}>
         {this.state.phasename}
     </Text></View>
 }
@@ -681,7 +682,7 @@ _renderListComponent(){
                     >
                     {item.dead?<MaterialCommunityIcons name='skull'
                         style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
-                        <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>}
+                        <Text style = {styles.concerto}>{item.name}</Text>}
                 </TouchableOpacity>
             )}
             numColumns={2}
@@ -707,7 +708,7 @@ _renderListComponent(){
                     > 
                     {item.dead?<MaterialCommunityIcons name='skull'
                         style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
-                        <Text style = {{color:'white', alignSelf: 'center'}}>{item.name}</Text>}
+                        <Text style = {styles.concerto}>{item.name}</Text>}
                 </TouchableOpacity>
         )}
         keyExtractor={item => item.key}
@@ -1155,5 +1156,11 @@ const styles = StyleSheet.create({
         fontSize: 24,
         color: 'black',
         alignSelf:'center',
+    },
+    concerto: {
+        fontSize:17,
+        fontFamily:'ConcertOne-Regular',
+        color:'white',
+        alignSelf: 'center',
     },
 });
