@@ -169,11 +169,9 @@ componentWillMount() {
         this._updateNumbers(snap.val());
 
         this.roomRef.child('mafia').once('value',mafia=>{
-            if(mafia.numChildren() == 0){
+            if(mafia.numChildren() == 0 || mafia.numChildren()*2+1 > snap.val()){
                 this.props.navigation.navigate('Option_Screen',{roomname:this.state.roomname})
-            } else if(mafia.numChildren()*2+1 > snap.val()){
-                this.props.navigation.navigate('Option_Screen',{roomname:this.state.roomname})
-            } 
+            }
         })
     })
 

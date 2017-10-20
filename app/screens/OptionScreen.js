@@ -19,7 +19,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
-export default class Options_Screen extends React.Component {
+export class Option_Screen extends React.Component {
 
 constructor(props) {
     super(props);
@@ -29,11 +29,8 @@ constructor(props) {
 
     this.state = {
         roomname:           params.roomname,
-        gameover:           false,
         townwin:            false,
-
         checked:            false,
-        roomexists:         false,
     };
 
     this.roomRef = firebase.database().ref('rooms/' + roomname);
@@ -50,30 +47,23 @@ componentWillMount() {
                 if(mafia.numChildren() == 0){
                     this.setState({
                         checked:    true,
-                        gameover:   true,
                         townwin:    true,
-                        roomexists: true,
                     })
                 } else if(mafia.numChildren()*2+1 > snap.val().playernum){
                     this.setState({
                         checked:    true,
-                        gameover:   true,
                         townwin:    false,
-                        roomexists: true,
                     })
+                //Should not be triggered?
                 } else {
                     this.setState({
-                        checked:    true,
-                        gameover:   false,
-                        roomexists: true,
+                        checked: true,
                     })
                 }
             })
         } else {
             this.setState({
-                checked:            true,
-                gameover:           false,
-                roomexists:         false,
+                checked: true,
             })
         }
     })
@@ -94,7 +84,7 @@ _handleBackButton() {
 }
 
 _returnGame(){
-    this.props.navigation.navigate('Mafia_Screen',{roomname:this.state.roomname})
+    
 }
 
 _resetGame(){
@@ -107,17 +97,11 @@ _resetGame(){
 }
 
 _renderHeader() {
-    return this.state.gameover?
-        (this.state.townwin?<Text>town wins</Text>:<Text>mafia wins</Text>)
-        :
-        <Text>Looks like you were in a Game</Text>
+    return this.state.townwin?<Text>town wins</Text>:<Text>mafia wins</Text>
 }
 
 _renderImage() {
-    return this.state.gameover?
-    (this.state.townwin?<Text>town wins image</Text>:<Text>mafia wins image</Text>)
-    :
-    <Text>Looks like you were in a Game IMAGE</Text>
+    return this.state.townwin?<Text>town wins image</Text>:<Text>mafia wins image</Text>
 }
 
 render() {
@@ -144,11 +128,9 @@ render() {
                     flex:0.8,
                     justifyContent:'center',
                     backgroundColor:'black',
-                    opacity:this.state.roomexists?1:0.5
                 }}
-                disabled={!this.state.roomexists}
             ><Text style = {{alignSelf:'center',color:'white',
-                fontFamily:'ConcertOne-Regular',fontSize:25}}>CONTINUE</Text>
+                fontFamily:'ConcertOne-Regular',fontSize:25}}>PLAY AGAIN</Text>
             </TouchableOpacity>
         </View>
         <View style = {{flex:0.5,justifyContent:'center',flexDirection:'row'}}>
@@ -163,3 +145,69 @@ render() {
     </View>
     }
 }
+
+export class Expired_Screen extends React.Component {
+    
+    constructor(props) {
+        super(props);
+    }
+    
+    componentWillMount() {    
+        BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
+    }
+    
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
+    }
+    
+    _handleBackButton() {
+        return true;
+    }
+    
+    _resetGame(){
+        AsyncStorage.removeItem('ROOM-KEY');
+        AsyncStorage.removeItem('GAME-KEY');
+    
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+            .update({ name: null, phase:1 })
+        this.props.navigation.navigate('Room_Screen')
+    }
+    
+    _renderHeader() {
+        return <Text>Your game expired</Text>
+    }
+    
+    _renderImage() {
+        return <Text>awww poor baby</Text>
+    }
+    
+    render() {
+        return <View style = {{flex:3,backgroundColor:'white'}}>
+            <View style = {{flex:1,justifyContent:'center'}}>
+                <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
+                    {this._renderHeader()}
+                </View>
+            </View>
+            <View style = {{flex:5,justifyContent:'center'}}>
+                <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
+                    {this._renderImage()}
+                </View>
+            </View>
+            <View style = {{flex:1,justifyContent:'center',flexDirection:'row'}}>
+                <TouchableOpacity
+                    onPress={()=>{this._resetGame()}}
+                    style={{
+                        flex:0.7,
+                        justifyContent:'center',
+                        backgroundColor:'black',
+                        borderRadius:15,
+                    }}
+                ><Text style = {{alignSelf:'center',color:'white',
+                    fontFamily:'ConcertOne-Regular',fontSize:25}}>CONTINUE</Text>
+                </TouchableOpacity>
+            </View>
+            <View style = {{flex:1}}/>
+        </View>
+        }
+}
+    

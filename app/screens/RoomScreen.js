@@ -28,671 +28,657 @@ import { isInGame } from "../auth";
 import { isInRoom } from "../auth";
 
 import Mafia_Screen from './MafiaScreen.js';
-import Option_Screen from './OptionScreen.js';
+import { Option_Screen, Expired_Screen } from './OptionScreen.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
 class Room_Screen extends React.Component {
 
-constructor(props) {
-    super(props);
-    
-    this.state = {
-        roomtype:'',
-    };
-}
+    constructor(props) {
+        super(props);
+        
+        this.state = {
+            roomtype:'',
+        };
+    }
 
-componentWillMount() {
+    componentWillMount() {
 
-    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
+        BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
 
-    //Necessary???
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
-        .on('value',snap=>{
-            this.setState({roomtype: snap.val()})
-        })
+        //Necessary???
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
+            .on('value',snap=>{
+                this.setState({roomtype: snap.val()})
+            })
 
-}
+    }
 
-componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-}
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
+    }
 
-_handleBackButton() {
-    return true
-}
+    _handleBackButton() {
+        return true
+    }
 
-_createRoom() {
-    this.props.navigation.navigate('Create_Screen');
-}
+    _createRoom() {
+        this.props.navigation.navigate('Create_Screen');
+    }
 
-_findRoom() {
-    this.props.navigation.navigate('Join_Screen');
-}
+    _findRoom() {
+        this.props.navigation.navigate('Join_Screen');
+    }
 
-render() {
-    return <View 
-    style = {{
-        flex:1,
-        backgroundColor:'white'
-    }}>
-        <View style = {{flex:1}}> 
-            <TouchableWithoutFeedback 
-                style = {{ flex:1,justifyContent:'center' }}
-                onPress={()=>{ this._createRoom() }}>
-                <View style = {{flex:1,backgroundColor:'black',justifyContent:'center',alignItems:'center'}}>
-                    <Text style = {{
-                        fontFamily:'ConcertOne-Regular',
-                        color:'white',
-                        fontSize:30,
-                        justifyContent:'center'}}>Make a Room</Text>
-                </View>
-            </TouchableWithoutFeedback>
+    render() {
+        return <View 
+        style = {{
+            flex:1,
+            backgroundColor:'white'
+        }}>
+            <View style = {{flex:1}}> 
+                <TouchableWithoutFeedback 
+                    style = {{ flex:1,justifyContent:'center' }}
+                    onPress={()=>{ this._createRoom() }}>
+                    <View style = {{flex:1,backgroundColor:'black',justifyContent:'center',alignItems:'center'}}>
+                        <Text style = {{
+                            fontFamily:'ConcertOne-Regular',
+                            color:'white',
+                            fontSize:30,
+                            justifyContent:'center'}}>Make a Room</Text>
+                    </View>
+                </TouchableWithoutFeedback>
 
-            <TouchableWithoutFeedback 
-                style = {{ flex:1,justifyContent:'center' }}
-                onPress={()=>{ this._findRoom() }}>
-                <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
-                    <Text style = {{
-                        fontFamily:'ConcertOne-Regular',
-                        color:'black',
-                        fontSize:30,
-                        justifyContent:'center'}}>Join a Room</Text>
-                </View>
-            </TouchableWithoutFeedback>
+                <TouchableWithoutFeedback 
+                    style = {{ flex:1,justifyContent:'center' }}
+                    onPress={()=>{ this._findRoom() }}>
+                    <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+                        <Text style = {{
+                            fontFamily:'ConcertOne-Regular',
+                            color:'black',
+                            fontSize:30,
+                            justifyContent:'center'}}>Join a Room</Text>
+                    </View>
+                </TouchableWithoutFeedback>
+            </View>
         </View>
-    </View>
-}
+    }
 }
 
 class Create_Screen extends React.Component {
     constructor(props) {
-    super(props);
+        super(props);
 
-    this.state = {
-        alias:'',
-    };
-}
+        this.state = {
+            alias:'',
+        };
+    }
 
-componentWillMount() {
-    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-}
+    componentWillMount() {
+        BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
+    }
 
-componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-}
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
+    }
 
-_handleBackButton() {
-    return false
-}
+    _handleBackButton() {
+        return false
+    }
 
-_createRoom() {
-    const roomname = randomize('A',4);
+    _createRoom() {
+        const roomname = randomize('A',4);
 
-    //TODO: Check if room already exists
-    
-    AsyncStorage.setItem('ROOM-KEY', roomname);
+        //TODO: Check if room already exists
+        
+        AsyncStorage.setItem('ROOM-KEY', roomname);
 
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({
-        name: roomname,
-    });
-    
-    firebase.database().ref('rooms/' + roomname).set({
-        phase: 1,
-        owner: firebase.auth().currentUser.uid,
-        playernum: 1,
-        daycounter:1,
-    });
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({
+            name: roomname,
+        });
+        
+        firebase.database().ref('rooms/' + roomname).set({
+            phase: 1,
+            owner: firebase.auth().currentUser.uid,
+            playernum: 1,
+            daycounter:1,
+        });
 
-    //Set up list of players
-    firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
-        + firebase.auth().currentUser.uid).set({
-            name: this.state.alias,
-            dead:false,
-            bloody:false,
-            suspicious:false,
-    });
+        //Set up list of players
+        firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+            + firebase.auth().currentUser.uid).set({
+                name: this.state.alias,
+                dead:false,
+                bloody:false,
+                suspicious:false,
+        });
 
-    //Set up phases and rules
-    //Set up temporary list of roles
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type').once('value',outsnap=>{
-       
-        firebase.database().ref(outsnap.val() + '/roles').once('value',snap => {
-            snap.forEach((child)=>{
+        //Set up phases and rules
+        //Set up temporary list of roles
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type').once('value',outsnap=>{
+        
+            firebase.database().ref(outsnap.val() + '/roles').once('value',snap => {
+                snap.forEach((child)=>{
 
-                firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-                + '/' + child.val().name).set({
-                    count:0,
-                    color: child.val().color,
-                    desc: child.val().desc,
-                    type: child.val().type,
-                    roleid: child.key,
+                    firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+                    + '/' + child.val().name).set({
+                        count:0,
+                        color: child.val().color,
+                        desc: child.val().desc,
+                        type: child.val().type,
+                        roleid: child.key,
+                    })
+
                 })
+            }) 
 
-            })
-        }) 
+            firebase.database().ref(outsnap.val() + '/phases').once('value',snap=>{
+                snap.forEach((child)=>{
 
-        firebase.database().ref(outsnap.val() + '/phases').once('value',snap=>{
-            snap.forEach((child)=>{
+                    firebase.database().ref('rooms/' + roomname + '/phases/' + child.key).set({
+                        action:     child.val().action,
+                        actionreset:child.val().actionreset,
+                        continue:   child.val().continue,
+                        locked:     child.val().locked,
+                        name:       child.val().name,
+                        nominate:   child.val().nominate,
+                        trigger:    child.val().trigger,
+                        type:       child.val().type,
+                    })
 
-                firebase.database().ref('rooms/' + roomname + '/phases/' + child.key).set({
-                    action:     child.val().action,
-                    actionreset:child.val().actionreset,
-                    continue:   child.val().continue,
-                    locked:     child.val().locked,
-                    name:       child.val().name,
-                    nominate:   child.val().nominate,
-                    trigger:    child.val().trigger,
-                    type:       child.val().type,
                 })
-
             })
         })
-    })
-    
-    this.props.navigation.navigate('Lobby_Screen', {roomname: roomname})
-}
+        
+        this.props.navigation.navigate('Lobby_Screen', {roomname: roomname});
+        Keyboard.dismiss();
+    }
 
-render() {
-    return <TouchableWithoutFeedback 
-    style = {{ flex:1 }}
-    onPress={()=>{ Keyboard.dismiss() }}>
-        <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
-            <Text style = {{
-                fontFamily:'ConcertOne-Regular',
-                color:'black',
-                fontSize:30}}>Who are you?
-            </Text>
+    render() {
+        return <TouchableWithoutFeedback 
+        style = {{ flex:1 }}
+        onPress={()=>{ Keyboard.dismiss() }}>
+            <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+                <Text style = {{
+                    fontFamily:'ConcertOne-Regular',
+                    color:'black',
+                    fontSize:30}}>Who are you?
+                </Text>
 
+                <View style = {{ justifyContent: 'center', flexDirection: 'row', marginBottom:10 }}>
+                    <TextInput
+                        placeholder="Who are you? ..."
+                        style={{
+                            backgroundColor: 'white',
+                            flex:0.6,
+                        }}
+                        value={this.state.alias}
+                        onChangeText = {(text) => {this.setState({alias: text})}}
+                        autoFocus={true}
+                        onSubmitEditing = {()=>{Keyboard.dismiss()}}
+                    />
+                </View>
 
-            <View style = {{
-                margin: 5,
-                justifyContent: 'center',
-                flexDirection: 'row',
-            }}>
-                <TextInput
-                    placeholder="Who are you? ..."
-                    style={{
-                        backgroundColor: 'white',
-                        flex:0.6,
-                    }}
-                    value={this.state.alias}
-                    onChangeText = {(text) => {this.setState({alias: text})}}
-                    autoFocus={true}
-                    onSubmitEditing = {()=>{Keyboard.dismiss()}}
-                />
-            </View>
-
-            <View style = {{
-                margin: 5,
-                justifyContent: 'center',
-                alignItems:'center',
-                flexDirection: 'row',
-            }}>
+                <View style = {{ justifyContent: 'center', alignItems:'center', flexDirection: 'row' }}>
                     <View style = {{flex:0.75}}>
                     <Button
                         title="Go"
                         backgroundColor='black'
                         onPress={()=>{this._createRoom()}}
                     /></View>
+                </View>
 
+                {/*Make-shift Keyboard Avoiding View*/}
+                <View style = {{flex:0.2}}/> 
             </View>
-        </View>
-    </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback>
+    }
 }
-}
-
 
 class Join_Screen extends React.Component {
     constructor(props) {
-    super(props);
+        super(props);
 
-    this.state = {
-        joincode: '',
-        alias:'',
-    };
+        this.state = {
+            joincode: '',
+            alias:'',
+        };
+    }
 
-}
+    componentWillMount() {
+        BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
+    }
 
-componentWillMount() {
-    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-}
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
+    }
 
-componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-}
+    _handleBackButton() {
+        return false
+    }
 
-_handleBackButton() {
-    return false
-}
+    _joinRoom(joincode) {
+        firebase.database().ref('rooms/' + joincode).once('value', snap => {
+            if(snap.exists() && (snap.val().phase == 1)){
 
-_joinRoom(joincode) {
-    firebase.database().ref('rooms/' + joincode).once('value', snap => {
-        if(snap.exists() && (snap.val().phase == 1)){
+                AsyncStorage.setItem('ROOM-KEY', joincode);
 
-            AsyncStorage.setItem('ROOM-KEY', joincode);
+                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:joincode});
+                firebase.database().ref('rooms/' + joincode 
+                    + '/listofplayers/' + firebase.auth().currentUser.uid).update({
+                        name: this.state.alias,
+                        dead:false,
+                        bloody:false,
+                        suspicious:false,
+                });   
 
-            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:joincode});
-            firebase.database().ref('rooms/' + joincode 
-                + '/listofplayers/' + firebase.auth().currentUser.uid).update({
-                    name: this.state.alias,
-                    dead:false,
-                    bloody:false,
-                    suspicious:false,
-            });   
+                firebase.database().ref('rooms/' + joincode + '/playernum').transaction((playernum) => {
+                    return (playernum + 1);
+                });       
+                
+                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+                .update({ name:joincode })
 
-            firebase.database().ref('rooms/' + joincode + '/playernum').transaction((playernum) => {
-                return (playernum + 1);
-            });       
-            
-            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-            .update({ name:joincode })
+                this.props.navigation.navigate('Lobby_Screen', { roomname: joincode});
+            } else if (snap.exists() && (snap.val().phase > 1)) {
+                alert('Game has already started.')
+            } else {
+                alert('Room does not Exist.')
+            }
+        })
+    }
 
-            this.props.navigation.navigate('Lobby_Screen', { roomname: joincode});
-        } else if (snap.exists() && (snap.val().phase > 1)) {
-            alert('Game has already started.')
-        } else {
-            alert('Room does not Exist.')
-        }
-    })
-}
-
-render() {
-    return <TouchableWithoutFeedback 
-    style = {{ flex:1 }}
-    onPress={()=>{ Keyboard.dismiss() }}>
-        <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
-            <Text style = {{
-                fontFamily:'ConcertOne-Regular',
-                color:'black',
-                fontSize:30}}>Join Room
-            </Text>
+    render() {
+        return <TouchableWithoutFeedback 
+        style = {{ flex:1 }}
+        onPress={()=>{ Keyboard.dismiss() }}>
+            <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+                <Text style = {{
+                    fontFamily:'ConcertOne-Regular',
+                    color:'black',
+                    fontSize:30}}>Join Room
+                </Text>
 
 
-            <View style = {{
-                justifyContent: 'center',
-                flexDirection: 'row',
-            }}>
-                <TextInput
-                    placeholder="Who are you? ..."
-                    style={{
-                        backgroundColor: 'white',
-                        flex:0.6,
-                    }}
-                    value={this.state.alias}
-                    autoFocus = {true}
-                    blurOnSubmit={false}
-                    onChangeText = {(text) => {this.setState({alias: text})}}
-                    onSubmitEditing = {()=>this.refs['roomcode'].focus()}
-                />
+                <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
+                    <TextInput
+                        placeholder="Who are you? ..."
+                        style={{
+                            backgroundColor: 'white',
+                            flex:0.6,
+                        }}
+                        value={this.state.alias}
+                        autoFocus = {true}
+                        blurOnSubmit={false}
+                        onChangeText = {(text) => {this.setState({alias: text})}}
+                        onSubmitEditing = {()=>this.refs['roomcode'].focus()}
+                    />
+                </View>
+
+                <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
+                    <TextInput
+                        ref='roomcode'
+                        placeholder="Room Code ..."
+                        style={{
+                            backgroundColor: 'white',
+                            flex:0.6,
+                        }}
+                        value={this.state.joincode}
+                        autoCapitalize='characters'
+                        blurOnSubmit={false}
+                        onChangeText = {(text) => {this.setState({joincode: text})}}
+                        onSubmitEditing = {()=>{Keyboard.dismiss()}}
+                    />
+                </View>
+
+                <View style = {{ margin: 5, justifyContent: 'center', alignItems:'center', flexDirection: 'row' }}>
+                        <View style = {{flex:0.75}}>
+                        <Button
+                            title="Go"
+                            backgroundColor='black'
+                            onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
+                        /></View>
+
+                </View>
+
+                {/*Makeshift Keyboard Avoiding View*/}
+                <View style = {{flex:0.3}}/>
             </View>
 
-            <View style = {{
-                justifyContent: 'center',
-                flexDirection: 'row',
-            }}>
-                <TextInput
-                    ref='roomcode'
-                    placeholder="Room Code ..."
-                    style={{
-                        backgroundColor: 'white',
-                        flex:0.6,
-                    }}
-                    value={this.state.joincode}
-                    autoCapitalize='characters'
-                    blurOnSubmit={false}
-                    onChangeText = {(text) => {this.setState({joincode: text})}}
-                    onSubmitEditing = {()=>{Keyboard.dismiss()}}
-                />
-            </View>
 
-            <View style = {{
-                margin: 5,
-                justifyContent: 'center',
-                alignItems:'center',
-                flexDirection: 'row',
-            }}>
-                    <View style = {{flex:0.75}}>
-                    <Button
-                        title="Go"
-                        backgroundColor='black'
-                        onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
-                    /></View>
-
-            </View>
-        </View>
-    </TouchableWithoutFeedback>
-}
+        </TouchableWithoutFeedback>
+    }
 }
 
 class Lobby_Screen extends React.Component {
 
-constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    const dataSource = new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-    });
+        const dataSource = new ListView.DataSource({
+            rowHasChanged: (row1, row2) => row1 !== row2,
+        });
 
-    //Navigation parameters
-    const { params } = this.props.navigation.state;
-    const roomname = params.roomname.toUpperCase();
+        //Navigation parameters
+        const { params } = this.props.navigation.state;
+        const roomname = params.roomname.toUpperCase();
 
-    this.state = {
-        roomname: params.roomname.toUpperCase(),
+        this.state = {
+            roomname: params.roomname.toUpperCase(),
 
-        namelist:dataSource,
+            namelist:dataSource,
 
-        rolecount:0,
-        playercount:0,
+            rolecount:0,
+            playercount:0,
 
-        amiowner:false,
-    };
+            amiowner:false,
+        };
 
-    this.roleCount = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
-    this.playerCount = firebase.database().ref('rooms/' + roomname + '/listofplayers');
-    this.gameStart = firebase.database().ref('rooms/' + roomname + '/phase');
-    this.ownerListener = firebase.database().ref('rooms/' + roomname + '/owner');
+        this.roleCount = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
+        this.playerCount = firebase.database().ref('rooms/' + roomname + '/listofplayers');
+        this.gameStart = firebase.database().ref('rooms/' + roomname + '/phase');
+        this.ownerListener = firebase.database().ref('rooms/' + roomname + '/owner');
 
-}
-
-componentWillMount() {
-    
-    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-
-    this._pullListOfPlayers();
-    this._count();
-    this._checkIfStart();
-
-    this.ownerListener.on('value',snap=>{
-        if(snap.val() == firebase.auth().currentUser.uid){
-            this.setState({amiowner:true})
-        } else {
-            this.setState({amiowner:false})
-        }
-    })
-
-}
-
-componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-
-    if(this.roleCount){
-        this.roleCount.off();
     }
-    if(this.playerCount){
-        this.playerCount.off();
-    }
-    if(this.gameStart){
-        this.gameStart.off();
-    }
-    if(this.ownerListener){
-        this.ownerListener.off();
-    }
-}
 
-_pullListOfPlayers() {
-    firebase.database().ref('rooms/' + this.state.roomname.toUpperCase() 
-        + '/listofplayers').on('value',snap => {
+    componentWillMount() {
         
-        var list = [];
-        snap.forEach((child)=> {
-            list.push({
-                name: child.val().name,
-                key: child.key,
-            })
-        })
-        this.setState({namelist:list})
-    })
-}
+        BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
 
-_handleBackButton() {
-    return true;
-}
+        this._pullListOfPlayers();
+        this._count();
+        this._checkIfStart();
 
-_deleteRoom() {
-
-    AsyncStorage.removeItem('ROOM-KEY');
-
-    firebase.database().ref('rooms/' + this.state.roomname).remove();
-    firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
-    this.props.navigation.navigate('Room_Screen');
-}
-
-_leaveRoom(roomname) {
-
-    AsyncStorage.removeItem('ROOM-KEY');
-
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
-    firebase.database().ref('rooms/' + roomname.toUpperCase() + '/playernum').transaction((playernum) => {
-        return (playernum - 1);
-    });  
-    this.props.navigation.navigate('Room_Screen');
-}
-
-_count() {
-
-    //Role Count
-    this.roleCount.on('value',snap=>{
-        var rolecount = 0;
-        snap.forEach((child)=>{
-            rolecount = rolecount + child.val().count;
-        })
-        this.setState({rolecount:rolecount})
-    });
-
-    //Player Count
-    this.playerCount.on('value',snap=>{
-        this.setState({playercount:snap.numChildren()})
-    });
-}
-
-_checkIfStart() {
-    this.gameStart.on('value',snap=> {
-        if(snap.val() > 1 ){
-            
-            AsyncStorage.setItem('GAME-KEY',this.state.roomname);
-
-            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                .update({phase: snap.val()})
-            this.props.navigation.navigate('Mafia_Screen', {roomname: this.state.roomname})
-        }
-    })
-}
-
-_startGame(rolecount,playercount,roomname) {
-
-    if(rolecount==playercount){
-
-        AsyncStorage.setItem('GAME-KEY',roomname);
-
-        this._handOutRoles(roomname);
-
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
-
-        firebase.database().ref('rooms/' + roomname).update({phase:2});
-
-        this.props.navigation.navigate('Mafia_Screen', { roomname:roomname })
-    } else {
-        alert('The number of players does not match the Game set-up.');
-    }
-}
-
-_handOutRoles(roomname){
-
-    var randomstring = '';
-    var charcount = 0;
-
-    firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).once('value',snap=>{
-
-        snap.forEach((child)=>{
-            if(child.val().count > 0){
-                for(i=0;i<child.val().count;i++){
-                    if(child.val().roleid == 'E'){
-                        randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
-                        charcount++
-                    } else if (child.val().roleid == 'I'){ //Random Mischeif Mafia
-                        randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
-                        charcount++
-                    } else if (child.val().roleid == 'M'){ //Random Inspective Town
-                        randomstring = randomstring + randomize('?', 1, {chars: 'KL'})
-                        charcount++
-                    } else if (child.val().roleid == 'P'){ //Random Stalling Town
-                        randomstring = randomstring + randomize('?', 1, {chars: 'NO'})
-                        charcount++
-                    } else if (child.val().roleid == 'S'){ //Random Specialist Town
-                        randomstring = randomstring + randomize('?', 1, {chars: 'QR'})
-                        charcount++
-                    } else if (child.val().roleid == 'T'){ //Random Town
-                        randomstring = randomstring + randomize('?', 1, {chars: 'KLNOQR'})
-                        charcount++
-                    } else {
-                        randomstring = randomstring + child.val().roleid
-                        charcount++
-                    }
-                }
+        this.ownerListener.on('value',snap=>{
+            if(snap.val() == firebase.auth().currentUser.uid){
+                this.setState({amiowner:true})
+            } else {
+                this.setState({amiowner:false})
             }
         })
 
-        var min = Math.ceil(1);
-        var max = Math.ceil(charcount);
+    }
 
-        firebase.database().ref('rooms/' + roomname + '/listofplayers').once('value',insidesnap=>{
-            insidesnap.forEach((child)=>{
+    componentWillUnmount() {
+        BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
 
-                var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
+        if(this.roleCount){
+            this.roleCount.off();
+        }
+        if(this.playerCount){
+            this.playerCount.off();
+        }
+        if(this.gameStart){
+            this.gameStart.off();
+        }
+        if(this.ownerListener){
+            this.ownerListener.off();
+        }
+    }
 
-                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + child.key)
-                    .update({roleid: randomstring.charAt(randomnumber - 1)});
-
-                if(randomstring.charAt(randomnumber - 1) == 'A' ||
-                    randomstring.charAt(randomnumber - 1) == 'B' ||
-                    randomstring.charAt(randomnumber - 1) == 'C' ||
-                    randomstring.charAt(randomnumber - 1) == 'D' ||
-                    randomstring.charAt(randomnumber - 1) == 'J'){
-                        firebase.database().ref('rooms/' + roomname + '/mafia/' 
-                            + child.key).update({roleid:randomstring.charAt(randomnumber - 1)})
-                }
-                
-                max = max - 1;
-                randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);
-
+    _pullListOfPlayers() {
+        firebase.database().ref('rooms/' + this.state.roomname.toUpperCase() 
+            + '/listofplayers').on('value',snap => {
+            
+            var list = [];
+            snap.forEach((child)=> {
+                list.push({
+                    name: child.val().name,
+                    key: child.key,
+                })
             })
+            this.setState({namelist:list})
         })
+    }
 
-    })
+    _handleBackButton() {
+        return true;
+    }
+
+    _deleteRoom() {
+
+        AsyncStorage.removeItem('ROOM-KEY');
+
+        firebase.database().ref('rooms/' + this.state.roomname).remove();
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
+        this.props.navigation.navigate('Room_Screen');
+    }
+
+    _leaveRoom(roomname) {
+
+        AsyncStorage.removeItem('ROOM-KEY');
+
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
+        firebase.database().ref('rooms/' + roomname.toUpperCase() + '/playernum').transaction((playernum) => {
+            return (playernum - 1);
+        });  
+        this.props.navigation.navigate('Room_Screen');
+    }
+
+    _count() {
+
+        //Role Count
+        this.roleCount.on('value',snap=>{
+            var rolecount = 0;
+            snap.forEach((child)=>{
+                rolecount = rolecount + child.val().count;
+            })
+            this.setState({rolecount:rolecount})
+        });
+
+        //Player Count
+        this.playerCount.on('value',snap=>{
+            this.setState({playercount:snap.numChildren()})
+        });
+    }
+
+    _checkIfStart() {
+        this.gameStart.on('value',snap=> {
+            if(snap.val() > 1 ){
+                
+                AsyncStorage.setItem('GAME-KEY',this.state.roomname);
+
+                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+                    .update({phase: snap.val()})
+                this.props.navigation.navigate('Mafia_Screen', {roomname: this.state.roomname})
+            }
+        })
+    }
+
+    _startGame(rolecount,playercount,roomname) {
+
+        if(rolecount==playercount){
+
+            AsyncStorage.setItem('GAME-KEY',roomname);
+
+            this._handOutRoles(roomname);
+
+            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
+
+            firebase.database().ref('rooms/' + roomname).update({phase:2});
+
+            this.props.navigation.navigate('Mafia_Screen', { roomname:roomname })
+        } else {
+            alert('The number of players does not match the Game set-up.');
+        }
+    }
+
+    _handOutRoles(roomname){
+
+        var randomstring = '';
+        var charcount = 0;
+
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).once('value',snap=>{
+
+            snap.forEach((child)=>{
+                if(child.val().count > 0){
+                    for(i=0;i<child.val().count;i++){
+                        if(child.val().roleid == 'E'){
+                            randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
+                            charcount++
+                        } else if (child.val().roleid == 'I'){ //Random Mischeif Mafia
+                            randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
+                            charcount++
+                        } else if (child.val().roleid == 'M'){ //Random Inspective Town
+                            randomstring = randomstring + randomize('?', 1, {chars: 'KL'})
+                            charcount++
+                        } else if (child.val().roleid == 'P'){ //Random Stalling Town
+                            randomstring = randomstring + randomize('?', 1, {chars: 'NO'})
+                            charcount++
+                        } else if (child.val().roleid == 'S'){ //Random Specialist Town
+                            randomstring = randomstring + randomize('?', 1, {chars: 'QR'})
+                            charcount++
+                        } else if (child.val().roleid == 'T'){ //Random Town
+                            randomstring = randomstring + randomize('?', 1, {chars: 'KLNOQR'})
+                            charcount++
+                        } else {
+                            randomstring = randomstring + child.val().roleid
+                            charcount++
+                        }
+                    }
+                }
+            })
+
+            var min = Math.ceil(1);
+            var max = Math.ceil(charcount);
+
+            firebase.database().ref('rooms/' + roomname + '/listofplayers').once('value',insidesnap=>{
+                insidesnap.forEach((child)=>{
+
+                    var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
+
+                    firebase.database().ref('rooms/' + roomname + '/listofplayers/' + child.key)
+                        .update({roleid: randomstring.charAt(randomnumber - 1)});
+
+                    if(randomstring.charAt(randomnumber - 1) == 'A' ||
+                        randomstring.charAt(randomnumber - 1) == 'B' ||
+                        randomstring.charAt(randomnumber - 1) == 'C' ||
+                        randomstring.charAt(randomnumber - 1) == 'D' ||
+                        randomstring.charAt(randomnumber - 1) == 'J'){
+                            firebase.database().ref('rooms/' + roomname + '/mafia/' 
+                                + child.key).update({roleid:randomstring.charAt(randomnumber - 1)})
+                    }
+                    
+                    max = max - 1;
+                    randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);
+
+                })
+            })
+
+        })
+    }
+
+    render() {
+        return <View style = {{
+            backgroundColor: 'white',
+            flex: 1,
+        }}>
+            <View style = {{flex:1,flexDirection:'row'}}>
+                <View style = {{flex:1}}/>
+                <View style = {{
+                    flex:15, 
+                    borderBottomLeftRadius: 15, borderBottomRightRadius: 15, 
+                    backgroundColor: 'black', justifyContent: 'center', }}
+                > 
+                    <Text style = {{color:'white', alignSelf:'center',
+                        fontFamily:'ConcertOne-Regular', fontSize:25}}>
+                        {'Room Name: ' + this.state.roomname}
+                    </Text>
+                </View>
+                <View style = {{flex:1}}/>
+            </View>
+
+            <View style = {{flex:0.15}}/>
+
+            <View style = {{flex:10.65,flexDirection: 'row'}}>
+                <View style = {{flex:0.2}}/>
+                <View style = {{flex:3}}><FlatList
+                        data={this.state.namelist}
+                        renderItem={({item}) => (
+                            <TouchableOpacity 
+                                onPress={() => { }}
+                                style = {{height:40,
+                                    flex:0.5,
+                                    borderRadius:5,
+                                    backgroundColor: 'black',
+                                    margin: 3,
+                                    justifyContent:'center'
+                            }}> 
+                                <Text style = {styles.concerto}>{item.name}</Text>
+                            </TouchableOpacity>
+
+                        )}
+                        keyExtractor={item => item.key}
+                        numColumns={2}
+                    />
+                </View>
+                <View style = {{flex:0.2}}/>
+            </View>
+
+            <View style = {{flex:0.15}}/>
+
+            <View style = {{flex:1,flexDirection:'row'}}>
+                <View style = {{flex:0.2}}/>
+                <View style = {{flex:0.36,justifyContent:'center',
+                    backgroundColor:'black',borderTopLeftRadius:15,borderBottomLeftRadius:15}}>
+                    <TouchableOpacity
+                        onPress={()=> {
+                            alert('does nothing')
+                        }}>
+                        <MaterialCommunityIcons name='cursor-pointer'
+                                    style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+                    </TouchableOpacity>
+                </View>
+                <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
+                    <TouchableOpacity
+                        onPress={()=> {
+                            AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+                                alert(result)
+                            })
+                        }}>
+                        <MaterialCommunityIcons name='dice-5'
+                                    style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+                    </TouchableOpacity>
+                </View>
+                <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
+                    <TouchableOpacity
+                        onPress={()=> {
+                            this.state.amiowner?this._startGame(this.state.rolecount,this.state.playercount,
+                                this.state.roomname):alert('You are not the Owner');
+                        }}>
+                        <MaterialCommunityIcons name='play-circle'
+                                    style={{color:'white', fontSize:32,alignSelf:'center'}}/>
+                    </TouchableOpacity>
+                </View>
+                <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
+                    <TouchableOpacity
+                        onPress={()=> {
+                            alert(randomize('?', 1, {chars: 'AB'}))
+                        }}>
+                        <MaterialCommunityIcons name='bookmark'
+                                    style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+                    </TouchableOpacity>
+                </View>
+                <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black',
+                    borderTopRightRadius:15,borderBottomRightRadius:15}}>
+                    <TouchableOpacity
+                        onPress={()=> {
+                            this.state.amiowner?this._deleteRoom():this._leaveRoom(this.state.roomname);
+                        }}>
+                        <MaterialCommunityIcons name={this.state.amiowner?'delete-circle':'close-circle'}
+                                    style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+                    </TouchableOpacity>
+                </View>
+                <View style = {{flex:0.2}}/>
+            </View>
+
+            <View style = {{flex:0.15}}/>
+
+        </View>
+    }
 }
-
-render() {
-    return <View style = {{
-        backgroundColor: 'white',
-        flex: 1,
-    }}>
-        <View style = {{flex:1,flexDirection:'row'}}>
-            <View style = {{flex:1}}/>
-            <View style = {{
-                flex:15, 
-                borderBottomLeftRadius: 15, borderBottomRightRadius: 15, 
-                backgroundColor: 'black', justifyContent: 'center', }}
-            > 
-                <Text style = {{color:'white', alignSelf:'center',
-                    fontFamily:'ConcertOne-Regular', fontSize:25}}>
-                    {'Room Name: ' + this.state.roomname}
-                </Text>
-            </View>
-            <View style = {{flex:1}}/>
-        </View>
-
-        <View style = {{flex:0.15}}/>
-
-        <View style = {{flex:10.65,flexDirection: 'row'}}>
-            <View style = {{flex:0.2}}/>
-            <View style = {{flex:3}}><FlatList
-                    data={this.state.namelist}
-                    renderItem={({item}) => (
-                        <TouchableOpacity 
-                            onPress={() => { }}
-                            style = {{height:40,
-                                flex:0.5,
-                                borderRadius:5,
-                                backgroundColor: 'black',
-                                margin: 3,
-                                justifyContent:'center'
-                        }}> 
-                            <Text style = {styles.concerto}>{item.name}</Text>
-                        </TouchableOpacity>
-
-                    )}
-                    keyExtractor={item => item.key}
-                    numColumns={2}
-                />
-            </View>
-            <View style = {{flex:0.2}}/>
-        </View>
-
-        <View style = {{flex:0.15}}/>
-
-        <View style = {{flex:1,flexDirection:'row'}}>
-            <View style = {{flex:0.2}}/>
-            <View style = {{flex:0.36,justifyContent:'center',
-                backgroundColor:'black',borderTopLeftRadius:15,borderBottomLeftRadius:15}}>
-                <TouchableOpacity
-                    onPress={()=> {
-                        alert('does nothing')
-                    }}>
-                    <MaterialCommunityIcons name='cursor-pointer'
-                                style={{color:'white', fontSize:26,alignSelf:'center'}}/>
-                </TouchableOpacity>
-            </View>
-            <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
-                <TouchableOpacity
-                    onPress={()=> {
-                        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
-                            alert(result)
-                        })
-                    }}>
-                    <MaterialCommunityIcons name='dice-5'
-                                style={{color:'white', fontSize:26,alignSelf:'center'}}/>
-                </TouchableOpacity>
-            </View>
-            <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
-                <TouchableOpacity
-                    onPress={()=> {
-                        this.state.amiowner?this._startGame(this.state.rolecount,this.state.playercount,
-                            this.state.roomname):alert('You are not the Owner');
-                    }}>
-                    <MaterialCommunityIcons name='play-circle'
-                                style={{color:'white', fontSize:32,alignSelf:'center'}}/>
-                </TouchableOpacity>
-            </View>
-            <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
-                <TouchableOpacity
-                    onPress={()=> {
-                        alert(randomize('?', 1, {chars: 'AB'}))
-                    }}>
-                    <MaterialCommunityIcons name='bookmark'
-                                style={{color:'white', fontSize:26,alignSelf:'center'}}/>
-                </TouchableOpacity>
-            </View>
-            <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black',
-                borderTopRightRadius:15,borderBottomRightRadius:15}}>
-                <TouchableOpacity
-                    onPress={()=> {
-                        this.state.amiowner?this._deleteRoom():this._leaveRoom(this.state.roomname);
-                    }}>
-                    <MaterialCommunityIcons name={this.state.amiowner?'delete-circle':'close-circle'}
-                                style={{color:'white', fontSize:26,alignSelf:'center'}}/>
-                </TouchableOpacity>
-            </View>
-            <View style = {{flex:0.2}}/>
-        </View>
-
-        <View style = {{flex:0.15}}/>
-
-    </View>
-}}
 
 
 export default class App extends React.Component {
@@ -706,6 +692,9 @@ export default class App extends React.Component {
           inRoom:           false,
           checkedInRoom:    false,
 
+          isExpired:        false,
+          checkedExpired:   false,
+
         };
 
         AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
@@ -714,7 +703,7 @@ export default class App extends React.Component {
       }
     
     componentWillMount() {
-
+        
         isInGame()
             .then(res => this.setState({ inGame: res, checkedInGame: true }))
             .catch(err => alert("is In Game error"));
@@ -722,22 +711,39 @@ export default class App extends React.Component {
         isInRoom()
             .then(res => this.setState({ inRoom: res, checkedInRoom: true }))
             .catch(err => alert("is In Room error"));
+
+        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+            if(result){
+                firebase.database().ref('rooms/' + result + '/listofplayers/' 
+                + firebase.auth().currentUser.uid).once('value',snap=>{
+                    if(!snap.exists()){
+                        this.setState({isExpired:true, checkedExpired:true})
+                    } else {
+                        this.setState({isExpired:false, checkedExpired:true})
+                    }
+                })
+            }  else {
+                this.setState({checkedExpired:true})
+            }
+        })
+        
     }
 
     render(){
-        const { checkedInGame, inGame, checkedInRoom, inRoom, roomname } = this.state;
+        const { checkedInGame, inGame, checkedInRoom, inRoom,
+            checkedExpired, isExpired, roomname } = this.state;
         
         // If we haven't checked AsyncStorage yet, don't render anything (better ways to do this)
-        if (!checkedInGame || !checkedInRoom) {
+        if (!checkedInGame || !checkedInRoom || !checkedExpired) {
             return null;
         }
 
-        const Layout = createRoomNavigator(inGame,inRoom,roomname);
+        const Layout = createRoomNavigator(inGame,inRoom,isExpired,roomname);
         return <Layout />;
     }
 }
 
-export const createRoomNavigator = (inGame,inRoom,key) => {
+export const createRoomNavigator = (inGame,inRoom,isExpired,key) => {
     return StackNavigator(
     
         {
@@ -749,6 +755,9 @@ export const createRoomNavigator = (inGame,inRoom,key) => {
             },
             Join_Screen: {
             screen: Join_Screen,
+            },
+            Expired_Screen: {
+                screen: Expired_Screen,
             },
             Lobby_Screen: {
             screen: Lobby_Screen,
@@ -762,12 +771,16 @@ export const createRoomNavigator = (inGame,inRoom,key) => {
         },
             {
                 headerMode: 'none',
-                initialRouteName: inRoom?(inGame?'Option_Screen':'Lobby_Screen'):'Room_Screen',
+                initialRouteName: 
+                    inRoom?(
+                        inGame?(
+                            isExpired?'Expired_Screen':'Mafia_Screen'
+                        ):'Lobby_Screen'
+                    ):'Room_Screen',
                 initialRouteParams: {roomname:key}
             }
         );
 } 
-
 
 const styles = StyleSheet.create({
     actionButtonIcon: {
