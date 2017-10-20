@@ -67,7 +67,7 @@ _createRoom() {
 }
 
 _findRoom() {
-    this.props.navigation.navigate('Search_Screen');
+    this.props.navigation.navigate('Join_Screen');
 }
 
 render() {
@@ -240,20 +240,20 @@ render() {
 }
 }
 
-class Search_Screen extends React.Component {
+
+class Join_Screen extends React.Component {
     constructor(props) {
     super(props);
 
     this.state = {
-        roomname:'',
+        joincode: '',
+        alias:'',
     };
 
 }
 
 componentWillMount() {
-
     BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-
 }
 
 componentWillUnmount() {
@@ -262,108 +262,6 @@ componentWillUnmount() {
 
 _handleBackButton() {
     return false
-}
-
-_searchRoom(joincode) {
-    firebase.database().ref('rooms/' + joincode.toUpperCase()).once('value', snap => {
-        if(snap.exists() && (snap.val().phase == 1)){
-            this.props.navigation.navigate('Join_Screen', { roomname: joincode.toUpperCase()});
-        } else if (snap.exists() && (snap.val().phase > 1)) {
-            alert('Game has already started.')
-        } else {
-            alert('Room does not Exist.')
-        }
-    })
-}
-
-render() {
-    return <TouchableWithoutFeedback 
-    style = {{ flex:1 }}
-    onPress={()=>{ Keyboard.dismiss() }}>
-        <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
-            <Text style = {{
-                fontFamily:'ConcertOne-Regular',
-                color:'black',
-                fontSize:30}}>Enter the Room Code:
-            </Text>
-
-
-            <View style = {{
-                margin: 5,
-                justifyContent: 'center',
-                flexDirection: 'row',
-            }}>
-                <TextInput
-                    placeholder="Room CODE ..."
-                    style={{
-                        backgroundColor: 'white',
-                        flex:0.6,
-                    }}
-                    value={this.state.roomname}
-                    onChangeText = {(text) => {this.setState({roomname: text})}}
-                />
-            </View>
-
-            <View style = {{
-                margin: 5,
-                justifyContent: 'center',
-                alignItems:'center',
-                flexDirection: 'row',
-            }}>
-                    <View style = {{flex:0.75}}>
-                    <Button
-                        title="Search"
-                        backgroundColor='black'
-                        onPress={()=>{this._searchRoom(this.state.roomname)}}
-                    /></View>
-
-            </View>
-        </View>
-    </TouchableWithoutFeedback>
-}
-}
-
-class Join_Screen extends React.Component {
-    constructor(props) {
-    super(props);
-
-    //Navigation parameters
-    const { params } = this.props.navigation.state;
-    const roomname = params.roomname;
-
-    this.state = {
-        roomname: params.roomname,
-        alias:'',
-    };
-
-    this.roomRef = firebase.database().ref('rooms/' + roomname);
-
-}
-
-componentWillMount() {
-    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-
-    this.roomRef.on('value',snap=>{
-        if(snap.exists() && (snap.val().phase == 1)){
-            
-        } else if (snap.exists() && (snap.val().phase > 1)) {
-            this.props.navigation.navigate('Search_Screen');
-        } else {
-            this.props.navigation.navigate('Search_Screen');
-        }
-    })
-}
-
-componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-
-    if(this.roomRef){
-        this.roomRef.off();
-    }
-}
-
-_handleBackButton() {
-    return true
 }
 
 _joinRoom(joincode) {
@@ -405,12 +303,11 @@ render() {
             <Text style = {{
                 fontFamily:'ConcertOne-Regular',
                 color:'black',
-                fontSize:30}}>Who are you?
+                fontSize:30}}>Join Room
             </Text>
 
 
             <View style = {{
-                margin: 5,
                 justifyContent: 'center',
                 flexDirection: 'row',
             }}>
@@ -426,6 +323,21 @@ render() {
             </View>
 
             <View style = {{
+                justifyContent: 'center',
+                flexDirection: 'row',
+            }}>
+                <TextInput
+                    placeholder="Room Code ..."
+                    style={{
+                        backgroundColor: 'white',
+                        flex:0.6,
+                    }}
+                    value={this.state.joincode}
+                    onChangeText = {(text) => {this.setState({joincode: text})}}
+                />
+            </View>
+
+            <View style = {{
                 margin: 5,
                 justifyContent: 'center',
                 alignItems:'center',
@@ -435,7 +347,7 @@ render() {
                     <Button
                         title="Go"
                         backgroundColor='black'
-                        onPress={()=>{this._joinRoom(this.state.roomname)}}
+                        onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
                     /></View>
 
             </View>
@@ -827,9 +739,6 @@ export const createRoomNavigator = (inGame,inRoom,key) => {
             },
             Create_Screen: {
             screen: Create_Screen,
-            },
-            Search_Screen: {
-            screen: Search_Screen,
             },
             Join_Screen: {
             screen: Join_Screen,
