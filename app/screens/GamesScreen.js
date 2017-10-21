@@ -4,7 +4,6 @@ import {
     View,
     Image,
     AsyncStorage,
-    BackHandler,
     Text,
     ListView,
     FlatList,

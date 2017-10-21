@@ -2,7 +2,6 @@ import React from "react";
 import { 
     View, 
     Keyboard, 
-    BackHandler,
     AsyncStorage
 } from "react-native";
 import { Button, FormInput } from "react-native-elements";

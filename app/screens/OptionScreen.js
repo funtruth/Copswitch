@@ -4,7 +4,6 @@ import {
     View,
     Image,
     AsyncStorage,
-    BackHandler,
     Text,
     Keyboard,
     TouchableOpacity
@@ -39,8 +38,6 @@ constructor(props) {
 
 componentWillMount() {
 
-    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-
     this.roomRef.on('value',snap=>{
         if(snap.exists()){
             this.roomRef.child('mafia').once('value',mafia=>{
@@ -71,16 +68,11 @@ componentWillMount() {
 }
 
 componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
 
     if(this.roomRef){
         this.roomRef.off();
     }
 
-}
-
-_handleBackButton() {
-    return true;
 }
 
 _returnGame(){
@@ -161,18 +153,6 @@ export class Expired_Screen extends React.Component {
     
     constructor(props) {
         super(props);
-    }
-    
-    componentWillMount() {    
-        BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-    }
-    
-    componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-    }
-    
-    _handleBackButton() {
-        return true;
     }
     
     _resetGame(){

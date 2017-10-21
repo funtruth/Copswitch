@@ -45,8 +45,6 @@ class Room_Screen extends React.Component {
 
     componentWillMount() {
 
-        BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-
         //Necessary???
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
             .on('value',snap=>{
@@ -56,11 +54,6 @@ class Room_Screen extends React.Component {
     }
 
     componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-    }
-
-    _handleBackButton() {
-        return false
     }
 
     _createRoom() {
@@ -113,18 +106,6 @@ class Create_Screen extends React.Component {
         this.state = {
             alias:'',
         };
-    }
-
-    componentWillMount() {
-        BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-    }
-
-    componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-    }
-
-    _handleBackButton() {
-        return false
     }
 
     _createRoom() {
@@ -191,7 +172,15 @@ class Create_Screen extends React.Component {
             })
         })
         
-        this.props.navigation.navigate('Lobby_Screen', {roomname: roomname});
+        //this.props.navigation.navigate('Lobby_Screen', {roomname: roomname});
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                actions: [
+                  NavigationActions.navigate({ routeName: 'Lobby_Screen', params:{roomname:roomname}})
+                ]
+            })
+        )
         Keyboard.dismiss();
     }
 
@@ -246,18 +235,6 @@ class Join_Screen extends React.Component {
         };
     }
 
-    componentWillMount() {
-        BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-    }
-
-    componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
-    }
-
-    _handleBackButton() {
-        return false
-    }
-
     _joinRoom(joincode) {
         firebase.database().ref('rooms/' + joincode).once('value', snap => {
             if(snap.exists() && (snap.val().phase == 1)){
@@ -280,7 +257,15 @@ class Join_Screen extends React.Component {
                 firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
                 .update({ name:joincode })
 
-                this.props.navigation.navigate('Lobby_Screen', { roomname: joincode});
+                //this.props.navigation.navigate('Lobby_Screen', { roomname: joincode});
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        actions: [
+                          NavigationActions.navigate({ routeName: 'Lobby_Screen', params:{roomname:roomname}})
+                        ]
+                    })
+                )
             } else if (snap.exists() && (snap.val().phase > 1)) {
                 alert('Game has already started.')
             } else {
@@ -383,8 +368,6 @@ class Lobby_Screen extends React.Component {
     }
 
     componentWillMount() {
-        
-        BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
 
         this._pullListOfPlayers();
         this._count();
@@ -401,7 +384,6 @@ class Lobby_Screen extends React.Component {
     }
 
     componentWillUnmount() {
-        BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
 
         if(this.roleCount){
             this.roleCount.off();
@@ -432,10 +414,6 @@ class Lobby_Screen extends React.Component {
         })
     }
 
-    _handleBackButton() {
-        return true;
-    }
-
     _deleteRoom() {
 
         AsyncStorage.removeItem('ROOM-KEY');
@@ -443,7 +421,15 @@ class Lobby_Screen extends React.Component {
         firebase.database().ref('rooms/' + this.state.roomname).remove();
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
-        this.props.navigation.navigate('Room_Screen');
+        //this.props.navigation.navigate('Room_Screen');
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                actions: [
+                  NavigationActions.navigate({ routeName: 'Room_Screen'})
+                ]
+            })
+        )
     }
 
     _leaveRoom(roomname) {
@@ -454,7 +440,15 @@ class Lobby_Screen extends React.Component {
         firebase.database().ref('rooms/' + roomname.toUpperCase() + '/playernum').transaction((playernum) => {
             return (playernum - 1);
         });  
-        this.props.navigation.navigate('Room_Screen');
+        //this.props.navigation.navigate('Room_Screen');
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                actions: [
+                  NavigationActions.navigate({ routeName: 'Room_Screen'})
+                ]
+            })
+        )
     }
 
     _count() {

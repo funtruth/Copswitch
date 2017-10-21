@@ -90,8 +90,6 @@ constructor(props) {
 
 componentWillMount() {
 
-    BackHandler.addEventListener('hardwareBackPress', this._handleBackButton);
-
     this.msgRef.on('value',snap=>{
         if(snap.exists()){
             var msg = [];
@@ -236,7 +234,6 @@ componentWillMount() {
 }
 
 componentWillUnmount() {
-    BackHandler.removeEventListener('hardwareBackPress', this._handleBackButton);
     if(this.roomRef){
         this.roomRef.off();
     }
@@ -663,10 +660,6 @@ _voteFinished(roomname){
             }
         })
     })
-}
-
-_handleBackButton() {
-    return true;
 }
 
 //Rendering the Main Game Header
