@@ -363,6 +363,7 @@ class Lobby_Screen extends React.Component {
         this.roleCount = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
         this.playerCount = firebase.database().ref('rooms/' + roomname + '/listofplayers');
         this.gameStart = firebase.database().ref('rooms/' + roomname + '/phase');
+        this.playerList = firebase.database().ref('rooms/' + roomname + '/listofplayers');
         this.ownerListener = firebase.database().ref('rooms/' + roomname + '/owner');
 
     }
@@ -380,7 +381,6 @@ class Lobby_Screen extends React.Component {
                 this.setState({amiowner:false})
             }
         })
-
     }
 
     componentWillUnmount() {
@@ -394,14 +394,16 @@ class Lobby_Screen extends React.Component {
         if(this.gameStart){
             this.gameStart.off();
         }
+        if(this.playerList){
+            this.playerList.off();
+        }
         if(this.ownerListener){
             this.ownerListener.off();
         }
     }
 
     _pullListOfPlayers() {
-        firebase.database().ref('rooms/' + this.state.roomname.toUpperCase() 
-            + '/listofplayers').on('value',snap => {
+        this.playerList.on('value',snap => {
             
             var list = [];
             snap.forEach((child)=> {
@@ -476,7 +478,16 @@ class Lobby_Screen extends React.Component {
 
                 firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
                     .update({phase: snap.val()})
-                this.props.navigation.navigate('Mafia_Screen', {roomname: this.state.roomname})
+                //this.props.navigation.navigate('Mafia_Screen', {roomname: this.state.roomname})
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        actions: [
+                          NavigationActions.navigate({ routeName: 'Mafia_Screen',
+                            params:{roomname:this.state.roomname}})
+                        ]
+                    })
+                )
             }
         })
     }
@@ -493,7 +504,16 @@ class Lobby_Screen extends React.Component {
 
             firebase.database().ref('rooms/' + roomname).update({phase:2});
 
-            this.props.navigation.navigate('Mafia_Screen', { roomname:roomname })
+            //this.props.navigation.navigate('Mafia_Screen', { roomname:roomname })
+            this.props.navigation.dispatch(
+                NavigationActions.reset({
+                    index: 0,
+                    actions: [
+                      NavigationActions.navigate({ routeName: 'Mafia_Screen',
+                        params:{roomname:this.state.roomname}})
+                    ]
+                })
+            )
         } else {
             alert('The number of players does not match the Game set-up.');
         }

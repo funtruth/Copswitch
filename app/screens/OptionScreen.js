@@ -20,132 +20,132 @@ import firebase from '../firebase/FirebaseController.js';
 
 export class Option_Screen extends React.Component {
 
-constructor(props) {
-    super(props);
-    
-    const { params } = this.props.navigation.state;
-    const roomname = params.roomname;
+    constructor(props) {
+        super(props);
+        
+        const { params } = this.props.navigation.state;
+        const roomname = params.roomname;
 
-    this.state = {
-        roomname:           params.roomname,
-        townwin:            false,
-        checked:            false,
-    };
+        this.state = {
+            roomname:           params.roomname,
+            townwin:            false,
+            checked:            false,
+        };
 
-    this.roomRef = firebase.database().ref('rooms/' + roomname);
+        this.roomRef = firebase.database().ref('rooms/' + roomname);
 
-}
-
-componentWillMount() {
-
-    this.roomRef.on('value',snap=>{
-        if(snap.exists()){
-            this.roomRef.child('mafia').once('value',mafia=>{
-                if(mafia.numChildren() == 0){
-                    this.setState({
-                        checked:    true,
-                        townwin:    true,
-                    })
-                } else if(mafia.numChildren()*2+1 > snap.val().playernum){
-                    this.setState({
-                        checked:    true,
-                        townwin:    false,
-                    })
-                //Should not be triggered?
-                } else {
-                    this.setState({
-                        checked: true,
-                    })
-                }
-            })
-        } else {
-            this.setState({
-                checked: true,
-            })
-        }
-    })
-
-}
-
-componentWillUnmount() {
-
-    if(this.roomRef){
-        this.roomRef.off();
     }
 
-}
+    componentWillMount() {
 
-_returnGame(){
-    
-}
+        this.roomRef.on('value',snap=>{
+            if(snap.exists()){
+                this.roomRef.child('mafia').once('value',mafia=>{
+                    if(mafia.numChildren() == 0){
+                        this.setState({
+                            checked:    true,
+                            townwin:    true,
+                        })
+                    } else if(mafia.numChildren()*2+1 > snap.val().playernum){
+                        this.setState({
+                            checked:    true,
+                            townwin:    false,
+                        })
+                    //Should not be triggered?
+                    } else {
+                        this.setState({
+                            checked: true,
+                        })
+                    }
+                })
+            } else {
+                this.setState({
+                    checked: true,
+                })
+            }
+        })
 
-_leaveGame(){
-    AsyncStorage.removeItem('ROOM-KEY');
-    AsyncStorage.removeItem('GAME-KEY');
-
-    //Either remove yourself from the room or delete it
-    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers').once('value',snap=>{
-        if(snap.numChildren() < 2){
-            firebase.database().ref('rooms/' + this.state.roomname).remove();
-        } else {
-            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + firebase.auth().currentUser.uid).remove();
-        }
-    })
-
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .update({ name: null, phase:1 })
-      
-    this.props.navigation.navigate('Room_Screen')
-}
-
-_renderHeader() {
-    return this.state.townwin?<Text>town wins</Text>:<Text>mafia wins</Text>
-}
-
-_renderImage() {
-    return this.state.townwin?<Text>town wins image</Text>:<Text>mafia wins image</Text>
-}
-
-render() {
-
-    if(!this.state.checked){
-        return null
     }
 
-    return <View style = {{flex:1,backgroundColor:'white'}}>
-        <View style = {{flex:1,justifyContent:'center'}}>
-            <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
-                {this._renderHeader()}
+    componentWillUnmount() {
+
+        if(this.roomRef){
+            this.roomRef.off();
+        }
+
+    }
+
+    _returnGame(){
+        
+    }
+
+    _leaveGame(){
+        AsyncStorage.removeItem('ROOM-KEY');
+        AsyncStorage.removeItem('GAME-KEY');
+
+        //Either remove yourself from the room or delete it
+        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers').once('value',snap=>{
+            if(snap.numChildren() < 2){
+                firebase.database().ref('rooms/' + this.state.roomname).remove();
+            } else {
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                    + firebase.auth().currentUser.uid).remove();
+            }
+        })
+
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+            .update({ name: null, phase:1 })
+        
+        this.props.navigation.navigate('Room_Screen')
+    }
+
+    _renderHeader() {
+        return this.state.townwin?<Text>town wins</Text>:<Text>mafia wins</Text>
+    }
+
+    _renderImage() {
+        return this.state.townwin?<Text>town wins image</Text>:<Text>mafia wins image</Text>
+    }
+
+    render() {
+
+        if(!this.state.checked){
+            return null
+        }
+
+        return <View style = {{flex:1,backgroundColor:'white'}}>
+            <View style = {{flex:1,justifyContent:'center'}}>
+                <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
+                    {this._renderHeader()}
+                </View>
             </View>
-        </View>
-        <View style = {{flex:2,justifyContent:'center'}}>
-            <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
-                {this._renderImage()}
+            <View style = {{flex:2,justifyContent:'center'}}>
+                <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
+                    {this._renderImage()}
+                </View>
             </View>
+            <View style = {{flex:1,justifyContent:'center'}}>
+                <TouchableOpacity
+                    onPress={()=>{this._returnGame()}}
+                    style={{
+                        flex:0.8,
+                        justifyContent:'center',
+                        backgroundColor:'black',
+                    }}
+                ><Text style = {{alignSelf:'center',color:'white',
+                    fontFamily:'ConcertOne-Regular',fontSize:25}}>PLAY AGAIN</Text>
+                </TouchableOpacity>
+            </View>
+            <View style = {{flex:0.5,justifyContent:'center',flexDirection:'row'}}>
+                <TouchableOpacity
+                    onPress={()=>{this._leaveGame()}}
+                    style={{flex:0.65,justifyContent:'center',backgroundColor:'black',borderRadius:15}}>
+                <Text style = {{alignSelf:'center',color:'white',
+                    fontFamily:'ConcertOne-Regular',fontSize:20}}>QUIT</Text>
+                </TouchableOpacity>
+            </View>
+            <View style = {{flex:0.2}}/>
         </View>
-        <View style = {{flex:1,justifyContent:'center'}}>
-            <TouchableOpacity
-                onPress={()=>{this._returnGame()}}
-                style={{
-                    flex:0.8,
-                    justifyContent:'center',
-                    backgroundColor:'black',
-                }}
-            ><Text style = {{alignSelf:'center',color:'white',
-                fontFamily:'ConcertOne-Regular',fontSize:25}}>PLAY AGAIN</Text>
-            </TouchableOpacity>
-        </View>
-        <View style = {{flex:0.5,justifyContent:'center',flexDirection:'row'}}>
-            <TouchableOpacity
-                onPress={()=>{this._leaveGame()}}
-                style={{flex:0.65,justifyContent:'center',backgroundColor:'black',borderRadius:15}}>
-            <Text style = {{alignSelf:'center',color:'white',
-                fontFamily:'ConcertOne-Regular',fontSize:20}}>QUIT</Text>
-            </TouchableOpacity>
-        </View>
-        <View style = {{flex:0.2}}/>
-    </View>
     }
 }
 
@@ -161,7 +161,15 @@ export class Expired_Screen extends React.Component {
     
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
             .update({ name: null, phase:1 })
-        this.props.navigation.navigate('Room_Screen')
+        //this.props.navigation.navigate('Room_Screen')
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                actions: [
+                  NavigationActions.navigate({ routeName: 'Room_Screen'})
+                ]
+            })
+        )
     }
     
     _renderHeader() {

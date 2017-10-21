@@ -50,28 +50,31 @@ componentWillMount() {
 
         firebase.database().ref('rooms/' + snap.val().name + '/listofplayers/' 
         + firebase.auth().currentUser.uid).once('value',status=> {
+            if(status.exists()){
+                
+                if(snap.val().phase > 1){
+                    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
+                    .once('value',outsnap=>{
+                        firebase.database().ref(outsnap.val() + '/roles/' + status.val().roleid).once('value',rolesnap=>{
 
-            if(snap.val().phase > 1){
-                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
-                .once('value',outsnap=>{
-                    firebase.database().ref(outsnap.val() + '/roles/' + status.val().roleid).once('value',rolesnap=>{
-
-                        this.setState({
-                            role: rolesnap.val().name,
-                            description: rolesnap.val().desc,
-                            inagame: true,
+                            this.setState({
+                                role: rolesnap.val().name,
+                                description: rolesnap.val().desc,
+                                inagame: true,
+                            })
                         })
                     })
-                })
 
-            } else {
-                this.setState({
-                    role:'None',
-                    description: 'There is no Active Game.',
-                    inagame:false,
-                })
+                } else {
+                    this.setState({
+                        role:'None',
+                        description: 'There is no Active Game.',
+                        inagame:false,
+                    })
+                }
             }
         })
+        
     })
 }
 
@@ -89,7 +92,16 @@ _leaveGame() {
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
         .update({ name: null, phase:1 })
-    this.props.navigation.navigate('SignedIn')
+    //this.props.navigation.navigate('SignedIn')
+    this.props.navigation.dispatch(
+        NavigationActions.reset({
+            index: 0,
+            key: null,
+            actions: [
+              NavigationActions.navigate({ routeName: 'SignedIn'})
+            ]
+        })
+    )
 }
 
 _logOutPress() {

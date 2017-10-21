@@ -112,7 +112,7 @@ class Roles_Screen extends Component {
 
     componentWillMount() {
 
-        this.listListener.once('value',snap=>{
+        this.listListener.on('value',snap=>{
             if(snap.exists()){
                 var list = [];
                 snap.forEach((child)=> {
@@ -156,6 +156,12 @@ class Roles_Screen extends Component {
             }
 
         })
+    }
+
+    componentWillUnmount() {
+        if(this.listListener){
+            this.listListener.off();
+        }
     }
 
     render(){
