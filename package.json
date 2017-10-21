@@ -13,13 +13,9 @@
 		"react-native": "0.47.2",
 		"react-native-action-button": "^2.8.0",
 		"react-native-elements": "^0.16.0",
-		//"react-native-fbsdk": "^0.6.1",
 		"react-native-firebase": "^2.2.0",
-		"react-native-gifted-spinner": "^0.1.0",
-		"react-native-modal-picker": "0.0.16",
 		"react-native-vector-icons": "^4.3.0",
-		"react-navigation": "^1.0.0-beta.11",
-		"react-throttle": "^0.3.0"
+		"react-navigation": "^1.0.0-beta.11"
 	},
 	"devDependencies": {
 		"babel-jest": "20.0.3",
@@ -31,6 +27,8 @@
 		"preset": "react-native"
 	},
 	"rnpm": {
-		"assets": ["assets/fonts/ConcertOne-Regular"]
+		"assets": [
+			"assets/fonts/ConcertOne-Regular"
+		]
 	}
 }
