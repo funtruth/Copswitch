@@ -8,19 +8,20 @@ import { isSignedIn } from "./app/auth";
 export default class App extends React.Component {
     constructor(props) {
         super(props);
-    
+        
         this.state = {
-          signedIn: false,
-          checkedSignIn: false
+        signedIn: false,
+        checkedSignIn: false,
         };
-      }
+    }
     
     componentWillMount() {
-    isSignedIn()
+        
+        isSignedIn()
         .then(res => this.setState({ signedIn: res, checkedSignIn: true }))
         .catch(err => alert("An error occurred"));
     }
-
+    
     render(){
         const { checkedSignIn, signedIn } = this.state;
         
@@ -28,11 +29,11 @@ export default class App extends React.Component {
         if (!checkedSignIn) {
             return null;
         }
-    
+        
         const Layout = createRootNavigator(signedIn);
         return <Layout />;
     }
 }
 
 AppRegistry.registerComponent('Huddle', () => App);
-//AppRegistry.registerComponent('Huddle', () => CreateScreen);
+
