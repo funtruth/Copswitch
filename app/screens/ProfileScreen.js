@@ -117,64 +117,47 @@ _logOutPress() {
   render(){
     return <View style={{ flex: 1, backgroundColor: 'white' }}>
 
-            <View style = {{flex:1.15,flexDirection:'row' }}>
-                <View style = {{ flex:0.75 }}/>
-                <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
-                    <Text style = {{fontFamily:'ConcertOne-Regular'}}>My Role:</Text>
-                    <Text style={{fontSize:30,color:'black',fontFamily:'ConcertOne-Regular'}}>
-                        {this.state.hidden ? 'Hidden' : this.state.role}</Text>
-                </View>
+            <View style = {{flex:2,flexDirection:'row',justifyContent:'center'}}>
                 <TouchableOpacity
                     style={{ flex:0.75,justifyContent:'center' }}
                     onPressIn={()=>{ this.setState({hidden:false}) }}
                     onPressOut={()=>{ this.setState({hidden:true}) }}>
-                    <MaterialCommunityIcons name='eye'
-                        style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                    <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
+                        <Text style = {{fontFamily:'ConcertOne-Regular'}}>My Role:</Text>
+                        <Text style={{fontSize:30,color:'black',fontFamily:'ConcertOne-Regular'}}>
+                        {this.state.hidden ? 'Hidden' : this.state.role}</Text>
+                </View>
                 </TouchableOpacity>
             </View>
 
             <View style = {{flex:10, flexDirection:'row'}}>
 
-                <View style = {{flex:1}}>
-                    <View style = {{flex:4.4}}/>
-                    <View style = {{flex:2.4}}/>
+            </View>
+
+            <View style = {{flex:1,flexDirection:'row'}}>
+                <View style = {{flex:0.5, flexDirection:'row', justifyContent:'center'}}>
+                <TouchableOpacity
+                    style = {{flex:0.75, justifyContent:'center', alignItems:'center',
+                        backgroundColor:'black', borderRadius:10}}
+                    onPress={() => {
+                        this._leaveGame();     
+                    }}
+                >
+                    <Text style={{color:'white'}}>Quit</Text>
+                </TouchableOpacity>
                 </View>
 
-                <View style = {{flex:0.2}}/>
-
-                <View style = {{flex:5.6}}/>
-
-                <View style = {{flex:0.2}}/>
-
-                <View style = {{flex:1}}>
-                    <View style = {{flex:4.4}}/>
-                    <View style = {{flex:0.6,justifyContent:'center',
-                        backgroundColor:'black',borderTopLeftRadius:15}}>
-                        <TouchableOpacity
-                            disabled={this.state.inagame?false:true}
-                            onPress={() => {
-                                this._leaveGame();     
-                            }}>
-                            <MaterialCommunityIcons name='wrench'
-                                style={{color:this.state.inagame? 'white' : '#b5b3b0',
-                                    fontSize:26,alignSelf:'center'}}/>
-                        </TouchableOpacity>
-                    </View>
-                    <View style = {{flex:0.6,backgroundColor:'black'}}/>
-                    <View style = {{flex:0.6,backgroundColor:'black'}}/>
-
-                    <View style = {{flex:0.6,justifyContent:'center',
-                        backgroundColor:'black',borderBottomLeftRadius:15}}>
-                        <TouchableOpacity
-                            disabled={this.state.inagame}
-                            onPress={() => { this._logOutPress() }}>
-                            <MaterialCommunityIcons name='logout' 
-                                style={{color:this.state.inagame ?  '#b5b3b0' : 'white',
-                                    fontSize:26,alignSelf:'center'}}/>
-                        </TouchableOpacity>
-                    </View>
+                <View style = {{flex:0.5, flexDirection:'row', justifyContent:'center'}}>
+                <TouchableOpacity
+                    style = {{flex:0.75, justifyContent:'center', alignItems:'center',
+                        backgroundColor:'black', borderRadius:10}}
+                    onPress={() => {
+                        this._logOutPress();     
+                    }}
+                >
+                    <Text style={{color:'white'}}>Logout</Text>
+                </TouchableOpacity>
                 </View>
-
             </View>
 
         <View style = {{ flex: 0.15 }}/>

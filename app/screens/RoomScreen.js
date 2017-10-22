@@ -35,6 +35,10 @@ import firebase from '../firebase/FirebaseController.js';
 
 class Room_Screen extends React.Component {
 
+    static navigationOptions = {
+        header: null
+    };
+
     constructor(props) {
         super(props);
         
@@ -100,6 +104,11 @@ class Room_Screen extends React.Component {
 }
 
 class Create_Screen extends React.Component {
+    
+    static navigationOptions = {
+        title: 'Make a Room',
+    };
+
     constructor(props) {
         super(props);
 
@@ -219,13 +228,18 @@ class Create_Screen extends React.Component {
                 </View>
 
                 {/*Make-shift Keyboard Avoiding View*/}
-                <View style = {{flex:0.3}}/> 
+                <View style = {{flex:0.4}}/> 
             </View>
         </TouchableWithoutFeedback>
     }
 }
 
 class Join_Screen extends React.Component {
+
+    static navigationOptions = {
+        title: 'Join a Room',
+    };
+
     constructor(props) {
         super(props);
 
@@ -328,7 +342,7 @@ class Join_Screen extends React.Component {
                 </View>
 
                 {/*Makeshift Keyboard Avoiding View*/}
-                <View style = {{flex:0.3}}/>
+                <View style = {{flex:0.5}}/>
             </View>
 
 
@@ -338,6 +352,10 @@ class Join_Screen extends React.Component {
 
 class Lobby_Screen extends React.Component {
 
+    static navigationOptions = {
+        header: null
+    };
+    
     constructor(props) {
         super(props);
 
@@ -784,7 +802,7 @@ export const createRoomNavigator = (inGame,inRoom,isExpired,key) => {
             },
         },
             {
-                headerMode: 'none',
+                headerMode: 'screen',
                 initialRouteName: 
                     inRoom?(
                         inGame?(

@@ -26,6 +26,10 @@ import RulebookListItem from '../components/RulebookListItem.js';
 
 class General_Screen extends Component {
     
+    static navigationOptions = {
+        header: null
+    };
+
     constructor(props) {
         super(props);
 
@@ -88,7 +92,11 @@ class General_Screen extends Component {
 }
 
 class Roles_Screen extends Component {
-    
+
+    static navigationOptions = {
+        title: 'Roles',
+    };
+
     constructor(props) {
         super(props);
     
@@ -199,6 +207,6 @@ export default RuleBook = StackNavigator(
     },
     {
       initialRouteName: 'General_Screen',
-      headerMode: 'none',
+      headerMode: 'screen',
     }
   );

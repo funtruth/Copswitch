@@ -10,7 +10,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import SignUp from "./app/loginscreens/SignUp";
 import SignIn from "./app/loginscreens/SignIn";
 
-import Games from "./app/screens/GamesScreen";
 import Lists from "./app/screens/ListsScreen";
 import Room from "./app/screens/RoomScreen";
 import Profile from "./app/screens/ProfileScreen";
@@ -53,14 +52,6 @@ export const SignedOut = StackNavigator(
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => (
             <MaterialIcons name="person" style={styles.icon}/>
-          ),
-        }
-      },
-      Games: {
-        screen: Games,
-        navigationOptions: {
-          tabBarIcon: ({ tintColor }) => (
-            <MaterialIcons name="shopping-cart" style={styles.icon}/>
           ),
         }
       },

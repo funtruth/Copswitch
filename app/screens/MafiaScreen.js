@@ -74,14 +74,15 @@ constructor(props) {
     };
 
     this.roomRef = firebase.database().ref('rooms/' + roomname);
-    this.listListener = this.roomRef.child('listofplayers');
-    this.userRoomRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
-    this.phaseListener = this.roomRef.child('phase');
-    this.playernumListener = this.roomRef.child('playernum');
-    this.nominationListener = this.roomRef.child('nominate');
+    
     this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
     this.globalMsgRef = firebase.database().ref('globalmsgs/' + roomname);
     this.eventsRef = this.roomRef.child('events');
+    this.userRoomRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
+    this.listListener = this.roomRef.child('listofplayers');
+    this.playernumListener = this.roomRef.child('playernum');
+    this.nominationListener = this.roomRef.child('nominate');
+    this.phaseListener = this.roomRef.child('phase');
 
     //Transition Screen
     this.dayCounterRef = firebase.database().ref('rooms/' + roomname + '/daycounter');
@@ -182,14 +183,17 @@ componentWillMount() {
             this.roomRef.child('mafia').once('value',mafia=>{
                 if(mafia.numChildren() == 0 || mafia.numChildren()*2+1 > snap.val()){
                     //this.props.navigation.navigate('Option_Screen',{roomname:this.state.roomname})
-                    this.props.navigation.dispatch(
-                        NavigationActions.reset({
-                            index: 0,
-                            actions: [
-                            NavigationActions.navigate({ routeName: 'Option_Screen', params:{roomname:roomname}})
-                            ]
-                        })
-                    )
+                    setTimeout(()=>
+                        this.props.navigation.dispatch(
+                            NavigationActions.reset({
+                                index: 0,
+                                actions: [
+                                NavigationActions.navigate({ routeName: 'Option_Screen', 
+                                    params:{roomname:this.state.roomname}})
+                                ]
+                            })
+                        )
+                    ,500)
                 }
             })
         }
@@ -242,6 +246,7 @@ componentWillMount() {
 }
 
 componentWillUnmount() {
+
     if(this.roomRef){
         this.roomRef.off();
     }

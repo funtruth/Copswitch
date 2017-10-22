@@ -96,7 +96,15 @@ export class Option_Screen extends React.Component {
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
             .update({ name: null, phase:1 })
         
-        this.props.navigation.navigate('Room_Screen')
+        //this.props.navigation.navigate('Room_Screen')
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                actions: [
+                  NavigationActions.navigate({ routeName: 'Room_Screen'})
+                ]
+            })
+        )
     }
 
     _renderHeader() {
