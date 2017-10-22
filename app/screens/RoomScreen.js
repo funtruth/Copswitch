@@ -219,7 +219,7 @@ class Create_Screen extends React.Component {
                 </View>
 
                 {/*Make-shift Keyboard Avoiding View*/}
-                <View style = {{flex:0.2}}/> 
+                <View style = {{flex:0.3}}/> 
             </View>
         </TouchableWithoutFeedback>
     }
