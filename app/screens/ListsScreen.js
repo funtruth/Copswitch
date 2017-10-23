@@ -95,6 +95,9 @@ class Roles_Screen extends Component {
 
     static navigationOptions = {
         title: 'Roles',
+        headerStyle: { backgroundColor: 'black' },
+        titleStyle: { fontFamily:'ConcertOne-Regular' },
+        headerTintColor: 'white',
     };
 
     constructor(props) {
@@ -110,66 +113,69 @@ class Roles_Screen extends Component {
         this.state = {
             rolelist: dataSource,
             type: params.type,
+            room: false,
         }
-
-        this.listListener = firebase.database()
-            .ref('listofroles/' + firebase.auth().currentUser.uid).orderByChild('roleid');
+        
+        this.roomListener = firebase.database()
+            .ref('users/' + firebase.auth().currentUser.uid + '/room');
+    
         
     }
 
 
     componentWillMount() {
 
-        this.listListener.on('value',snap=>{
-            if(snap.exists()){
+        this.roomListener.on('value',snap=>{
+            if(snap.val().name && snap.val().phase == 1){
+                firebase.database().ref('rooms/' + snap.val().name + '/owner').once('value',owner=>{
+                    if(owner.val() == firebase.auth().currentUser.uid){
+                        this.setState({room:true})
+                    } else {
+                        this.setState({room:false})
+                    }
+                })
+            } else {
+                this.setState({room:false})
+            }
+        })
+
+        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
+        .once('value',outsnap=>{
+            firebase.database().ref(outsnap.val() + '/roles').once('value', deepshot => {
                 var list = [];
-                snap.forEach((child)=> {
+                deepshot.forEach((child)=> {
                     if(child.val().type == this.state.type){
                         list.push({
-                            name: child.key,
+                            name: child.val().name,
                             desc: child.val().desc,
                             color: child.val().color,
-                            count:child.val().count,
-                            hideChevron:false,
 
-                            key: child.val().roleid,
+                            key: child.key,
                         })
                     }
                         
                 })
-                this.setState({ rolelist:list })
-
-            } else {
-                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
-                .once('value',outsnap=>{
-                    firebase.database().ref(outsnap.val() + '/roles').once('value', deepshot => {
-                        var list = [];
-                        deepshot.forEach((child)=> {
-                            if(child.val().type == this.state.type){
-                                list.push({
-                                    name: child.val().name,
-                                    desc: child.val().desc,
-                                    color: child.val().color,
-                                    count:1,
-                                    hideChevron:true,
-
-                                    key: child.key,
-                                })
-                            }
-                                
-                        })
-                        this.setState({ rolelist:list }) 
-                    })
-                })
-            }
-
+                this.setState({ rolelist:list }) 
+            })
         })
+
     }
 
     componentWillUnmount() {
-        if(this.listListener){
-            this.listListener.off();
+        if(this.roomListener){
+            this.roomListener.off();
         }
+    }
+
+    _addRole(rolename,roleid,color) {
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+        + '/' + rolename + '/count')
+            .transaction((count)=>{
+                return count + 1;
+            })
+
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+        + '/' + rolename).update({roleid:roleid,color:color})
     }
 
     render(){
@@ -179,14 +185,26 @@ class Roles_Screen extends Component {
             <View><FlatList
                 data={this.state.rolelist}
                 renderItem={({item}) => (
-                    <RulebookListItem
-                        title={item.name}
-                        color= {item.color}
-                        subtitle={item.desc}
-                        hideChevron={item.hideChevron}
-                        count={item.count}
-                    />
-
+                    <TouchableOpacity
+                        onPress = {()=>{this.state.room?
+                            this._addRole(item.name,item.key,item.color)
+                            :
+                            alert('future rulebook details')}}
+                    >
+                        <Text style = {{
+                            marginTop: 10,
+                            marginLeft: 10,
+                            marginRight: 10,
+                            color:item.color,
+                            fontFamily: 'ConcertOne-Regular',
+                            fontSize:25}}>{item.name}</Text>
+                        <Text style = {{
+                            marginLeft: 10,
+                            marginRight: 10,
+                            color:'black',
+                            fontFamily: 'ConcertOne-Regular',
+                            fontSize:18}}>{item.desc}</Text>
+                    </TouchableOpacity>
                 )}
                 keyExtractor={item => item.key}
             /></View>

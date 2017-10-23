@@ -147,21 +147,6 @@ class Create_Screen extends React.Component {
         //Set up phases and rules
         //Set up temporary list of roles
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type').once('value',outsnap=>{
-        
-            firebase.database().ref(outsnap.val() + '/roles').once('value',snap => {
-                snap.forEach((child)=>{
-
-                    firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-                    + '/' + child.val().name).set({
-                        count:0,
-                        color: child.val().color,
-                        desc: child.val().desc,
-                        type: child.val().type,
-                        roleid: child.key,
-                    })
-
-                })
-            }) 
 
             firebase.database().ref(outsnap.val() + '/phases').once('value',snap=>{
                 snap.forEach((child)=>{
@@ -355,7 +340,7 @@ class Lobby_Screen extends React.Component {
     static navigationOptions = {
         header: null
     };
-    
+
     constructor(props) {
         super(props);
 
@@ -369,8 +354,10 @@ class Lobby_Screen extends React.Component {
 
         this.state = {
             roomname: params.roomname.toUpperCase(),
+            listview: false,
 
             namelist:dataSource,
+            rolelist: dataSource,
 
             rolecount:0,
             playercount:0,
@@ -378,7 +365,8 @@ class Lobby_Screen extends React.Component {
             amiowner:false,
         };
 
-        this.roleCount = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
+        this.roleCount = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid)
+            .orderByChild('roleid');
         this.playerCount = firebase.database().ref('rooms/' + roomname + '/listofplayers');
         this.gameStart = firebase.database().ref('rooms/' + roomname + '/phase');
         this.playerList = firebase.database().ref('rooms/' + roomname + '/listofplayers');
@@ -476,10 +464,17 @@ class Lobby_Screen extends React.Component {
         //Role Count
         this.roleCount.on('value',snap=>{
             var rolecount = 0;
+            var list = [];
             snap.forEach((child)=>{
                 rolecount = rolecount + child.val().count;
+                list.push({
+                    name: child.key,
+                    count: child.val().count,
+                    color: child.val().color,
+                    key: child.val().roleid,
+                })
             })
-            this.setState({rolecount:rolecount})
+            this.setState({rolecount:rolecount, rolelist:list})
         });
 
         //Player Count
@@ -545,30 +540,28 @@ class Lobby_Screen extends React.Component {
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).once('value',snap=>{
 
             snap.forEach((child)=>{
-                if(child.val().count > 0){
-                    for(i=0;i<child.val().count;i++){
-                        if(child.val().roleid == 'E'){
-                            randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
-                            charcount++
-                        } else if (child.val().roleid == 'I'){ //Random Mischeif Mafia
-                            randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
-                            charcount++
-                        } else if (child.val().roleid == 'M'){ //Random Inspective Town
-                            randomstring = randomstring + randomize('?', 1, {chars: 'KL'})
-                            charcount++
-                        } else if (child.val().roleid == 'P'){ //Random Stalling Town
-                            randomstring = randomstring + randomize('?', 1, {chars: 'NO'})
-                            charcount++
-                        } else if (child.val().roleid == 'S'){ //Random Specialist Town
-                            randomstring = randomstring + randomize('?', 1, {chars: 'QR'})
-                            charcount++
-                        } else if (child.val().roleid == 'T'){ //Random Town
-                            randomstring = randomstring + randomize('?', 1, {chars: 'KLNOQR'})
-                            charcount++
-                        } else {
-                            randomstring = randomstring + child.val().roleid
-                            charcount++
-                        }
+                for(i=0;i<child.val().count;i++){
+                    if(child.val().roleid == 'E'){
+                        randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
+                        charcount++
+                    } else if (child.val().roleid == 'I'){ //Random Mischeif Mafia
+                        randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
+                        charcount++
+                    } else if (child.val().roleid == 'M'){ //Random Inspective Town
+                        randomstring = randomstring + randomize('?', 1, {chars: 'KL'})
+                        charcount++
+                    } else if (child.val().roleid == 'P'){ //Random Stalling Town
+                        randomstring = randomstring + randomize('?', 1, {chars: 'NO'})
+                        charcount++
+                    } else if (child.val().roleid == 'S'){ //Random Specialist Town
+                        randomstring = randomstring + randomize('?', 1, {chars: 'QR'})
+                        charcount++
+                    } else if (child.val().roleid == 'T'){ //Random Town
+                        randomstring = randomstring + randomize('?', 1, {chars: 'KLNOQR'})
+                        charcount++
+                    } else {
+                        randomstring = randomstring + child.val().roleid
+                        charcount++
                     }
                 }
             })
@@ -602,6 +595,56 @@ class Lobby_Screen extends React.Component {
         })
     }
 
+    _renderListComponent(){
+        if(this.state.listview){
+            return <FlatList
+                data={this.state.namelist}
+                renderItem={({item}) => (
+                    <TouchableOpacity 
+                        onPress={() => { }}
+                        style = {{height:40,
+                            borderRadius:5,
+                            backgroundColor: 'black',
+                            margin: 3,
+                            justifyContent:'center'
+                    }}> 
+                        <Text style = {styles.concerto}>{item.name}</Text>
+                    </TouchableOpacity>
+
+                )}
+                keyExtractor={item => item.key}
+            />
+        } else {
+            return <FlatList
+                data={this.state.rolelist}
+                renderItem={({item}) => (
+                    <TouchableOpacity 
+                        onPress={() => {
+                            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+                                + '/' + item.name + '/count').transaction((count)=>{
+                                    if(count > 1){
+                                        return count - 1;
+                                    } else {
+                                        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+                                        + '/' + item.name).remove();
+                                    }
+                                })
+                        }}
+                        style = {{height:40,
+                            borderRadius:5,
+                            backgroundColor: item.color,
+                            margin: 3,
+                            justifyContent:'center'
+                    }}> 
+                        <Text style = {styles.concerto}>{item.name + ' x' + item.count}</Text>
+                    </TouchableOpacity>
+
+                )}
+                keyExtractor={item => item.key}
+            />
+        }
+    }
+
     render() {
         return <View style = {{
             backgroundColor: 'white',
@@ -610,7 +653,7 @@ class Lobby_Screen extends React.Component {
             <View style = {{flex:1,flexDirection:'row'}}>
                 <View style = {{flex:1}}/>
                 <View style = {{
-                    flex:15, 
+                    flex:4, 
                     borderBottomLeftRadius: 15, borderBottomRightRadius: 15, 
                     backgroundColor: 'black', justifyContent: 'center', }}
                 > 
@@ -619,91 +662,60 @@ class Lobby_Screen extends React.Component {
                         {'Room Name: ' + this.state.roomname}
                     </Text>
                 </View>
-                <View style = {{flex:1}}/>
-            </View>
-
-            <View style = {{flex:0.15}}/>
-
-            <View style = {{flex:10.65,flexDirection: 'row'}}>
-                <View style = {{flex:0.2}}/>
-                <View style = {{flex:3}}><FlatList
-                        data={this.state.namelist}
-                        renderItem={({item}) => (
-                            <TouchableOpacity 
-                                onPress={() => { }}
-                                style = {{height:40,
-                                    flex:0.5,
-                                    borderRadius:5,
-                                    backgroundColor: 'black',
-                                    margin: 3,
-                                    justifyContent:'center'
-                            }}> 
-                                <Text style = {styles.concerto}>{item.name}</Text>
-                            </TouchableOpacity>
-
-                        )}
-                        keyExtractor={item => item.key}
-                        numColumns={2}
-                    />
-                </View>
-                <View style = {{flex:0.2}}/>
-            </View>
-
-            <View style = {{flex:0.15}}/>
-
-            <View style = {{flex:1,flexDirection:'row'}}>
-                <View style = {{flex:0.2}}/>
-                <View style = {{flex:0.36,justifyContent:'center',
-                    backgroundColor:'black',borderTopLeftRadius:15,borderBottomLeftRadius:15}}>
-                    <TouchableOpacity
-                        onPress={()=> {
-                            alert('does nothing')
-                        }}>
-                        <MaterialCommunityIcons name='cursor-pointer'
-                                    style={{color:'white', fontSize:26,alignSelf:'center'}}/>
-                    </TouchableOpacity>
-                </View>
-                <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
-                    <TouchableOpacity
-                        onPress={()=> {
-                            AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
-                                alert(result)
-                            })
-                        }}>
-                        <MaterialCommunityIcons name='dice-5'
-                                    style={{color:'white', fontSize:26,alignSelf:'center'}}/>
-                    </TouchableOpacity>
-                </View>
-                <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
-                    <TouchableOpacity
-                        onPress={()=> {
-                            this.state.amiowner?this._startGame(this.state.rolecount,this.state.playercount,
-                                this.state.roomname):alert('You are not the Owner');
-                        }}>
-                        <MaterialCommunityIcons name='play-circle'
-                                    style={{color:'white', fontSize:32,alignSelf:'center'}}/>
-                    </TouchableOpacity>
-                </View>
-                <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black'}}>
-                    <TouchableOpacity
-                        onPress={()=> {
-                            alert(randomize('?', 1, {chars: 'AB'}))
-                        }}>
-                        <MaterialCommunityIcons name='bookmark'
-                                    style={{color:'white', fontSize:26,alignSelf:'center'}}/>
-                    </TouchableOpacity>
-                </View>
-                <View style = {{flex:0.36,justifyContent:'center',backgroundColor:'black',
-                    borderTopRightRadius:15,borderBottomRightRadius:15}}>
+                <View style = {{flex:1, justifyContent:'center'}}>
                     <TouchableOpacity
                         onPress={()=> {
                             this.state.amiowner?this._deleteRoom():this._leaveRoom(this.state.roomname);
                         }}>
-                        <MaterialCommunityIcons name={this.state.amiowner?'delete-circle':'close-circle'}
-                                    style={{color:'white', fontSize:26,alignSelf:'center'}}/>
+                        <MaterialCommunityIcons name={this.state.amiowner?'close-circle':'close-circle'}
+                                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                 </View>
-                <View style = {{flex:0.2}}/>
+            </View>
+
+            <View style = {{flex:0.15}}/>
+
+            <View style = {{flex:0.85,flexDirection:'row', justifyContent:'center'}}>
+                <TouchableOpacity
+                    style = {{
+                        flex: 0.6,
+                        backgroundColor:'black',
+                        borderRadius: 15,
+                        justifyContent:'center',
+                    }}
+                    onPress = {()=>{
+                        if(this.state.listview){
+                            this.setState({listview:false})
+                        } else {
+                            this.setState({listview:true})
+                        }
+                    }}
+                >
+                    <Text style = {styles.concerto}>
+                        {this.state.listview?'Game Set-up':'Players: ' + this.state.playercount}</Text>
+                </TouchableOpacity>
+            </View>
+
+            <View style = {{flex:0.15}}/>
+
+            <View style = {{flex:10.65, flexDirection:'row',justifyContent:'center'}}>
+                <View style = {{flex:0.85}}>
+                    {this._renderListComponent()}
+                </View>
+            </View>
+
+            <View style = {{flex:0.15}}/>
+
+            <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
+                <View style = {{flex:0.66,justifyContent:'center',backgroundColor:'black',borderRadius:15}}>
+                    <TouchableOpacity
+                        onPress={()=> {
+                            this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
+                        }}
+                        disabled={!this.state.amiowner}>
+                        <Text style = {styles.concerto}>START GAME</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
 
             <View style = {{flex:0.15}}/>
@@ -754,7 +766,7 @@ export default class App extends React.Component {
                         this.setState({isExpired:false, checkedExpired:true})
                     }
                 })
-            }  else {
+            } else {
                 this.setState({checkedExpired:true})
             }
         })

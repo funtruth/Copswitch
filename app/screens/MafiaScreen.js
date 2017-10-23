@@ -27,6 +27,10 @@ import firebase from '../firebase/FirebaseController.js';
 
 export default class Mafia_Screen extends React.Component {
 
+static navigationOptions = {
+    header: null
+};
+
 constructor(props) {
     super(props);
 

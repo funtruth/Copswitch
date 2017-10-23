@@ -88,7 +88,7 @@ export const SignedOut = StackNavigator(
         SignedOut: {
           screen: SignedOut,
           navigationOptions: {
-            gesturesEnabled: false
+            gesturesEnabled: false,
           }
         }
       },

@@ -16,6 +16,7 @@ import { NavigationActions } from 'react-navigation';
 import { Button, List } from "react-native-elements";
 import { onSignOut } from "../auth";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -126,39 +127,58 @@ _logOutPress() {
                         <Text style = {{fontFamily:'ConcertOne-Regular'}}>My Role:</Text>
                         <Text style={{fontSize:30,color:'black',fontFamily:'ConcertOne-Regular'}}>
                         {this.state.hidden ? 'Hidden' : this.state.role}</Text>
-                </View>
+                    </View>
                 </TouchableOpacity>
             </View>
 
             <View style = {{flex:10, flexDirection:'row'}}>
 
-            </View>
+                <View style = {{flex:0.3}}/>
 
-            <View style = {{flex:1,flexDirection:'row'}}>
-                <View style = {{flex:0.5, flexDirection:'row', justifyContent:'center'}}>
-                <TouchableOpacity
-                    style = {{flex:0.75, justifyContent:'center', alignItems:'center',
-                        backgroundColor:'black', borderRadius:10}}
-                    onPress={() => {
-                        this._leaveGame();     
-                    }}
-                >
-                    <Text style={{color:'white'}}>Quit</Text>
-                </TouchableOpacity>
+                <View style = {{flex:4, borderRadius:15, backgroundColor:'black'}}>
+                
+                </View>
+                
+                <View style = {{flex:1}}>
+                    <View style = {{flex:1}}/>
+                    <TouchableOpacity
+                        style={{flex:1}}
+                        onPress={()=> {
+                            alert('public')
+                        }}>
+                        <MaterialIcons name='announcement'
+                                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={{flex:1}}
+                        onPress={()=> {
+                            alert('private') 
+                        }}>
+                        <MaterialCommunityIcons name='clipboard-text'
+                                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                    </TouchableOpacity>
+                    <View style = {{flex:4}}/>
+                    <TouchableOpacity
+                        style={{flex:1}}
+                        onPress={()=> {
+                            this._leaveGame(); 
+                        }}>
+                        <MaterialIcons name='cancel'
+                                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={{flex:1}}
+                        onPress={()=> {
+                            this._logOutPress(); 
+                        }}>
+                        <MaterialCommunityIcons name='exit-to-app'
+                                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                    </TouchableOpacity>
                 </View>
 
-                <View style = {{flex:0.5, flexDirection:'row', justifyContent:'center'}}>
-                <TouchableOpacity
-                    style = {{flex:0.75, justifyContent:'center', alignItems:'center',
-                        backgroundColor:'black', borderRadius:10}}
-                    onPress={() => {
-                        this._logOutPress();     
-                    }}
-                >
-                    <Text style={{color:'white'}}>Logout</Text>
-                </TouchableOpacity>
-                </View>
             </View>
+
+            <View style = {{flex:0.3}}/>
 
         <View style = {{ flex: 0.15 }}/>
     </View>

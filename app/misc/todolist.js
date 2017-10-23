@@ -20,3 +20,7 @@
     //Delete ROOM and GLOBALMESSAGES
 
 //Switching Players!!
+
+//Mafia_Screen
+    //The screen transition does not wait for Mafia_Screen to unmount because the stack is reset
+    //giving an error that you cannot setState on an unmounted component
