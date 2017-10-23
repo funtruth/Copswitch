@@ -703,7 +703,6 @@ _renderListComponent(){
                         margin: 3,
                         borderRadius:5,
                         justifyContent:'center',
-                        flex:0.5,
                     }}
                     disabled = {this.state.amidead?true:item.dead}
                     >
@@ -712,7 +711,6 @@ _renderListComponent(){
                         <Text style = {styles.concerto}>{item.name}</Text>}
                 </TouchableOpacity>
             )}
-            numColumns={2}
             keyExtractor={item => item.key}
         />
     } else if (this.state.screentype=='normal-person'){
@@ -729,7 +727,6 @@ _renderListComponent(){
                         margin: 3,
                         borderRadius:5,
                         justifyContent:'center',
-                        flex:0.5,
                     }}
                     disabled = {this.state.amipicking?item.dead:false}
                     > 
@@ -739,7 +736,6 @@ _renderListComponent(){
                 </TouchableOpacity>
         )}
         keyExtractor={item => item.key}
-        numColumns={2}
     />
 
     } else if(this.state.screentype=='voting-person'){
@@ -1091,61 +1087,60 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
 <View style = {{flex:0.15,backgroundColor:'white'}}/>
 
 <View style = {{
-    flex:10,
+    flex:11,
     flexDirection:'row',
     backgroundColor:'white',
 }}>
-    <View style = {{flex:0.2}}>
+    <View style = {{flex:2.2}}>
     </View>
-    <View style = {{flex:15}}>
+    <View style = {{flex:13}}>
         <View style = {{flex:4.4}}>
             {this._renderListComponent()}
         </View>
         <View style = {{flex:this.state.messagechat||this.state.notificationchat?2.4:0,
-            backgroundColor:'black',borderRadius:15,marginLeft:10,marginRight:10}}>
+            backgroundColor:'black',borderRadius:15}}>
             {this._renderMessageComponent()}
         </View>
     </View>
 
-    <View style = {{flex:0.2}}/>
+    <View style = {{flex:2, justifyContent:'center'}}>
+        <View style = {{flex:1}}/>
+        <View style = {{flex:0.6,justifyContent:'center'}}>
+            <TouchableOpacity
+                onPress={()=> {
+                    this._chatPress('notifications')
+                }}>
+                <MaterialCommunityIcons name='comment-alert'
+                            style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+            </TouchableOpacity>
+        </View>
+        <View style = {{flex:0.6,justifyContent:'center'}}>
+            <TouchableOpacity
+                onPress={()=> {
+                    this._chatPress('messages')
+                }}>
+                <MaterialCommunityIcons name='clipboard-text' 
+                            style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+            </TouchableOpacity>
+        </View>
+        <View style = {{flex:4}}/>
+    </View>
 
 </View>
 
 <View style = {{flex:0.15, backgroundColor:'white'}}/>
 
-<View style = {{flex:1,backgroundColor:'white',flexDirection:'row'}}>
-    <View style = {{flex:0.2}}/>
-    <View style = {{flex:0.6,justifyContent:'center',
-        backgroundColor:'black',borderTopLeftRadius:15,borderBottomLeftRadius:15}}>
-        <TouchableOpacity
-            onPress={()=> {
-                this._chatPress('notifications')
-            }}>
-            <MaterialCommunityIcons name='comment-alert'
-                        style={{color:'white', fontSize:26,alignSelf:'center'}}/>
-        </TouchableOpacity>
-    </View>
-    <View style = {{flex:0.6,justifyContent:'center', backgroundColor:'black'}}>
-        <TouchableOpacity
-            onPress={()=> {
-                this._chatPress('messages')
-            }}>
-            <MaterialCommunityIcons name='book-open' 
-                        style={{color:'white', fontSize:26,alignSelf:'center'}}/>
-        </TouchableOpacity>
-    </View>
-    <View style = {{flex:0.6,justifyContent:'center',
-        backgroundColor:'black',borderBottomRightRadius:15,borderTopRightRadius:15}}>
+<View style = {{flex:1,backgroundColor:'white',flexDirection:'row',justifyContent:'center'}}>
         <TouchableOpacity
             disabled={this.state.disabled?true:(this.state.locked?true:this.state.amidead)}
             onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
-                this.state.triggernum,this.state.phase,this.state.roomname)}}>
-            <MaterialCommunityIcons name={!this.state.locked && !this.state.amidead?'check-circle':'lock'} 
-                        style={{color:!this.state.locked && this.state.actionbtnvalue?'#e3c382':'white'
-                            , fontSize:26,alignSelf:'center'}}/>
+                this.state.triggernum,this.state.phase,this.state.roomname)}}
+            style = {{flex:0.82,justifyContent:'center',backgroundColor:'black',borderRadius:15}}>
+            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?'#e3c382':'white'
+                            , fontSize:26,alignSelf:'center', fontFamily:'ConcertOne-Regular'}}>
+                {!this.state.locked && !this.state.amidead?'READY':'LOCKED'}
+            </Text>
         </TouchableOpacity>
-    </View>
-    <View style = {{flex:0.2}}/>
 </View>
 
 <View style = {{flex:0.15, backgroundColor:'white'}}/>

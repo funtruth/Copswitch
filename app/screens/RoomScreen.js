@@ -261,7 +261,7 @@ class Join_Screen extends React.Component {
                     NavigationActions.reset({
                         index: 0,
                         actions: [
-                          NavigationActions.navigate({ routeName: 'Lobby_Screen', params:{roomname:roomname}})
+                          NavigationActions.navigate({ routeName: 'Lobby_Screen', params:{roomname:joincode}})
                         ]
                     })
                 )

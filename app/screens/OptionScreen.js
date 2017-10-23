@@ -20,6 +20,10 @@ import firebase from '../firebase/FirebaseController.js';
 
 export class Option_Screen extends React.Component {
 
+    static navigationOptions = {
+        header: null
+    };
+
     constructor(props) {
         super(props);
         
@@ -159,6 +163,10 @@ export class Option_Screen extends React.Component {
 
 export class Expired_Screen extends React.Component {
     
+    static navigationOptions = {
+        header: null
+    };
+
     constructor(props) {
         super(props);
     }

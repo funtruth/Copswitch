@@ -139,32 +139,34 @@ _logOutPress() {
                 
                 </View>
                 
-                <View style = {{flex:1}}>
+                <View style = {{flex:0.7}}>
                     <View style = {{flex:1}}/>
                     <TouchableOpacity
                         style={{flex:1}}
                         onPress={()=> {
-                            alert('public')
+                            alert('placeholder')
                         }}>
                         <MaterialIcons name='announcement'
-                                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                            style={{color:'black', fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={{flex:1}}
                         onPress={()=> {
-                            alert('private') 
+                            alert('placeholder') 
                         }}>
                         <MaterialCommunityIcons name='clipboard-text'
-                                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                            style={{color:'black', fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                     <View style = {{flex:4}}/>
                     <TouchableOpacity
                         style={{flex:1}}
                         onPress={()=> {
                             this._leaveGame(); 
-                        }}>
+                        }}
+                        disabled={!this.state.inagame}>
                         <MaterialIcons name='cancel'
-                                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                            style={{color:this.state.inagame?'black':'gray',
+                            fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={{flex:1}}
@@ -172,7 +174,7 @@ _logOutPress() {
                             this._logOutPress(); 
                         }}>
                         <MaterialCommunityIcons name='exit-to-app'
-                                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                            style={{color:'black', fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                 </View>
 
