@@ -294,6 +294,7 @@ _updatePlayerState() {
             list.push({
                 name: child.val().name,
                 dead: child.val().dead,
+                immune: child.val().immune,
                 votes: child.val().votes,
                 key: child.key,
             })
@@ -350,6 +351,16 @@ _changePhase(newphase){
     })
 }
 
+_resetImmunity() {
+    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/').once('value',snap=>{
+        snap.forEach((child)=>{
+            //Set all votes to 0
+            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.key)
+                .update({immune:false})
+        })
+    })
+}
+
 _actionBtnValue(status){
     this.userRoomRef.update({actionbtnvalue: status})
 }
@@ -401,6 +412,7 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                                 
                                 this.eventsRef.remove();
                                 this.roomRef.child('guiltyvotes').remove();
+                                this._resetImmunity();
                                 
                                 this._changePhase(snap.val().continue);
 
@@ -672,6 +684,9 @@ _voteFinished(roomname){
                                     dead.val().name + ' was not hung.',1)
                             })
 
+                            firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+                                + firebase.auth().currentUser.uid).update({immune:true})
+
                             this._nominationMsg(this.state.nominee,'was not hung','#34cd0e')
                             this._changePhase(phasedata.val().continue)
                         }
@@ -701,16 +716,11 @@ _renderListComponent(){
                     onPress={() => {this.state.disabled?{}:
                         this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.dead : {height:40,
-                        backgroundColor: 'black',
-                        margin: 3,
-                        borderRadius:5,
-                        justifyContent:'center',
-                    }}
-                    disabled = {this.state.amidead?true:item.dead}>
+                    style = {item.dead ? styles.dead : (item.immune? styles.immune : styles.alive)}
+                    disabled = {this.state.amidead?true:(item.immune?true:item.dead)}>
                     <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
                         <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                        <MaterialCommunityIcons name={item.dead?'skull':null}
+                        <MaterialCommunityIcons name={item.dead?'skull':(item.immune?'needle':null)}
                             style={{color:'white', fontSize:26}}/>
                         </View>
                         <View style = {{flex:5}}>
@@ -733,15 +743,10 @@ _renderListComponent(){
                     onPress={() => {
                         this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.dead : {height:40,
-                        backgroundColor: 'black',
-                        margin: 3,
-                        borderRadius:5,
-                        justifyContent:'center',
-                    }}
+                    style = {item.dead ? styles.dead : styles.alive}
                     disabled = {this.state.amipicking?item.dead:false}
                     > 
-                    {item.dead?<MaterialCommunityIcons name='skull'
+                    {item.dead?<MaterialCommunityIcons name={item.dead?'skull':null}
                         style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
                         <Text style = {styles.concerto}>{item.name}</Text>}
                 </TouchableOpacity>
@@ -1146,8 +1151,10 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
             disabled={this.state.disabled?true:(this.state.locked?true:this.state.amidead)}
             onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
                 this.state.triggernum,this.state.phase,this.state.roomname)}}
-            style = {{flex:0.82,justifyContent:'center',backgroundColor:'black',borderRadius:15}}>
-            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?'#e3c382':'white'
+            style = {{flex:0.82,justifyContent:'center',
+                backgroundColor:!this.state.locked && this.state.actionbtnvalue?'#e3c382':'black',
+                borderRadius:15}}>
+            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?'black':'white'
                             , fontSize:26,alignSelf:'center', fontFamily:'ConcertOne-Regular'}}>
                 {!this.state.locked && !this.state.amidead?'READY':'LOCKED'}
             </Text>
@@ -1170,13 +1177,26 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
 }
 
 const styles = StyleSheet.create({
+    alive: {
+        height:40,
+        backgroundColor: 'black',
+        margin: 3,
+        borderRadius:5,
+        justifyContent:'center',
+    },
     dead: {
         height:40,
         backgroundColor: 'grey',
         margin: 3,
         borderRadius:5,
         justifyContent:'center',
-        flex:0.5,
+    },
+    immune: {
+        height:40,
+        backgroundColor: '#14b6d7',
+        margin: 3,
+        borderRadius:5,
+        justifyContent:'center',
     },
     headerFont: {
         fontFamily:'ConcertOne-Regular',

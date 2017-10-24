@@ -138,10 +138,11 @@ class Create_Screen extends React.Component {
         //Set up list of players
         firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
             + firebase.auth().currentUser.uid).set({
-                name: this.state.alias,
-                dead:false,
-                bloody:false,
-                suspicious:false,
+                name:       this.state.alias,
+                dead:       false,
+                immune:     false,
+                bloody:     false,
+                suspicious: false,
         });
 
         //Set up phases and rules
@@ -243,10 +244,11 @@ class Join_Screen extends React.Component {
                 firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:joincode});
                 firebase.database().ref('rooms/' + joincode 
                     + '/listofplayers/' + firebase.auth().currentUser.uid).update({
-                        name: this.state.alias,
-                        dead:false,
-                        bloody:false,
-                        suspicious:false,
+                        name:       this.state.alias,
+                        dead:       false,
+                        immune:     false,
+                        bloody:     false,
+                        suspicious: false,
                 });   
 
                 firebase.database().ref('rooms/' + joincode + '/playernum').transaction((playernum) => {
