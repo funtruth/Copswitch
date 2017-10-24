@@ -485,6 +485,19 @@ class Lobby_Screen extends React.Component {
         });
     }
 
+    _recommendedBtnPress(mode,playercount){
+        this.roleCount.remove();
+
+        firebase.database().ref('Original/recommended/' + playercount + '/' + mode).once('value',snap=>{
+            snap.forEach((child)=>{
+                this.roleCount.child(child.key).update({
+                    color:child.val().color,
+                    count:child.val().count,
+                    roleid:child.val().roleid})
+            })
+        })
+    }
+
     _checkIfStart() {
         this.gameStart.on('value',snap=> {
             if(snap.val() > 1 ){
@@ -700,9 +713,46 @@ class Lobby_Screen extends React.Component {
 
             <View style = {{flex:0.15}}/>
 
-            <View style = {{flex:10.65, flexDirection:'row',justifyContent:'center'}}>
+            <View style = {{flex:8.65, flexDirection:'row',justifyContent:'center'}}>
                 <View style = {{flex:0.85}}>
                     {this._renderListComponent()}
+                </View>
+            </View>
+
+            <View style = {{flex:1.5,justifyContent:'center',alignItems:'center'}}>
+                <Text style = {{fontFamily:'ConcertOne-Regular', fontSize:23, color:'black', flex:1}}>
+                    Recommended Set-Up</Text>
+                <View style = {{flex:1,flexDirection:'row'}}>
+                    <TouchableOpacity
+                        style = {{
+                            backgroundColor:'black', borderBottomLeftRadius: 10, borderTopLeftRadius: 10,
+                            justifyContent:'center', alignItems:'center', flex:0.3
+                        }}
+                        onPress = {()=>{this._recommendedBtnPress('easy',this.state.playercount)}}
+                    >
+                        <Text style = {{color:'white',fontFamily:'ConcertOne-Regular',fontSize:15}}>
+                            Easy</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style = {{
+                            backgroundColor:'black', flex:0.3, 
+                            justifyContent:'center', alignItems:'center'
+                        }}
+                        onPress = {()=>{this._recommendedBtnPress('medium',this.state.playercount)}}
+                    >
+                        <Text style = {{color:'white',fontFamily:'ConcertOne-Regular',fontSize:15}}>
+                            Normal</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style = {{
+                            backgroundColor:'black', borderBottomRightRadius: 10, borderTopRightRadius: 10,
+                            justifyContent:'center', alignItems:'center', flex:0.3
+                        }}
+                        onPress = {()=>{this._recommendedBtnPress('hard',this.state.playercount)}}
+                    >
+                        <Text style = {{color:'white',fontFamily:'ConcertOne-Regular',fontSize:15}}>
+                            Difficult</Text>
+                    </TouchableOpacity>
                 </View>
             </View>
 
