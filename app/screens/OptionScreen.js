@@ -98,7 +98,7 @@ export class Option_Screen extends React.Component {
         })
 
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-            .update({ name: null, phase:1 })
+            .update({ name: null, phase:1, actionbtnvalue: false, presseduid: 'foo' })
         
         //this.props.navigation.navigate('Room_Screen')
         this.props.navigation.dispatch(
@@ -176,7 +176,7 @@ export class Expired_Screen extends React.Component {
         AsyncStorage.removeItem('GAME-KEY');
     
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-            .update({ name: null, phase:1 })
+            .update({ name: null, phase:1, actionbtnvalue: false, presseduid: 'foo' })
         //this.props.navigation.navigate('Room_Screen')
         this.props.navigation.dispatch(
             NavigationActions.reset({

@@ -294,6 +294,7 @@ _updatePlayerState() {
             list.push({
                 name: child.val().name,
                 dead: child.val().dead,
+                votes: child.val().votes,
                 key: child.key,
             })
         })
@@ -367,6 +368,16 @@ _increaseCount(){
     })
 }
 
+_vote(bool) {
+    this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid).child('name').once('value',snap=>{
+        if(bool){
+            this.roomRef.child('guiltyvotes').child(firebase.auth().currentUser.uid).set(snap.val());
+        } else {
+            this.roomRef.child('guiltyvotes').child(firebase.auth().currentUser.uid).set(null);
+        }
+    })
+}
+
 //Pressing the Action Button at the Bottom of Screen
 _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
  
@@ -374,9 +385,8 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
     this.setState({disabled:true});
     setTimeout(() => {this.setState({disabled: false})}, 1000);
 
-    if(actionbtnvalue == true){
+    if(actionbtnvalue){
         this._actionBtnValue(false);
-        this._pressedUid('foo');
         this._decreaseCount();
     } else {
         this._actionBtnValue(true);
@@ -390,6 +400,7 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                             new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
                                 
                                 this.eventsRef.remove();
+                                this.roomRef.child('guiltyvotes').remove();
                                 
                                 this._changePhase(snap.val().continue);
 
@@ -402,7 +413,7 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
                     };
                     if(snap.val().actionreset){
                         this.roomRef.child('actions').remove();
-                        this.roomRef.child('events').remove();
+                        this.eventsRef.remove();
                         this._changePhase(snap.val().continue);
                     };
                 } else {
@@ -420,11 +431,6 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     //Stops the user from clicking multiple times
     this.setState({disabled:true});
     setTimeout(() => {this.setState({disabled: false})}, 1000);
-
-    if(this.state.actionbtnvalue){
-        this._actionBtnValue(false);
-        this._decreaseCount();
-    }
 
     if(phase == 2){
         if(uid==this.state.presseduid){
@@ -552,33 +558,31 @@ _voteBtnPress(presseduid,votebtn) {
         
         if(presseduid == 'yes'){
             if(votebtn){
-                this.userRoomRef.update({actionbtnvalue:false, presseduid:'foo'})
+                this.userRoomRef.update({actionbtnvalue:false, presseduid:'foo'});
+                this._vote(false);
                 this._decreaseCount();
             } else {
                 this.userRoomRef.update({actionbtnvalue:true, presseduid:'no'})
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                    + firebase.auth().currentUser.uid).update({vote:false})
+                this._vote(true);
             }
         } else if (presseduid == 'no') {
             if(votebtn){
                 this.userRoomRef.update({actionbtnvalue:true, presseduid:'yes'})
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                    + firebase.auth().currentUser.uid).update({vote:true})
+                this._vote(false);
             } else {
                 this.userRoomRef.update({actionbtnvalue:false, presseduid:'foo'})
+                this._vote(false);
                 this._decreaseCount();
             }
         } else {
             if(votebtn){
                 this.userRoomRef.update({actionbtnvalue:true, presseduid:'yes'})
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                    + firebase.auth().currentUser.uid).update({vote:true})
+                this._vote(false);
                 this._increaseCount();
                 this._voteFinished(this.state.roomname);
             } else {
                 this.userRoomRef.update({actionbtnvalue:true, presseduid:'no'})
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                    + firebase.auth().currentUser.uid).update({vote:false})
+                this._vote(true);
                 this._increaseCount();
                 this._voteFinished(this.state.roomname);
             }
@@ -599,8 +603,7 @@ _voteFinished(roomname){
                     firebase.database().ref('rooms/' + roomname + '/actions').remove(); 
                 };
 
-                firebase.database().ref('rooms/'+ roomname +'/listofplayers')
-                .orderByChild('vote').equalTo(false)
+                firebase.database().ref('rooms/'+ roomname +'/guiltyvotes')
                 .once('value',guiltyvotes=>{
 
                     var counter = 0;
@@ -608,8 +611,8 @@ _voteFinished(roomname){
 
                     guiltyvotes.forEach((votechild)=>{ 
                         counter++;
-                        if(counter==1){names=votechild.val().name}
-                        else if(counter>1){names=names+', '+votechild.val().name}
+                        if(counter==1){names=votechild.val()}
+                        else if(counter>1){names=names+', '+votechild.val()}
                     })
                     
                     this._noticeMsgGlobal(roomname,'#d31d1d', names + ' voted against ' + this.state.nominee + '.') 
@@ -704,11 +707,19 @@ _renderListComponent(){
                         borderRadius:5,
                         justifyContent:'center',
                     }}
-                    disabled = {this.state.amidead?true:item.dead}
-                    >
-                    {item.dead?<MaterialCommunityIcons name='skull'
-                        style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
-                        <Text style = {styles.concerto}>{item.name}</Text>}
+                    disabled = {this.state.amidead?true:item.dead}>
+                    <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                        <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
+                        <MaterialCommunityIcons name={item.dead?'skull':null}
+                            style={{color:'white', fontSize:26}}/>
+                        </View>
+                        <View style = {{flex:5}}>
+                            <Text style = {styles.concerto}>{item.name}</Text>
+                        </View>
+                        <View style = {{flex:1}}>
+                            <Text style = {styles.concerto}>{item.votes>0?item.votes:null}</Text>
+                        </View>
+                    </View>
                 </TouchableOpacity>
             )}
             keyExtractor={item => item.key}
@@ -1094,10 +1105,10 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
     <View style = {{flex:2.2}}>
     </View>
     <View style = {{flex:13}}>
-        <View style = {{flex:4.4}}>
+        <View style = {{flex:2}}>
             {this._renderListComponent()}
         </View>
-        <View style = {{flex:this.state.messagechat||this.state.notificationchat?2.4:0,
+        <View style = {{flex:this.state.messagechat||this.state.notificationchat?3:0,
             backgroundColor:'black',borderRadius:15}}>
             {this._renderMessageComponent()}
         </View>
