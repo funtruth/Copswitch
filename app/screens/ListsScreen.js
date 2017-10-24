@@ -189,7 +189,8 @@ class Roles_Screen extends Component {
                         onPress = {()=>{this.state.room?
                             this._addRole(item.name,item.key,item.color)
                             :
-                            alert('future rulebook details')}}
+                            this.props.navigation.navigate('Character_Screen',{roleid:item.key})    
+                        }}
                     >
                         <Text style = {{
                             marginTop: 10,
@@ -213,6 +214,47 @@ class Roles_Screen extends Component {
     }
 }
 
+class Character_Screen extends Component {
+
+    static navigationOptions = {
+        title: 'Rules',
+        headerStyle: { backgroundColor: 'black' },
+        headerTintColor: 'white',
+    };
+
+    constructor(props) {
+        super(props);
+    
+        const dataSource = new ListView.DataSource({
+            rowHasChanged: (row1, row2) => row1 !== row2,
+        });
+
+        const { params } = this.props.navigation.state;
+        const roleid = params.roleid;
+
+        this.state = {
+            roleid: params.roleid,
+        }
+        
+        this.characterRef = firebase.database().ref('Original/roles/' + params.roleid);
+    
+    }
+
+
+    componentWillMount() {
+
+    }
+
+    componentWillUnmount() {
+
+    }
+
+    render(){
+        return <View style = {{flex:1, backgroundColor:'white',justifyContent:'center'}}>
+            <Text>{'future info about role ' + this.state.roleid}</Text>
+        </View>
+    }
+}
 
 export default RuleBook = StackNavigator(
     {
@@ -221,6 +263,9 @@ export default RuleBook = StackNavigator(
       },
       Roles_Screen: {
         screen: Roles_Screen,
+      },
+      Character_Screen: {
+        screen: Character_Screen,
       },
     },
     {

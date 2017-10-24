@@ -45,6 +45,7 @@ constructor(props) {
         roomname: params.roomname,
         phase:              '',
         screentype:         '',
+        screencolor:        'white',
         phasename:          '',
         bottommessage:      '',
         locked:             '',
@@ -215,14 +216,6 @@ componentWillMount() {
 
             this.setState({cover:true})
 
-            this.roomRef.once('value',roomsnap=>{
-                //Keep Phase name updated
-                firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + roomsnap.val().phase)
-                .once('value',layout=>{ 
-                    this.setState({ phasename:layout.val().name,loaded:true}) 
-                })
-            })
-
             //Keep Phase updated for PERSONAL USER
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
                 .update({phase:snap.val()});
@@ -232,8 +225,11 @@ componentWillMount() {
             firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val())
             .once('value',layout=>{
                 this.setState({
+                    phasename:layout.val().name,
                     screentype:layout.val().type,
-                    locked:layout.val().locked })
+                    screencolor:layout.val().color,
+                    locked:layout.val().locked,
+                    loaded:true })
             })
         }
     })
@@ -785,10 +781,6 @@ _renderListComponent(){
 
                 <View style = {{flex:1}}/>
             </View>
-
-            <View style = {{flex:this.state.messagechat||this.state.notificationchat?0:2.4
-                ,backgroundColor:'white',borderBottomRightRadius:15,borderTopRightRadius:15,}}>
-            </View>
         </View>
     }
 }
@@ -1059,7 +1051,7 @@ if(!this.state.loaded){
     return null
 }
 
-return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
+return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screencolor}}>
 
     <View style = {{flex:2}}/>
     
@@ -1089,23 +1081,20 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
     <View style = {{flex:2}}/>
 
 </View>:
-<View style = {{flex:1}}>
+<View style = {{flex:1, backgroundColor:this.state.screencolor}}>
 
-<View style = {{flex:1,flexDirection:'row',backgroundColor:'white'}}>
-    <View style = {{flex:1}}/>
-    <View style = {{flex:15,backgroundColor:'black',justifyContent:'center',
+<View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
+    <View style = {{flex:0.9,backgroundColor:'black',justifyContent:'center',
         borderBottomLeftRadius:15,borderBottomRightRadius:15}}>
         {this._renderHeader()}
     </View>
-    <View style = {{flex:1}}/>
 </View>
 
-<View style = {{flex:0.15,backgroundColor:'white'}}/>
+<View style = {{flex:0.15}}/>
 
 <View style = {{
     flex:11,
     flexDirection:'row',
-    backgroundColor:'white',
 }}>
     <View style = {{flex:2.2}}>
     </View>
@@ -1127,7 +1116,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
                     this._chatPress('notifications')
                 }}>
                 <MaterialCommunityIcons name='comment-alert'
-                            style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
         <View style = {{flex:0.6,justifyContent:'center'}}>
@@ -1136,7 +1125,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
                     this._chatPress('messages')
                 }}>
                 <MaterialCommunityIcons name='clipboard-text' 
-                            style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
         <View style = {{flex:4}}/>
@@ -1144,9 +1133,9 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
 
 </View>
 
-<View style = {{flex:0.15, backgroundColor:'white'}}/>
+<View style = {{flex:0.15}}/>
 
-<View style = {{flex:1,backgroundColor:'white',flexDirection:'row',justifyContent:'center'}}>
+<View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
         <TouchableOpacity
             disabled={this.state.disabled?true:(this.state.locked?true:this.state.amidead)}
             onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
@@ -1154,24 +1143,22 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:'white'}}>
             style = {{flex:0.82,justifyContent:'center',
                 backgroundColor:!this.state.locked && this.state.actionbtnvalue?'#e3c382':'black',
                 borderRadius:15}}>
-            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?'black':'white'
-                            , fontSize:26,alignSelf:'center', fontFamily:'ConcertOne-Regular'}}>
+            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?'black':'white',
+                fontSize:26,alignSelf:'center', fontFamily:'ConcertOne-Regular'}}>
                 {!this.state.locked && !this.state.amidead?'READY':'LOCKED'}
             </Text>
         </TouchableOpacity>
 </View>
 
-<View style = {{flex:0.15, backgroundColor:'white'}}/>
+<View style = {{flex:0.15}}/>
 
-<View style = {{flex:0.5,flexDirection:'row',backgroundColor:'white'}}>
-    <View style = {{flex:3}}/>
-    <View style = {{flex:15,backgroundColor:'black',borderRadius:10,justifyContent:'center',alignItems:'center'}}>
+<View style = {{flex:0.5,flexDirection:'row',justifyContent:'center'}}>
+    <View style = {{flex:0.7,backgroundColor:'black',borderRadius:10,justifyContent:'center',alignItems:'center'}}>
         <Text style = {{color:'white',fontSize:12}}>{this.state.bottommessage}</Text>
     </View>
-    <View style = {{flex:3}}/>
 </View>
 
-<View style = {{flex:0.15, backgroundColor:'white'}}/>
+<View style = {{flex:0.15}}/>
 </View>
 }
 }
