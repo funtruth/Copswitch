@@ -234,25 +234,7 @@ componentWillMount() {
                     
                     this.roomRef.child('phases').child(this.state.phase).once('value',phase=>{
                         
-                        //Phase 5 Handling CONTINUE
-                        if(phase.val().action){
-
-                            new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
-                                new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
-                                    
-                                    this.guiltyVotesRef.remove();
-                                    this._resetImmunity();
-                                    
-                                    this._changePhase(phase.val().continue);
-
-                                    //After Night, the day count increases
-                                    this.dayCounterRef.once('value',daycount=>{
-                                        this.dayCounterRef.set(daycount.val()+1);
-                                    })
-                                });
-                            });
-                        };
-                        //Phase 2 Handling CONTINUE
+                        //Phase 2 + 4 Handling CONTINUE
                         if(phase.val().actionreset){
                             this.roomRef.child('actions').remove();
                             this._resetImmunity();
@@ -327,6 +309,24 @@ componentWillMount() {
                                 }
 
                             })
+                        };
+                        //Phase 5 Handling CONTINUE
+                        if(phase.val().action){
+                            
+                            new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
+                                new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
+                                    
+                                    this.guiltyVotesRef.remove();
+                                    this._resetImmunity();
+                                    
+                                    this._changePhase(phase.val().continue);
+
+                                    //After Night, the day count increases
+                                    this.dayCounterRef.once('value',daycount=>{
+                                        this.dayCounterRef.set(daycount.val()+1);
+                                    })
+                                });
+                            });
                         };
 
                     })
@@ -560,7 +560,24 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                 
         } 
 
-    }  else if (phase==5) {
+    }  else if(phase == 4){
+        //Check if selected player is a mafia member
+        //change role id on listofplayers
+        firebase.database().ref('rooms/' + roomname + '/mafia/' + uid).once('value',mafiacheck=>{
+            if(mafiacheck.exists()){
+                firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+                + uid).once('value',snap=>{
+                        firebase.database().ref('rooms/'+roomname+'/mafia/' + uid)
+                            .update({roleid:'A'})
+                        firebase.database().ref('rooms/'+roomname+'/listofplayers/'
+                            + uid).update({roleid:'A'})
+                })
+                this.countRef.set(this.state.playernum)
+            } else {
+                this.setState({bottommessage: name + ' is not a member of the Mafia.'})
+            }
+        })
+    } else if (phase==5) {
         if(this.state.presseduid == 'foo'){
 
             firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
@@ -609,26 +626,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                     this._pressedUid(uid);
             })
         }
-    } else if(phase == 4){
-        //Check if selected player is a mafia member
-        //change role id on listofplayers
-        firebase.database().ref('rooms/' + roomname + '/mafia/' + uid).once('value',mafiacheck=>{
-            if(mafiacheck.exists()){
-                firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
-                + uid).once('value',snap=>{
-                        firebase.database().ref('rooms/'+roomname+'/mafia/' + uid)
-                            .update({roleid:'A'})
-                        firebase.database().ref('rooms/'+roomname+'/listofplayers/'
-                            + uid).update({roleid:'A'})
-                })
-                this.countRef.set(this.state.playernum)
-            } else {
-                this.setState({bottommessage: name + ' is not a member of the Mafia.'})
-            }
-        })
-            
-
-    }
+    } 
 }
 
 //Pressing a Voting BUtton
@@ -808,7 +806,7 @@ _renderTransitionHeader() {
 
 //Renders the continue button
 _renderContinueBtn() {
-    if(this.state.phase == 5 && this.state.amipicking){
+    if(this.state.phase == 4 && this.state.amipicking){
         return <TouchableOpacity 
             style = {{flex:0.7,backgroundColor:'black',borderRadius:15,justifyContent:'center'}}
             onPress = {() => {
@@ -817,7 +815,7 @@ _renderContinueBtn() {
         >
             <Text style = {{color:'white',alignSelf:'center'}}>Select new</Text>
         </TouchableOpacity>
-    } else if (this.state.phase == 5 && !this.state.amipicking){
+    } else if (this.state.phase == 4 && !this.state.amipicking){
         return <TouchableOpacity 
             style = {{flex:0.7,backgroundColor:'black',borderRadius:15,justifyContent:'center'}}
             onPress = {() => {
@@ -1023,6 +1021,7 @@ _actionPhase() {
 render() {
 
 if(!this.state.loaded){
+    //Loading Screen
     return null
 }
 

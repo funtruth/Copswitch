@@ -158,6 +158,7 @@ class Create_Screen extends React.Component {
                         color:      child.val().color,
                         continue:   child.val().continue,
                         locked:     child.val().locked,
+                        lynch:      child.val().lynch,
                         name:       child.val().name,
                         nominate:   child.val().nominate,
                         trigger:    child.val().trigger,
