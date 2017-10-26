@@ -125,7 +125,7 @@ class Create_Screen extends React.Component {
         AsyncStorage.setItem('ROOM-KEY', roomname);
 
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({
-            name: roomname,
+            name: roomname, actionbtnvalue: false, presseduid: 'foo'
         });
         
         firebase.database().ref('rooms/' + roomname).set({
@@ -155,6 +155,7 @@ class Create_Screen extends React.Component {
                     firebase.database().ref('rooms/' + roomname + '/phases/' + child.key).set({
                         action:     child.val().action,
                         actionreset:child.val().actionreset,
+                        color:      child.val().color,
                         continue:   child.val().continue,
                         locked:     child.val().locked,
                         name:       child.val().name,
@@ -252,11 +253,11 @@ class Join_Screen extends React.Component {
                 });   
 
                 firebase.database().ref('rooms/' + joincode + '/playernum').transaction((playernum) => {
-                    return (playernum + 1);
+                    return playernum + 1;
                 });       
                 
                 firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                .update({ name:joincode })
+                .update({ name:joincode, presseduid: 'foo', actionbtnvalue:false })
 
                 //this.props.navigation.navigate('Lobby_Screen', { roomname: joincode});
                 this.props.navigation.dispatch(
@@ -718,6 +719,22 @@ class Lobby_Screen extends React.Component {
                     {this._renderListComponent()}
                 </View>
             </View>
+            
+            <View style = {{flex:0.15}}/>
+
+            <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
+                <View style = {{flex:0.66,justifyContent:'center',backgroundColor:'black',borderRadius:15}}>
+                    <TouchableOpacity
+                        onPress={()=> {
+                            this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
+                        }}
+                        disabled={!this.state.amiowner}>
+                        <Text style = {styles.concerto}>START GAME</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
+
+            <View style = {{flex:0.15}}/>
 
             <View style = {{flex:1.5,justifyContent:'center',alignItems:'center'}}>
                 <Text style = {{fontFamily:'ConcertOne-Regular', fontSize:23, color:'black', flex:1}}>
@@ -752,20 +769,6 @@ class Lobby_Screen extends React.Component {
                     >
                         <Text style = {{color:'white',fontFamily:'ConcertOne-Regular',fontSize:15}}>
                             Difficult</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            <View style = {{flex:0.15}}/>
-
-            <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
-                <View style = {{flex:0.66,justifyContent:'center',backgroundColor:'black',borderRadius:15}}>
-                    <TouchableOpacity
-                        onPress={()=> {
-                            this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
-                        }}
-                        disabled={!this.state.amiowner}>
-                        <Text style = {styles.concerto}>START GAME</Text>
                     </TouchableOpacity>
                 </View>
             </View>

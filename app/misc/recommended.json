@@ -1,4 +1,67 @@
 {
+  "4" : {
+    "easy" : {
+      "Investigator" : {
+        "color" : "#6daa2c",
+        "count" : 1,
+        "roleid" : "L"
+      },
+      "Murderer" : {
+        "color" : "#aa3131",
+        "count" : 1,
+        "roleid" : "A"
+      },
+      "Villager" : {
+        "color" : "#6daa2c",
+        "count" : 2,
+        "roleid" : "U"
+      }
+    },
+    "medium" : {
+      "Doctor" : {
+        "color" : "#6daa2c",
+        "count" : 1,
+        "roleid" : "N"
+      },
+      "Investigator" : {
+        "color" : "#6daa2c",
+        "count" : 1,
+        "roleid" : "L"
+      },
+      "Murderer" : {
+        "color" : "#aa3131",
+        "count" : 1,
+        "roleid" : "A"
+      },
+      "Villager" : {
+        "color" : "#6daa2c",
+        "count" : 1,
+        "roleid" : "U"
+      }
+    },
+    "hard" : {
+      "Investigator" : {
+        "color" : "#6daa2c",
+        "count" : 1,
+        "roleid" : "L"
+      },
+      "Murderer" : {
+        "color" : "#aa3131",
+        "count" : 1,
+        "roleid" : "A"
+      },
+      "Psychopath" : {
+        "color" : "#c7c4cf",
+        "count" : 1,
+        "roleid" : "W"
+      },
+      "Villager" : {
+        "color" : "#6daa2c",
+        "count" : 1,
+        "roleid" : "U"
+      }
+    }
+  },
   "5" : {
     "easy" : {
       "Investigator" : {

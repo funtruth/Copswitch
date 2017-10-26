@@ -93,7 +93,6 @@ _leaveGame() {
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
         .update({ name: null, phase:1, actionbtnvalue: false, presseduid: 'foo' })
-    //this.props.navigation.navigate('SignedIn')
     this.props.navigation.dispatch(
         NavigationActions.reset({
             index: 0,

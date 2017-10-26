@@ -204,13 +204,6 @@ componentWillMount() {
         }
     })
 
-    this.nominationListener.on('value',snap=>{
-        if(snap.exists()){
-            //this.state.nominate, nominee, amipicking
-            this._updateNominate();
-        }
-    })
-
     this.phaseListener.on('value',snap=>{
         if(snap.exists()){
 
@@ -232,6 +225,9 @@ componentWillMount() {
                     loaded:true })
             })
         }
+
+        //this.state.nominate, nominee, amipicking
+        this._updateNominate();
     })
 
     //For Transition Screen
@@ -311,7 +307,7 @@ _updateNumbers(playernum) {
 _updateNominate(){
     //Checks the nominated player and updates state for his uid/name
     //Then checks if you are the nominated player.
-    firebase.database().ref('rooms/' + this.state.roomname +'/nominate').once('value',snap=>{
+    this.nominationListener.once('value',snap=>{
         if(snap.exists()){
             firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'+snap.val()).once('value',sp=>{
                 this.setState({nominate: snap.val(), nominee: sp.val().name})
@@ -402,6 +398,7 @@ _actionBtnPress(actionbtnvalue,presseduid,triggernum,phase,roomname){
 
             this.roomRef.child('count').transaction((count)=>{
                 if((count+2)>this.state.playernum){
+                    alert('breached')
                     if(snap.val().action){
                         new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
                             new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
@@ -850,6 +847,38 @@ _renderTransitionMessage(){
         
 }
 
+//Renders the continue button
+_renderContinueBtn() {
+    if(this.state.phase == 5 && this.state.amipicking){
+        return <TouchableOpacity 
+            style = {{flex:0.7,backgroundColor:'black',borderRadius:15,justifyContent:'center'}}
+            onPress = {() => {
+                this.setState({cover:false})
+            }}
+        >
+            <Text style = {{color:'white',alignSelf:'center'}}>Select new</Text>
+        </TouchableOpacity>
+    } else if (this.state.phase == 5 && !this.state.amipicking){
+        return <TouchableOpacity 
+            style = {{flex:0.7,backgroundColor:'black',borderRadius:15,justifyContent:'center'}}
+            onPress = {() => {
+                
+            }}
+        >
+            <Text style = {{color:'white',alignSelf:'center'}}>Wait bruv</Text>
+        </TouchableOpacity>
+    } else {
+        return <TouchableOpacity 
+            style = {{flex:0.7,backgroundColor:'black',borderRadius:15,justifyContent:'center'}}
+            onPress = {() => {
+                this.setState({cover:false})
+            }}
+        >
+            <Text style = {{color:'white',alignSelf:'center'}}>Continue</Text>
+        </TouchableOpacity>
+    }
+}
+
 //Pressing a chat button
 _chatPress(chattype){
     if(chattype=='messages'){
@@ -1068,14 +1097,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
     <View style = {{flex:4}}/>
     
     <View style = {{flex:1.5,flexDirection:'row',alignContent:'center',justifyContent:'center'}}>
-        <TouchableOpacity 
-            style = {{flex:0.7,backgroundColor:'black',borderRadius:15,justifyContent:'center'}}
-            onPress = {() => {
-                this.setState({cover:false})
-            }}
-        >
-            <Text style = {{color:'white',alignSelf:'center'}}>Continue</Text>
-        </TouchableOpacity>
+        {this._renderContinueBtn()}
     </View>
     
     <View style = {{flex:2}}/>
