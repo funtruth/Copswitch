@@ -26,6 +26,7 @@ import { Button, List } from "react-native-elements";
 
 import { isInGame } from "../auth";
 import { isInRoom } from "../auth";
+import colors from '../misc/colors.js';
 
 import Mafia_Screen from './MafiaScreen.js';
 import { Option_Screen, Expired_Screen } from './OptionScreen.js';
@@ -72,16 +73,17 @@ class Room_Screen extends React.Component {
         return <View 
         style = {{
             flex:1,
-            backgroundColor:'white'
+            backgroundColor:colors.lightbackground,
         }}>
             <View style = {{flex:1}}> 
                 <TouchableWithoutFeedback 
                     style = {{ flex:1,justifyContent:'center' }}
                     onPress={()=>{ this._createRoom() }}>
-                    <View style = {{flex:1,backgroundColor:'black',justifyContent:'center',alignItems:'center'}}>
+                    <View style = {{flex:1,backgroundColor:colors.darkbackground,
+                        justifyContent:'center',alignItems:'center'}}>
                         <Text style = {{
                             fontFamily:'ConcertOne-Regular',
-                            color:'white',
+                            color:colors.lightfont,
                             fontSize:30,
                             justifyContent:'center'}}>Make a Room</Text>
                     </View>
@@ -90,10 +92,11 @@ class Room_Screen extends React.Component {
                 <TouchableWithoutFeedback 
                     style = {{ flex:1,justifyContent:'center' }}
                     onPress={()=>{ this._findRoom() }}>
-                    <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+                    <View style = {{flex:1,backgroundColor:colors.lightbackground,
+                        justifyContent:'center',alignItems:'center'}}>
                         <Text style = {{
                             fontFamily:'ConcertOne-Regular',
-                            color:'black',
+                            color:colors.lightfont,
                             fontSize:30,
                             justifyContent:'center'}}>Join a Room</Text>
                     </View>
@@ -107,6 +110,9 @@ class Create_Screen extends React.Component {
     
     static navigationOptions = {
         title: 'Make a Room',
+        headerStyle: { backgroundColor: colors.headerbackground},
+        titleStyle: { fontFamily:'ConcertOne-Regular' },
+        headerTintColor: colors.headerfont,
     };
 
     constructor(props) {
@@ -185,10 +191,11 @@ class Create_Screen extends React.Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+            <View style = {{flex:1,backgroundColor:colors.background,
+                justifyContent:'center',alignItems:'center'}}>
                 <Text style = {{
                     fontFamily:'ConcertOne-Regular',
-                    color:'black',
+                    color:colors.font,
                     fontSize:30}}>Who are you?
                 </Text>
 
@@ -196,7 +203,7 @@ class Create_Screen extends React.Component {
                     <TextInput
                         placeholder="Who are you? ..."
                         style={{
-                            backgroundColor: 'white',
+                            backgroundColor: colors.background,
                             flex:0.6,
                         }}
                         value={this.state.alias}
@@ -210,7 +217,8 @@ class Create_Screen extends React.Component {
                     <View style = {{flex:0.75}}>
                     <Button
                         title="Go"
-                        backgroundColor='black'
+                        borderRadius={15}
+                        backgroundColor={colors.button}
                         onPress={()=>{this._createRoom()}}
                     /></View>
                 </View>
@@ -226,6 +234,9 @@ class Join_Screen extends React.Component {
 
     static navigationOptions = {
         title: 'Join a Room',
+        headerStyle: { backgroundColor: colors.headerbackground},
+        titleStyle: { fontFamily:'ConcertOne-Regular' },
+        headerTintColor: colors.headerfont,
     };
 
     constructor(props) {
@@ -281,10 +292,12 @@ class Join_Screen extends React.Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:'white',justifyContent:'center',alignItems:'center'}}>
+            <View style = {{flex:1,backgroundColor:colors.background,
+                justifyContent:'center',alignItems:'center'}}>
+                
                 <Text style = {{
                     fontFamily:'ConcertOne-Regular',
-                    color:'black',
+                    color:colors.font,
                     fontSize:30}}>Join Room
                 </Text>
 
@@ -293,7 +306,7 @@ class Join_Screen extends React.Component {
                     <TextInput
                         placeholder="Who are you? ..."
                         style={{
-                            backgroundColor: 'white',
+                            backgroundColor: colors.background,
                             flex:0.6,
                         }}
                         value={this.state.alias}
@@ -309,7 +322,7 @@ class Join_Screen extends React.Component {
                         ref='roomcode'
                         placeholder="Room Code ..."
                         style={{
-                            backgroundColor: 'white',
+                            backgroundColor: colors.background,
                             flex:0.6,
                         }}
                         value={this.state.joincode}
@@ -324,7 +337,7 @@ class Join_Screen extends React.Component {
                         <View style = {{flex:0.75}}>
                         <Button
                             title="Go"
-                            backgroundColor='black'
+                            backgroundColor={colors.button}
                             onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
                         /></View>
 
@@ -621,7 +634,7 @@ class Lobby_Screen extends React.Component {
                         onPress={() => { }}
                         style = {{height:40,
                             borderRadius:5,
-                            backgroundColor: 'black',
+                            backgroundColor: colors.button,
                             margin: 3,
                             justifyContent:'center'
                     }}> 
@@ -664,7 +677,7 @@ class Lobby_Screen extends React.Component {
 
     render() {
         return <View style = {{
-            backgroundColor: 'white',
+            backgroundColor: colors.background,
             flex: 1,
         }}>
             <View style = {{flex:1,flexDirection:'row'}}>
@@ -672,9 +685,9 @@ class Lobby_Screen extends React.Component {
                 <View style = {{
                     flex:4, 
                     borderBottomLeftRadius: 15, borderBottomRightRadius: 15, 
-                    backgroundColor: 'black', justifyContent: 'center', }}
+                    backgroundColor: colors.button, justifyContent: 'center', }}
                 > 
-                    <Text style = {{color:'white', alignSelf:'center',
+                    <Text style = {{color:colors.lightfont, alignSelf:'center',
                         fontFamily:'ConcertOne-Regular', fontSize:25}}>
                         {'Room Name: ' + this.state.roomname}
                     </Text>
@@ -685,7 +698,7 @@ class Lobby_Screen extends React.Component {
                             this.state.amiowner?this._deleteRoom():this._leaveRoom(this.state.roomname);
                         }}>
                         <MaterialCommunityIcons name={this.state.amiowner?'close-circle':'close-circle'}
-                                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                                    style={{color:colors.button, fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -696,7 +709,7 @@ class Lobby_Screen extends React.Component {
                 <TouchableOpacity
                     style = {{
                         flex: 0.6,
-                        backgroundColor:'black',
+                        backgroundColor:colors.button,
                         borderRadius: 15,
                         justifyContent:'center',
                     }}
@@ -724,7 +737,7 @@ class Lobby_Screen extends React.Component {
             <View style = {{flex:0.15}}/>
 
             <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
-                <View style = {{flex:0.66,justifyContent:'center',backgroundColor:'black',borderRadius:15}}>
+                <View style = {{flex:0.66,justifyContent:'center',backgroundColor:colors.button,borderRadius:15}}>
                     <TouchableOpacity
                         onPress={()=> {
                             this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
@@ -738,12 +751,12 @@ class Lobby_Screen extends React.Component {
             <View style = {{flex:0.15}}/>
 
             <View style = {{flex:1.5,justifyContent:'center',alignItems:'center'}}>
-                <Text style = {{fontFamily:'ConcertOne-Regular', fontSize:23, color:'black', flex:1}}>
+                <Text style = {{fontFamily:'ConcertOne-Regular', fontSize:23, color:colors.button, flex:1}}>
                     Recommended Set-Up</Text>
                 <View style = {{flex:1,flexDirection:'row'}}>
                     <TouchableOpacity
                         style = {{
-                            backgroundColor:'black', borderBottomLeftRadius: 10, borderTopLeftRadius: 10,
+                            backgroundColor:colors.button, borderBottomLeftRadius: 10, borderTopLeftRadius: 10,
                             justifyContent:'center', alignItems:'center', flex:0.3
                         }}
                         onPress = {()=>{this._recommendedBtnPress('easy',this.state.playercount)}}
@@ -753,7 +766,7 @@ class Lobby_Screen extends React.Component {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style = {{
-                            backgroundColor:'black', flex:0.3, 
+                            backgroundColor:colors.button, flex:0.3, 
                             justifyContent:'center', alignItems:'center'
                         }}
                         onPress = {()=>{this._recommendedBtnPress('medium',this.state.playercount)}}
@@ -763,7 +776,7 @@ class Lobby_Screen extends React.Component {
                     </TouchableOpacity>
                     <TouchableOpacity
                         style = {{
-                            backgroundColor:'black', borderBottomRightRadius: 10, borderTopRightRadius: 10,
+                            backgroundColor:colors.button, borderBottomRightRadius: 10, borderTopRightRadius: 10,
                             justifyContent:'center', alignItems:'center', flex:0.3
                         }}
                         onPress = {()=>{this._recommendedBtnPress('hard',this.state.playercount)}}
@@ -896,7 +909,7 @@ const styles = StyleSheet.create({
     concerto: {
         fontSize:17,
         fontFamily:'ConcertOne-Regular',
-        color:'white',
+        color:colors.lightfont,
         alignSelf: 'center',
     },
 

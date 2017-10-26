@@ -1,7 +1,7 @@
 {
   "A" : {
     "category" : "killing",
-    "color" : "#aa3131",
+    "color" : "#4B4352",
     "desc" : "Murderer of the Mafia.",
     "image" : "hehee",
     "name" : "Murderer",
@@ -64,7 +64,7 @@
   },
   "K" : {
     "category" : "inspective",
-    "color" : "#6daa2c",
+    "color" : "#8F626A",
     "desc" : "On the case.",
     "image" : "google.comlol",
     "name" : "Detective",

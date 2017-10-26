@@ -7,8 +7,8 @@ import { StackNavigator, TabNavigator } from "react-navigation";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import SignUp from "./app/loginscreens/SignUp";
-import SignIn from "./app/loginscreens/SignIn";
+import { SignUp, SignIn } from "./app/loginscreens/LogIn";
+import colors from './app/misc/colors.js';
 
 import Lists from "./app/screens/ListsScreen";
 import Room from "./app/screens/RoomScreen";
@@ -61,13 +61,11 @@ export const SignedOut = StackNavigator(
       tabBarOptions: {
         showIcon: true,
         showLabel: false,
-        activeTintColor:'#9373d9',
-        inactiveTintColor:'#9373d9',
         style: {
-          backgroundColor: 'black',
+          backgroundColor: colors.tabbackground,
         },
         indicatorStyle: {
-          backgroundColor: 'white',
+          backgroundColor: colors.indicatorcolor,
           height:5,
         }
       },
@@ -104,7 +102,7 @@ export const SignedOut = StackNavigator(
 const styles = StyleSheet.create({
   icon: {
     height: 26,
-    color: '#ffffff',
+    color: colors.iconcolor,
     fontSize: 20
   },
 });

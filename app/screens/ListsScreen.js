@@ -20,6 +20,7 @@ import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
 import firebase from '../firebase/FirebaseController.js';
+import colors from '../misc/colors.js';
 
 //Components
 import RulebookListItem from '../components/RulebookListItem.js';
@@ -48,40 +49,40 @@ class General_Screen extends Component {
 
 
     render(){
-        return <View style = {{flex:1, backgroundColor:'white'}}>
+        return <View style = {{flex:1, backgroundColor:colors.lightbackground}}>
 
             <TouchableOpacity
-                style={{flex:1,justifyContent:'center'}}
+                style={{flex:1,justifyContent:'center',backgroundColor:colors.listcolor1}}
                 onPress={()=>{this._goToRules(2)}}
             >   
                 <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
                     <Text style = {{
                         fontFamily:'ConcertOne-Regular',
-                        color:'black',
+                        color:colors.lightfont,
                         fontSize:30,
                         justifyContent:'center'}}>Town</Text>
                 </View>
             </TouchableOpacity>
             <TouchableOpacity
-                style={{flex:1,backgroundColor:'black',justifyContent:'center'}}
+                style={{flex:1,justifyContent:'center',backgroundColor:colors.listcolor2,}}
                 onPress={()=>{this._goToRules(1)}}
             >   
                 <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
                     <Text style = {{
                         fontFamily:'ConcertOne-Regular',
-                        color:'white',
+                        color:colors.lightfont,
                         fontSize:30,
                         justifyContent:'center'}}>Mafia</Text>
                 </View>
             </TouchableOpacity>
             <TouchableOpacity
-                style={{flex:1,justifyContent:'center'}}
+                style={{flex:1,justifyContent:'center',backgroundColor:colors.listcolor3,}}
                 onPress={()=>{this._goToRules(3)}}
             >   
                 <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
                     <Text style = {{
                         fontFamily:'ConcertOne-Regular',
-                        color:'black',
+                        color:colors.lightfont,
                         fontSize:30,
                         justifyContent:'center'}}>Neutral</Text>
                 </View>
@@ -95,9 +96,9 @@ class Roles_Screen extends Component {
 
     static navigationOptions = {
         title: 'Roles',
-        headerStyle: { backgroundColor: 'black' },
+        headerStyle: { backgroundColor: colors.headerbackground},
         titleStyle: { fontFamily:'ConcertOne-Regular' },
-        headerTintColor: 'white',
+        headerTintColor: colors.headerfont,
     };
 
     constructor(props) {
@@ -179,7 +180,7 @@ class Roles_Screen extends Component {
     }
 
     render(){
-        return <View style = {{flex:1, backgroundColor:'white'}}>
+        return <View style = {{flex:1, backgroundColor:colors.listcolor3}}>
 
             <View style = {{flex:9}}>
             <View><FlatList
@@ -196,13 +197,13 @@ class Roles_Screen extends Component {
                             marginTop: 10,
                             marginLeft: 10,
                             marginRight: 10,
-                            color:item.color,
+                            color:colors.lightfont,
                             fontFamily: 'ConcertOne-Regular',
                             fontSize:25}}>{item.name}</Text>
                         <Text style = {{
                             marginLeft: 10,
                             marginRight: 10,
-                            color:'black',
+                            color:colors.darkfont,
                             fontFamily: 'ConcertOne-Regular',
                             fontSize:18}}>{item.desc}</Text>
                     </TouchableOpacity>
@@ -218,8 +219,8 @@ class Character_Screen extends Component {
 
     static navigationOptions = {
         title: 'Rules',
-        headerStyle: { backgroundColor: 'black' },
-        headerTintColor: 'white',
+        headerStyle: { backgroundColor: colors.headerbackground },
+        headerTintColor: colors.headerfont,
     };
 
     constructor(props) {
