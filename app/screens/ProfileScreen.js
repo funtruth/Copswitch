@@ -121,13 +121,13 @@ _logOutPress() {
 
             <View style = {{flex:2,flexDirection:'row',justifyContent:'center'}}>
                 <TouchableOpacity
-                    style={{ flex:0.75,justifyContent:'center' }}
+                    style={{ flex:1,justifyContent:'center' }}
                     onPressIn={()=>{ this.setState({hidden:false}) }}
                     onPressOut={()=>{ this.setState({hidden:true}) }}>
                     <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
                         <Text style = {{fontFamily:'ConcertOne-Regular',color:colors.main}}>My Role:</Text>
                         <Text style={{fontSize:30,color:colors.color1,fontFamily:'ConcertOne-Regular'}}>
-                        {this.state.hidden ? 'Hidden' : this.state.role}</Text>
+                        {this.state.hidden ? 'Hidden' : (this.state.role?this.state.role:'None')}</Text>
                     </View>
                 </TouchableOpacity>
             </View>

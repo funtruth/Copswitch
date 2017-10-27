@@ -92,9 +92,11 @@ class General_Screen extends Component {
 class Roles_Screen extends Component {
 
     static navigationOptions = {
-        title: 'Roles',
+        headerTitle: <Text style = {{fontSize:20,
+            fontFamily: 'ConcertOne-Regular',
+            color:colors.font,
+            marginLeft:15}}>Roles</Text>,
         headerStyle: { backgroundColor: colors.headerbackground},
-        titleStyle: { fontFamily:'ConcertOne-Regular' },
         headerTintColor: colors.headerfont,
     };
 
@@ -215,7 +217,10 @@ class Roles_Screen extends Component {
 class Character_Screen extends Component {
 
     static navigationOptions = {
-        title: 'Rules',
+        headerTitle: <Text style = {{fontSize:20,
+            fontFamily: 'ConcertOne-Regular',
+            color:colors.font,
+            marginLeft:15}}>Rules</Text>,
         headerStyle: { backgroundColor: colors.headerbackground },
         headerTintColor: colors.headerfont,
     };

@@ -4,9 +4,7 @@ import {
     View,
     Image,
     AsyncStorage,
-    BackHandler,
     Text,
-    ScrollView,
     StyleSheet,
     TextInput,
     Keyboard,
@@ -22,7 +20,7 @@ import { NavigationActions } from 'react-navigation';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import randomize from 'randomatic';
 
-import { Button, List } from "react-native-elements";
+import { Button } from "react-native-elements";
 
 import { isInGame } from "../auth";
 import { isInRoom } from "../auth";
@@ -109,9 +107,11 @@ class Room_Screen extends React.Component {
 class Create_Screen extends React.Component {
     
     static navigationOptions = {
-        title: 'Make a Room',
+        headerTitle: <Text style = {{fontSize:20,
+            fontFamily: 'ConcertOne-Regular',
+            color:colors.font,
+            marginLeft:15}}>Make a Room</Text>,
         headerStyle: { backgroundColor: colors.headerbackground},
-        titleStyle: { fontFamily:'ConcertOne-Regular' },
         headerTintColor: colors.headerfont,
     };
 
@@ -215,7 +215,9 @@ class Create_Screen extends React.Component {
                 <View style = {{ justifyContent: 'center', alignItems:'center', flexDirection: 'row' }}>
                     <View style = {{flex:0.75}}>
                     <Button
-                        title="Go"
+                        title="Create Room"
+                        fontFamily='ConcertOne-Regular'
+                        fontSize={25}
                         borderRadius={15}
                         backgroundColor={colors.main}
                         onPress={()=>{this._createRoom()}}
@@ -232,9 +234,12 @@ class Create_Screen extends React.Component {
 class Join_Screen extends React.Component {
 
     static navigationOptions = {
-        title: 'Join a Room',
+        headerTitle: <Text style = {{
+            fontSize:20,
+            fontFamily: 'ConcertOne-Regular',
+            color:colors.font,
+            marginLeft:15}}>Join a Room</Text>,
         headerStyle: { backgroundColor: colors.headerbackground},
-        titleStyle: { fontFamily:'ConcertOne-Regular' },
         headerTintColor: colors.headerfont,
     };
 
@@ -336,7 +341,9 @@ class Join_Screen extends React.Component {
                 <View style = {{ margin: 5, justifyContent: 'center', alignItems:'center', flexDirection: 'row' }}>
                         <View style = {{flex:0.75}}>
                         <Button
-                            title="Go"
+                            title="Join Room"
+                            fontFamily='ConcertOne-Regular'
+                            fontSize={25}
                             borderRadius={15}
                             backgroundColor={colors.main}
                             onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
@@ -907,6 +914,11 @@ const styles = StyleSheet.create({
         fontFamily:'ConcertOne-Regular',
         color:colors.font,
         alignSelf: 'center',
+    },
+    headerStyle: {
+        fontSize:20,
+        fontFamily: 'ConcertOne-Regular',
+        color:colors.font,
     },
 
 });

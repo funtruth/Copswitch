@@ -1065,7 +1065,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
             {this._renderListComponent()}
         </View>
         <View style = {{flex:this.state.messagechat||this.state.notificationchat?3:0,
-            backgroundColor:colors.main,borderRadius:15}}>
+            backgroundColor:colors.color1,borderRadius:15}}>
             {this._renderMessageComponent()}
         </View>
     </View>
@@ -1078,7 +1078,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
                     this._chatPress('notifications')
                 }}>
                 <MaterialCommunityIcons name='comment-alert'
-                    style={{color:colors.main, fontSize:26,alignSelf:'center'}}/>
+                    style={{color:colors.color1, fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
         <View style = {{flex:0.6,justifyContent:'center'}}>
@@ -1087,7 +1087,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
                     this._chatPress('messages')
                 }}>
                 <MaterialCommunityIcons name='clipboard-text' 
-                    style={{color:colors.main, fontSize:26,alignSelf:'center'}}/>
+                    style={{color:colors.color1, fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
         <View style = {{flex:4}}/>

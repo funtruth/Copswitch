@@ -114,11 +114,19 @@ export class Option_Screen extends React.Component {
     }
 
     _renderHeader() {
-        return this.state.townwin?<Text>town wins</Text>:<Text>mafia wins</Text>
+        return this.state.townwin?<Text style = {{fontFamily:'ConcertOne-Regular',fontSize:30,color:colors.font}}>
+            town wins</Text>
+            :
+            <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:30,color:colors.font}}>
+            mafia wins</Text>
     }
 
     _renderImage() {
-        return this.state.townwin?<Text>town wins image</Text>:<Text>mafia wins image</Text>
+        return this.state.townwin?<Text style = {{fontFamily:'ConcertOne-Regular',fontSize:25,color:colors.font}}>
+            town wins image</Text>
+            :
+            <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:25,color:colors.font}}>
+            mafia wins image</Text>
     }
 
     render() {
@@ -146,7 +154,7 @@ export class Option_Screen extends React.Component {
                         justifyContent:'center',
                         backgroundColor:colors.main,
                     }}
-                ><Text style = {{alignSelf:'center',color:colors.background,
+                ><Text style = {{alignSelf:'center',color:colors.font,
                     fontFamily:'ConcertOne-Regular',fontSize:25}}>PLAY AGAIN</Text>
                 </TouchableOpacity>
             </View>
@@ -154,7 +162,7 @@ export class Option_Screen extends React.Component {
                 <TouchableOpacity
                     onPress={()=>{this._leaveGame()}}
                     style={{flex:0.65,justifyContent:'center',backgroundColor:colors.main,borderRadius:15}}>
-                <Text style = {{alignSelf:'center',color:colors.background,
+                <Text style = {{alignSelf:'center',color:colors.font,
                     fontFamily:'ConcertOne-Regular',fontSize:20}}>QUIT</Text>
                 </TouchableOpacity>
             </View>
@@ -191,11 +199,13 @@ export class Expired_Screen extends React.Component {
     }
     
     _renderHeader() {
-        return <Text>Your game expired</Text>
+        return <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:25,color:colors.font}}>
+        Your game expired</Text>
     }
     
     _renderImage() {
-        return <Text>awww poor baby</Text>
+        return <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:25,color:colors.font}}>
+        awww poor baby</Text>
     }
     
     render() {
