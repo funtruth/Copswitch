@@ -31,11 +31,11 @@ export class Option_Screen extends React.Component {
         
         const { params } = this.props.navigation.state;
         const roomname = params.roomname;
+        const townwin = params.townwin;
 
         this.state = {
             roomname:           params.roomname,
-            townwin:            false,
-            checked:            false,
+            townwin:            params.townwin,
         };
 
         this.roomRef = firebase.database().ref('rooms/' + roomname);
@@ -43,33 +43,6 @@ export class Option_Screen extends React.Component {
     }
 
     componentWillMount() {
-
-        this.roomRef.on('value',snap=>{
-            if(snap.exists()){
-                this.roomRef.child('mafia').once('value',mafia=>{
-                    if(mafia.numChildren() == 0){
-                        this.setState({
-                            checked:    true,
-                            townwin:    true,
-                        })
-                    } else if(mafia.numChildren()*2+1 > snap.val().playernum){
-                        this.setState({
-                            checked:    true,
-                            townwin:    false,
-                        })
-                    //Should not be triggered?
-                    } else {
-                        this.setState({
-                            checked: true,
-                        })
-                    }
-                })
-            } else {
-                this.setState({
-                    checked: true,
-                })
-            }
-        })
 
     }
 
@@ -130,10 +103,6 @@ export class Option_Screen extends React.Component {
     }
 
     render() {
-
-        if(!this.state.checked){
-            return null
-        }
 
         return <View style = {{flex:1,backgroundColor:colors.background}}>
             <View style = {{flex:1,justifyContent:'center'}}>

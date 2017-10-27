@@ -183,19 +183,31 @@ componentWillMount() {
             this._updateNumbers(snap.val());
 
             this.roomRef.child('mafia').once('value',mafia=>{
-                if(mafia.numChildren() == 0 || mafia.numChildren()*2+1 > snap.val()){
-                    //this.props.navigation.navigate('Option_Screen',{roomname:this.state.roomname})
+                if(mafia.numChildren() == 0){
                     setTimeout(()=>
                         this.props.navigation.dispatch(
                             NavigationActions.reset({
                                 index: 0,
                                 actions: [
                                 NavigationActions.navigate({ routeName: 'Option_Screen', 
-                                    params:{roomname:this.state.roomname}})
+                                    params:{roomname:this.state.roomname,townwin:true}})
                                 ]
                             })
                         )
-                    ,500)
+                    ,0)
+                }
+                if(mafia.numChildren()*2+1 > snap.val()){
+                    setTimeout(()=>
+                        this.props.navigation.dispatch(
+                            NavigationActions.reset({
+                                index: 0,
+                                actions: [
+                                NavigationActions.navigate({ routeName: 'Option_Screen', 
+                                    params:{roomname:this.state.roomname,townwin:false}})
+                                ]
+                            })
+                        )
+                    ,0)
                 }
             })
         }

@@ -50,33 +50,34 @@ export default class ProfileScreen extends React.Component {
 
 componentWillMount() {
     this.userRef.on('value',snap=>{
+        if(snap.exists()){
+            firebase.database().ref('rooms/' + snap.val().name + '/listofplayers/' 
+            + firebase.auth().currentUser.uid).once('value',status=> {
+                if(status.exists()){
+                    
+                    if(snap.val().phase > 1){
+                        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
+                        .once('value',outsnap=>{
+                            firebase.database().ref(outsnap.val() + '/roles/' + status.val().roleid).once('value',rolesnap=>{
 
-        firebase.database().ref('rooms/' + snap.val().name + '/listofplayers/' 
-        + firebase.auth().currentUser.uid).once('value',status=> {
-            if(status.exists()){
-                
-                if(snap.val().phase > 1){
-                    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
-                    .once('value',outsnap=>{
-                        firebase.database().ref(outsnap.val() + '/roles/' + status.val().roleid).once('value',rolesnap=>{
-
-                            this.setState({
-                                role: rolesnap.val().name,
-                                description: rolesnap.val().desc,
-                                inagame: true,
+                                this.setState({
+                                    role: rolesnap.val().name,
+                                    description: rolesnap.val().desc,
+                                    inagame: true,
+                                })
                             })
                         })
-                    })
 
-                } else {
-                    this.setState({
-                        role:'None',
-                        description: 'There is no Active Game.',
-                        inagame:false,
-                    })
+                    } else {
+                        this.setState({
+                            role:'None',
+                            description: 'There is no Active Game.',
+                            inagame:false,
+                        })
+                    }
                 }
-            }
-        })
+            })
+        }
         
     })
 }
