@@ -10,7 +10,7 @@
   },
   "B" : {
     "category" : "mischief",
-    "color" : "#aa3131",
+    "color" : "#4B4352",
     "desc" : "Skilled framer of the Mafia.",
     "image" : "https://static.planetminecraft.com/files/resource_media/screenshot/1322/530b5668481765b8fac21343989c1668_5603805_lrg.jpg",
     "name" : "Schemer",
@@ -19,7 +19,7 @@
   },
   "C" : {
     "category" : "mischief",
-    "color" : "#aa3131",
+    "color" : "#4B4352",
     "desc" : "Informant of the Mafia.",
     "image" : "lol",
     "name" : "Spy",
@@ -28,7 +28,7 @@
   },
   "D" : {
     "category" : "mischief",
-    "color" : "#aa3131",
+    "color" : "#4B4352",
     "desc" : "Explosives expert of the Mafia.",
     "image" : "lkjkl",
     "name" : "Bomber",
@@ -37,7 +37,7 @@
   },
   "E" : {
     "category" : "mischief",
-    "color" : "#aa3131",
+    "color" : "#4B4352",
     "desc" : "A Random Mafia with a Mischief Role.",
     "image" : "lkjkl",
     "name" : "Random Mischievous",
@@ -46,7 +46,7 @@
   },
   "I" : {
     "category" : "killing",
-    "color" : "#aa3131",
+    "color" : "#4B4352",
     "desc" : "A Random Mafia member.",
     "image" : "lkjkl",
     "name" : "Random Mafia",
@@ -55,7 +55,7 @@
   },
   "J" : {
     "category" : "none",
-    "color" : "#aa3131",
+    "color" : "#4B4352",
     "desc" : "A low-level mafia recruit.",
     "image" : "lkjkl",
     "name" : "Thug",
@@ -73,7 +73,7 @@
   },
   "L" : {
     "category" : "inspective",
-    "color" : "#6daa2c",
+    "color" : "#8F626A",
     "desc" : "Investigates the house of another Player.",
     "image" : "lkjdsf",
     "name" : "Investigator",
@@ -82,7 +82,7 @@
   },
   "M" : {
     "category" : "inspective",
-    "color" : "#6daa2c",
+    "color" : "#8F626A",
     "desc" : "A random Inspective Town member.",
     "image" : "lkjl",
     "name" : "Random Inspective",
@@ -91,7 +91,7 @@
   },
   "N" : {
     "category" : "stalling",
-    "color" : "#6daa2c",
+    "color" : "#8F626A",
     "desc" : "PHD in Stab wounds.",
     "image" : "https://static.planetminecraft.com/files/resource_media/screenshot/1322/530b5668481765b8fac21343989c1668_5603805_lrg.jpg",
     "name" : "Doctor",
@@ -100,7 +100,7 @@
   },
   "O" : {
     "category" : "stalling",
-    "color" : "#6daa2c",
+    "color" : "#8F626A",
     "desc" : "Distracts a lucky player for the Night.",
     "image" : "https://static.planetminecraft.com/files/resource_media/screenshot/1322/530b5668481765b8fac21343989c1668_5603805_lrg.jpg",
     "name" : "Escort",
@@ -109,7 +109,7 @@
   },
   "P" : {
     "category" : "stalling",
-    "color" : "#6daa2c",
+    "color" : "#8F626A",
     "desc" : "A random protective Town member.",
     "image" : "lkjl",
     "name" : "Random Stalling",
@@ -117,7 +117,7 @@
   },
   "Q" : {
     "category" : "specialist",
-    "color" : "#6daa2c",
+    "color" : "#8F626A",
     "desc" : "An observant Town member.",
     "image" : "lkjl",
     "name" : "Bird Watcher",
@@ -125,7 +125,7 @@
   },
   "R" : {
     "category" : "specialist",
-    "color" : "#6daa2c",
+    "color" : "#8F626A",
     "desc" : "A Town member that examines dead bodies.",
     "image" : "lkjl",
     "name" : "Forensic",
@@ -133,7 +133,7 @@
   },
   "S" : {
     "category" : "specialist",
-    "color" : "#6daa2c",
+    "color" : "#8F626A",
     "desc" : "A random specialist Town member.",
     "image" : "lkjl",
     "name" : "Random Specialist",
@@ -141,7 +141,7 @@
   },
   "T" : {
     "category" : "killing",
-    "color" : "#6daa2c",
+    "color" : "#8F626A",
     "desc" : "A random Town member.",
     "image" : "lkjlk",
     "name" : "Random Town",
@@ -150,7 +150,7 @@
   },
   "U" : {
     "category" : "normal",
-    "color" : "#6daa2c",
+    "color" : "#8F626A",
     "desc" : "A normal Town member.",
     "image" : "lkjlk",
     "name" : "Villager",
@@ -159,7 +159,7 @@
   },
   "W" : {
     "category" : "chaos",
-    "color" : "#c7c4cf",
+    "color" : "#8F626A",
     "desc" : "A psychopath who is trying to get hung.",
     "image" : "lkjlk",
     "name" : "Psychopath",

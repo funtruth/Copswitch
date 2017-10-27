@@ -15,6 +15,8 @@ import { NavigationActions } from 'react-navigation';
 
 import { Button, List } from "react-native-elements";
 import { onSignOut } from "../auth";
+import colors from '../misc/colors.js';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
@@ -115,7 +117,7 @@ _logOutPress() {
 }
 
   render(){
-    return <View style={{ flex: 1, backgroundColor: 'white' }}>
+    return <View style={{ flex: 1, backgroundColor: colors.background }}>
 
             <View style = {{flex:2,flexDirection:'row',justifyContent:'center'}}>
                 <TouchableOpacity
@@ -123,8 +125,8 @@ _logOutPress() {
                     onPressIn={()=>{ this.setState({hidden:false}) }}
                     onPressOut={()=>{ this.setState({hidden:true}) }}>
                     <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
-                        <Text style = {{fontFamily:'ConcertOne-Regular'}}>My Role:</Text>
-                        <Text style={{fontSize:30,color:'black',fontFamily:'ConcertOne-Regular'}}>
+                        <Text style = {{fontFamily:'ConcertOne-Regular',color:colors.main}}>My Role:</Text>
+                        <Text style={{fontSize:30,color:colors.color1,fontFamily:'ConcertOne-Regular'}}>
                         {this.state.hidden ? 'Hidden' : this.state.role}</Text>
                     </View>
                 </TouchableOpacity>
@@ -134,7 +136,7 @@ _logOutPress() {
 
                 <View style = {{flex:0.3}}/>
 
-                <View style = {{flex:4, borderRadius:15, backgroundColor:'black'}}>
+                <View style = {{flex:4, borderRadius:15, backgroundColor:colors.main}}>
                 
                 </View>
                 
@@ -146,7 +148,7 @@ _logOutPress() {
                             alert('placeholder')
                         }}>
                         <MaterialIcons name='announcement'
-                            style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                            style={{color:colors.color1, fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={{flex:1}}
@@ -154,7 +156,7 @@ _logOutPress() {
                             alert('placeholder') 
                         }}>
                         <MaterialCommunityIcons name='clipboard-text'
-                            style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                            style={{color:colors.color1, fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                     <View style = {{flex:4}}/>
                     <TouchableOpacity
@@ -164,7 +166,7 @@ _logOutPress() {
                         }}
                         disabled={!this.state.inagame}>
                         <MaterialIcons name='cancel'
-                            style={{color:this.state.inagame?'black':'gray',
+                            style={{color:this.state.inagame?colors.color1:'gray',
                             fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                     <TouchableOpacity
@@ -173,7 +175,7 @@ _logOutPress() {
                             this._logOutPress(); 
                         }}>
                         <MaterialCommunityIcons name='exit-to-app'
-                            style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                            style={{color:colors.color1, fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                 </View>
 

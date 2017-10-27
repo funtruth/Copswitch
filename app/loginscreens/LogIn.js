@@ -60,17 +60,19 @@ export class SignIn extends React.Component {
         return <TouchableWithoutFeedback 
             style = {{ flex:1 }}
             onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.loginbackground,justifyContent:'center',alignItems:'center'}}>
+            <View style = {{flex:1,backgroundColor:colors.background,justifyContent:'center',alignItems:'center'}}>
                 
                 
                 <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
                     <TextInput
                         placeholder="Email Address ..."
+                        placeholderTextColor = {colors.font}
                         style={{
-                            backgroundColor: colors.loginbackground,
+                            backgroundColor: colors.background,
                             flex:0.6,
                             fontFamily:'ConcertOne-Regular',
                             fontSize:22,
+                            color:colors.font,
                         }}
                         value={this.state.email}
                         keyboardType = 'email-address'
@@ -83,11 +85,13 @@ export class SignIn extends React.Component {
                     <TextInput
                         ref='password'
                         placeholder="Password ..."
+                        placeholderTextColor = {colors.font}
                         style={{
-                            backgroundColor: colors.loginbackground,
+                            backgroundColor: colors.background,
                             flex:0.6,
                             fontFamily:'ConcertOne-Regular',
                             fontSize:22,
+                            color:colors.font,
                         }}
                         value={this.state.password}
                         secureTextEntry = {true}
@@ -101,10 +105,10 @@ export class SignIn extends React.Component {
                     <Button
                         title="Log In"
                         fontFamily='ConcertOne-Regular'
-                        color={colors.lightfont}
+                        color={colors.font}
                         fontSize={30}
                         borderRadius={15}
-                        backgroundColor={colors.loginbuttoncolor}
+                        backgroundColor={colors.main}
                         onPress={()=>{
                             this._logIn();
                         }}
@@ -118,10 +122,10 @@ export class SignIn extends React.Component {
                     <Button
                         title="Sign Up"
                         fontFamily='ConcertOne-Regular'
-                        color={colors.lightfont}
+                        color={colors.font}
                         fontSize={25}
                         borderRadius={15}
-                        backgroundColor={colors.loginbuttoncolor}
+                        backgroundColor={colors.main}
                         onPress={() => this.props.navigation.navigate("SignUp")}
                     /></View>
                 </View>
@@ -131,9 +135,9 @@ export class SignIn extends React.Component {
                     <Button
                         title="Continue Anonymously"
                         fontFamily='ConcertOne-Regular'
-                        color={colors.lightfont}
+                        color={colors.font}
                         borderRadius={10}
-                        backgroundColor={colors.loginbuttoncolor}
+                        backgroundColor={colors.main}
                         onPress={()=>{
                             this._signInAnon();
                         }}
@@ -186,17 +190,19 @@ export class SignUp extends React.Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-        <View style = {{flex:1,backgroundColor:colors.loginbackground,justifyContent:'center',alignItems:'center'}}>
+        <View style = {{flex:1,backgroundColor:colors.background,justifyContent:'center',alignItems:'center'}}>
             
             
             <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
                 <TextInput
                     placeholder="Email Address ..."
+                    placeholderTextColor = {colors.font}
                     style={{
-                        backgroundColor: colors.loginbackground,
+                        backgroundColor: colors.background,
                         flex:0.6,
                         fontFamily:'ConcertOne-Regular',
                         fontSize:18,
+                        color:colors.font,
                     }}
                     value={this.state.email}
                     keyboardType = 'email-address'
@@ -209,11 +215,13 @@ export class SignUp extends React.Component {
                 <TextInput
                     ref='password'
                     placeholder="Password ..."
+                    placeholderTextColor = {colors.font}
                     style={{
-                        backgroundColor: colors.loginbackground,
+                        backgroundColor: colors.background,
                         flex:0.6,
                         fontFamily:'ConcertOne-Regular',
                         fontSize:18,
+                        color:colors.font,
                     }}
                     value={this.state.password}
                     secureTextEntry = {true}
@@ -226,11 +234,13 @@ export class SignUp extends React.Component {
                 <TextInput
                     ref='confirm'
                     placeholder="Confirm ..."
+                    placeholderTextColor = {colors.font}
                     style={{
-                        backgroundColor: colors.loginbackground,
+                        backgroundColor: colors.background,
                         flex:0.6,
                         fontFamily:'ConcertOne-Regular',
                         fontSize:18,
+                        color:colors.font,
                     }}
                     value={this.state.confirm}
                     secureTextEntry = {true}
@@ -244,10 +254,10 @@ export class SignUp extends React.Component {
                 <Button
                     title="Create Account"
                     fontFamily='ConcertOne-Regular'
-                    color={colors.lightfont}
+                    color={colors.font}
                     fontSize={30}
                     borderRadius={15}
-                    backgroundColor={colors.loginbuttoncolor}
+                    backgroundColor={colors.main}
                     onPress={()=>{
                         this._SignUpProcess(this.state.email,this.state.password);
                     }}

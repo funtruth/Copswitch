@@ -1,14 +1,18 @@
 export default colors = {
     
-    //General
-    lightfont:              'white',
-    font:                   '#54537A',
-    button:                 '#54537A',
-    background:             '#9793A6',
+    //Main Palette
+    main:       '#54537A',
+    highlight:  '#e3c382',
+    background: '#9793A6',
+    title:      '#54537A',
+    font:       'white',
 
-    //login page
-    loginbuttoncolor:       '#54537A',
-    loginbackground:        '#F5E5C9',
+    //Other colors
+    color1:       '#4B4352',
+    color2:       '#8F626A',
+    color3:       '#F5E5C9',
+
+//COMPONENTS
 
     //Tab Navigator
     tabbackground:          '#54537A',
@@ -19,20 +23,7 @@ export default colors = {
     headerbackground:       '#4B4352',
     headerfont:             'white',
 
-    //Make/Join Room Screen
-    darkestfont:            '#4B4352',
-    darkbackground:         '#54537A',
-    darkfont:               '#54537A',
-    lightbackground:        '#9793A6',
-    lightfont:              'white',
-
-    //List Screen
-    listcolor1:             '#4B4352',
-    listcolor2:             '#54537A',
-    listcolor3:             '#9793A6',
-
-
-
+    //Weird Colors
     lightbutton:            '#9793A6',
     backgroundcolor:        '#4B4352',
     rosy:                   '#D9C0CC',

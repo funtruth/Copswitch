@@ -12,6 +12,8 @@ import {
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
+import colors from '../misc/colors.js';
+
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -125,7 +127,7 @@ export class Option_Screen extends React.Component {
             return null
         }
 
-        return <View style = {{flex:1,backgroundColor:'white'}}>
+        return <View style = {{flex:1,backgroundColor:colors.background}}>
             <View style = {{flex:1,justifyContent:'center'}}>
                 <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
                     {this._renderHeader()}
@@ -142,17 +144,17 @@ export class Option_Screen extends React.Component {
                     style={{
                         flex:0.8,
                         justifyContent:'center',
-                        backgroundColor:'black',
+                        backgroundColor:colors.main,
                     }}
-                ><Text style = {{alignSelf:'center',color:'white',
+                ><Text style = {{alignSelf:'center',color:colors.background,
                     fontFamily:'ConcertOne-Regular',fontSize:25}}>PLAY AGAIN</Text>
                 </TouchableOpacity>
             </View>
             <View style = {{flex:0.5,justifyContent:'center',flexDirection:'row'}}>
                 <TouchableOpacity
                     onPress={()=>{this._leaveGame()}}
-                    style={{flex:0.65,justifyContent:'center',backgroundColor:'black',borderRadius:15}}>
-                <Text style = {{alignSelf:'center',color:'white',
+                    style={{flex:0.65,justifyContent:'center',backgroundColor:colors.main,borderRadius:15}}>
+                <Text style = {{alignSelf:'center',color:colors.background,
                     fontFamily:'ConcertOne-Regular',fontSize:20}}>QUIT</Text>
                 </TouchableOpacity>
             </View>
@@ -197,7 +199,7 @@ export class Expired_Screen extends React.Component {
     }
     
     render() {
-        return <View style = {{flex:3,backgroundColor:'white'}}>
+        return <View style = {{flex:3,backgroundColor:colors.background}}>
             <View style = {{flex:1,justifyContent:'center'}}>
                 <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
                     {this._renderHeader()}
@@ -214,7 +216,7 @@ export class Expired_Screen extends React.Component {
                     style={{
                         flex:0.7,
                         justifyContent:'center',
-                        backgroundColor:'black',
+                        backgroundColor:colors.main,
                         borderRadius:15,
                     }}
                 ><Text style = {{alignSelf:'center',color:'white',

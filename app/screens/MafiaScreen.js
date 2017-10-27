@@ -17,6 +17,7 @@ import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
 import FadeInView from '../components/FadeInView.js';
+import colors from '../misc/colors.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -669,7 +670,7 @@ _voteBtnPress(presseduid,votebtn) {
 
 //Rendering the Main Game Header
 _renderHeader() {
-    return <View><Text style = {{color:'white', alignSelf:'center', 
+    return <View><Text style = {{color:colors.font, alignSelf:'center', 
         fontFamily: 'ConcertOne-Regular', fontSize:25}}>
         {this.state.phasename}
     </Text></View>
@@ -717,7 +718,7 @@ _renderListComponent(){
                     disabled = {this.state.amipicking?item.dead:false}
                     > 
                     {item.dead?<MaterialCommunityIcons name={item.dead?'skull':null}
-                        style={{color:'white', fontSize:26,alignSelf:'center'}}/>:
+                        style={{color:colors.font, fontSize:26,alignSelf:'center'}}/>:
                         <Text style = {styles.concerto}>{item.name}</Text>}
                 </TouchableOpacity>
         )}
@@ -737,7 +738,7 @@ _renderListComponent(){
                     disabled = {this.state.disabled?true:this.state.amidead}
                 >
                     <MaterialCommunityIcons name={'thumb-up'} 
-                        style={{color:'black', fontSize:40,alignSelf:'center',
+                        style={{color:colors.main, fontSize:40,alignSelf:'center',
                             opacity:this.state.amidead?0.25:1}}/>
                 </TouchableOpacity>
 
@@ -749,7 +750,7 @@ _renderListComponent(){
                     disabled = {this.state.disabled?true:this.state.amidead}
                 >
                     <MaterialCommunityIcons name={'thumb-down'} 
-                        style={{color:'black', fontSize:40,alignSelf:'center',
+                        style={{color:colors.main, fontSize:40,alignSelf:'center',
                             opacity:this.state.amidead?0.25:1}}/>
                 </TouchableOpacity>
 
@@ -765,7 +766,7 @@ _renderMessageComponent(){
         return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}><FlatList
             data={this.state.globallist}
             renderItem={({item}) => (
-                <Text style={{color:'white',fontWeight:'bold',marginTop:5}}>
+                <Text style={{color:colors.font,fontWeight:'bold',marginTop:5}}>
                     {'[ ' + item.from + ' ] '+ item.message}</Text>
             )}
             keyExtractor={item => item.key}
@@ -774,7 +775,7 @@ _renderMessageComponent(){
         return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}><FlatList
             data={this.state.msglist}
             renderItem={({item}) => (
-                <Text style={{color:'white',fontWeight:'bold',marginTop:5}}>
+                <Text style={{color:colors.font,fontWeight:'bold',marginTop:5}}>
                       {'[ ' + item.from + ' ] ' + item.message}</Text>
             )}
             keyExtractor={item => item.key}
@@ -808,30 +809,30 @@ _renderTransitionHeader() {
 _renderContinueBtn() {
     if(this.state.phase == 4 && this.state.amipicking){
         return <TouchableOpacity 
-            style = {{flex:0.7,backgroundColor:'black',borderRadius:15,justifyContent:'center'}}
+            style = {{flex:0.7,backgroundColor:colors.main,borderRadius:15,justifyContent:'center'}}
             onPress = {() => {
                 this.setState({cover:false})
             }}
         >
-            <Text style = {{color:'white',alignSelf:'center'}}>Select new</Text>
+            <Text style = {{color:colors.font,alignSelf:'center'}}>Select new</Text>
         </TouchableOpacity>
     } else if (this.state.phase == 4 && !this.state.amipicking){
         return <TouchableOpacity 
-            style = {{flex:0.7,backgroundColor:'black',borderRadius:15,justifyContent:'center'}}
+            style = {{flex:0.7,backgroundColor:colors.main,borderRadius:15,justifyContent:'center'}}
             onPress = {() => {
                 
             }}
         >
-            <Text style = {{color:'white',alignSelf:'center'}}>Wait bruv</Text>
+            <Text style = {{color:colors.font,alignSelf:'center'}}>Wait bruv</Text>
         </TouchableOpacity>
     } else {
         return <TouchableOpacity 
-            style = {{flex:0.7,backgroundColor:'black',borderRadius:15,justifyContent:'center'}}
+            style = {{flex:0.7,backgroundColor:colors.main,borderRadius:15,justifyContent:'center'}}
             onPress = {() => {
                 this.setState({cover:false})
             }}
         >
-            <Text style = {{color:'white',alignSelf:'center'}}>Continue</Text>
+            <Text style = {{color:colors.font,alignSelf:'center'}}>Continue</Text>
         </TouchableOpacity>
     }
 }
@@ -1029,7 +1030,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
 
     <View style = {{flex:2}}/>
     
-    <FadeInView style = {{flex:1.5,backgroundColor:'black',justifyContent:'center'}}>
+    <FadeInView style = {{flex:1.5,backgroundColor:colors.main,justifyContent:'center'}}>
         {this._renderTransitionHeader()}
     </FadeInView>
 
@@ -1045,7 +1046,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
 <View style = {{flex:1, backgroundColor:this.state.screencolor}}>
 
 <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
-    <View style = {{flex:0.9,backgroundColor:'black',justifyContent:'center',
+    <View style = {{flex:0.9,backgroundColor:colors.main,justifyContent:'center',
         borderBottomLeftRadius:15,borderBottomRightRadius:15}}>
         {this._renderHeader()}
     </View>
@@ -1064,7 +1065,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
             {this._renderListComponent()}
         </View>
         <View style = {{flex:this.state.messagechat||this.state.notificationchat?3:0,
-            backgroundColor:'black',borderRadius:15}}>
+            backgroundColor:colors.main,borderRadius:15}}>
             {this._renderMessageComponent()}
         </View>
     </View>
@@ -1077,7 +1078,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
                     this._chatPress('notifications')
                 }}>
                 <MaterialCommunityIcons name='comment-alert'
-                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                    style={{color:colors.main, fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
         <View style = {{flex:0.6,justifyContent:'center'}}>
@@ -1086,7 +1087,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
                     this._chatPress('messages')
                 }}>
                 <MaterialCommunityIcons name='clipboard-text' 
-                    style={{color:'black', fontSize:26,alignSelf:'center'}}/>
+                    style={{color:colors.main, fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
         <View style = {{flex:4}}/>
@@ -1102,9 +1103,9 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
             onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
                 this.state.triggernum,this.state.phase,this.state.roomname)}}
             style = {{flex:0.82,justifyContent:'center',
-                backgroundColor:!this.state.locked && this.state.actionbtnvalue?'#e3c382':'black',
+                backgroundColor:!this.state.locked && this.state.actionbtnvalue?colors.highlight:colors.main,
                 borderRadius:15}}>
-            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?'black':'white',
+            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?colors.main:colors.font,
                 fontSize:26,alignSelf:'center', fontFamily:'ConcertOne-Regular'}}>
                 {!this.state.locked && !this.state.amidead?'READY':'LOCKED'}
             </Text>
@@ -1114,8 +1115,9 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
 <View style = {{flex:0.15}}/>
 
 <View style = {{flex:0.5,flexDirection:'row',justifyContent:'center'}}>
-    <View style = {{flex:0.7,backgroundColor:'black',borderRadius:10,justifyContent:'center',alignItems:'center'}}>
-        <Text style = {{color:'white',fontSize:12}}>{this.state.bottommessage}</Text>
+    <View style = {{flex:0.7,backgroundColor:colors.main,borderRadius:10,
+        justifyContent:'center',alignItems:'center'}}>
+        <Text style = {{color:colors.font,fontSize:12}}>{this.state.bottommessage}</Text>
     </View>
 </View>
 
@@ -1127,7 +1129,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
 const styles = StyleSheet.create({
     alive: {
         height:40,
-        backgroundColor: 'black',
+        backgroundColor: colors.main,
         margin: 3,
         borderRadius:5,
         justifyContent:'center',
@@ -1149,19 +1151,19 @@ const styles = StyleSheet.create({
     headerFont: {
         fontFamily:'ConcertOne-Regular',
         fontSize: 30,
-        color: 'white',
+        color: colors.font,
         alignSelf:'center',
     },
     messageFont: {
         fontFamily:'ConcertOne-Regular',
         fontSize: 24,
-        color: 'black',
+        color: colors.title,
         alignSelf:'center',
     },
     concerto: {
         fontSize:17,
         fontFamily:'ConcertOne-Regular',
-        color:'white',
+        color:colors.font,
         alignSelf: 'center',
     },
 });
