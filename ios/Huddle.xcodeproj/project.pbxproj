@@ -5,6 +5,7 @@
 	};
 	objectVersion = 46;
 	objects = {
+
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -22,6 +23,7 @@
 		140ED2AC1D01E1AD002B40FF /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
 		1414E9FD5A5A47F18466852D /* FontAwesome.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0A73E7E8DE434578A7406C13 /* FontAwesome.ttf */; };
 		146834051AC3E58100842450 /* libReact.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 146834041AC3E56700842450 /* libReact.a */; };
+		286670C21FA538DA004DC2A9 /* Concert One Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 286670A21FA538DA004DC2A9 /* Concert One Regular.ttf */; };
 		28BB1ECC1F9C0880004D57C3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 28BB1EAC1F9C0880004D57C3 /* GoogleService-Info.plist */; };
 		2D02E4BC1E0B4A80006451C7 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		2D02E4BD1E0B4A84006451C7 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
@@ -314,6 +316,7 @@
 		13C979E3343396A952DB5064 /* Pods-HuddleTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-HuddleTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-HuddleTests/Pods-HuddleTests.release.xcconfig"; sourceTree = "<group>"; };
 		146833FF1AC3E56700842450 /* React.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = React.xcodeproj; path = "../node_modules/react-native/React/React.xcodeproj"; sourceTree = "<group>"; };
 		268FC370ADB645DB99259461 /* Zocial.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Zocial.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Zocial.ttf"; sourceTree = "<group>"; };
+		286670A21FA538DA004DC2A9 /* Concert One Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Concert One Regular.ttf"; path = "../../../hannahpark/Downloads/Concert_One/Concert One Regular.ttf"; sourceTree = "<group>"; };
 		28BB1EAC1F9C0880004D57C3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../hannahpark/Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		294C7AF263F41C32D36CE23E /* Pods-Huddle-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Huddle-tvOS.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Huddle-tvOS/Pods-Huddle-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
 		2D02E47B1E0B4A5D006451C7 /* Huddle-tvOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Huddle-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -618,6 +621,7 @@
 		83CBB9F61A601CBA00E9B192 = {
 			isa = PBXGroup;
 			children = (
+				286670A21FA538DA004DC2A9 /* Concert One Regular.ttf */,
 				13B07FAE1A68108700A75B9A /* Huddle */,
 				832341AE1AAA6A7D00B99B32 /* Libraries */,
 				00E356EF1AD99517003FC87E /* HuddleTests */,
@@ -1080,6 +1084,7 @@
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
 				A588BE1134414F5AA6820656 /* Entypo.ttf in Resources */,
 				5AD7D069D2F14F34BA8EBD99 /* EvilIcons.ttf in Resources */,
+				286670C21FA538DA004DC2A9 /* Concert One Regular.ttf in Resources */,
 				1414E9FD5A5A47F18466852D /* FontAwesome.ttf in Resources */,
 				308CA2AD966D4429BCC397FC /* Foundation.ttf in Resources */,
 				32DB294F44074A8E8C9C44FC /* Ionicons.ttf in Resources */,
