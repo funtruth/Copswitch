@@ -90,7 +90,7 @@ class Room_Screen extends React.Component {
                 <TouchableWithoutFeedback 
                     style = {{ flex:1,justifyContent:'center' }}
                     onPress={()=>{ this._findRoom() }}>
-                    <View style = {{flex:1,backgroundColor:colors.background,
+                    <View style = {{flex:1,backgroundColor:colors.color3,
                         justifyContent:'center',alignItems:'center'}}>
                         <Text style = {{
                             fontFamily:'ConcertOne-Regular',
@@ -769,7 +769,7 @@ class Lobby_Screen extends React.Component {
                         }}
                         onPress = {()=>{this._recommendedBtnPress('easy',this.state.playercount)}}
                     >
-                        <Text style = {{color:'white',fontFamily:'ConcertOne-Regular',fontSize:15}}>
+                        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',fontSize:15}}>
                             Easy</Text>
                     </TouchableOpacity>
                     <TouchableOpacity

@@ -7,21 +7,30 @@ export default colors = {
     title:      '#54537A',
     font:       'white',
 
+    //Classical Palette
+    main:       '#231715',
+    highlight:  '#8A3418',
+    background: '#AB835C',
+    title:      '#F3C58A',
+    font:       '#F8E3C7',       
+
     //Other colors
-    color1:       '#4B4352',
-    color2:       '#8F626A',
-    color3:       '#F5E5C9',
+    color1:       '#231715',
+    color2:       '#672C1A',
+    color3:       '#AB835C',
+
+
 
 //COMPONENTS
 
     //Tab Navigator
-    tabbackground:          '#54537A',
-    indicatorcolor:         'white',
-    iconcolor:              'white',
+    tabbackground:          '#231715',
+    indicatorcolor:         '#F8E3C7',
+    iconcolor:              '#F8E3C7',
 
     //Header Style
-    headerbackground:       '#4B4352',
-    headerfont:             'white',
+    headerbackground:       '#231715',
+    headerfont:             '#F8E3C7',
 
     //Weird Colors
     lightbutton:            '#9793A6',

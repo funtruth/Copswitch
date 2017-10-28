@@ -61,7 +61,7 @@ class General_Screen extends Component {
                 </View>
             </TouchableOpacity>
             <TouchableOpacity
-                style={{flex:1,justifyContent:'center',backgroundColor:colors.main,}}
+                style={{flex:1,justifyContent:'center',backgroundColor:colors.color2,}}
                 onPress={()=>{this._goToRules(1)}}
             >   
                 <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
@@ -73,7 +73,7 @@ class General_Screen extends Component {
                 </View>
             </TouchableOpacity>
             <TouchableOpacity
-                style={{flex:1,justifyContent:'center',backgroundColor:colors.background,}}
+                style={{flex:1,justifyContent:'center',backgroundColor:colors.color3,}}
                 onPress={()=>{this._goToRules(3)}}
             >   
                 <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
