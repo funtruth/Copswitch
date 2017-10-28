@@ -4,17 +4,12 @@ import android.app.Application;
 
 import com.facebook.react.ReactApplication;
 import com.oblador.vectoricons.VectorIconsPackage;
-//import com.facebook.reactnative.androidsdk.FBSDKPackage;
+import io.invertase.firebase.RNFirebasePackage;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.react.shell.MainReactPackage;
 import com.facebook.soloader.SoLoader;
 
-//import com.facebook.FacebookSdk;
-//import com.facebook.CallbackManager;
-//import com.facebook.appevents.AppEventsLogger;
-
-import io.invertase.firebase.RNFirebasePackage;
 import io.invertase.firebase.admob.RNFirebaseAdMobPackage; //Firebase AdMob
 import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage; // Firebase Analytics
 import io.invertase.firebase.auth.RNFirebaseAuthPackage; // Firebase Auth
