@@ -3,11 +3,6 @@ package com.huddle;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
-import io.invertase.firebase.RNFirebasePackage;
-import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
-import com.oblador.vectoricons.VectorIconsPackage;
-import io.invertase.firebase.RNFirebasePackage;
-import io.invertase.firebase.analytics.RNFirebaseAnalyticsPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 //import com.facebook.reactnative.androidsdk.FBSDKPackage;
 import com.facebook.react.ReactNativeHost;
@@ -56,10 +51,7 @@ public class MainApplication extends Application implements ReactApplication {
             new RNFirebaseAnalyticsPackage(),
           new VectorIconsPackage(),
           
-          new RNFirebasePackage(),  // <-- Add this line
-          // Add these packages as appropriate
           new RNFirebaseAdMobPackage(),
-          new RNFirebaseAnalyticsPackage(),
           new RNFirebaseAuthPackage(),
           new RNFirebaseRemoteConfigPackage(),
           new RNFirebaseCrashPackage(),

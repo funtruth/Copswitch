@@ -70,7 +70,7 @@ export class SignIn extends React.Component {
                         style={{
                             backgroundColor: colors.background,
                             flex:0.6,
-                            fontFamily:'ConcertOne-Regular',
+                            fontFamily:'ConcertOne Regular',
                             fontSize:22,
                             color:colors.font,
                         }}
@@ -89,7 +89,7 @@ export class SignIn extends React.Component {
                         style={{
                             backgroundColor: colors.background,
                             flex:0.6,
-                            fontFamily:'ConcertOne-Regular',
+                            fontFamily:'ConcertOne Regular',
                             fontSize:22,
                             color:colors.font,
                         }}
@@ -104,7 +104,7 @@ export class SignIn extends React.Component {
                     <View style = {{flex:0.75}}>
                     <Button
                         title="Log In"
-                        fontFamily='ConcertOne-Regular'
+                        fontFamily='ConcertOne Regular'
                         color={colors.font}
                         fontSize={30}
                         borderRadius={15}
@@ -121,7 +121,7 @@ export class SignIn extends React.Component {
                     <View style = {{flex:0.75}}>
                     <Button
                         title="Sign Up"
-                        fontFamily='ConcertOne-Regular'
+                        fontFamily='ConcertOne Regular'
                         color={colors.font}
                         fontSize={25}
                         borderRadius={15}
@@ -134,7 +134,7 @@ export class SignIn extends React.Component {
                     <View style = {{flex:0.75}}>
                     <Button
                         title="Continue Anonymously"
-                        fontFamily='ConcertOne-Regular'
+                        fontFamily='ConcertOne Regular'
                         color={colors.font}
                         borderRadius={10}
                         backgroundColor={colors.main}
@@ -200,7 +200,7 @@ export class SignUp extends React.Component {
                     style={{
                         backgroundColor: colors.background,
                         flex:0.6,
-                        fontFamily:'ConcertOne-Regular',
+                        fontFamily:'ConcertOne Regular',
                         fontSize:18,
                         color:colors.font,
                     }}
@@ -219,7 +219,7 @@ export class SignUp extends React.Component {
                     style={{
                         backgroundColor: colors.background,
                         flex:0.6,
-                        fontFamily:'ConcertOne-Regular',
+                        fontFamily:'ConcertOne Regular',
                         fontSize:18,
                         color:colors.font,
                     }}
@@ -238,7 +238,7 @@ export class SignUp extends React.Component {
                     style={{
                         backgroundColor: colors.background,
                         flex:0.6,
-                        fontFamily:'ConcertOne-Regular',
+                        fontFamily:'ConcertOne Regular',
                         fontSize:18,
                         color:colors.font,
                     }}
@@ -253,7 +253,7 @@ export class SignUp extends React.Component {
                 <View style = {{flex:0.75}}>
                 <Button
                     title="Create Account"
-                    fontFamily='ConcertOne-Regular'
+                    fontFamily='ConcertOne Regular'
                     color={colors.font}
                     fontSize={30}
                     borderRadius={15}
