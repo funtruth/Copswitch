@@ -55,7 +55,7 @@ constructor(props) {
 
         myrole:             '',
         myroleid:           '',
-        ruleslist:          dataSource,
+        roledesc:           '',
         mafialist:          dataSource,
 
         namelist:           dataSource,
@@ -73,6 +73,7 @@ constructor(props) {
         disabled:           false,
 
         amidead:            true,
+        amimafia:           false,
         amipicking:         false,
         amiowner:           false,
 
@@ -116,7 +117,23 @@ componentWillMount() {
     this.roleRef.on('value',snap=>{
         if(snap.exists()){
             firebase.database().ref('Original/roles/' + snap.val()).once('value',rolename=>{
-                this.setState({myroleid:snap.val(),myrole:rolename.val().name})
+                if(rolename.val().type == 1){
+                    this.setState({
+                        myroleid:snap.val(),
+                        myrole:rolename.val().name,
+                        roledesc:rolename.val().desc,
+                        rolerules:rolename.val().rules,
+                        amimafia:true
+                    })
+                } else {
+                    this.setState({
+                        myroleid:snap.val(),
+                        myrole:rolename.val().name,
+                        roledesc:rolename.val().desc,
+                        rolerules:rolename.val().rules,
+                        amimafia:false
+                    })
+                }
             })
         }
     })
@@ -230,7 +247,7 @@ componentWillMount() {
                                 ]
                             })
                         )
-                    ,100)
+                    ,1000)
                 }
                 if(mafia.numChildren()*2+1 > snap.val()){
                     setTimeout(()=>
@@ -243,7 +260,7 @@ componentWillMount() {
                                 ]
                             })
                         )
-                    ,100)
+                    ,1000)
                 }
             })
         }
@@ -836,19 +853,20 @@ _renderMessageComponent(){
             /></View>
     } else if (this.state.showprofile){
         return <View style = {{marginLeft:10,marginRight:10,marginBottom:5,marginTop:10}}>
-                <Text style = {styles.concerto}>{'-'+this.state.myrole+'-'}</Text>
-                <FlatList
+                <Text style = {styles.leftconcerto}>{'-'+this.state.myrole+'-'}</Text>
+                {this.state.amimafia?<FlatList
                     data={this.state.mafialist}
                     renderItem={({item}) => (
                         <Text style={{fontSize:17,
                             fontFamily:'ConcertOne-Regular',
                             color:colors.font,
-                            alignSelf: 'center',
                             textDecorationLine:item.alive?'none':'line-through'}}>
                             {'[ ' + item.name + ' ] ' + item.rolename}</Text>
                     )}
                     keyExtractor={item => item.key}
-                />
+                />:<View/>}
+                <Text style = {styles.leftconcerto}>{'Description: '+this.state.roledesc}</Text>
+                <Text style = {styles.leftconcerto}>{'Rules: '+this.state.rolerules}</Text>
             </View>
     }
 }
@@ -1254,4 +1272,10 @@ const styles = StyleSheet.create({
         color:colors.font,
         alignSelf: 'center',
     },
+    leftconcerto:{
+        fontSize:17,
+        fontFamily:'ConcertOne-Regular',
+        color:colors.font,
+        marginTop:5,
+    }
 });
