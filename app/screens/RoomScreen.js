@@ -621,8 +621,12 @@ class Lobby_Screen extends React.Component {
                         randomstring.charAt(randomnumber - 1) == 'D' ||
                         randomstring.charAt(randomnumber - 1) == 'J'){
                             firebase.database().ref('rooms/' + roomname + '/mafia/' 
-                                + child.key).update({roleid:randomstring.charAt(randomnumber - 1)})
-                    }
+                                + child.key).update({
+                                    roleid:randomstring.charAt(randomnumber - 1),
+                                    name: child.val().name,
+                                    alive: true,
+                                })
+                        }
                     
                     max = max - 1;
                     randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);

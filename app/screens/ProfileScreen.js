@@ -5,7 +5,6 @@ import {
     Image,
     AsyncStorage,
     Text,
-    ListView,
     FlatList,
     TouchableOpacity
 }   from 'react-native';
@@ -28,21 +27,9 @@ export default class ProfileScreen extends React.Component {
   constructor(props) {
     super(props);
     
-    const dataSource = new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-    });
 
     this.state = {
-
-      role: '',
-      description: '',
       inagame:false,
-
-      roomname:'',
-      messages: dataSource,
-
-      hidden:true,
-
     }
     this.userRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
 
@@ -51,32 +38,11 @@ export default class ProfileScreen extends React.Component {
 componentWillMount() {
     this.userRef.on('value',snap=>{
         if(snap.exists()){
-            firebase.database().ref('rooms/' + snap.val().name + '/listofplayers/' 
-            + firebase.auth().currentUser.uid).once('value',status=> {
-                if(status.exists()){
-                    
-                    if(snap.val().phase > 1){
-                        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
-                        .once('value',outsnap=>{
-                            firebase.database().ref(outsnap.val() + '/roles/' + status.val().roleid).once('value',rolesnap=>{
-
-                                this.setState({
-                                    role: rolesnap.val().name,
-                                    description: rolesnap.val().desc,
-                                    inagame: true,
-                                })
-                            })
-                        })
-
-                    } else {
-                        this.setState({
-                            role:'None',
-                            description: 'There is no Active Game.',
-                            inagame:false,
-                        })
-                    }
-                }
-            })
+            if(snap.val().phase > 1){
+                this.setState({ inagame: true })
+            } else {
+                this.setState({ inagame:false })
+            }
         }
         
     })
@@ -120,18 +86,7 @@ _logOutPress() {
   render(){
     return <View style={{ flex: 1, backgroundColor: colors.background }}>
 
-            <View style = {{flex:2,flexDirection:'row',justifyContent:'center'}}>
-                <TouchableOpacity
-                    style={{ flex:1,justifyContent:'center' }}
-                    onPressIn={()=>{ this.setState({hidden:false}) }}
-                    onPressOut={()=>{ this.setState({hidden:true}) }}>
-                    <View style = {{flex:2.5,alignItems: 'center',justifyContent:'center'}}>
-                        <Text style = {{fontFamily:'ConcertOne-Regular',color:colors.main}}>My Role:</Text>
-                        <Text style={{fontSize:30,color:colors.color1,fontFamily:'ConcertOne-Regular'}}>
-                        {this.state.hidden ? 'Hidden' : (this.state.role?this.state.role:'None')}</Text>
-                    </View>
-                </TouchableOpacity>
-            </View>
+            <View style = {{flex:0.3}}/>
 
             <View style = {{flex:10, flexDirection:'row'}}>
 
@@ -142,24 +97,7 @@ _logOutPress() {
                 </View>
                 
                 <View style = {{flex:0.7}}>
-                    <View style = {{flex:1}}/>
-                    <TouchableOpacity
-                        style={{flex:1}}
-                        onPress={()=> {
-                            alert('placeholder')
-                        }}>
-                        <MaterialIcons name='announcement'
-                            style={{color:colors.color1, fontSize:26,alignSelf:'center'}}/>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style={{flex:1}}
-                        onPress={()=> {
-                            alert('placeholder') 
-                        }}>
-                        <MaterialCommunityIcons name='clipboard-text'
-                            style={{color:colors.color1, fontSize:26,alignSelf:'center'}}/>
-                    </TouchableOpacity>
-                    <View style = {{flex:4}}/>
+                    <View style = {{flex:9}}/>
                     <TouchableOpacity
                         style={{flex:1}}
                         onPress={()=> {
@@ -184,6 +122,5 @@ _logOutPress() {
 
             <View style = {{flex:0.3}}/>
 
-        <View style = {{ flex: 0.15 }}/>
     </View>
 }};

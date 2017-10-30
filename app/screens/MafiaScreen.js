@@ -21,6 +21,8 @@ import colors from '../misc/colors.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
 import randomize from 'randomatic';
 
 //Firebase
@@ -51,6 +53,11 @@ constructor(props) {
         bottommessage:      '',
         locked:             '',
 
+        myrole:             '',
+        myroleid:           '',
+        ruleslist:          dataSource,
+        mafialist:          dataSource,
+
         namelist:           dataSource,
         globallist:         dataSource,
         msglist:            dataSource,
@@ -62,6 +69,7 @@ constructor(props) {
         presseduid:         '',
         messagechat:        false,
         notificationchat:   false,
+        showprofile:        false,
         disabled:           false,
 
         amidead:            true,
@@ -80,6 +88,9 @@ constructor(props) {
     };
 
     this.roomRef = firebase.database().ref('rooms/' + roomname);
+    this.roleRef = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid)
+        .child('roleid');
+    this.mafiaRef = this.roomRef.child('mafia');
     
     this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
     this.globalMsgRef = firebase.database().ref('globalmsgs/' + roomname);
@@ -101,6 +112,31 @@ constructor(props) {
 }
 
 componentWillMount() {
+
+    this.roleRef.on('value',snap=>{
+        if(snap.exists()){
+            firebase.database().ref('Original/roles/' + snap.val()).once('value',rolename=>{
+                this.setState({myroleid:snap.val(),myrole:rolename.val().name})
+            })
+        }
+    })
+
+    this.mafiaRef.on('value',snap=>{
+        if(snap.exists()){
+            var mafialist = [];
+            snap.forEach((child)=>{
+                firebase.database().ref('Original/roles/' + child.val().roleid).once('value',idtoname=>{
+                    mafialist.push({
+                        name: child.val().name,
+                        rolename: idtoname.val().name,
+                        alive: child.val().alive,
+                        key: child.key,
+                    })
+                })
+            })
+            this.setState({mafialist:mafialist})
+        }
+    })
 
     this.msgRef.on('value',snap=>{
         if(snap.exists()){
@@ -182,7 +218,7 @@ componentWillMount() {
             //this.state.triggernum, playernum
             this._updateNumbers(snap.val());
 
-            this.roomRef.child('mafia').once('value',mafia=>{
+            this.mafiaRef.orderByChild('alive').equalTo(true).once('value',mafia=>{
                 if(mafia.numChildren() == 0){
                     setTimeout(()=>
                         this.props.navigation.dispatch(
@@ -194,7 +230,7 @@ componentWillMount() {
                                 ]
                             })
                         )
-                    ,0)
+                    ,100)
                 }
                 if(mafia.numChildren()*2+1 > snap.val()){
                     setTimeout(()=>
@@ -207,7 +243,7 @@ componentWillMount() {
                                 ]
                             })
                         )
-                    ,0)
+                    ,100)
                 }
             })
         }
@@ -216,7 +252,7 @@ componentWillMount() {
     this.phaseListener.on('value',snap=>{
         if(snap.exists()){
 
-            this.setState({cover:true})
+            this.setState({cover:true, messagechat:false, notificationchat:false, showprofile:false})
 
             //Keep Phase updated for PERSONAL USER
             firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
@@ -283,7 +319,7 @@ componentWillMount() {
                                         
                                         if(dead.val().roleid == 'A'){
 
-                                            this.roomRef.child('mafia').child(this.state.nominate).remove();
+                                            this.roomRef.child('mafia').child(this.state.nominate).update({alive:false});
                                             this._changePhase(4);
 
                                         } else if (dead.val().roleid == 'B' ||
@@ -292,7 +328,7 @@ componentWillMount() {
                                                 dead.val().roleid == 'J'    
                                             ){
 
-                                            this.roomRef.child('mafia').child(this.state.nominate).remove();
+                                            this.roomRef.child('mafia').child(this.state.nominate).update({alive:false});
                                             this._changePhase(phase.val().trigger)
 
                                         } else if (dead.val().roleid == 'W'){
@@ -384,6 +420,9 @@ componentWillMount() {
 
 componentWillUnmount() {
 
+    if(this.roleRef){
+        this.roleRef.off();
+    }
     if(this.msgRef){
         this.msgRef.off();
     }
@@ -581,7 +620,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                 firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
                 + uid).once('value',snap=>{
                         firebase.database().ref('rooms/'+roomname+'/mafia/' + uid)
-                            .update({roleid:'A'})
+                            .update({roleid:'A',rolename:'Murderer'})
                         firebase.database().ref('rooms/'+roomname+'/listofplayers/'
                             + uid).update({roleid:'A'})
                 })
@@ -740,34 +779,37 @@ _renderListComponent(){
     } else if(this.state.screentype=='voting-person'){
         return <View style = {{flex:1}}>
 
-            <View style = {{flex:4.4,justifyContent:'center'}}>
-                <View style = {{flex:1}}/>
-                <TouchableOpacity 
-                    style = {{flex:2,justifyContent:'center'}}
-                    onPress={()=>{
-                        this._voteBtnPress(this.state.presseduid,true)
-                    }}
-                    disabled = {this.state.disabled?true:this.state.amidead}
-                >
-                    <MaterialCommunityIcons name={'thumb-up'} 
-                        style={{color:colors.main, fontSize:40,alignSelf:'center',
-                            opacity:this.state.amidead?0.25:1}}/>
-                </TouchableOpacity>
+            <TouchableOpacity 
+                style = {{flex:2,justifyContent:'center'}}
+                onPress={()=>{
+                    this._voteBtnPress(this.state.presseduid,true)
+                }}
+                disabled = {this.state.disabled?true:this.state.amidead}
+            >
+                <MaterialCommunityIcons name={'thumb-up'} 
+                    style={{color:colors.main, fontSize:40,alignSelf:'center',
+                        opacity:this.state.amidead?0.25:1}}/>
+            </TouchableOpacity>
 
-                <TouchableOpacity 
-                    style = {{flex:2,justifyContent:'center'}}
-                    onPress={()=>{
-                        this._voteBtnPress(this.state.presseduid,false)
-                    }}
-                    disabled = {this.state.disabled?true:this.state.amidead}
-                >
-                    <MaterialCommunityIcons name={'thumb-down'} 
-                        style={{color:colors.main, fontSize:40,alignSelf:'center',
-                            opacity:this.state.amidead?0.25:1}}/>
-                </TouchableOpacity>
-
-                <View style = {{flex:1}}/>
+            <View style = {{flexDirection:'row',flex:0.3,}}>
+            <TouchableOpacity style = {{flex:1,borderRadius:10,backgroundColor:colors.main,
+                justifyContent:'center',alignItems:'center'}}>
+                <Text style = {{fontFamily:'ConcertOne-Regular',color:colors.font}}>
+                    {this.state.nominee + ' has been Nominated.'}</Text>
+            </TouchableOpacity>
             </View>
+
+            <TouchableOpacity 
+                style = {{flex:2,justifyContent:'center'}}
+                onPress={()=>{
+                    this._voteBtnPress(this.state.presseduid,false)
+                }}
+                disabled = {this.state.disabled?true:this.state.amidead}
+            >
+                <MaterialCommunityIcons name={'thumb-down'} 
+                    style={{color:colors.main, fontSize:40,alignSelf:'center',
+                        opacity:this.state.amidead?0.25:1}}/>
+            </TouchableOpacity>
         </View>
     }
 }
@@ -792,7 +834,23 @@ _renderMessageComponent(){
             )}
             keyExtractor={item => item.key}
             /></View>
-    } 
+    } else if (this.state.showprofile){
+        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5,marginTop:10}}>
+                <Text style = {styles.concerto}>{'-'+this.state.myrole+'-'}</Text>
+                <FlatList
+                    data={this.state.mafialist}
+                    renderItem={({item}) => (
+                        <Text style={{fontSize:17,
+                            fontFamily:'ConcertOne-Regular',
+                            color:colors.font,
+                            alignSelf: 'center',
+                            textDecorationLine:item.alive?'none':'line-through'}}>
+                            {'[ ' + item.name + ' ] ' + item.rolename}</Text>
+                    )}
+                    keyExtractor={item => item.key}
+                />
+            </View>
+    }
 }
 
 //Rendering the Transition Header
@@ -831,9 +889,6 @@ _renderContinueBtn() {
     } else if (this.state.phase == 4 && !this.state.amipicking){
         return <TouchableOpacity 
             style = {{flex:0.7,backgroundColor:colors.main,borderRadius:15,justifyContent:'center'}}
-            onPress = {() => {
-                
-            }}
         >
             <Text style = {{color:colors.font,alignSelf:'center'}}>Wait bruv</Text>
         </TouchableOpacity>
@@ -854,18 +909,26 @@ _chatPress(chattype){
     if(chattype=='messages'){
         if(this.state.messagechat){
             this.setState({messagechat:false})
-        } else if (this.state.notificationchat){
-            this.setState({messagechat:true,notificationchat:false})
+        } else if (this.state.notificationchat || this.state.showprofile){
+            this.setState({messagechat:true,notificationchat:false,showprofile:false})
         } else {
             this.setState({messagechat:true})
         }
     } else if (chattype == 'notifications'){
         if(this.state.notificationchat){
             this.setState({notificationchat:false})
-        } else if (this.state.messagechat){
-            this.setState({messagechat:false,notificationchat:true})
+        } else if (this.state.messagechat || this.state.showprofile){
+            this.setState({messagechat:false,notificationchat:true,showprofile:false})
         } else {
             this.setState({notificationchat:true})
+        }
+    } else if (chattype == 'profile'){
+        if(this.state.showprofile){
+            this.setState({showprofile:false})
+        } else if (this.state.messagechat || this.state.notificationchat){
+            this.setState({messagechat:false,notificationchat:false,showprofile:true})
+        } else {
+            this.setState({showprofile:true})
         }
     }
 }
@@ -1070,14 +1133,14 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
     flex:11,
     flexDirection:'row',
 }}>
-    <View style = {{flex:2.2}}>
+    <View style = {{flex:2}}>
     </View>
     <View style = {{flex:13}}>
         <View style = {{flex:2}}>
             {this._renderListComponent()}
         </View>
-        <View style = {{flex:this.state.messagechat||this.state.notificationchat?3:0,
-            backgroundColor:colors.color1,borderRadius:15}}>
+        <View style = {{flex:this.state.messagechat||this.state.notificationchat||
+            this.state.showprofile?3:0,backgroundColor:colors.color1,borderRadius:15}}>
             {this._renderMessageComponent()}
         </View>
     </View>
@@ -1088,7 +1151,8 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
             <TouchableOpacity
                 onPress={()=> {
                     this._chatPress('notifications')
-                }}>
+                }}
+                disabled={this.state.locked}>
                 <MaterialCommunityIcons name='comment-alert'
                     style={{color:colors.color1, fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
@@ -1097,12 +1161,24 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
             <TouchableOpacity
                 onPress={()=> {
                     this._chatPress('messages')
-                }}>
+                }}
+                disabled={this.state.locked}>
                 <MaterialCommunityIcons name='clipboard-text' 
                     style={{color:colors.color1, fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
-        <View style = {{flex:4}}/>
+        <View style = {{flex:3.3}}/>
+        <View style = {{flex:0.6,justifyContent:'center'}}>
+            <TouchableOpacity
+                onPress={()=> {
+                    this._chatPress('profile')
+                }}
+                disabled={this.state.locked}>
+                <FontAwesome name='user-secret'
+                    style={{color:colors.color1, fontSize:35,alignSelf:'center'}}/>
+            </TouchableOpacity>
+        </View>
+        <View style = {{flex:0.2}}/>
     </View>
 
 </View>

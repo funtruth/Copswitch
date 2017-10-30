@@ -1,11 +1,10 @@
-//Holding for DAY Abilities?
+//TODO BEFORE BETA LAUNCH
 
 //Am I Mafia Flag
-    //Specific Mafia voting at night - display in chat
+    //Specific Mafia voting at night
 
-//Chopping Block player Name
+//Rules in Profile Chat
 
-//users/uid/active flag to show only the relevant roles
 
 //Game CleanUp
     //Ending a game
@@ -14,7 +13,7 @@
     //Remove 
         //User data on Firebase
         //Remove messages
-    
+
 //End game
     //Delete messages
     //Delete ROOM and GLOBALMESSAGES
