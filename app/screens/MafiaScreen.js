@@ -70,6 +70,7 @@ constructor(props) {
         messagechat:        false,
         notificationchat:   false,
         showprofile:        false,
+        xdisabled:          true,
         disabled:           false,
 
         amidead:            true,
@@ -247,7 +248,7 @@ componentWillMount() {
                                 ]
                             })
                         )
-                    ,1000)
+                    )
                 }
                 if(mafia.numChildren()*2+1 > snap.val()){
                     setTimeout(()=>
@@ -260,7 +261,7 @@ componentWillMount() {
                                 ]
                             })
                         )
-                    ,1000)
+                    )
                 }
             })
         }
@@ -1017,6 +1018,29 @@ _actionPhase() {
                     }
                 })
 
+                //Mafia Kill    
+            } else if (child.val().roleid == 'b' && !child.val().O) {
+                firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
+                .once('value',innersnap=>{
+                    if(!innersnap.val().N){
+                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                            + child.val().target).update({dead:true});
+                        this._changePlayerCount(false);
+
+                        this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                            child.val().targetname + ' has been stabbed by the Mafia.')
+
+                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                            + firebase.auth().currentUser.uid).update({bloody:true});
+                        this._noticeMsg(child.val().target,'#d31d1d','You have been stabbed.');
+                        this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
+                            + child.val().targetname + '.');
+                    } else {
+                        this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
+                            + child.val().targetname + '.');
+                    }
+                })
+
                 //Schemer
             } else if (child.val().roleid == 'c' && !child.val().O) {
                 this._noticeMsg(child.key,'#34cd0e','You attempted to frame ' 
@@ -1061,7 +1085,7 @@ _actionPhase() {
             } else if (child.val().roleid == 'N' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',insidesnap=>{
-                    if(insidesnap.val().a){
+                    if(insidesnap.val().a || insidesnap.val().b){
                         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                             + firebase.auth().currentUser.uid).update({bloody:true});
                         this._noticeMsg(child.val().target,'#34cd0e','The Doctor took care of your stab wounds.');
@@ -1107,6 +1131,44 @@ _actionPhase() {
 
 }
 
+_leaveRoom() {
+    AsyncStorage.removeItem('ROOM-KEY');
+    AsyncStorage.removeItem('GAME-KEY');
+
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+        .update({ name: null, phase:1, actionbtnvalue: false, presseduid: 'foo' })
+    this.props.navigation.dispatch(
+        NavigationActions.reset({
+            index: 0,
+            key: null,
+            actions: [
+                NavigationActions.navigate({ routeName: 'Room_Screen'})
+            ]
+        })
+    )
+}
+_deleteRoom() {
+    AsyncStorage.removeItem('ROOM-KEY');
+    AsyncStorage.removeItem('GAME-KEY');
+
+    firebase.database().ref('rooms/' + this.state.roomname).remove();
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+        .update({ name: null, phase:1, actionbtnvalue: false, presseduid: 'foo' })
+    
+    this.props.navigation.dispatch(
+        NavigationActions.reset({
+            index: 0,
+            actions: [
+                NavigationActions.navigate({ routeName: 'Room_Screen'})
+            ]
+        })
+    )
+}
+_enableCloseBtn() {
+    this.setState({xdisabled:false});
+    setTimeout(() => {this.setState({xdisabled: true})}, 2000);
+}
+
 render() {
 
 if(!this.state.loaded){
@@ -1134,9 +1196,22 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
 <View style = {{flex:1, backgroundColor:this.state.screencolor}}>
 
 <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
-    <View style = {{flex:0.9,backgroundColor:colors.main,justifyContent:'center',
+    <View style = {{flex:1}}/>
+    <View style = {{flex:4,backgroundColor:colors.main,justifyContent:'center',
         borderBottomLeftRadius:15,borderBottomRightRadius:15}}>
         {this._renderHeader()}
+    </View>
+    <View style = {{flex:1,justifyContent:'center'}}>
+        <TouchableOpacity
+            onPress={()=> {
+                this.state.xdisabled?
+                    this._enableCloseBtn():
+                    this.state.amiowner?this._deleteRoom():this._leaveRoom();
+            }}>
+            <MaterialCommunityIcons name='close-circle'
+                style={{color:this.state.xdisabled?colors.main:colors.highlight, 
+                    fontSize:26,alignSelf:'center'}}/>
+        </TouchableOpacity>
     </View>
 </View>
 

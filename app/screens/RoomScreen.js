@@ -52,7 +52,7 @@ class Room_Screen extends React.Component {
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
             .on('value',snap=>{
                 this.setState({roomtype: snap.val()})
-            })
+        })
 
     }
 
@@ -73,7 +73,9 @@ class Room_Screen extends React.Component {
             flex:1,
             backgroundColor:colors.background,
         }}>
-            <View style = {{flex:1}}> 
+            <View style = {{flex:0.25}}/>
+
+            <View style = {{flex:0.75}}> 
                 <TouchableWithoutFeedback 
                     style = {{ flex:1,justifyContent:'center' }}
                     onPress={()=>{ this._createRoom() }}>

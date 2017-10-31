@@ -46,7 +46,7 @@ export const SignedOut = StackNavigator(
             <MaterialIcons name="gamepad" style={styles.icon}/>
           ),
         }
-      },
+      },/*
       Profile: {
         screen: Profile,
         navigationOptions: {
@@ -54,7 +54,7 @@ export const SignedOut = StackNavigator(
             <MaterialIcons name="person" style={styles.icon}/>
           ),
         }
-      },
+      },*/
     },
     {
       tabBarPosition: 'bottom',
