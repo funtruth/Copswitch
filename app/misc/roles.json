@@ -44,7 +44,7 @@
     "color" : "#4B4352",
     "desc" : "A Random Mafia with a Mischief Role.",
     "image" : "lkjkl",
-    "name" : "Random Mischievous",
+    "name" : "Mischievous",
     "rules" : "lkjlj",
     "suspicious" : true,
     "type" : 1
@@ -84,7 +84,7 @@
     "color" : "#8F626A",
     "desc" : "A random Inspective Town member.",
     "image" : "lkjl",
-    "name" : "Random Inspective",
+    "name" : "Inspective",
     "rules" : "lkjl",
     "suspicious" : false,
     "type" : 2
@@ -114,7 +114,7 @@
     "color" : "#8F626A",
     "desc" : "A random protective Town member.",
     "image" : "lkjl",
-    "name" : "Random Stalling",
+    "name" : "Stalling",
     "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
     "suspicious" : false,
     "type" : 2
@@ -144,7 +144,7 @@
     "color" : "#8F626A",
     "desc" : "A random specialist Town member.",
     "image" : "lkjl",
-    "name" : "Random Specialist",
+    "name" : "Specialist",
     "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
     "suspicious" : false,
     "type" : 2
@@ -154,7 +154,7 @@
     "color" : "#8F626A",
     "desc" : "A random Town member.",
     "image" : "lkjlk",
-    "name" : "Random Town",
+    "name" : "Town",
     "rules" : "lkjlk",
     "suspicious" : false,
     "type" : 2

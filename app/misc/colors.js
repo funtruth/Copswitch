@@ -4,30 +4,26 @@ export default colors = {
     main:       '#54537A',
     highlight:  '#e3c382',
     background: '#9793A6',
-    title:      '#54537A',
+    title:      '#231715',
     font:       'white',
-
-    //Classical Palette
-    main:       '#231715',
-    highlight:  '#8A3418',
-    background: '#AB835C',
-    title:      '#F3C58A',
-    font:       '#F8E3C7',       
+    icon:       'white',     
 
     //Other colors
-    color1:       '#231715',
-    color2:       '#672C1A',
-    color3:       '#AB835C',
-
-
+    color1:       '#54537A',
+    color2:       '#6D849C',
+    color3:       '#9793A6',
+    
+    //Possible Mains
+    bluemain: '#1F476E',
+    blueback: '#6D849C',
 
 //COMPONENTS
 
     //Tab Navigator
     tabbackground:          '#231715',
-    indicatorcolor:         '#F8E3C7',
-    iconcolor:              '#F8E3C7',
-
+    indicatorcolor:         'white',
+    iconcolor:              'white',
+    
     //Header Style
     headerbackground:       '#231715',
     headerfont:             '#F8E3C7',

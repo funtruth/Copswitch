@@ -30,6 +30,14 @@ export const SignedOut = StackNavigator(
   
   export const SignedIn = TabNavigator(
     {
+      Room: {
+        screen: Room,
+        navigationOptions : {
+          tabBarIcon: ({ tintColor }) => (
+            <MaterialIcons name="gamepad" style={styles.icon}/>
+          ),
+        }
+      },
       Lists: {
         screen: Lists,
         navigationOptions: {
@@ -37,14 +45,6 @@ export const SignedOut = StackNavigator(
             <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
           ),
           
-        }
-      },
-      Room: {
-        screen: Room,
-        navigationOptions : {
-          tabBarIcon: ({ tintColor }) => (
-            <MaterialIcons name="gamepad" style={styles.icon}/>
-          ),
         }
       },/*
       Profile: {

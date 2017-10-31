@@ -82,7 +82,6 @@ constructor(props) {
         nominee:            '',
 
         gameover:           false,
-        townwin:            false,
         cover:              true,
 
         //Tagged onto Grabbing the PHASE NAME CURRENTLY because it takes the longest.
@@ -238,30 +237,10 @@ componentWillMount() {
 
             this.mafiaRef.orderByChild('alive').equalTo(true).once('value',mafia=>{
                 if(mafia.numChildren() == 0){
-                    setTimeout(()=>
-                        this.props.navigation.dispatch(
-                            NavigationActions.reset({
-                                index: 0,
-                                actions: [
-                                NavigationActions.navigate({ routeName: 'Option_Screen', 
-                                    params:{roomname:this.state.roomname,townwin:true}})
-                                ]
-                            })
-                        )
-                    )
+                    this.phaseListener.set(6)
                 }
-                if(mafia.numChildren()*2+1 > snap.val()){
-                    setTimeout(()=>
-                        this.props.navigation.dispatch(
-                            NavigationActions.reset({
-                                index: 0,
-                                actions: [
-                                NavigationActions.navigate({ routeName: 'Option_Screen', 
-                                    params:{roomname:this.state.roomname,townwin:false}})
-                                ]
-                            })
-                        )
-                    )
+                else if(mafia.numChildren()*2+1 > snap.val()){
+                    this.phaseListener.set(7)
                 }
             })
         }
@@ -285,6 +264,7 @@ componentWillMount() {
                     screentype:layout.val().type,
                     screencolor:layout.val().color,
                     locked:layout.val().locked,
+                    gameover:layout.val().gameover,
                     loaded:true })
             })
         }
@@ -874,24 +854,15 @@ _renderMessageComponent(){
 
 //Rendering the Transition Header
 _renderTransitionHeader() {
-    if(this.state.phase == 2){
+    if(this.state.phase == 2 || this.state.phase == 5){
         return <Text style = {styles.headerFont}>
             {this.state.phasename + ' ' + this.state.daycounter}
         </Text>
-    } else if (this.state.phase == 3) {
+    } else {
         return <Text style = {styles.headerFont}>
             {this.state.phasename}
-        </Text>
-    } else if (this.state.phase == 4) {
-        return <Text style = {styles.headerFont}>
-            {this.state.phasename}
-        </Text>
-    } else if (this.state.phase == 5) {
-        return <Text style = {styles.headerFont}>
-            {this.state.phasename + ' ' + this.state.daycounter}
         </Text>
     }
-        
 }
 
 //Renders the continue button
@@ -901,24 +872,22 @@ _renderContinueBtn() {
             style = {{flex:0.7,backgroundColor:colors.main,borderRadius:15,justifyContent:'center'}}
             onPress = {() => {
                 this.setState({cover:false})
-            }}
-        >
-            <Text style = {{color:colors.font,alignSelf:'center'}}>Select new</Text>
+            }}>
+            <Text style = {styles.continueFont}>Select new</Text>
         </TouchableOpacity>
     } else if (this.state.phase == 4 && !this.state.amipicking){
         return <TouchableOpacity 
             style = {{flex:0.7,backgroundColor:colors.main,borderRadius:15,justifyContent:'center'}}
         >
-            <Text style = {{color:colors.font,alignSelf:'center'}}>Wait bruv</Text>
+            <Text style = {styles.continueFont}>Wait bruv</Text>
         </TouchableOpacity>
     } else {
         return <TouchableOpacity 
             style = {{flex:0.7,backgroundColor:colors.main,borderRadius:15,justifyContent:'center'}}
             onPress = {() => {
                 this.setState({cover:false})
-            }}
-        >
-            <Text style = {{color:colors.font,alignSelf:'center'}}>Continue</Text>
+            }}>
+            <Text style = {styles.continueFont}>Continue</Text>
         </TouchableOpacity>
     }
 }
@@ -1168,6 +1137,33 @@ _enableCloseBtn() {
     this.setState({xdisabled:false});
     setTimeout(() => {this.setState({xdisabled: true})}, 2000);
 }
+_gameOver() {
+    AsyncStorage.removeItem('ROOM-KEY');
+    AsyncStorage.removeItem('GAME-KEY');
+
+    //Either remove yourself from the room or delete it
+    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers').once('value',snap=>{
+        if(snap.numChildren() < 2){
+            firebase.database().ref('rooms/' + this.state.roomname).remove();
+        } else {
+            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                + firebase.auth().currentUser.uid).remove();
+        }
+    })
+
+    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
+        .update({ name: null, phase:1, actionbtnvalue: false, presseduid: 'foo' })
+    
+    //this.props.navigation.navigate('Room_Screen')
+    this.props.navigation.dispatch(
+        NavigationActions.reset({
+            index: 0,
+            actions: [
+                NavigationActions.navigate({ routeName: 'Room_Screen'})
+            ]
+        })
+    )
+}
 
 render() {
 
@@ -1242,7 +1238,8 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
                 }}
                 disabled={this.state.locked}>
                 <MaterialCommunityIcons name='comment-alert'
-                    style={{color:colors.color1, fontSize:26,alignSelf:'center'}}/>
+                    style={{color:this.state.notificationchat?colors.highlight:colors.icon, 
+                        fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
         <View style = {{flex:0.6,justifyContent:'center'}}>
@@ -1252,7 +1249,8 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
                 }}
                 disabled={this.state.locked}>
                 <MaterialCommunityIcons name='clipboard-text' 
-                    style={{color:colors.color1, fontSize:26,alignSelf:'center'}}/>
+                    style={{color:this.state.messagechat?colors.highlight:colors.icon, 
+                        fontSize:26,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
         <View style = {{flex:3.3}}/>
@@ -1263,7 +1261,8 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
                 }}
                 disabled={this.state.locked}>
                 <FontAwesome name='user-secret'
-                    style={{color:colors.color1, fontSize:35,alignSelf:'center'}}/>
+                    style={{color:this.state.showprofile?colors.highlight:colors.icon, 
+                        fontSize:35,alignSelf:'center'}}/>
             </TouchableOpacity>
         </View>
         <View style = {{flex:0.2}}/>
@@ -1274,18 +1273,20 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
 <View style = {{flex:0.15}}/>
 
 <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
-        <TouchableOpacity
-            disabled={this.state.disabled?true:(this.state.locked?true:this.state.amidead)}
-            onPress={()=> {this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
-                this.state.triggernum,this.state.phase,this.state.roomname)}}
-            style = {{flex:0.82,justifyContent:'center',
-                backgroundColor:!this.state.locked && this.state.actionbtnvalue?colors.highlight:colors.main,
-                borderRadius:15}}>
-            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?colors.main:colors.font,
-                fontSize:26,alignSelf:'center', fontFamily:'ConcertOne-Regular'}}>
-                {!this.state.locked && !this.state.amidead?'READY':'LOCKED'}
-            </Text>
-        </TouchableOpacity>
+    <TouchableOpacity
+        disabled={this.state.disabled?true:(this.state.locked?true:this.state.amidead)}
+        onPress={()=> {this.state.gameover?this._gameOver():
+            (this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
+            this.state.triggernum,this.state.phase,this.state.roomname))}}
+        style = {{flex:0.82,justifyContent:'center',
+            backgroundColor:!this.state.locked && this.state.actionbtnvalue?colors.highlight:colors.main,
+            borderRadius:15}}>
+        <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?colors.main:colors.font,
+            fontSize:26,alignSelf:'center', fontFamily:'ConcertOne-Regular'}}>
+            {this.state.gameover?'CONTINUE':
+                (!this.state.locked && !this.state.amidead?'READY':'LOCKED')}
+        </Text>
+    </TouchableOpacity>
 </View>
 
 <View style = {{flex:0.15}}/>
@@ -1293,7 +1294,8 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
 <View style = {{flex:0.5,flexDirection:'row',justifyContent:'center'}}>
     <View style = {{flex:0.7,backgroundColor:colors.main,borderRadius:10,
         justifyContent:'center',alignItems:'center'}}>
-        <Text style = {{color:colors.font,fontSize:12}}>{this.state.bottommessage}</Text>
+        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',
+            fontSize:14}}>{this.state.bottommessage}</Text>
     </View>
 </View>
 
@@ -1327,6 +1329,12 @@ const styles = StyleSheet.create({
     headerFont: {
         fontFamily:'ConcertOne-Regular',
         fontSize: 30,
+        color: colors.font,
+        alignSelf:'center',
+    },
+    continueFont: {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 25,
         color: colors.font,
         alignSelf:'center',
     },

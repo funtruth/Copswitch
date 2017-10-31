@@ -27,7 +27,7 @@ import { isInRoom } from "../auth";
 import colors from '../misc/colors.js';
 
 import Mafia_Screen from './MafiaScreen.js';
-import { Option_Screen, Expired_Screen } from './OptionScreen.js';
+import { Expired_Screen } from './OptionScreen.js';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -73,9 +73,7 @@ class Room_Screen extends React.Component {
             flex:1,
             backgroundColor:colors.background,
         }}>
-            <View style = {{flex:0.25}}/>
-
-            <View style = {{flex:0.75}}> 
+            <View style = {{flex:1}}> 
                 <TouchableWithoutFeedback 
                     style = {{ flex:1,justifyContent:'center' }}
                     onPress={()=>{ this._createRoom() }}>
@@ -209,6 +207,7 @@ class Create_Screen extends React.Component {
                         title="Create Room"
                         fontFamily='ConcertOne-Regular'
                         fontSize={25}
+                        color={colors.font}
                         borderRadius={15}
                         backgroundColor={colors.main}
                         onPress={()=>{this._createRoom()}}
@@ -335,6 +334,7 @@ class Join_Screen extends React.Component {
                             title="Join Room"
                             fontFamily='ConcertOne-Regular'
                             fontSize={25}
+                            color={colors.font}
                             borderRadius={15}
                             backgroundColor={colors.main}
                             onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
@@ -608,12 +608,13 @@ class Lobby_Screen extends React.Component {
                             borderRadius:5,
                             backgroundColor: colors.main,
                             margin: 3,
-                            justifyContent:'center'
+                            justifyContent:'center',
+                            flex:0.5
                     }}> 
                         <Text style = {styles.concerto}>{item.name}</Text>
                     </TouchableOpacity>
-
                 )}
+                numColumns={2}
                 keyExtractor={item => item.key}
             />
         } else {
@@ -623,25 +624,26 @@ class Lobby_Screen extends React.Component {
                     <TouchableOpacity 
                         onPress={() => {
                             firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-                                + '/' + item.name + '/count').transaction((count)=>{
-                                    if(count > 1){
-                                        return count - 1;
-                                    } else {
-                                        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-                                        + '/' + item.name).remove();
-                                    }
-                                })
+                            + '/' + item.name + '/count').transaction((count)=>{
+                                if(count > 1){
+                                    return count - 1;
+                                } else {
+                                    firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+                                    + '/' + item.name).remove();
+                                }
+                            })
                         }}
                         style = {{height:40,
                             borderRadius:5,
                             backgroundColor: item.color,
                             margin: 3,
-                            justifyContent:'center'
-                    }}> 
+                            justifyContent:'center',
+                            flex:0.5
+                    }}>
                         <Text style = {styles.concerto}>{item.name + ' x' + item.count}</Text>
                     </TouchableOpacity>
-
                 )}
+                numColumns={2}
                 keyExtractor={item => item.key}
             />
         }
@@ -694,7 +696,8 @@ class Lobby_Screen extends React.Component {
                     }}
                 >
                     <Text style = {styles.concerto}>
-                        {this.state.listview?'Game Set-up':'Players: ' + this.state.playercount}</Text>
+                        {this.state.listview?
+                            'View Role Selection':' View Players: ' + this.state.playercount}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -849,9 +852,6 @@ export const createRoomNavigator = (inGame,inRoom,isExpired,key) => {
             },
             Mafia_Screen: {
                 screen: Mafia_Screen,
-            },
-            Option_Screen: {
-                screen: Option_Screen,
             },
         },
             {
