@@ -575,6 +575,7 @@ class Lobby_Screen extends React.Component {
                         firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
                         + child.key).update({
                             roleid: randomrole,
+                            type: suspicious.val().type,
                             suspicious:suspicious.val().suspicious,
                         })
                     })
@@ -590,7 +591,6 @@ class Lobby_Screen extends React.Component {
                     
                     max = max - 1;
                     randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);
-
                 })
             })
 
@@ -671,7 +671,7 @@ class Lobby_Screen extends React.Component {
                         onPress={()=> {
                             this.state.amiowner?this._deleteRoom():this._leaveRoom(this.state.roomname);
                         }}>
-                        <MaterialCommunityIcons name={this.state.amiowner?'close-circle':'close-circle'}
+                        <MaterialCommunityIcons name='close-circle'
                                     style={{color:colors.main, fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                 </View>
