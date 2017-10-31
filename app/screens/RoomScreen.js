@@ -148,7 +148,6 @@ class Create_Screen extends React.Component {
                 dead:       false,
                 immune:     false,
                 bloody:     false,
-                suspicious: false,
         });
 
         //Set up phases and rules
@@ -158,18 +157,8 @@ class Create_Screen extends React.Component {
             firebase.database().ref(outsnap.val() + '/phases').once('value',snap=>{
                 snap.forEach((child)=>{
 
-                    firebase.database().ref('rooms/' + roomname + '/phases/' + child.key).set({
-                        action:     child.val().action,
-                        actionreset:child.val().actionreset,
-                        color:      child.val().color,
-                        continue:   child.val().continue,
-                        locked:     child.val().locked,
-                        lynch:      child.val().lynch,
-                        name:       child.val().name,
-                        nominate:   child.val().nominate,
-                        trigger:    child.val().trigger,
-                        type:       child.val().type,
-                    })
+                    firebase.database().ref('rooms/' + roomname + '/phases/' + child.key)
+                        .set(child.val())
 
                 })
             })
@@ -379,7 +368,7 @@ class Lobby_Screen extends React.Component {
 
         this.state = {
             roomname: params.roomname.toUpperCase(),
-            listview: false,
+            listview: true,
 
             namelist:dataSource,
             rolelist: dataSource,
@@ -392,7 +381,6 @@ class Lobby_Screen extends React.Component {
 
         this.roleCount = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid)
             .orderByChild('roleid');
-        this.playerCount = firebase.database().ref('rooms/' + roomname + '/listofplayers');
         this.gameStart = firebase.database().ref('rooms/' + roomname + '/phase');
         this.playerList = firebase.database().ref('rooms/' + roomname + '/listofplayers');
         this.ownerListener = firebase.database().ref('rooms/' + roomname + '/owner');
@@ -419,9 +407,6 @@ class Lobby_Screen extends React.Component {
         if(this.roleCount){
             this.roleCount.off();
         }
-        if(this.playerCount){
-            this.playerCount.off();
-        }
         if(this.gameStart){
             this.gameStart.off();
         }
@@ -443,7 +428,7 @@ class Lobby_Screen extends React.Component {
                     key: child.key,
                 })
             })
-            this.setState({namelist:list})
+            this.setState({namelist:list,playercount:snap.numChildren()})
         })
     }
 
@@ -454,7 +439,7 @@ class Lobby_Screen extends React.Component {
         firebase.database().ref('rooms/' + this.state.roomname).remove();
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
-        //this.props.navigation.navigate('Room_Screen');
+        
         this.props.navigation.dispatch(
             NavigationActions.reset({
                 index: 0,
@@ -473,7 +458,7 @@ class Lobby_Screen extends React.Component {
         firebase.database().ref('rooms/' + roomname.toUpperCase() + '/playernum').transaction((playernum) => {
             return (playernum - 1);
         });  
-        //this.props.navigation.navigate('Room_Screen');
+        
         this.props.navigation.dispatch(
             NavigationActions.reset({
                 index: 0,
@@ -501,11 +486,6 @@ class Lobby_Screen extends React.Component {
             })
             this.setState({rolecount:rolecount, rolelist:list})
         });
-
-        //Player Count
-        this.playerCount.on('value',snap=>{
-            this.setState({playercount:snap.numChildren()})
-        });
     }
 
     _recommendedBtnPress(mode,playercount){
@@ -513,10 +493,7 @@ class Lobby_Screen extends React.Component {
 
         firebase.database().ref('Original/recommended/' + playercount + '/' + mode).once('value',snap=>{
             snap.forEach((child)=>{
-                this.roleCount.child(child.key).update({
-                    color:child.val().color,
-                    count:child.val().count,
-                    roleid:child.val().roleid})
+                this.roleCount.child(child.key).update(child.val())
             })
         })
     }
@@ -529,7 +506,6 @@ class Lobby_Screen extends React.Component {
 
                 firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
                     .update({phase: snap.val()})
-                //this.props.navigation.navigate('Mafia_Screen', {roomname: this.state.roomname})
                 this.props.navigation.dispatch(
                     NavigationActions.reset({
                         index: 0,
@@ -555,7 +531,6 @@ class Lobby_Screen extends React.Component {
 
             firebase.database().ref('rooms/' + roomname).update({phase:2});
 
-            //this.props.navigation.navigate('Mafia_Screen', { roomname:roomname })
             this.props.navigation.dispatch(
                 NavigationActions.reset({
                     index: 0,
@@ -579,28 +554,8 @@ class Lobby_Screen extends React.Component {
 
             snap.forEach((child)=>{
                 for(i=0;i<child.val().count;i++){
-                    if(child.val().roleid == 'E'){
-                        randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
-                        charcount++
-                    } else if (child.val().roleid == 'I'){ //Random Mischeif Mafia
-                        randomstring = randomstring + randomize('?', 1, {chars: 'BCD'})
-                        charcount++
-                    } else if (child.val().roleid == 'M'){ //Random Inspective Town
-                        randomstring = randomstring + randomize('?', 1, {chars: 'KL'})
-                        charcount++
-                    } else if (child.val().roleid == 'P'){ //Random Stalling Town
-                        randomstring = randomstring + randomize('?', 1, {chars: 'NO'})
-                        charcount++
-                    } else if (child.val().roleid == 'S'){ //Random Specialist Town
-                        randomstring = randomstring + randomize('?', 1, {chars: 'QR'})
-                        charcount++
-                    } else if (child.val().roleid == 'T'){ //Random Town
-                        randomstring = randomstring + randomize('?', 1, {chars: 'KLNOQR'})
-                        charcount++
-                    } else {
-                        randomstring = randomstring + child.val().roleid
-                        charcount++
-                    }
+                    randomstring = randomstring + randomize('?', 1, {chars: child.val().roleid})
+                    charcount++
                 }
             })
 
@@ -611,22 +566,25 @@ class Lobby_Screen extends React.Component {
                 insidesnap.forEach((child)=>{
 
                     var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
+                    var randomrole = randomstring.charAt(randomnumber-1);
 
-                    firebase.database().ref('rooms/' + roomname + '/listofplayers/' + child.key)
-                        .update({roleid: randomstring.charAt(randomnumber - 1)});
+                    firebase.database().ref('Original/roles/'+randomrole)
+                    .once('value',suspicious=>{
+                        firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+                        + child.key).update({
+                            roleid: randomrole,
+                            suspicious:suspicious.val().suspicious,
+                        })
+                    })
 
-                    if(randomstring.charAt(randomnumber - 1) == 'A' ||
-                        randomstring.charAt(randomnumber - 1) == 'B' ||
-                        randomstring.charAt(randomnumber - 1) == 'C' ||
-                        randomstring.charAt(randomnumber - 1) == 'D' ||
-                        randomstring.charAt(randomnumber - 1) == 'J'){
-                            firebase.database().ref('rooms/' + roomname + '/mafia/' 
-                                + child.key).update({
-                                    roleid:randomstring.charAt(randomnumber - 1),
-                                    name: child.val().name,
-                                    alive: true,
-                                })
-                        }
+                    if(randomrole == randomrole.toLowerCase()){
+                        firebase.database().ref('rooms/' + roomname + '/mafia/' 
+                        + child.key).update({
+                            roleid:randomrole,
+                            name: child.val().name,
+                            alive: true,
+                        })
+                    }
                     
                     max = max - 1;
                     randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);

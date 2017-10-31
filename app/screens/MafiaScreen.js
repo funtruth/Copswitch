@@ -995,7 +995,7 @@ _actionPhase() {
         snap.forEach((child)=>{
 
                 //Mafia Kill
-            if (child.val().roleid == 'A' && !child.val().O) {
+            if (child.val().roleid == 'a' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',innersnap=>{
                     if(!innersnap.val().N){
@@ -1018,12 +1018,12 @@ _actionPhase() {
                 })
 
                 //Schemer
-            } else if (child.val().roleid == 'B' && !child.val().O) {
+            } else if (child.val().roleid == 'c' && !child.val().O) {
                 this._noticeMsg(child.key,'#34cd0e','You attempted to frame ' 
                     + child.val().targetname +" last night.");
 
                 //Spy
-            } else if (child.val().roleid == 'C' && !child.val().O) {
+            } else if (child.val().roleid == 'd' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     firebase.database().ref('Original/roles/' + innersnap.val().roleid).once('value',rolename=>{
@@ -1036,12 +1036,7 @@ _actionPhase() {
             } else if (child.val().roleid == 'K' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
                 .once('value',insidesnap=>{
-                    if(insidesnap.val().roleid == 'B'||
-                        insidesnap.val().roleid =='C'||
-                        insidesnap.val().roleid =='D'||
-                        insidesnap.val().roleid =='J'||
-                        insidesnap.val().B           ||
-                        insidesnap.val().suspicious){
+                    if(insidesnap.val().c || insidesnap.val().suspicious){
                         this._noticeMsg(child.key,'#34cd0e',child.val().targetname +' is hiding something ...');
                     } else {
                         this._noticeMsg(child.key,'#34cd0e',
@@ -1066,7 +1061,7 @@ _actionPhase() {
             } else if (child.val().roleid == 'N' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',insidesnap=>{
-                    if(insidesnap.val().A){
+                    if(insidesnap.val().a){
                         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                             + firebase.auth().currentUser.uid).update({bloody:true});
                         this._noticeMsg(child.val().target,'#34cd0e','The Doctor took care of your stab wounds.');

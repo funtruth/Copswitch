@@ -38,25 +38,8 @@ export class Option_Screen extends React.Component {
             townwin:            params.townwin,
         };
 
-        this.roomRef = firebase.database().ref('rooms/' + roomname);
-
     }
 
-    componentWillMount() {
-
-    }
-
-    componentWillUnmount() {
-
-        if(this.roomRef){
-            this.roomRef.off();
-        }
-
-    }
-
-    _returnGame(){
-        
-    }
 
     _leaveGame(){
         AsyncStorage.removeItem('ROOM-KEY');

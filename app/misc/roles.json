@@ -1,65 +1,62 @@
 {
-  "A" : {
+  "a" : {
     "category" : "killing",
     "color" : "#4B4352",
-    "desc" : "Murderer of the Mafia.",
+    "desc" : "Highly trained Assassin of the Mafia.",
     "image" : "hehee",
-    "name" : "Murderer",
+    "name" : "Assassin",
     "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "suspicious" : false,
     "type" : 1
   },
-  "B" : {
+  "b" : {
+    "category" : "killing",
+    "color" : "#4B4352",
+    "desc" : "The professional killer of the Mafia.",
+    "image" : "lkjkl",
+    "name" : "Murderer",
+    "rules" : "lkjlj",
+    "suspicious" : true,
+    "type" : 1
+  },
+  "c" : {
     "category" : "mischief",
     "color" : "#4B4352",
     "desc" : "Skilled framer of the Mafia.",
     "image" : "https://static.planetminecraft.com/files/resource_media/screenshot/1322/530b5668481765b8fac21343989c1668_5603805_lrg.jpg",
     "name" : "Schemer",
     "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "suspicious" : true,
     "type" : 1
   },
-  "C" : {
+  "d" : {
     "category" : "mischief",
     "color" : "#4B4352",
     "desc" : "Informant of the Mafia.",
     "image" : "lol",
     "name" : "Spy",
     "rules" : "rulesrules",
+    "suspicious" : true,
     "type" : 1
   },
-  "D" : {
-    "category" : "mischief",
-    "color" : "#4B4352",
-    "desc" : "Explosives expert of the Mafia.",
-    "image" : "lkjkl",
-    "name" : "Bomber",
-    "rules" : "lkjlj",
-    "type" : 1
-  },
-  "E" : {
+  "e" : {
     "category" : "mischief",
     "color" : "#4B4352",
     "desc" : "A Random Mafia with a Mischief Role.",
     "image" : "lkjkl",
     "name" : "Random Mischievous",
     "rules" : "lkjlj",
+    "suspicious" : true,
     "type" : 1
   },
-  "I" : {
-    "category" : "killing",
-    "color" : "#4B4352",
-    "desc" : "A Random Mafia member.",
-    "image" : "lkjkl",
-    "name" : "Random Mafia",
-    "rules" : "lkjlj",
-    "type" : 1
-  },
-  "J" : {
+  "j" : {
     "category" : "none",
     "color" : "#4B4352",
     "desc" : "A low-level mafia recruit.",
     "image" : "lkjkl",
     "name" : "Thug",
     "rules" : "lkjlj",
+    "suspicious" : true,
     "type" : 1
   },
   "K" : {
@@ -69,6 +66,7 @@
     "image" : "google.comlol",
     "name" : "Detective",
     "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "suspicious" : false,
     "type" : 2
   },
   "L" : {
@@ -78,6 +76,7 @@
     "image" : "lkjdsf",
     "name" : "Investigator",
     "rules" : "lkjlkj",
+    "suspicious" : false,
     "type" : 2
   },
   "M" : {
@@ -87,6 +86,7 @@
     "image" : "lkjl",
     "name" : "Random Inspective",
     "rules" : "lkjl",
+    "suspicious" : false,
     "type" : 2
   },
   "N" : {
@@ -96,15 +96,17 @@
     "image" : "https://static.planetminecraft.com/files/resource_media/screenshot/1322/530b5668481765b8fac21343989c1668_5603805_lrg.jpg",
     "name" : "Doctor",
     "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "suspicious" : false,
     "type" : 2
   },
   "O" : {
     "category" : "stalling",
     "color" : "#8F626A",
-    "desc" : "Distracts a lucky player for the Night.",
+    "desc" : "Distracts a player for the Night.",
     "image" : "https://static.planetminecraft.com/files/resource_media/screenshot/1322/530b5668481765b8fac21343989c1668_5603805_lrg.jpg",
     "name" : "Escort",
     "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "suspicious" : false,
     "type" : 2
   },
   "P" : {
@@ -113,6 +115,8 @@
     "desc" : "A random protective Town member.",
     "image" : "lkjl",
     "name" : "Random Stalling",
+    "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "suspicious" : false,
     "type" : 2
   },
   "Q" : {
@@ -121,6 +125,8 @@
     "desc" : "An observant Town member.",
     "image" : "lkjl",
     "name" : "Bird Watcher",
+    "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "suspicious" : false,
     "type" : 2
   },
   "R" : {
@@ -129,6 +135,8 @@
     "desc" : "A Town member that examines dead bodies.",
     "image" : "lkjl",
     "name" : "Forensic",
+    "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "suspicious" : false,
     "type" : 2
   },
   "S" : {
@@ -137,6 +145,8 @@
     "desc" : "A random specialist Town member.",
     "image" : "lkjl",
     "name" : "Random Specialist",
+    "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
+    "suspicious" : false,
     "type" : 2
   },
   "T" : {
@@ -146,6 +156,7 @@
     "image" : "lkjlk",
     "name" : "Random Town",
     "rules" : "lkjlk",
+    "suspicious" : false,
     "type" : 2
   },
   "U" : {
@@ -155,6 +166,7 @@
     "image" : "lkjlk",
     "name" : "Villager",
     "rules" : "lkjlk",
+    "suspicious" : false,
     "type" : 2
   },
   "W" : {
@@ -164,6 +176,7 @@
     "image" : "lkjlk",
     "name" : "Psychopath",
     "rules" : "kjlkj",
+    "suspicious" : false,
     "type" : 3
   }
 }

@@ -149,6 +149,7 @@ class Roles_Screen extends Component {
                             name: child.val().name,
                             desc: child.val().desc,
                             color: child.val().color,
+                            suspicious: child.val().suspicious,
 
                             key: child.key,
                         })
@@ -167,7 +168,7 @@ class Roles_Screen extends Component {
         }
     }
 
-    _addRole(rolename,roleid,color) {
+    _addRole(rolename,roleid,color,suspicious) {
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
         + '/' + rolename + '/count')
             .transaction((count)=>{
@@ -175,7 +176,7 @@ class Roles_Screen extends Component {
             })
 
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-        + '/' + rolename).update({roleid:roleid,color:color})
+        + '/' + rolename).update({roleid:roleid,color:color,suspicious:suspicious})
     }
 
     render(){
@@ -187,7 +188,7 @@ class Roles_Screen extends Component {
                 renderItem={({item}) => (
                     <TouchableOpacity
                         onPress = {()=>{this.state.room?
-                            this._addRole(item.name,item.key,item.color)
+                            this._addRole(item.name,item.key,item.color,item.suspicious)
                             :
                             this.props.navigation.navigate('Character_Screen',{roleid:item.key})    
                         }}
