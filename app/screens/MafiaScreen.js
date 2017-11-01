@@ -463,6 +463,7 @@ _updatePlayerState() {
         snap.forEach((child)=> {
             list.push({
                 name: child.val().name,
+                type: child.val().type,
                 dead: child.val().dead,
                 immune: child.val().immune,
                 votes: child.val().votes,
@@ -738,7 +739,12 @@ _renderListComponent(){
                             style={{color:'white', fontSize:26}}/>
                         </View>
                         <View style = {{flex:5}}>
-                            <Text style = {styles.concerto}>{item.name}</Text>
+                            {item.dead?
+                                <Text style = {styles.concerto}>
+                                    {item.name + ' ' + (item.type==1?'(Town)':
+                                    item.type==2?'(Mafia)':'(Neutral)')}</Text>
+                                :<Text style = {styles.concerto}>{item.name}</Text>
+                            }
                         </View>
                         <View style = {{flex:1}}>
                             <Text style = {styles.concerto}>{item.votes>0?item.votes:null}</Text>
