@@ -245,12 +245,13 @@ componentWillMount() {
 
         if(snap.exists()){
 
-            this.setState({cover:true, messagechat:false, notificationchat:false, showprofile:false})
-
-            //Keep Phase updated for PERSONAL USER
-            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                .update({phase:snap.val()});
-            this.setState({phase:snap.val()})
+            this.setState({
+                cover:true, 
+                messagechat:false, 
+                notificationchat:false, 
+                showprofile:false,
+                phase:snap.val()
+            })
             
             //Find layout type of Phase
             firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val())
@@ -1089,7 +1090,7 @@ _leaveRoom() {
     AsyncStorage.removeItem('GAME-KEY');
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .update({ name: null, phase:1 })
+        .update({ name: null })
     this.props.navigation.dispatch(
         NavigationActions.reset({
             index: 0,
@@ -1106,7 +1107,7 @@ _deleteRoom() {
 
     firebase.database().ref('rooms/' + this.state.roomname).remove();
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .update({ name: null, phase:1 })
+        .update({ name: null })
     
     this.props.navigation.dispatch(
         NavigationActions.reset({
@@ -1136,7 +1137,7 @@ _gameOver() {
     })
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .update({ name: null, phase:1 })
+        .update({ name: null })
     
     //this.props.navigation.navigate('Room_Screen')
     this.props.navigation.dispatch(

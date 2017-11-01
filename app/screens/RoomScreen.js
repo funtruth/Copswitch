@@ -40,23 +40,6 @@ class Room_Screen extends React.Component {
 
     constructor(props) {
         super(props);
-        
-        this.state = {
-            roomtype:'',
-        };
-    }
-
-    componentWillMount() {
-
-        //Necessary???
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
-            .on('value',snap=>{
-                this.setState({roomtype: snap.val()})
-        })
-
-    }
-
-    componentWillUnmount() {
     }
 
     _createRoom() {
@@ -154,15 +137,10 @@ class Create_Screen extends React.Component {
 
         //Set up phases and rules
         //Set up temporary list of roles
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type').once('value',outsnap=>{
-
-            firebase.database().ref(outsnap.val() + '/phases').once('value',snap=>{
-                snap.forEach((child)=>{
-
-                    firebase.database().ref('rooms/' + roomname + '/phases/' + child.key)
-                        .set(child.val())
-
-                })
+        firebase.database().ref('Original/phases').once('value',snap=>{
+            snap.forEach((child)=>{
+                firebase.database().ref('rooms/' + roomname + '/phases/' + child.key)
+                    .set(child.val())
             })
         })
         
@@ -510,8 +488,6 @@ class Lobby_Screen extends React.Component {
                 
                 AsyncStorage.setItem('GAME-KEY',this.state.roomname);
 
-                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                    .update({phase: snap.val()})
                 this.props.navigation.dispatch(
                     NavigationActions.reset({
                         index: 0,
@@ -534,8 +510,6 @@ class Lobby_Screen extends React.Component {
             this._handOutRoles(roomname);
 
             firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
-
-            firebase.database().ref('rooms/' + roomname).update({phase:2});
 
             this.props.navigation.dispatch(
                 NavigationActions.reset({

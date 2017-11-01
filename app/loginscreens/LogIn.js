@@ -38,11 +38,6 @@ export class SignIn extends React.Component {
 
     _signInAnon(){
         firebase.auth().signInAnonymously().then(() => {
-            firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                .set({
-                    phase: 1,
-                    type:'Original',
-                })
             onSignIn();
             this.props.navigation.dispatch(
                 NavigationActions.reset({
@@ -168,10 +163,6 @@ export class SignUp extends React.Component {
             firebase.auth().signInWithEmailAndPassword(
             email, password).then(() => 
                 {
-                    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                      .set({
-                        phase:1,
-                        type:'Original'})
                     onSignIn();
                     this.props.navigation.navigate("SignedIn");
                     Keyboard.dismiss();
