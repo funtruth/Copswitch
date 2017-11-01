@@ -193,15 +193,17 @@ componentWillMount() {
                 presseduid: snap.val().presseduid,
             })
 
-            if (snap.val().presseduid == 'foo' || !snap.val().presseduid){
+            var presseduid = snap.val().presseduid;
+
+            if (presseduid == 'foo' || !presseduid){
                 this.setState({ bottommessage: 'You have not selected anything.'})
-            } else if (snap.val().presseduid == 'yes'){
+            } else if (presseduid == 'yes'){
                 this.setState({ bottommessage: 'You have voted Innocent.'})
-            } else if (snap.val().presseduid == 'no'){
+            } else if (presseduid == 'no'){
                 this.setState({ bottommessage: 'You have voted Guilty.'})
             } else {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + snap.val().presseduid).once('value',uidtoname=>{
+                + presseduid).once('value',uidtoname=>{
                     this.setState({ bottommessage: 'You have selected ' + uidtoname.val().name + '.'})
                 }) 
             }
@@ -277,8 +279,8 @@ componentWillMount() {
 
     //Count listeners for the room owner
     this.countRef.on('value',snap=>{
-        if(snap.exists && this.state.amiowner && ((snap.val()+1)>this.state.playernum)){
-                    
+        if(snap.exists && this.state.amiowner && ((snap.val()+1)>this.state.playernum)
+            && this.state.playernum>0){            
             this.roomRef.child('phases').child(this.state.phase).once('value',phase=>{
                 
                 //Phase 2 + 4 Handling CONTINUE
@@ -1266,7 +1268,8 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
 
 <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
     <TouchableOpacity
-        disabled={this.state.disabled?true:(this.state.locked?true:this.state.amidead)}
+        disabled={this.state.gameover?false:
+            (this.state.disabled?true:(this.state.locked?true:this.state.amidead))}
         onPress={()=> {this.state.gameover?this._gameOver():
             (this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
             this.state.triggernum,this.state.phase,this.state.roomname))}}
@@ -1313,7 +1316,7 @@ const styles = StyleSheet.create({
     },
     immune: {
         height:40,
-        backgroundColor: '#14b6d7',
+        backgroundColor: colors.immune,
         margin: 3,
         borderRadius:5,
         justifyContent:'center',
