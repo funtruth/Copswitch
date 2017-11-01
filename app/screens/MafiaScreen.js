@@ -257,12 +257,13 @@ componentWillMount() {
             firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val())
             .once('value',layout=>{
                 this.setState({
-                    phasename:layout.val().name,
-                    screentype:layout.val().type,
-                    screencolor:layout.val().color,
-                    locked:layout.val().locked,
-                    gameover:layout.val().gameover,
-                    loaded:true })
+                    phasename:      layout.val().name,
+                    screentype:     layout.val().type,
+                    screencolor:    layout.val().color,
+                    locked:         layout.val().locked,
+                    gameover:       layout.val().gameover,
+                    loaded:         true 
+                })
             })
         }
 

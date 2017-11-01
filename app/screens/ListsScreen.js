@@ -139,25 +139,21 @@ class Roles_Screen extends Component {
             }
         })
 
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room/type')
-        .once('value',outsnap=>{
-            firebase.database().ref(outsnap.val() + '/roles').once('value', deepshot => {
-                var list = [];
-                deepshot.forEach((child)=> {
-                    if(child.val().type == this.state.type){
-                        list.push({
-                            name: child.val().name,
-                            desc: child.val().desc,
-                            color: child.val().color,
-                            suspicious: child.val().suspicious,
+        firebase.database().ref('roles').once('value', deepshot => {
+            var list = [];
+            deepshot.forEach((child)=> {
+                if(child.val().type == this.state.type){
+                    list.push({
+                        name: child.val().name,
+                        desc: child.val().desc,
+                        color: child.val().color,
+                        suspicious: child.val().suspicious,
 
-                            key: child.key,
-                        })
-                    }
-                        
-                })
-                this.setState({ rolelist:list }) 
+                        key: child.key,
+                    })
+                }
             })
+            this.setState({ rolelist:list }) 
         })
 
     }
@@ -240,7 +236,7 @@ class Character_Screen extends Component {
             roleid: params.roleid,
         }
         
-        this.characterRef = firebase.database().ref('Original/roles/' + params.roleid);
+        this.characterRef = firebase.database().ref('roles/' + params.roleid);
     
     }
 
