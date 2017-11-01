@@ -88,53 +88,77 @@ constructor(props) {
         loaded:             false,
     };
 
-    this.roomRef = firebase.database().ref('rooms/' + roomname);
-    this.roleRef = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid)
-        .child('roleid');
-    this.mafiaRef = this.roomRef.child('mafia');
+    this.roomRef            = firebase.database().ref('rooms/' + roomname);
+    this.myInfoRef          = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid);
+    this.mafiaRef           = this.roomRef.child('mafia');
     
-    this.msgRef = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
-    this.globalMsgRef = firebase.database().ref('globalmsgs/' + roomname);
-    this.userRoomRef = firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room');
-    this.listListener = this.roomRef.child('listofplayers');
-    this.playernumListener = this.roomRef.child('playernum');
+    this.msgRef             = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
+    this.globalMsgRef       = firebase.database().ref('globalmsgs/' + roomname);
+    this.listListener       = this.roomRef.child('listofplayers');
+    this.playernumListener  = this.roomRef.child('playernum');
     this.nominationListener = this.roomRef.child('nominate');
-    this.ownerRef = this.roomRef.child('owner');
-    this.phaseListener = this.roomRef.child('phase');
+    this.ownerRef           = this.roomRef.child('owner');
+    this.phaseListener      = this.roomRef.child('phase');
 
     //Owner Listening
-    this.countRef = this.roomRef.child('count');
-    this.guiltyVotesRef = this.roomRef.child('guiltyvotes');
-    this.popularVoteRef = this.roomRef.child('listofplayers').orderByChild('votes').limitToLast(1);
+    this.countRef           = this.roomRef.child('count');
+    this.guiltyVotesRef     = this.roomRef.child('guiltyvotes');
+    this.popularVoteRef     = this.roomRef.child('listofplayers').orderByChild('votes').limitToLast(1);
 
     //Transition Screen
-    this.dayCounterRef = this.roomRef.child('daycounter');
+    this.dayCounterRef      = this.roomRef.child('daycounter');
 
 }
 
 componentWillMount() {
 
-    this.roleRef.on('value',snap=>{
+    this.myInfoRef.on('value',snap=>{
         if(snap.exists()){
-            firebase.database().ref('Original/roles/' + snap.val()).once('value',rolename=>{
-                if(rolename.val().type == 1){
-                    this.setState({
-                        myroleid:snap.val(),
-                        myrole:rolename.val().name,
-                        roledesc:rolename.val().desc,
-                        rolerules:rolename.val().rules,
-                        amimafia:true
-                    })
-                } else {
-                    this.setState({
-                        myroleid:snap.val(),
-                        myrole:rolename.val().name,
-                        roledesc:rolename.val().desc,
-                        rolerules:rolename.val().rules,
-                        amimafia:false
-                    })
-                }
+            
+            if(snap.val().roleid){
+                //Role information
+                firebase.database().ref('Original/roles/' + snap.val().roleid).once('value',rolename=>{
+                    if(rolename.val().type == 1){
+                        this.setState({
+                            myroleid:snap.val().roleid,
+                            myrole:rolename.val().name,
+                            roledesc:rolename.val().desc,
+                            rolerules:rolename.val().rules,
+                            amimafia:true
+                        })
+                    } else {
+                        this.setState({
+                            myroleid:snap.val().roleid,
+                            myrole:rolename.val().name,
+                            roledesc:rolename.val().desc,
+                            rolerules:rolename.val().rules,
+                            amimafia:false
+                        })
+                    }
+                })
+            }
+
+            //Button press states and Living state
+            this.setState({
+                actionbtnvalue: snap.val().actionbtnvalue,
+                presseduid: snap.val().presseduid,
+                amidead:    snap.val().dead,
             })
+            var presseduid = snap.val().presseduid;
+
+            if (presseduid == 'foo' || !presseduid){
+                this.setState({ bottommessage: 'You have not selected anything.'})
+            } else if (presseduid == 'yes'){
+                this.setState({ bottommessage: 'You have voted Innocent.'})
+            } else if (presseduid == 'no'){
+                this.setState({ bottommessage: 'You have voted Guilty.'})
+            } else {
+                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                + presseduid).once('value',uidtoname=>{
+                    this.setState({ bottommessage: 'You have selected ' + uidtoname.val().name + '.'})
+                }) 
+            }
+
         }
     })
 
@@ -185,31 +209,6 @@ componentWillMount() {
         }
     })
 
-    //Match Button Presses with the Database
-    this.userRoomRef.on('value',snap=>{
-        if(snap.exists()){
-            this.setState({
-                actionbtnvalue: snap.val().actionbtnvalue,
-                presseduid: snap.val().presseduid,
-            })
-
-            var presseduid = snap.val().presseduid;
-
-            if (presseduid == 'foo' || !presseduid){
-                this.setState({ bottommessage: 'You have not selected anything.'})
-            } else if (presseduid == 'yes'){
-                this.setState({ bottommessage: 'You have voted Innocent.'})
-            } else if (presseduid == 'no'){
-                this.setState({ bottommessage: 'You have voted Guilty.'})
-            } else {
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + presseduid).once('value',uidtoname=>{
-                    this.setState({ bottommessage: 'You have selected ' + uidtoname.val().name + '.'})
-                }) 
-            }
-        }
-    })
-
     this.ownerRef.on('value',snap=>{
         if(snap.val() == firebase.auth().currentUser.uid){
             this.setState({amiowner:true})
@@ -222,13 +221,6 @@ componentWillMount() {
         if(snap.exists()){
             //Update colors + options for Player Name Buttons
             this._updatePlayerState();
-
-            //Check if you are alive
-            this.listListener.child(firebase.auth().currentUser.uid).once('value',amidead=>{  
-                this.setState({
-                    amidead: amidead.val().dead
-                })
-            })
         }
     })
 
@@ -412,17 +404,14 @@ componentWillMount() {
 
 componentWillUnmount() {
 
-    if(this.roleRef){
-        this.roleRef.off();
+    if(this.myInfoRef){
+        this.myInfoRef.off();
     }
     if(this.msgRef){
         this.msgRef.off();
     }
     if(this.globalMsgRef){
         this.globalMsgRef.off();
-    }
-    if(this.userRoomRef){
-        this.userRoomRef.off();
     }
     if(this.ownerRef){
         this.ownerRef.off();
@@ -452,7 +441,6 @@ componentWillUnmount() {
     if(this.dayCounterRef){
         this.dayCounterRef.off();
     }
-
 
 }
 
@@ -505,13 +493,9 @@ _changePhase(newphase){
     
     this.listListener.once('value',snap=>{
         snap.forEach((child)=>{
-            //Set all votes to 0
+            //Set all votes to 0 and RESET Buttons
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.key)
-                .update({votes:0})
-
-            //Set all btn values to neutral
-            firebase.database().ref('users/' + child.key + '/room')
-                .update({actionbtnvalue:false,presseduid:'foo'})
+                .update({votes:0, actionbtnvalue:false, presseduid:'foo'})
         })
     })
 
@@ -525,7 +509,7 @@ _changePhase(newphase){
 _resetImmunity() {
     firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/').once('value',snap=>{
         snap.forEach((child)=>{
-            //Set all votes to 0
+            //RESET IMMUNITY
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.key)
                 .update({immune:false})
         })
@@ -533,10 +517,10 @@ _resetImmunity() {
 }
 
 _actionBtnValue(status){
-    this.userRoomRef.update({actionbtnvalue: status})
+    this.myInfoRef.update({actionbtnvalue: status})
 }
 _pressedUid(uid){
-    this.userRoomRef.update({presseduid: uid})
+    this.myInfoRef.update({presseduid: uid})
 }
 
 _changeCount(bool){
@@ -683,29 +667,29 @@ _voteBtnPress(presseduid,votebtn) {
 
     if(presseduid == 'yes'){
         if(votebtn){
-            this.userRoomRef.update({actionbtnvalue:false, presseduid:'foo'});
+            this.myInfoRef.update({actionbtnvalue:false, presseduid:'foo'});
             this._vote(false);
             this._changeCount(false);
         } else {
-            this.userRoomRef.update({actionbtnvalue:true, presseduid:'no'})
+            this.myInfoRef.update({actionbtnvalue:true, presseduid:'no'})
             this._vote(true);
         }
     } else if (presseduid == 'no') {
         if(votebtn){
-            this.userRoomRef.update({actionbtnvalue:true, presseduid:'yes'})
+            this.myInfoRef.update({actionbtnvalue:true, presseduid:'yes'})
             this._vote(false);
         } else {
-            this.userRoomRef.update({actionbtnvalue:false, presseduid:'foo'})
+            this.myInfoRef.update({actionbtnvalue:false, presseduid:'foo'})
             this._vote(false);
             this._changeCount(false);
         }
     } else {
         if(votebtn){
-            this.userRoomRef.update({actionbtnvalue:true, presseduid:'yes'})
+            this.myInfoRef.update({actionbtnvalue:true, presseduid:'yes'})
             this._vote(false);
             this._changeCount(true);
         } else {
-            this.userRoomRef.update({actionbtnvalue:true, presseduid:'no'})
+            this.myInfoRef.update({actionbtnvalue:true, presseduid:'no'})
             this._vote(true);
             this._changeCount(true);
         }
@@ -741,8 +725,8 @@ _renderListComponent(){
                         <View style = {{flex:5}}>
                             {item.dead?
                                 <Text style = {styles.concerto}>
-                                    {item.name + ' ' + (item.type==1?'(Town)':
-                                    item.type==2?'(Mafia)':'(Neutral)')}</Text>
+                                    {item.name + ' ' + (item.type==2?'(Town)':
+                                    item.type==1?'(Mafia)':'(Neutral)')}</Text>
                                 :<Text style = {styles.concerto}>{item.name}</Text>
                             }
                         </View>
@@ -1105,7 +1089,7 @@ _leaveRoom() {
     AsyncStorage.removeItem('GAME-KEY');
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .update({ name: null, phase:1, actionbtnvalue: false, presseduid: 'foo' })
+        .update({ name: null, phase:1 })
     this.props.navigation.dispatch(
         NavigationActions.reset({
             index: 0,
@@ -1122,7 +1106,7 @@ _deleteRoom() {
 
     firebase.database().ref('rooms/' + this.state.roomname).remove();
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .update({ name: null, phase:1, actionbtnvalue: false, presseduid: 'foo' })
+        .update({ name: null, phase:1 })
     
     this.props.navigation.dispatch(
         NavigationActions.reset({
@@ -1152,7 +1136,7 @@ _gameOver() {
     })
 
     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .update({ name: null, phase:1, actionbtnvalue: false, presseduid: 'foo' })
+        .update({ name: null, phase:1 })
     
     //this.props.navigation.navigate('Room_Screen')
     this.props.navigation.dispatch(

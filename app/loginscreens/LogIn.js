@@ -168,8 +168,6 @@ export class SignUp extends React.Component {
             firebase.auth().signInWithEmailAndPassword(
             email, password).then(() => 
                 {
-                    firebase.database().ref('users/' + firebase.auth().currentUser.uid)
-                      .set({email: email})
                     firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
                       .set({
                         phase:1,

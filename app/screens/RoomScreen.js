@@ -131,7 +131,7 @@ class Create_Screen extends React.Component {
         AsyncStorage.setItem('ROOM-KEY', roomname);
 
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({
-            name: roomname, actionbtnvalue: false, presseduid: 'foo'
+            name: roomname
         });
         
         firebase.database().ref('rooms/' + roomname).set({
@@ -144,10 +144,12 @@ class Create_Screen extends React.Component {
         //Set up list of players
         firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
             + firebase.auth().currentUser.uid).set({
-                name:       this.state.alias,
-                dead:       false,
-                immune:     false,
-                bloody:     false,
+                name:               this.state.alias,
+                actionbtnvalue:     false,
+                presseduid:         'foo',
+                dead:               false,
+                immune:             false,
+                bloody:             false,
         });
 
         //Set up phases and rules
@@ -251,11 +253,13 @@ class Join_Screen extends React.Component {
                 firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:joincode});
                 firebase.database().ref('rooms/' + joincode 
                     + '/listofplayers/' + firebase.auth().currentUser.uid).update({
-                        name:       this.state.alias,
-                        dead:       false,
-                        immune:     false,
-                        bloody:     false,
-                        suspicious: false,
+                        name:               this.state.alias,
+                        actionbtnvalue:     false,
+                        presseduid:         'foo',
+                        dead:               false,
+                        immune:             false,
+                        bloody:             false,
+                        suspicious:         false,
                 });   
 
                 firebase.database().ref('rooms/' + joincode + '/playernum').transaction((playernum) => {
@@ -263,7 +267,7 @@ class Join_Screen extends React.Component {
                 });       
                 
                 firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                .update({ name:joincode, presseduid: 'foo', actionbtnvalue:false })
+                .update({ name:joincode })
 
                 //this.props.navigation.navigate('Lobby_Screen', { roomname: joincode});
                 this.props.navigation.dispatch(
