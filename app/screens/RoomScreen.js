@@ -12,6 +12,7 @@ import {
     ListView,
     TouchableOpacity,
     TouchableWithoutFeedback,
+    ActivityIndicator,
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -370,124 +371,68 @@ class Lobby_Screen extends React.Component {
         });
 
         //Navigation parameters
-        const { params } = this.props.navigation.state;
-        const roomname = params.roomname.toUpperCase();
+        const { params }    = this.props.navigation.state;
+        const roomname      = params.roomname.toUpperCase();
 
         this.state = {
             roomname: params.roomname.toUpperCase(),
-            listview: true,
-            xdisabled: true,
-
-            namelist:dataSource,
-            rolelist: dataSource,
-
-            rolecount:0,
-            playercount:0,
-
-            amiowner:false,
+            listview:       true,
+            xdisabled:      true,
+            namelist:       dataSource,
+            rolelist:       dataSource,
+            rolecount:      0,
+            playercount:    0,
+            amiowner:       false,
+            
+            loading:        false,
         };
 
-        this.roleCount = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid)
-            .orderByChild('roleid');
-        this.gameStart = firebase.database().ref('rooms/' + roomname + '/phase');
-        this.playerList = firebase.database().ref('rooms/' + roomname + '/listofplayers');
-        this.ownerListener = firebase.database().ref('rooms/' + roomname + '/owner');
-
+        this.roleCount      = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid)
+                              .orderByChild('roleid');
+        this.roomRef        = firebase.database().ref('rooms/' + roomname);
+        this.playerList     = this.roomRef.child('listofplayers');
     }
 
     componentWillMount() {
 
-        this._pullListOfPlayers();
-        this._count();
-        this._checkIfStart();
+        this.roomRef.on('value',roomsnap=>{
 
-        this.ownerListener.on('value',snap=>{
-            if(snap.val() == firebase.auth().currentUser.uid){
+            this.playerList.once('value',snap => {
+                var list = [];
+                snap.forEach((child)=> {
+                    list.push({
+                        name: child.val().name,
+                        owner: roomsnap.val().owner == child.key,
+                        key: child.key,
+                    })
+                })
+                this.setState({namelist:list,playercount:snap.numChildren()})
+            })
+
+            if(roomsnap.val().phase > 1 ){
+                AsyncStorage.setItem('GAME-KEY',this.state.roomname);
+
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        actions: [
+                            NavigationActions.navigate({ routeName: 'Mafia_Screen',
+                            params:{roomname:this.state.roomname}})
+                        ]
+                    })
+                )
+            }
+
+            if(roomsnap.val().owner == firebase.auth().currentUser.uid){
                 this.setState({amiowner:true})
             } else {
                 this.setState({amiowner:false})
             }
+
         })
-    }
 
-    componentWillUnmount() {
-
-        if(this.roleCount){
-            this.roleCount.off();
-        }
-        if(this.gameStart){
-            this.gameStart.off();
-        }
-        if(this.playerList){
-            this.playerList.off();
-        }
-        if(this.ownerListener){
-            this.ownerListener.off();
-        }
-    }
-
-    _pullListOfPlayers() {
-        this.playerList.on('value',snap => {
-            
-            var list = [];
-            snap.forEach((child)=> {
-                list.push({
-                    name: child.val().name,
-                    key: child.key,
-                })
-            })
-            this.setState({namelist:list,playercount:snap.numChildren()})
-        })
-    }
-
-    _deleteRoom() {
-        setTimeout(() => {
-            AsyncStorage.removeItem('ROOM-KEY');
-            AsyncStorage.removeItem('OWNER-KEY');
-    
-            firebase.database().ref('rooms/' + this.state.roomname).remove();
-            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
-            
-            this.props.navigation.dispatch(
-                NavigationActions.reset({
-                    index: 0,
-                    actions: [
-                      NavigationActions.navigate({ routeName: 'Room_Screen'})
-                    ]
-                })
-            )
-        }, 2000);
-    }
-
-    _leaveRoom() {
-
-        setTimeout(() => {
-            AsyncStorage.removeItem('ROOM-KEY');
-
-            firebase.database().ref('rooms/'+this.state.roomname+'/playernum').transaction((playernum) => {
-                return (playernum - 1);
-            });  
-            
-            this.props.navigation.dispatch(
-                NavigationActions.reset({
-                    index: 0,
-                    actions: [
-                    NavigationActions.navigate({ routeName: 'Room_Screen'})
-                    ]
-                })
-            )
-        }, 2000);
         
-    }
-
-    _enableCloseBtn() {
-        this.setState({xdisabled:false});
-        setTimeout(() => {this.setState({xdisabled: true})}, 2000);
-    }
-
-    _count() {
-
-        //Role Count
+        //List of Roles information
         this.roleCount.on('value',snap=>{
             var rolecount = 0;
             var list = [];
@@ -504,6 +449,58 @@ class Lobby_Screen extends React.Component {
         });
     }
 
+    componentWillUnmount() {
+
+        if(this.roomRef){
+            this.roomRef.off();
+        }
+        if(this.roleCount){
+            this.roleCount.off();
+        }
+
+        clearTimeout(this.timer);
+    }
+
+    _deleteRoom() {
+        AsyncStorage.removeItem('ROOM-KEY');
+        AsyncStorage.removeItem('OWNER-KEY');
+
+        firebase.database().ref('rooms/' + this.state.roomname).remove();
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
+        
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                actions: [
+                    NavigationActions.navigate({ routeName: 'Room_Screen'})
+                ]
+            })
+        )
+    }
+
+    _leaveRoom() {
+
+        AsyncStorage.removeItem('ROOM-KEY');
+
+        firebase.database().ref('rooms/'+this.state.roomname+'/playernum').transaction((playernum) => {
+            return (playernum - 1);
+        });  
+        
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                actions: [
+                NavigationActions.navigate({ routeName: 'Room_Screen'})
+                ]
+            })
+        )
+    }
+
+    _enableCloseBtn() {
+        this.setState({xdisabled:false});
+        this.timer = setTimeout(() => {this.setState({xdisabled: true})}, 2000);
+    }
+
     _recommendedBtnPress(mode,playercount){
         this.roleCount.remove();
 
@@ -511,25 +508,6 @@ class Lobby_Screen extends React.Component {
             snap.forEach((child)=>{
                 this.roleCount.child(child.key).update(child.val())
             })
-        })
-    }
-
-    _checkIfStart() {
-        this.gameStart.on('value',snap=> {
-            if(snap.val() > 1 ){
-                
-                AsyncStorage.setItem('GAME-KEY',this.state.roomname);
-
-                this.props.navigation.dispatch(
-                    NavigationActions.reset({
-                        index: 0,
-                        actions: [
-                          NavigationActions.navigate({ routeName: 'Mafia_Screen',
-                            params:{roomname:this.state.roomname}})
-                        ]
-                    })
-                )
-            }
         })
     }
 
@@ -544,15 +522,22 @@ class Lobby_Screen extends React.Component {
 
             firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
 
-            this.props.navigation.dispatch(
-                NavigationActions.reset({
-                    index: 0,
-                    actions: [
-                      NavigationActions.navigate({ routeName: 'Mafia_Screen',
-                        params:{roomname:this.state.roomname}})
-                    ]
-                })
-            )
+            this.setState({loading:true})
+
+            setTimeout(()=>{
+                this.roomRef.child('phase').set(2)
+
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        actions: [
+                        NavigationActions.navigate({ routeName: 'Mafia_Screen',
+                            params:{roomname:this.state.roomname}})
+                        ]
+                    })
+                )
+            },5000)
+                
         } else {
             alert('The number of players does not match the Game set-up.');
         }
@@ -620,8 +605,13 @@ class Lobby_Screen extends React.Component {
                             backgroundColor: colors.main,
                             margin: 3,
                             justifyContent:'center',
-                            flex:0.5
-                    }}> 
+                            alignItems:'center',
+                            flex:0.5,
+                            flexDirection:'row',
+                        }}
+                    > 
+                        <MaterialCommunityIcons name={item.owner?'crown':null}
+                            style={{color:'white', fontSize:20}}/>
                         <Text style = {styles.concerto}>{item.name}</Text>
                     </TouchableOpacity>
                 )}
@@ -634,15 +624,17 @@ class Lobby_Screen extends React.Component {
                 renderItem={({item}) => (
                     <TouchableOpacity 
                         onPress={() => {
-                            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-                            + '/' + item.name + '/count').transaction((count)=>{
-                                if(count > 1){
-                                    return count - 1;
-                                } else {
-                                    firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-                                    + '/' + item.name).remove();
-                                }
-                            })
+                            {this.state.amiowner?
+                                firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+                                + '/' + item.name + '/count').transaction((count)=>{
+                                    if(count > 1){
+                                        return count - 1;
+                                    } else {
+                                        firebase.database().ref('listofroles/' 
+                                        + firebase.auth().currentUser.uid + '/' + item.name).remove();
+                                    }
+                                })
+                            :{}}
                         }}
                         style = {{height:40,
                             borderRadius:5,
@@ -650,7 +642,8 @@ class Lobby_Screen extends React.Component {
                             margin: 3,
                             justifyContent:'center',
                             flex:0.5
-                    }}>
+                        }}
+                    >
                         <Text style = {styles.concerto}>{item.name + ' x' + item.count}</Text>
                     </TouchableOpacity>
                 )}
@@ -661,6 +654,22 @@ class Lobby_Screen extends React.Component {
     }
 
     render() {
+
+        if(this.state.loading){
+            return <View style = {{
+                backgroundColor: colors.background,
+                flex: 1,
+                justifyContent:'center'}}>
+                    <ActivityIndicator size='large' color={colors.main}/>
+                    <Text style = {{fontSize:17,
+                    fontFamily:'ConcertOne-Regular',
+                    color:colors.main,
+                    alignSelf: 'center',
+                    marginTop: 10
+                    }}> Setting up Game</Text>
+                </View>
+        }
+
         return <View style = {{
             backgroundColor: colors.background,
             flex: 1,
@@ -718,7 +727,7 @@ class Lobby_Screen extends React.Component {
             <View style = {{flex:0.15}}/>
 
             <View style = {{flex:8.65, flexDirection:'row',justifyContent:'center'}}>
-                <View style = {{flex:0.85}}>
+                <View style = {{flex:0.85,justifyContent:'center'}}>
                     {this._renderListComponent()}
                 </View>
             </View>

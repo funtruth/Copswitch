@@ -39,7 +39,7 @@
     "suspicious" : true,
     "type" : 1
   },
-  "cd" : {
+  "dc" : {
     "category" : "mischief",
     "color" : "#4B4352",
     "desc" : "A Random Mafia with a Mischief Role.",
@@ -79,7 +79,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "KL" : {
+  "LK" : {
     "category" : "inspective",
     "color" : "#8F626A",
     "desc" : "A random Inspective Town member.",
@@ -109,7 +109,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "NO" : {
+  "ON" : {
     "category" : "stalling",
     "color" : "#8F626A",
     "desc" : "A random protective Town member.",
@@ -139,7 +139,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "QR" : {
+  "RQ" : {
     "category" : "specialist",
     "color" : "#8F626A",
     "desc" : "A random specialist Town member.",
@@ -149,7 +149,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "KLNOQR" : {
+  "RQONLK" : {
     "category" : "none",
     "color" : "#8F626A",
     "desc" : "A random Town member.",

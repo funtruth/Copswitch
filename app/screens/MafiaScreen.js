@@ -444,6 +444,8 @@ componentWillUnmount() {
         this.dayCounterRef.off();
     }
 
+    clearTimeout(this.timer);
+
 }
 
 _updatePlayerState() {
@@ -1091,45 +1093,41 @@ _actionPhase() {
 }
 
 _leaveRoom() {
-    setTimeout(() => {
-        AsyncStorage.removeItem('ROOM-KEY');
-        AsyncStorage.removeItem('GAME-KEY');
-    
-        this.msgRef.remove();
-    
-        this.props.navigation.dispatch(
-            NavigationActions.reset({
-                index: 0,
-                key: null,
-                actions: [
-                    NavigationActions.navigate({ routeName: 'Room_Screen'})
-                ]
-            })
-        )
-    }, 2000);
+    AsyncStorage.removeItem('ROOM-KEY');
+    AsyncStorage.removeItem('GAME-KEY');
+
+    this.msgRef.remove();
+
+    this.props.navigation.dispatch(
+        NavigationActions.reset({
+            index: 0,
+            key: null,
+            actions: [
+                NavigationActions.navigate({ routeName: 'Room_Screen'})
+            ]
+        })
+    )
 }
 _deleteRoom() {
-    setTimeout(() => {
-        AsyncStorage.removeItem('ROOM-KEY');
-        AsyncStorage.removeItem('GAME-KEY');
+    AsyncStorage.removeItem('ROOM-KEY');
+    AsyncStorage.removeItem('GAME-KEY');
+
+    this.msgRef.remove();
+    this.globalMsgRef.remove();
+    this.roomRef.remove();
     
-        this.msgRef.remove();
-        this.globalMsgRef.remove();
-        this.roomRef.remove();
-        
-        this.props.navigation.dispatch(
-            NavigationActions.reset({
-                index: 0,
-                actions: [
-                    NavigationActions.navigate({ routeName: 'Room_Screen'})
-                ]
-            })
-        )
-    }, 2000);
+    this.props.navigation.dispatch(
+        NavigationActions.reset({
+            index: 0,
+            actions: [
+                NavigationActions.navigate({ routeName: 'Room_Screen'})
+            ]
+        })
+    )
 }
 _enableCloseBtn() {
     this.setState({xdisabled:false});
-    setTimeout(() => {this.setState({xdisabled: true})}, 2000);
+    this.timer = setTimeout(() => {this.setState({xdisabled: true})}, 2000);
 }
 _gameOver() {
     AsyncStorage.removeItem('ROOM-KEY');
