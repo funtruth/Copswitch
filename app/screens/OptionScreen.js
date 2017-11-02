@@ -34,9 +34,10 @@ export class Expired_Screen extends React.Component {
         AsyncStorage.removeItem('ROOM-KEY');
         AsyncStorage.removeItem('GAME-KEY');
     
+        firebase.database().ref('messages/' + firebase.auth().currentUser.uid).remove();
         firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-            .update({ name: null, phase:1, actionbtnvalue: false, presseduid: 'foo' })
-        //this.props.navigation.navigate('Room_Screen')
+            .update({ name: null });
+
         this.props.navigation.dispatch(
             NavigationActions.reset({
                 index: 0,

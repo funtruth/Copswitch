@@ -112,10 +112,6 @@ class Create_Screen extends React.Component {
         //TODO: Check if room already exists
         
         AsyncStorage.setItem('ROOM-KEY', roomname);
-
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({
-            name: roomname
-        });
         
         firebase.database().ref('rooms/' + roomname).set({
             phase: 1,
@@ -137,14 +133,13 @@ class Create_Screen extends React.Component {
 
         //Set up phases and rules
         //Set up temporary list of roles
-        firebase.database().ref('Original/phases').once('value',snap=>{
+        firebase.database().ref('phases').once('value',snap=>{
             snap.forEach((child)=>{
                 firebase.database().ref('rooms/' + roomname + '/phases/' + child.key)
                     .set(child.val())
             })
         })
         
-        //this.props.navigation.navigate('Lobby_Screen', {roomname: roomname});
         this.props.navigation.dispatch(
             NavigationActions.reset({
                 index: 0,
@@ -228,7 +223,6 @@ class Join_Screen extends React.Component {
 
                 AsyncStorage.setItem('ROOM-KEY', joincode);
 
-                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:joincode});
                 firebase.database().ref('rooms/' + joincode 
                     + '/listofplayers/' + firebase.auth().currentUser.uid).update({
                         name:               this.state.alias,
@@ -244,10 +238,6 @@ class Join_Screen extends React.Component {
                     return playernum + 1;
                 });       
                 
-                firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-                .update({ name:joincode })
-
-                //this.props.navigation.navigate('Lobby_Screen', { roomname: joincode});
                 this.props.navigation.dispatch(
                     NavigationActions.reset({
                         index: 0,
@@ -422,7 +412,6 @@ class Lobby_Screen extends React.Component {
 
         firebase.database().ref('rooms/' + this.state.roomname).remove();
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
         
         this.props.navigation.dispatch(
             NavigationActions.reset({
@@ -438,7 +427,6 @@ class Lobby_Screen extends React.Component {
 
         AsyncStorage.removeItem('ROOM-KEY');
 
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room').update({name:null});
         firebase.database().ref('rooms/' + roomname.toUpperCase() + '/playernum').transaction((playernum) => {
             return (playernum - 1);
         });  
@@ -475,7 +463,7 @@ class Lobby_Screen extends React.Component {
     _recommendedBtnPress(mode,playercount){
         this.roleCount.remove();
 
-        firebase.database().ref('Original/recommended/' + playercount + '/' + mode).once('value',snap=>{
+        firebase.database().ref('recommended/' + playercount + '/' + mode).once('value',snap=>{
             snap.forEach((child)=>{
                 this.roleCount.child(child.key).update(child.val())
             })
@@ -548,7 +536,7 @@ class Lobby_Screen extends React.Component {
                     var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
                     var randomrole = randomstring.charAt(randomnumber-1);
 
-                    firebase.database().ref('Original/roles/'+randomrole)
+                    firebase.database().ref('roles/'+randomrole)
                     .once('value',suspicious=>{
                         firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
                         + child.key).update({

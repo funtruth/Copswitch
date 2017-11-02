@@ -117,7 +117,7 @@ componentWillMount() {
             
             if(snap.val().roleid){
                 //Role information
-                firebase.database().ref('Original/roles/' + snap.val().roleid).once('value',rolename=>{
+                firebase.database().ref('roles/' + snap.val().roleid).once('value',rolename=>{
                     if(rolename.val().type == 1){
                         this.setState({
                             myroleid:snap.val().roleid,
@@ -166,7 +166,7 @@ componentWillMount() {
         if(snap.exists()){
             var mafialist = [];
             snap.forEach((child)=>{
-                firebase.database().ref('Original/roles/' + child.val().roleid).once('value',idtoname=>{
+                firebase.database().ref('roles/' + child.val().roleid).once('value',idtoname=>{
                     mafialist.push({
                         name: child.val().name,
                         rolename: idtoname.val().name,
@@ -452,12 +452,14 @@ _updatePlayerState() {
         var list = [];
         snap.forEach((child)=> {
             list.push({
-                name: child.val().name,
-                type: child.val().type,
-                dead: child.val().dead,
-                immune: child.val().immune,
-                votes: child.val().votes,
-                key: child.key,
+                actionbtnvalue: child.val().actionbtnvalue,
+                name:           child.val().name,
+                dead:           child.val().dead,
+                immune:         child.val().immune,
+                type:           child.val().type,
+                votes:          child.val().votes,
+
+                key:            child.key,
             })
         })
 
@@ -721,7 +723,8 @@ _renderListComponent(){
                     disabled = {this.state.amidead?true:(item.immune?true:item.dead)}>
                     <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
                         <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                        <MaterialCommunityIcons name={item.dead?'skull':(item.immune?'needle':null)}
+                        <MaterialCommunityIcons name={item.dead?'skull':item.actionbtnvalue?
+                            'check-circle':(item.immune?'needle':null)}
                             style={{color:'white', fontSize:26}}/>
                         </View>
                         <View style = {{flex:5}}>
@@ -1005,7 +1008,7 @@ _actionPhase() {
             } else if (child.val().roleid == 'd' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
-                    firebase.database().ref('Original/roles/' + innersnap.val().roleid).once('value',rolename=>{
+                    firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
                         this._noticeMsg(child.key,'#34cd0e','You spied on ' 
                             + child.val().targetname +". Their role is the " + rolename.val().name);
                     })
@@ -1074,7 +1077,7 @@ _actionPhase() {
             } else if (child.val().roleid == 'R' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
-                    firebase.database().ref('Original/roles/' + innersnap.val().roleid).once('value',rolename=>{
+                    firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
                         this._noticeMsg(child.key,'#34cd0e','You examined the body of ' 
                         + child.val().targetname + ', the ' + rolename.val().name + '.');
                     })
@@ -1090,8 +1093,8 @@ _leaveRoom() {
     AsyncStorage.removeItem('ROOM-KEY');
     AsyncStorage.removeItem('GAME-KEY');
 
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .update({ name: null })
+    this.msgRef.remove();
+
     this.props.navigation.dispatch(
         NavigationActions.reset({
             index: 0,
@@ -1106,9 +1109,9 @@ _deleteRoom() {
     AsyncStorage.removeItem('ROOM-KEY');
     AsyncStorage.removeItem('GAME-KEY');
 
-    firebase.database().ref('rooms/' + this.state.roomname).remove();
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .update({ name: null })
+    this.msgRef.remove();
+    this.globalMsgRef.remove();
+    this.roomRef.remove();
     
     this.props.navigation.dispatch(
         NavigationActions.reset({
@@ -1127,7 +1130,10 @@ _gameOver() {
     AsyncStorage.removeItem('ROOM-KEY');
     AsyncStorage.removeItem('GAME-KEY');
 
-    //Either remove yourself from the room or delete it
+    this.msgRef.remove();
+    if(this.state.amiowner){
+        this.globalMsgRef.remove();
+    }
     firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers').once('value',snap=>{
         if(snap.numChildren() < 2){
             firebase.database().ref('rooms/' + this.state.roomname).remove();
@@ -1136,9 +1142,6 @@ _gameOver() {
                 + firebase.auth().currentUser.uid).remove();
         }
     })
-
-    firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-        .update({ name: null })
     
     //this.props.navigation.navigate('Room_Screen')
     this.props.navigation.dispatch(

@@ -113,31 +113,13 @@ class Roles_Screen extends Component {
         this.state = {
             rolelist: dataSource,
             type: params.type,
-            room: false,
+            room: true,
         }
-        
-        this.roomListener = firebase.database()
-            .ref('users/' + firebase.auth().currentUser.uid + '/room');
-    
         
     }
 
 
     componentWillMount() {
-
-        this.roomListener.on('value',snap=>{
-            if(snap.val().name && snap.val().phase == 1){
-                firebase.database().ref('rooms/' + snap.val().name + '/owner').once('value',owner=>{
-                    if(owner.val() == firebase.auth().currentUser.uid){
-                        this.setState({room:true})
-                    } else {
-                        this.setState({room:false})
-                    }
-                })
-            } else {
-                this.setState({room:false})
-            }
-        })
 
         firebase.database().ref('roles').once('value', deepshot => {
             var list = [];
@@ -156,12 +138,6 @@ class Roles_Screen extends Component {
             this.setState({ rolelist:list }) 
         })
 
-    }
-
-    componentWillUnmount() {
-        if(this.roomListener){
-            this.roomListener.off();
-        }
     }
 
     _addRole(rolename,roleid,color,suspicious) {
