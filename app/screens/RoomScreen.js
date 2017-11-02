@@ -152,6 +152,15 @@ class Create_Screen extends React.Component {
         Keyboard.dismiss();
     }
 
+    _validName(name) {
+        if(name.length>0 && name.length < 11){
+            return true
+        } else {
+            alert('Name is not a valid length (10 characters or less)')
+            return false
+        }
+    }
+
     render() {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
@@ -167,7 +176,7 @@ class Create_Screen extends React.Component {
                             backgroundColor: colors.background,
                             flex:0.6,
                             fontFamily:'ConcertOne-Regular',
-                            fontSize: 25,
+                            fontSize: 20,
                             color:colors.font,
                         }}
                         value={this.state.alias}
@@ -182,11 +191,15 @@ class Create_Screen extends React.Component {
                     <Button
                         title="Create Room"
                         fontFamily='ConcertOne-Regular'
-                        fontSize={25}
+                        fontSize={20}
                         color={colors.font}
                         borderRadius={15}
                         backgroundColor={colors.main}
-                        onPress={()=>{this._createRoom()}}
+                        onPress={()=>{
+                            if(this._validName(this.state.alias)){
+                                this._createRoom()
+                            }
+                        }}
                     /></View>
                 </View>
 
@@ -213,46 +226,64 @@ class Join_Screen extends React.Component {
         super(props);
 
         this.state = {
-            joincode: '',
+            roomname: '',
             alias:'',
         };
     }
 
-    _joinRoom(joincode) {
-        firebase.database().ref('rooms/' + joincode).once('value', snap => {
-            if(snap.exists() && (snap.val().phase == 1)){
-
-                AsyncStorage.setItem('ROOM-KEY', joincode);
-
-                firebase.database().ref('rooms/' + joincode 
-                    + '/listofplayers/' + firebase.auth().currentUser.uid).update({
-                        name:               this.state.alias,
-                        actionbtnvalue:     false,
-                        presseduid:         'foo',
-                        dead:               false,
-                        immune:             false,
-                        bloody:             false,
-                        suspicious:         false,
-                });   
-
-                firebase.database().ref('rooms/' + joincode + '/playernum').transaction((playernum) => {
-                    return playernum + 1;
-                });       
-                
-                this.props.navigation.dispatch(
-                    NavigationActions.reset({
-                        index: 0,
-                        actions: [
-                          NavigationActions.navigate({ routeName: 'Lobby_Screen', params:{roomname:joincode}})
-                        ]
-                    })
-                )
-            } else if (snap.exists() && (snap.val().phase > 1)) {
-                alert('Game has already started.')
+    _valid(name,roomname) {
+        if(name.length > 0 && name.length < 11){
+            if(roomname.length == 4){
+                firebase.database().ref('rooms/' + roomname + '/listofplayers')
+                .orderByChild('name').equalTo(name).once('value',snap=>{
+                    if(snap.exists()){
+                        alert('Name is already taken.')
+                    } else {
+                        firebase.database().ref('rooms/' + roomname).once('value', snap => {
+                            if(snap.exists() && (snap.val().phase == 1)){
+                                this._joinRoom(roomname)
+                            } else if (snap.exists() && (snap.val().phase > 1)) {
+                                alert('Game has already started.')
+                            } else {
+                                alert('Room does not Exist.')
+                            }
+                        })
+                    }
+                })
             } else {
-                alert('Room does not Exist.')
+                alert('Room name must be 4 characters in length.')
             }
-        })
+        } else {
+            alert('Name is not a valid length (10 characters or less).')
+        }
+    }
+
+    _joinRoom(roomname) {
+        AsyncStorage.setItem('ROOM-KEY', roomname);
+
+        firebase.database().ref('rooms/' + roomname 
+            + '/listofplayers/' + firebase.auth().currentUser.uid).update({
+                name:               this.state.alias,
+                actionbtnvalue:     false,
+                presseduid:         'foo',
+                dead:               false,
+                immune:             false,
+                bloody:             false,
+                suspicious:         false,
+        });   
+
+        firebase.database().ref('rooms/' + roomname + '/playernum').transaction((playernum) => {
+            return playernum + 1;
+        });       
+        
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                actions: [
+                    NavigationActions.navigate({ routeName: 'Lobby_Screen', params:{roomname:roomname}})
+                ]
+            })
+        )
     }
 
     render() {
@@ -270,7 +301,7 @@ class Join_Screen extends React.Component {
                             backgroundColor: colors.background,
                             flex:0.6,
                             fontFamily:'ConcertOne-Regular',
-                            fontSize: 25,
+                            fontSize: 20,
                             color:colors.font,
                         }}
                         value={this.state.alias}
@@ -290,13 +321,13 @@ class Join_Screen extends React.Component {
                             backgroundColor: colors.background,
                             flex:0.6,
                             fontFamily:'ConcertOne-Regular',
-                            fontSize: 25,
+                            fontSize: 20,
                             color:colors.font,
                         }}
-                        value={this.state.joincode}
+                        value={this.state.roomname}
                         autoCapitalize='characters'
                         blurOnSubmit={false}
-                        onChangeText = {(text) => {this.setState({joincode: text})}}
+                        onChangeText = {(text) => {this.setState({roomname: text})}}
                         onSubmitEditing = {()=>{Keyboard.dismiss()}}
                     />
                 </View>
@@ -306,13 +337,14 @@ class Join_Screen extends React.Component {
                         <Button
                             title="Join Room"
                             fontFamily='ConcertOne-Regular'
-                            fontSize={25}
+                            fontSize={20}
                             color={colors.font}
                             borderRadius={15}
                             backgroundColor={colors.main}
-                            onPress={()=>{this._joinRoom(this.state.joincode.toUpperCase())}}
+                            onPress={()=>{
+                                this._valid(this.state.alias,this.state.roomname.toUpperCase())
+                            }}
                         /></View>
-
                 </View>
 
                 {/*Makeshift Keyboard Avoiding View*/}
@@ -344,6 +376,7 @@ class Lobby_Screen extends React.Component {
         this.state = {
             roomname: params.roomname.toUpperCase(),
             listview: true,
+            xdisabled: true,
 
             namelist:dataSource,
             rolelist: dataSource,
@@ -408,39 +441,48 @@ class Lobby_Screen extends React.Component {
     }
 
     _deleteRoom() {
-
-        AsyncStorage.removeItem('ROOM-KEY');
-        AsyncStorage.removeItem('OWNER-KEY');
-
-        firebase.database().ref('rooms/' + this.state.roomname).remove();
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
-        
-        this.props.navigation.dispatch(
-            NavigationActions.reset({
-                index: 0,
-                actions: [
-                  NavigationActions.navigate({ routeName: 'Room_Screen'})
-                ]
-            })
-        )
+        setTimeout(() => {
+            AsyncStorage.removeItem('ROOM-KEY');
+            AsyncStorage.removeItem('OWNER-KEY');
+    
+            firebase.database().ref('rooms/' + this.state.roomname).remove();
+            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
+            
+            this.props.navigation.dispatch(
+                NavigationActions.reset({
+                    index: 0,
+                    actions: [
+                      NavigationActions.navigate({ routeName: 'Room_Screen'})
+                    ]
+                })
+            )
+        }, 2000);
     }
 
-    _leaveRoom(roomname) {
+    _leaveRoom() {
 
-        AsyncStorage.removeItem('ROOM-KEY');
+        setTimeout(() => {
+            AsyncStorage.removeItem('ROOM-KEY');
 
-        firebase.database().ref('rooms/' + roomname.toUpperCase() + '/playernum').transaction((playernum) => {
-            return (playernum - 1);
-        });  
+            firebase.database().ref('rooms/'+this.state.roomname+'/playernum').transaction((playernum) => {
+                return (playernum - 1);
+            });  
+            
+            this.props.navigation.dispatch(
+                NavigationActions.reset({
+                    index: 0,
+                    actions: [
+                    NavigationActions.navigate({ routeName: 'Room_Screen'})
+                    ]
+                })
+            )
+        }, 2000);
         
-        this.props.navigation.dispatch(
-            NavigationActions.reset({
-                index: 0,
-                actions: [
-                  NavigationActions.navigate({ routeName: 'Room_Screen'})
-                ]
-            })
-        )
+    }
+
+    _enableCloseBtn() {
+        this.setState({xdisabled:false});
+        setTimeout(() => {this.setState({xdisabled: true})}, 2000);
     }
 
     _count() {
@@ -638,10 +680,13 @@ class Lobby_Screen extends React.Component {
                 <View style = {{flex:1, justifyContent:'center'}}>
                     <TouchableOpacity
                         onPress={()=> {
+                            this.state.xdisabled?
+                            this._enableCloseBtn():        
                             this.state.amiowner?this._deleteRoom():this._leaveRoom(this.state.roomname);
                         }}>
                         <MaterialCommunityIcons name='close-circle'
-                                    style={{color:colors.main, fontSize:26,alignSelf:'center'}}/>
+                            style={{color:this.state.xdisabled?colors.main:colors.highlight, 
+                                fontSize:26,alignSelf:'center'}}/>
                     </TouchableOpacity>
                 </View>
             </View>

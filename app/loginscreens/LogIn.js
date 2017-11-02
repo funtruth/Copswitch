@@ -15,6 +15,52 @@ import colors from '../misc/colors.js';
 
 import { NavigationActions } from 'react-navigation';
 
+export class Splash extends React.Component {
+    
+    constructor(props) {
+        super(props);
+    }
+
+    _signInAnon(){
+        firebase.auth().signInAnonymously().then(() => {
+            onSignIn();
+            this.props.navigation.dispatch(
+                NavigationActions.reset({
+                    key: null,
+                    index: 0,
+                    actions: [
+                        NavigationActions.navigate({ routeName: 'SignedIn'})
+                    ]
+                })
+            )
+        })
+    }
+
+    render(){
+        return <TouchableWithoutFeedback 
+            style = {{ flex:1 }}
+            onPress={()=>{ Keyboard.dismiss() }}>
+            <View style = {{flex:1,backgroundColor:colors.background,justifyContent:'center',alignItems:'center'}}>
+                <View style = {{flex:0.9}}/>
+                <View style = {{justifyContent: 'center', alignItems:'center', flexDirection: 'row' }}>
+                    <View style = {{flex:0.75}}>
+                    <Button
+                        title="Continue Anonymously"
+                        fontFamily='ConcertOne-Regular'
+                        color={colors.font}
+                        borderRadius={10}
+                        backgroundColor={colors.main}
+                        onPress={()=>{
+                            this._signInAnon();
+                        }}
+                    /></View>
+
+                </View>
+            </View>
+        </TouchableWithoutFeedback>
+    }
+};
+
 export class SignIn extends React.Component {
 
     constructor(props) {
@@ -110,7 +156,7 @@ export class SignIn extends React.Component {
                     /></View>
                 </View>
 
-                <View style ={{flex:0.2}}/>
+                <View style ={{flex:0.8}}/>
 
                 <View style = {{justifyContent: 'center', alignItems:'center', flexDirection: 'row', marginBottom:5 }}>
                     <View style = {{flex:0.75}}>

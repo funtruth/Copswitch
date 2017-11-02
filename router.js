@@ -7,7 +7,7 @@ import { StackNavigator, TabNavigator } from "react-navigation";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { SignUp, SignIn } from "./app/loginscreens/LogIn";
+import { Splash, SignUp, SignIn } from "./app/loginscreens/LogIn";
 import colors from './app/misc/colors.js';
 
 import Lists from "./app/screens/ListsScreen";
@@ -16,6 +16,9 @@ import Profile from "./app/screens/ProfileScreen";
 
 export const SignedOut = StackNavigator(
   {
+    Splash: {
+        screen: Splash,
+      },
     SignIn: {
         screen: SignIn,
       },

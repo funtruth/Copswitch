@@ -732,7 +732,8 @@ _renderListComponent(){
                                 <Text style = {styles.concerto}>
                                     {item.name + ' ' + (item.type==2?'(Town)':
                                     item.type==1?'(Mafia)':'(Neutral)')}</Text>
-                                :<Text style = {styles.concerto}>{item.name}</Text>
+                                :
+                                <Text style = {styles.concerto}>{item.name}</Text>
                             }
                         </View>
                         <View style = {{flex:1}}>
@@ -1090,37 +1091,41 @@ _actionPhase() {
 }
 
 _leaveRoom() {
-    AsyncStorage.removeItem('ROOM-KEY');
-    AsyncStorage.removeItem('GAME-KEY');
-
-    this.msgRef.remove();
-
-    this.props.navigation.dispatch(
-        NavigationActions.reset({
-            index: 0,
-            key: null,
-            actions: [
-                NavigationActions.navigate({ routeName: 'Room_Screen'})
-            ]
-        })
-    )
+    setTimeout(() => {
+        AsyncStorage.removeItem('ROOM-KEY');
+        AsyncStorage.removeItem('GAME-KEY');
+    
+        this.msgRef.remove();
+    
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                key: null,
+                actions: [
+                    NavigationActions.navigate({ routeName: 'Room_Screen'})
+                ]
+            })
+        )
+    }, 2000);
 }
 _deleteRoom() {
-    AsyncStorage.removeItem('ROOM-KEY');
-    AsyncStorage.removeItem('GAME-KEY');
-
-    this.msgRef.remove();
-    this.globalMsgRef.remove();
-    this.roomRef.remove();
+    setTimeout(() => {
+        AsyncStorage.removeItem('ROOM-KEY');
+        AsyncStorage.removeItem('GAME-KEY');
     
-    this.props.navigation.dispatch(
-        NavigationActions.reset({
-            index: 0,
-            actions: [
-                NavigationActions.navigate({ routeName: 'Room_Screen'})
-            ]
-        })
-    )
+        this.msgRef.remove();
+        this.globalMsgRef.remove();
+        this.roomRef.remove();
+        
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                actions: [
+                    NavigationActions.navigate({ routeName: 'Room_Screen'})
+                ]
+            })
+        )
+    }, 2000);
 }
 _enableCloseBtn() {
     this.setState({xdisabled:false});
