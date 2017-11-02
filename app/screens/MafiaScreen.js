@@ -955,7 +955,7 @@ _actionPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
 
-                //Mafia Kill
+              //Assassin
             if (child.val().roleid == 'a' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',innersnap=>{
@@ -977,9 +977,10 @@ _actionPhase() {
                             + child.val().targetname + '.');
                     }
                 })
-
-                //Mafia Kill    
-            } else if (child.val().roleid == 'b' && !child.val().O) {
+    
+            } 
+            //Murderer 
+            else if (child.val().roleid == 'b' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',innersnap=>{
                     if(!innersnap.val().N){
@@ -1000,14 +1001,15 @@ _actionPhase() {
                             + child.val().targetname + '.');
                     }
                 })
-
-                //Schemer
-            } else if (child.val().roleid == 'c' && !child.val().O) {
+   
+            } 
+            //Schemer
+            else if (child.val().roleid == 'c' && !child.val().O) {
                 this._noticeMsg(child.key,'#34cd0e','You attempted to frame ' 
                     + child.val().targetname +" last night.");
-
-                //Spy
-            } else if (child.val().roleid == 'd' && !child.val().O) {
+            } 
+            //Spy
+            else if (child.val().roleid == 'd' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
@@ -1016,8 +1018,9 @@ _actionPhase() {
                     })
                 })
 
-                //Detective
-            } else if (child.val().roleid == 'K' && !child.val().O) {
+            } 
+            //Detective
+            else if (child.val().roleid == 'K' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
                 .once('value',insidesnap=>{
                     if(insidesnap.val().c || insidesnap.val().suspicious){
@@ -1028,8 +1031,10 @@ _actionPhase() {
                     }
                 })
 
-                //Investigator
-            } else if (child.val().roleid == 'L' && !child.val().O) {
+                
+            } 
+            //Investigator
+            else if (child.val().roleid == 'L' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     if(innersnap.val().bloody){
@@ -1041,8 +1046,10 @@ _actionPhase() {
                     }
                 })
 
-                //Doctor
-            } else if (child.val().roleid == 'N' && !child.val().O) {
+                
+            } 
+            //Doctor
+            else if (child.val().roleid == 'N' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',insidesnap=>{
                     if(insidesnap.val().a || insidesnap.val().b){
@@ -1055,15 +1062,16 @@ _actionPhase() {
                         this._noticeMsg(child.key,'#34cd0e','You visited '+ child.val().targetname + '.');
                     }
                 })
-
-                //Escort
-            } else if (child.val().roleid == 'O' && !child.val().O) {
+            } 
+            //Escort
+            else if (child.val().roleid == 'O' && !child.val().O) {
                 this._noticeMsg(child.val().target,'#34cd0e',
                     'You were distracted last night.');
-                this._noticeMsg(child.key,'#34cd0e','You distracted '+ child.val().targetname +" last night.");
-
-                //Bird Watcher
-            } else if (child.val().roleid == 'Q' && !child.val().O) {
+                this._noticeMsg(child.key,'#34cd0e','You distracted '
+                    + child.val().targetname +" last night.");     
+            } 
+            //Bird Watcher
+            else if (child.val().roleid == 'Q' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
                 + child.val().target).once('value',wheredhego=>{
                     if(wheredhego.val().targetname){
@@ -1074,9 +1082,9 @@ _actionPhase() {
                         + ' did not leave their house last night.');
                     }
                 })
-
-                //Forensic
-            } else if (child.val().roleid == 'R' && !child.val().O) {
+            } 
+            //Forensic
+            else if (child.val().roleid == 'R' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
@@ -1084,7 +1092,6 @@ _actionPhase() {
                         + child.val().targetname + ', the ' + rolename.val().name + '.');
                     })
                 })
-
             }
         })
     })
