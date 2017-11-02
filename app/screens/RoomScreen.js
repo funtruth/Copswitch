@@ -112,6 +112,7 @@ class Create_Screen extends React.Component {
         //TODO: Check if room already exists
         
         AsyncStorage.setItem('ROOM-KEY', roomname);
+        AsyncStorage.setItem('OWNER-KEY', roomname);
         
         firebase.database().ref('rooms/' + roomname).set({
             phase: 1,
@@ -409,6 +410,7 @@ class Lobby_Screen extends React.Component {
     _deleteRoom() {
 
         AsyncStorage.removeItem('ROOM-KEY');
+        AsyncStorage.removeItem('OWNER-KEY');
 
         firebase.database().ref('rooms/' + this.state.roomname).remove();
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
@@ -494,6 +496,7 @@ class Lobby_Screen extends React.Component {
         if(rolecount==playercount){
 
             AsyncStorage.setItem('GAME-KEY',roomname);
+            AsyncStorage.removeItem('OWNER-KEY');
 
             this._handOutRoles(roomname);
 

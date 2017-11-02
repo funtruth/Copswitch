@@ -27,12 +27,7 @@ export default colors = {
     iconcolor:              'white',
     
     //Header Style
-    headerbackground:       '#231715',
-    headerfont:             '#F8E3C7',
-
-    //Weird Colors
-    lightbutton:            '#9793A6',
-    backgroundcolor:        '#4B4352',
-    rosy:                   '#D9C0CC',
-    newred:                 '#E25361',
+    headerbackground:       '#54537A',
+    headerfont:             'white',
+    
 }

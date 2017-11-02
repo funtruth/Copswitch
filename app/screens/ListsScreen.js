@@ -113,7 +113,6 @@ class Roles_Screen extends Component {
         this.state = {
             rolelist: dataSource,
             type: params.type,
-            room: true,
         }
         
     }
@@ -140,6 +139,18 @@ class Roles_Screen extends Component {
 
     }
 
+    _roleBtnPress(name,key,color,suspicious) {
+        AsyncStorage.getItem('OWNER-KEY')
+        .then(res => {
+            if (res !== null) {
+                this._addRole(name,key,color,suspicious)
+            } else {
+                this.props.navigation.navigate('Character_Screen',{roleid:key})
+            }
+        })
+        .catch(err => reject(err));
+    }
+
     _addRole(rolename,roleid,color,suspicious) {
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
         + '/' + rolename + '/count')
@@ -159,12 +170,9 @@ class Roles_Screen extends Component {
                 data={this.state.rolelist}
                 renderItem={({item}) => (
                     <TouchableOpacity
-                        onPress = {()=>{this.state.room?
-                            this._addRole(item.name,item.key,item.color,item.suspicious)
-                            :
-                            this.props.navigation.navigate('Character_Screen',{roleid:item.key})    
-                        }}
-                    >
+                        onPress = {()=>{
+                            this._roleBtnPress(item.name,item.key,item.color,item.suspicious)  
+                        }}>
                         <Text style = {{
                             marginTop: 10,
                             marginLeft: 10,
