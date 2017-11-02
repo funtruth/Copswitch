@@ -53,6 +53,7 @@ constructor(props) {
         bottommessage:      '',
         locked:             '',
 
+        myname:             '',
         myrole:             '',
         myroleid:           '',
         roledesc:           '',
@@ -94,7 +95,7 @@ constructor(props) {
     
     this.msgRef             = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
     this.globalMsgRef       = firebase.database().ref('globalmsgs/' + roomname);
-    this.listListener       = this.roomRef.child('listofplayers');
+    this.listRef            = this.roomRef.child('listofplayers');
     this.playernumListener  = this.roomRef.child('playernum');
     this.nominationListener = this.roomRef.child('nominate');
     this.ownerRef           = this.roomRef.child('owner');
@@ -143,6 +144,7 @@ componentWillMount() {
                 actionbtnvalue: snap.val().actionbtnvalue,
                 presseduid: snap.val().presseduid,
                 amidead:    snap.val().dead,
+                myname:     snap.val().name,
             })
             var presseduid = snap.val().presseduid;
 
@@ -217,7 +219,7 @@ componentWillMount() {
         }
     })
 
-    this.listListener.on('value',snap=>{
+    this.listRef.on('value',snap=>{
         if(snap.exists()){
             //Update colors + options for Player Name Buttons
             this._updatePlayerState();
@@ -338,7 +340,7 @@ componentWillMount() {
                             this._noticeMsgGlobal(this.state.roomname,'#34cd0e',this.state.nominee 
                                 + ' was not hung.',1)
 
-                            this.listListener.child(firebase.auth().currentUser.uid)
+                            this.listRef.child(firebase.auth().currentUser.uid)
                                 .update({immune:true})
 
                             this._changePhase(phase.val().continue)
@@ -417,8 +419,8 @@ componentWillUnmount() {
     if(this.ownerRef){
         this.ownerRef.off();
     }
-    if(this.listListener){
-        this.listListener.off();
+    if(this.listRef){
+        this.listRef.off();
     }
     if(this.playernumListener){
         this.playernumListener.off();
@@ -496,7 +498,7 @@ _updateNominate(){
 
 _changePhase(newphase){
     
-    this.listListener.once('value',snap=>{
+    this.listRef.once('value',snap=>{
         snap.forEach((child)=>{
             //Set all votes to 0 and RESET Buttons
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.key)
@@ -576,22 +578,15 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
 
     if(phase == 2){
         if(uid==this.state.presseduid){
-
-            this.roomRef.child('listofplayers').child(uid).child('votes')
-            .transaction((votes)=>{ return votes - 1 })
-
+            this.listRef.child(uid).child('votes').transaction((votes)=>{ return votes - 1 })
             this._pressedUid('foo');
         } else {
             this._pressedUid(uid);
-
             if(this.state.presseduid != 'foo'){
-                firebase.database().ref('rooms/' + roomname + '/listofplayers/' + this.state.presseduid + '/votes')
+                this.listRef.child(this.state.presseduid).child('votes')
                 .transaction((votes)=>{ return votes - 1 })
             }
-
-            firebase.database().ref('rooms/' + roomname + '/listofplayers/' + uid + '/votes')
-            .transaction((votes)=>{ return votes + 1 })                        
-                
+            this.listRef.child(uid).child('votes').transaction((votes)=>{ return votes + 1 })                        
         } 
 
     }  else if(phase == 4){
@@ -663,6 +658,18 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     } 
 }
 
+_nameBtnLongPress(uid,name,phase,roomname){
+    if(phase == 5) {
+        if(this.state.amimafia){
+            this.mafiaRef.once('value',snap=>{
+                snap.forEach((child)=>{
+                    this._noticeMsg(uid,colors.font,this.state.myname+' wants to kill '+name+'.')
+                })
+            })
+        }
+    }
+}
+
 //Pressing a Voting BUtton
 _voteBtnPress(presseduid,votebtn) {
 
@@ -720,6 +727,9 @@ _renderListComponent(){
                     onPress={() => {this.state.disabled?{}:
                         this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
+                    onLongPress={()=>{
+                        this._nameBtnLongPress(item.key,item.name,this.state.phase,this.state.roomname)
+                    }}
                     style = {item.dead ? styles.dead : (item.immune? styles.immune : styles.alive)}
                     disabled = {this.state.amidead?true:(item.immune?true:item.dead)}>
                     <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
@@ -1070,7 +1080,7 @@ _actionPhase() {
                 this._noticeMsg(child.key,'#34cd0e','You distracted '
                     + child.val().targetname +" last night.");     
             } 
-            //Bird Watcher
+            //Warden
             else if (child.val().roleid == 'Q' && !child.val().O) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
                 + child.val().target).once('value',wheredhego=>{

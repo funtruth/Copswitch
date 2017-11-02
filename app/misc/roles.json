@@ -122,9 +122,9 @@
   "Q" : {
     "category" : "specialist",
     "color" : "#8F626A",
-    "desc" : "An observant Town member.",
+    "desc" : "A Town member who watches over the town.",
     "image" : "lkjl",
-    "name" : "Bird Watcher",
+    "name" : "Warden",
     "rules" : "rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules rules",
     "suspicious" : false,
     "type" : 2
@@ -172,9 +172,9 @@
   "W" : {
     "category" : "chaos",
     "color" : "#8F626A",
-    "desc" : "A psychopath who is trying to get hung.",
+    "desc" : "A mischief maker who is trying to get hung.",
     "image" : "lkjlk",
-    "name" : "Psychopath",
+    "name" : "Gremlin",
     "rules" : "kjlkj",
     "suspicious" : false,
     "type" : 3
