@@ -132,15 +132,6 @@ class Create_Screen extends React.Component {
                 immune:             false,
                 bloody:             false,
         });
-
-        //Set up phases and rules
-        //Set up temporary list of roles
-        firebase.database().ref('phases').once('value',snap=>{
-            snap.forEach((child)=>{
-                firebase.database().ref('rooms/' + roomname + '/phases/' + child.key)
-                    .set(child.val())
-            })
-        })
         
         this.props.navigation.dispatch(
             NavigationActions.reset({
@@ -457,7 +448,6 @@ class Lobby_Screen extends React.Component {
         if(this.roleCount){
             this.roleCount.off();
         }
-
         clearTimeout(this.timer);
     }
 

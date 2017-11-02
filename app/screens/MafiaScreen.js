@@ -254,8 +254,7 @@ componentWillMount() {
             })
             
             //Find layout type of Phase
-            firebase.database().ref('rooms/' + this.state.roomname + '/phases/' + snap.val())
-            .once('value',layout=>{
+            firebase.database().ref('phases').child(snap.val()).once('value',layout=>{
                 this.setState({
                     phasename:      layout.val().name,
                     screentype:     layout.val().type,
@@ -275,7 +274,7 @@ componentWillMount() {
     this.countRef.on('value',snap=>{
         if(snap.exists && this.state.amiowner && ((snap.val()+1)>this.state.playernum)
             && this.state.playernum>0){            
-            this.roomRef.child('phases').child(this.state.phase).once('value',phase=>{
+            firebase.database().ref('phases').child(this.state.phase).once('value',phase=>{
                 
                 //Phase 2 + 4 Handling CONTINUE
                 if(phase.val().actionreset){
@@ -374,11 +373,11 @@ componentWillMount() {
         if(snap.exists()){
             snap.forEach((child)=>{
                 if(child.val().votes + 1 > this.state.triggernum){
-                    firebase.database().ref('rooms/'+this.state.roomname+'/phases/'+this.state.phase)
-                    .once('value',phase=>{
+                    firebase.database().ref('phases').child(this.state.phase).once('value',phase=>{
                         if(phase.val().trigger){
                             if(phase.val().actionreset){
-                                firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove();
+                                firebase.database().ref('rooms/' + this.state.roomname + '/actions')
+                                .remove();
                             };
                             if(phase.val().nominate){
                                 this.roomRef.update({nominate:child.key});
