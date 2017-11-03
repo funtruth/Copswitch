@@ -52,38 +52,32 @@ class Room_Screen extends React.Component {
     }
 
     render() {
-        return <View 
-        style = {{
-            flex:1,
-            backgroundColor:colors.background,
-        }}>
-            <View style = {{flex:1}}> 
-                <TouchableWithoutFeedback 
-                    style = {{ flex:1,justifyContent:'center' }}
-                    onPress={()=>{ this._createRoom() }}>
-                    <View style = {{flex:1,backgroundColor:colors.main,
-                        justifyContent:'center',alignItems:'center'}}>
-                        <Text style = {{
-                            fontFamily:'ConcertOne-Regular',
-                            color:colors.font,
-                            fontSize:30,
-                            justifyContent:'center'}}>Make a Room</Text>
-                    </View>
-                </TouchableWithoutFeedback>
+        return <View style = {{ flex:1, backgroundColor:colors.background, }}>
+            <TouchableWithoutFeedback 
+                style = {{ flex:1,justifyContent:'center' }}
+                onPress={()=>{ this._createRoom() }}>
+                <View style = {{flex:1,backgroundColor:colors.main,
+                    justifyContent:'center',alignItems:'center'}}>
+                    <Text style = {{
+                        fontFamily:'ConcertOne-Regular',
+                        color:colors.font,
+                        fontSize:30,
+                        justifyContent:'center'}}>Make a Room</Text>
+                </View>
+            </TouchableWithoutFeedback>
 
-                <TouchableWithoutFeedback 
-                    style = {{ flex:1,justifyContent:'center' }}
-                    onPress={()=>{ this._findRoom() }}>
-                    <View style = {{flex:1,backgroundColor:colors.color3,
-                        justifyContent:'center',alignItems:'center'}}>
-                        <Text style = {{
-                            fontFamily:'ConcertOne-Regular',
-                            color:colors.font,
-                            fontSize:30,
-                            justifyContent:'center'}}>Join a Room</Text>
-                    </View>
-                </TouchableWithoutFeedback>
-            </View>
+            <TouchableWithoutFeedback 
+                style = {{ flex:1,justifyContent:'center' }}
+                onPress={()=>{ this._findRoom() }}>
+                <View style = {{flex:1,backgroundColor:colors.color3,
+                    justifyContent:'center',alignItems:'center'}}>
+                    <Text style = {{
+                        fontFamily:'ConcertOne-Regular',
+                        color:colors.font,
+                        fontSize:30,
+                        justifyContent:'center'}}>Join a Room</Text>
+                </View>
+            </TouchableWithoutFeedback>
         </View>
     }
 }

@@ -46,8 +46,8 @@ class General_Screen extends Component {
 
 
     render(){
-        return <View style = {{flex:1, backgroundColor:colors.background}}>
-
+        return <View style = {{flex:1,backgroundColor:colors.background}}>
+        
             <TouchableOpacity
                 style={{flex:1,justifyContent:'center',backgroundColor:colors.color1}}
                 onPress={()=>{this._goToRules(2)}}
@@ -218,6 +218,14 @@ class Character_Screen extends Component {
 
         this.state = {
             roleid: params.roleid,
+
+            name:           '',
+            desc:           '',
+            team:           '',
+            suspicious:     '',
+            blood:          '',
+            visits:         '',
+            rules:          '',
         }
         
         this.characterRef = firebase.database().ref('roles/' + params.roleid);
@@ -226,16 +234,44 @@ class Character_Screen extends Component {
 
 
     componentWillMount() {
-
+        this.characterRef.on('value',snap=>{
+            this.setState({
+                name:       snap.val().name,
+                desc:       snap.val().desc,
+                team:       snap.val().type,
+                suspicious: snap.val().suspicious,
+                rules:      snap.val().rules,
+            })
+        })
     }
 
     componentWillUnmount() {
-
+        if(this.characterRef){
+            this.characterRef.off();
+        }
     }
 
     render(){
-        return <View style = {{flex:1, backgroundColor:colors.background,justifyContent:'center'}}>
-            <Text>{'future info about role ' + this.state.roleid}</Text>
+        return <View style = {{ flex:1, backgroundColor:colors.background }}>
+            <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
+                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:25,color:colors.main}}>
+                    {this.state.name}</Text>
+            </View>
+            <View style = {{flex:0.3,justifyContent:'center',alignItems:'center'}}>
+                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
+                    {this.state.desc}</Text>
+            </View>
+            <View style = {{flex:3}}/>
+            <View style = {{flex:3,marginLeft:10}}>
+                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
+                    {'Team: ' + this.state.team}</Text>
+                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
+                    {'Suspicious: ' + this.state.suspicious}</Text>
+                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
+                    {'Visits: ' + this.state.suspicious}</Text>
+                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
+                    {'Rules: ' + this.state.rules}</Text>
+            </View>
         </View>
     }
 }

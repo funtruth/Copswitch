@@ -47,8 +47,7 @@ constructor(props) {
     this.state = {
         roomname: params.roomname,
         phase:              '',
-        screentype:         '',
-        screencolor:        'white',
+        screencolor:        colors.background,
         phasename:          '',
         bottommessage:      '',
         locked:             '',
@@ -259,7 +258,6 @@ componentWillMount() {
             firebase.database().ref('phases').child(snap.val()).once('value',layout=>{
                 this.setState({
                     phasename:      layout.val().name,
-                    screentype:     layout.val().type,
                     screencolor:    layout.val().color,
                     locked:         layout.val().locked,
                     gameover:       layout.val().gameover,
@@ -719,7 +717,7 @@ _renderHeader() {
 //Rendering Main Visuals of Game Board
 _renderListComponent(){
 
-    if(this.state.screentype=='normal'){
+    if(this.state.phase==2){
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
@@ -755,27 +753,7 @@ _renderListComponent(){
             )}
             keyExtractor={item => item.key}
         />
-    } else if (this.state.screentype=='normal-person'){
-
-        return <FlatList
-            data={this.state.namelist}
-            renderItem={({item}) => (
-                <TouchableOpacity 
-                    onPress={() => {
-                        this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                        this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.dead : styles.alive}
-                    disabled = {this.state.amipicking?item.dead:false}
-                    > 
-                    {item.dead?<MaterialCommunityIcons name={item.dead?'skull':null}
-                        style={{color:colors.font, fontSize:26,alignSelf:'center'}}/>:
-                        <Text style = {styles.concerto}>{item.name}</Text>}
-                </TouchableOpacity>
-        )}
-        keyExtractor={item => item.key}
-    />
-
-    } else if(this.state.screentype=='voting-person'){
+    } else if(this.state.phase==3){
         return <View style = {{flex:1}}>
 
             <TouchableOpacity 
@@ -810,6 +788,85 @@ _renderListComponent(){
                         opacity:this.state.amidead?0.25:1}}/>
             </TouchableOpacity>
         </View>
+
+    } else if (this.state.phase==4){
+        return <FlatList
+            data={this.state.namelist}
+            renderItem={({item}) => (
+                <TouchableOpacity 
+                    onPress={() => {
+                        this._nameBtnPress(item.key,item.name,this.state.triggernum,
+                        this.state.phase,this.state.roomname)}}
+                    style = {item.dead ? styles.dead : styles.alive}
+                    disabled = {this.state.amipicking?item.dead:false}
+                    > 
+                    {item.dead?<MaterialCommunityIcons name={item.dead?'skull':null}
+                        style={{color:colors.font, fontSize:26,alignSelf:'center'}}/>:
+                        <Text style = {styles.concerto}>{item.name}</Text>}
+                </TouchableOpacity>
+            )}
+            keyExtractor={item => item.key}
+        />
+
+    } else if (this.state.phase==5){
+        return <FlatList
+            data={this.state.namelist}
+            renderItem={({item}) => (
+                <TouchableOpacity 
+                    onPress={() => {this.state.disabled?{}:
+                        this._nameBtnPress(item.key,item.name,this.state.triggernum,
+                        this.state.phase,this.state.roomname)}}
+                    onLongPress={()=>{
+                        this._nameBtnLongPress(item.key,item.name,this.state.phase,this.state.roomname)
+                    }}
+                    style = {item.dead ? styles.dead : (item.immune? styles.immune : styles.alive)}
+                    disabled = {this.state.amidead?true:(item.immune?true:item.dead)}>
+                    <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                        <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
+                        <MaterialCommunityIcons name={item.dead?'skull':item.actionbtnvalue?
+                            'check-circle':(item.immune?'needle':null)}
+                            style={{color:'white', fontSize:26}}/>
+                        </View>
+                        <View style = {{flex:5}}>
+                            {item.dead?
+                                <Text style = {styles.concerto}>
+                                    {item.name + ' ' + (item.type==2?'(Town)':
+                                    item.type==1?'(Mafia)':'(Neutral)')}</Text>
+                                :
+                                <Text style = {styles.concerto}>{item.name}</Text>
+                            }
+                        </View>
+                        <View style = {{flex:1}}>
+                            <Text style = {styles.concerto}>{item.votes>0?item.votes:null}</Text>
+                        </View>
+                    </View>
+                </TouchableOpacity>
+            )}
+            keyExtractor={item => item.key}
+        />
+    } else if (this.state.phase==6 || this.state.phase==7){
+        return <FlatList
+            data={this.state.namelist}
+            renderItem={({item}) => (
+                <TouchableOpacity
+                    style = {item.dead ? styles.dead : (item.immune? styles.immune : styles.alive)}
+                    disabled>
+                    <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                        <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
+                        <MaterialCommunityIcons name={item.dead?'skull':null}
+                            style={{color:'white', fontSize:26}}/>
+                        </View>
+                        <View style = {{flex:5}}>
+                            <Text style = {styles.concerto}>
+                                {item.name + ' ' + (item.type==2?'(Town)':
+                                item.type==1?'(Mafia)':'(Neutral)')}</Text>
+                        </View>
+                        <View style = {{flex:1}}/>
+                    </View>
+                </TouchableOpacity>
+            )}
+            keyExtractor={item => item.key}
+        />
     }
 }
 
