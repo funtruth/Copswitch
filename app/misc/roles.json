@@ -59,7 +59,7 @@
     "suspicious" : true,
     "type" : 1
   },
-  "K" : {
+  "A" : {
     "category" : "inspective",
     "color" : "#8F626A",
     "desc" : "On the case.",
@@ -69,7 +69,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "L" : {
+  "B" : {
     "category" : "inspective",
     "color" : "#8F626A",
     "desc" : "Investigates houses for clues.",
@@ -79,7 +79,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "LK" : {
+  "BA" : {
     "category" : "inspective",
     "color" : "#8F626A",
     "desc" : "Random Inspective Town member.",
@@ -89,7 +89,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "N" : {
+  "D" : {
     "category" : "stalling",
     "color" : "#8F626A",
     "desc" : "PHD in Stab wounds.",
@@ -99,7 +99,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "O" : {
+  "E" : {
     "category" : "stalling",
     "color" : "#8F626A",
     "desc" : "Distracts a player for the Night.",
@@ -109,7 +109,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "ON" : {
+  "ED" : {
     "category" : "stalling",
     "color" : "#8F626A",
     "desc" : "Random protective Town member.",
@@ -119,7 +119,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "Q" : {
+  "G" : {
     "category" : "specialist",
     "color" : "#8F626A",
     "desc" : "Watches over the town.",
@@ -129,7 +129,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "R" : {
+  "H" : {
     "category" : "specialist",
     "color" : "#8F626A",
     "desc" : "Examines dead bodies.",
@@ -139,7 +139,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "RQ" : {
+  "HG" : {
     "category" : "specialist",
     "color" : "#8F626A",
     "desc" : "Random specialist Town member.",
@@ -149,7 +149,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "RQONLK" : {
+  "HGEDBA" : {
     "category" : "none",
     "color" : "#8F626A",
     "desc" : "Random Town member.",

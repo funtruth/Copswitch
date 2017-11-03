@@ -1008,7 +1008,7 @@ _adjustmentPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
 
-            if (child.val().O) {
+            if (child.val().E) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target 
                 + '/' + child.val().roleid + '/' + child.key).remove()
             }
@@ -1023,60 +1023,48 @@ _actionPhase() {
         snap.forEach((child)=>{
 
               //Assassin
-            if (child.val().roleid == 'a' && !child.val().O) {
+            if (child.val().roleid == 'a' && !child.val().E) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',innersnap=>{
-                    if(!innersnap.val().N){
-                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                            + child.val().target).update({dead:true});
+                    if(!innersnap.val().D){
+                        this.listRef.child(child.val().target).update({dead:true});
+                        this.myInfoRef.update({bloody:true});
                         this._changePlayerCount(false);
 
+                        this._noticeMsg(child.val().target,'#d31d1d','You were stabbed.');
                         this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                            child.val().targetname + ' has been stabbed by the Mafia.')
-
-                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                            + firebase.auth().currentUser.uid).update({bloody:true});
-                        this._noticeMsg(child.val().target,'#d31d1d','You have been stabbed.');
-                        this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
-                            + child.val().targetname + '.');
-                    } else {
-                        this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
-                            + child.val().targetname + '.');
-                    }
+                            child.val().targetname + ' was killed.');
+                    } 
+                    this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
+                        + child.val().targetname + '.');
                 })
     
-            } 
+            }
             //Murderer 
-            else if (child.val().roleid == 'b' && !child.val().O) {
+            else if (child.val().roleid == 'b' && !child.val().E) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',innersnap=>{
-                    if(!innersnap.val().N){
-                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                            + child.val().target).update({dead:true});
+                    if(!innersnap.val().D){
+                        this.listRef.child(child.val().target).update({dead:true});
+                        this.myInfoRef.update({bloody:true});
                         this._changePlayerCount(false);
 
+                        this._noticeMsg(child.val().target,'#d31d1d','You were stabbed.');
                         this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                            child.val().targetname + ' has been stabbed by the Mafia.')
-
-                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                            + firebase.auth().currentUser.uid).update({bloody:true});
-                        this._noticeMsg(child.val().target,'#d31d1d','You have been stabbed.');
-                        this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
-                            + child.val().targetname + '.');
-                    } else {
-                        this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
-                            + child.val().targetname + '.');
+                            child.val().targetname + ' was killed.');
                     }
+                    this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
+                        + child.val().targetname + '.');
                 })
    
             } 
             //Schemer
-            else if (child.val().roleid == 'c' && !child.val().O) {
+            else if (child.val().roleid == 'c' && !child.val().E) {
                 this._noticeMsg(child.key,'#34cd0e','You attempted to frame ' 
                     + child.val().targetname +" last night.");
             } 
             //Spy
-            else if (child.val().roleid == 'd' && !child.val().O) {
+            else if (child.val().roleid == 'd' && !child.val().E) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
@@ -1087,21 +1075,22 @@ _actionPhase() {
 
             } 
             //Detective
-            else if (child.val().roleid == 'K' && !child.val().O) {
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.val().target)
-                .once('value',insidesnap=>{
+            else if (child.val().roleid == 'A' && !child.val().E) {
+                this.listRef.child(child.val().target).once('value',insidesnap=>{
                     if(insidesnap.val().c || insidesnap.val().suspicious){
-                        this._noticeMsg(child.key,'#34cd0e',child.val().targetname +' is hiding something ...');
+                        this._noticeMsg(child.key,'#34cd0e',child.val().targetname 
+                            + ' is hiding something ...');
                     } else {
                         this._noticeMsg(child.key,'#34cd0e',
-                            'Nothing was learned from the investigation on ' + child.val().targetname + '.');
+                            'Nothing was learned from the investigation on ' 
+                            + child.val().targetname + '.');
                     }
                 })
 
                 
             } 
             //Investigator
-            else if (child.val().roleid == 'L' && !child.val().O) {
+            else if (child.val().roleid == 'B' && !child.val().E) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     if(innersnap.val().bloody){
@@ -1116,7 +1105,7 @@ _actionPhase() {
                 
             } 
             //Doctor
-            else if (child.val().roleid == 'N' && !child.val().O) {
+            else if (child.val().roleid == 'D' && !child.val().E) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',insidesnap=>{
                     if(insidesnap.val().a || insidesnap.val().b){
@@ -1131,14 +1120,14 @@ _actionPhase() {
                 })
             } 
             //Escort
-            else if (child.val().roleid == 'O' && !child.val().O) {
+            else if (child.val().roleid == 'E' && !child.val().E) {
                 this._noticeMsg(child.val().target,'#34cd0e',
                     'You were distracted last night.');
                 this._noticeMsg(child.key,'#34cd0e','You distracted '
                     + child.val().targetname +" last night.");     
             } 
             //Warden
-            else if (child.val().roleid == 'Q' && !child.val().O) {
+            else if (child.val().roleid == 'G' && !child.val().E) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
                 + child.val().target).once('value',wheredhego=>{
                     if(wheredhego.val().targetname){
@@ -1151,7 +1140,7 @@ _actionPhase() {
                 })
             } 
             //Forensic
-            else if (child.val().roleid == 'R' && !child.val().O) {
+            else if (child.val().roleid == 'H' && !child.val().E) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
