@@ -159,7 +159,7 @@
     "suspicious" : false,
     "type" : 2
   },
-  "HGEDBA" : {
+  "IHGEDBA" : {
     "category" : "none",
     "color" : "#8F626A",
     "desc" : "Random Town member.",
@@ -181,7 +181,7 @@
   },
   "W" : {
     "category" : "chaos",
-    "color" : "#8F626A",
+    "color" : "#54537A",
     "desc" : "A mischief maker trying to get hung.",
     "image" : "lkjlk",
     "name" : "Gremlin",

@@ -1219,7 +1219,7 @@ if(!this.state.loaded){
     return <View style = {{flex:1, backgroundColor:colors.background}}/>
 }
 
-return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screencolor}}>
+return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background}}>
 
     <View style = {{flex:2}}/>
     
@@ -1236,7 +1236,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:this.state.screen
     <View style = {{flex:2}}/>
 
 </View>:
-<View style = {{flex:1, backgroundColor:this.state.screencolor}}>
+<View style = {{flex:1, backgroundColor:colors.background}}>
 
 <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
     <View style = {{flex:1}}/>

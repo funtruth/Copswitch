@@ -68,7 +68,7 @@ class Room_Screen extends React.Component {
             <TouchableWithoutFeedback 
                 style = {{ flex:1,justifyContent:'center' }}
                 onPress={()=>{ this._findRoom() }}>
-                <View style = {{flex:1,backgroundColor:colors.color3,
+                <View style = {{flex:1,backgroundColor:colors.color2,
                     justifyContent:'center',alignItems:'center'}}>
                     <Text style = {{
                         fontFamily:'ConcertOne-Regular',
@@ -150,7 +150,7 @@ class Create_Screen extends React.Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.background,
+            <View style = {{flex:1,backgroundColor:colors.color2,
                 justifyContent:'center',alignItems:'center'}}>
 
                 <View style = {{ justifyContent: 'center', flexDirection: 'row', marginBottom:10 }}>
@@ -158,7 +158,7 @@ class Create_Screen extends React.Component {
                         placeholder="Who are you? ..."
                         placeholderTextColor={colors.main}
                         style={{
-                            backgroundColor: colors.background,
+                            backgroundColor: colors.color2,
                             flex:0.6,
                             fontFamily:'ConcertOne-Regular',
                             fontSize: 20,
@@ -275,7 +275,7 @@ class Join_Screen extends React.Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.background,
+            <View style = {{flex:1,backgroundColor:colors.color2,
                 justifyContent:'center',alignItems:'center'}}>
 
                 <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
@@ -283,7 +283,7 @@ class Join_Screen extends React.Component {
                         placeholder="Who are you? ..."
                         placeholderTextColor={colors.main}
                         style={{
-                            backgroundColor: colors.background,
+                            backgroundColor: colors.color2,
                             flex:0.6,
                             fontFamily:'ConcertOne-Regular',
                             fontSize: 20,
@@ -303,7 +303,7 @@ class Join_Screen extends React.Component {
                         placeholder="Room Code ..."
                         placeholderTextColor={colors.main}
                         style={{
-                            backgroundColor: colors.background,
+                            backgroundColor: colors.color2,
                             flex:0.6,
                             fontFamily:'ConcertOne-Regular',
                             fontSize: 20,
@@ -644,12 +644,12 @@ class Lobby_Screen extends React.Component {
                 flex: 1,
                 justifyContent:'center'}}>
                     <ActivityIndicator size='large' color={colors.main}/>
-                    <Text style = {{fontSize:17,
+                    <Text style = {{fontSize:23,
                     fontFamily:'ConcertOne-Regular',
                     color:colors.main,
                     alignSelf: 'center',
                     marginTop: 10
-                    }}> Setting up Game</Text>
+                    }}>Setting up Game</Text>
                 </View>
         }
 
@@ -813,7 +813,7 @@ class Expired_Screen extends React.Component {
     }
     
     render() {
-        return <View style = {{flex:3,backgroundColor:colors.background}}>
+        return <View style = {{flex:3,backgroundColor:colors.color2}}>
             <View style = {{flex:1,justifyContent:'center'}}>
                 <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
                     {this._renderHeader()}
