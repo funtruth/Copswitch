@@ -140,26 +140,23 @@ class Roles_Screen extends Component {
     }
 
     _roleBtnPress(name,key,color,suspicious) {
-        AsyncStorage.getItem('OWNER-KEY')
-        .then(res => {
-            if (res !== null) {
-                this._addRole(name,key,color,suspicious)
+        AsyncStorage.getItem('OWNER-KEY',(error,result)=>{
+            if(result){
+                this._addRole(name,key,color,suspicious,result)
             } else {
                 this.props.navigation.navigate('Character_Screen',{roleid:key})
             }
         })
-        .catch(err => reject(err));
     }
 
-    _addRole(rolename,roleid,color,suspicious) {
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-        + '/' + rolename + '/count')
+    _addRole(rolename,roleid,color,suspicious,roomname) {
+        firebase.database().ref('listofroles/' + roomname + '/' + rolename + '/count')
             .transaction((count)=>{
                 return count + 1;
             })
 
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-        + '/' + rolename).update({roleid:roleid,color:color,suspicious:suspicious})
+        firebase.database().ref('listofroles/' + roomname + '/' + rolename)
+            .update({roleid:roleid,color:color,suspicious:suspicious})
     }
 
     render(){

@@ -359,7 +359,7 @@ class Lobby_Screen extends React.Component {
         const roomname      = params.roomname.toUpperCase();
 
         this.state = {
-            roomname: params.roomname.toUpperCase(),
+            roomname:       params.roomname.toUpperCase(),
             listview:       true,
             xdisabled:      true,
             namelist:       dataSource,
@@ -371,17 +371,16 @@ class Lobby_Screen extends React.Component {
             loading:        false,
         };
 
-        this.roleCount      = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid)
-                              .orderByChild('roleid');
+        this.roleCount      = firebase.database().ref('listofroles/' + roomname).orderByChild('roleid');
         this.roomRef        = firebase.database().ref('rooms/' + roomname);
-        this.playerList     = this.roomRef.child('listofplayers');
+        this.listRef        = this.roomRef.child('listofplayers');
     }
 
     componentWillMount() {
 
         this.roomRef.on('value',roomsnap=>{
 
-            this.playerList.once('value',snap => {
+            this.listRef.once('value',snap => {
                 var list = [];
                 snap.forEach((child)=> {
                     list.push({
@@ -449,7 +448,7 @@ class Lobby_Screen extends React.Component {
         AsyncStorage.removeItem('OWNER-KEY');
 
         firebase.database().ref('rooms/' + this.state.roomname).remove();
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
+        firebase.database().ref('listofroles/' + this.state.roomname).remove();
         
         this.props.navigation.dispatch(
             NavigationActions.reset({
@@ -467,7 +466,8 @@ class Lobby_Screen extends React.Component {
 
         firebase.database().ref('rooms/'+this.state.roomname+'/playernum').transaction((playernum) => {
             return (playernum - 1);
-        });  
+        });
+        this.listRef.child(firebase.auth().currentUser.uid).remove();
         
         this.props.navigation.dispatch(
             NavigationActions.reset({
@@ -503,7 +503,7 @@ class Lobby_Screen extends React.Component {
 
             this._handOutRoles(roomname);
 
-            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
+            firebase.database().ref('listofroles/' + roomname).remove();
 
             this.setState({loading:true})
 
@@ -531,7 +531,7 @@ class Lobby_Screen extends React.Component {
         var randomstring = '';
         var charcount = 0;
 
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).once('value',snap=>{
+        firebase.database().ref('listofroles/' + roomname).once('value',snap=>{
 
             snap.forEach((child)=>{
                 for(i=0;i<child.val().count;i++){
@@ -608,13 +608,13 @@ class Lobby_Screen extends React.Component {
                     <TouchableOpacity 
                         onPress={() => {
                             {this.state.amiowner?
-                                firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+                                firebase.database().ref('listofroles/' + this.state.roomname 
                                 + '/' + item.name + '/count').transaction((count)=>{
                                     if(count > 1){
                                         return count - 1;
                                     } else {
                                         firebase.database().ref('listofroles/' 
-                                        + firebase.auth().currentUser.uid + '/' + item.name).remove();
+                                        + this.state.roomname + '/' + item.name).remove();
                                     }
                                 })
                             :{}}
@@ -633,6 +633,55 @@ class Lobby_Screen extends React.Component {
                 numColumns={2}
                 keyExtractor={item => item.key}
             />
+        }
+    }
+
+    _renderBottomComponent() {
+        if(this.state.listview){
+            return <View style = {{flex:0.7,justifyContent:'center', alignItems:'center',
+                backgroundColor:this.state.amiowner?colors.main:colors.disabled,borderRadius:15}}>
+            <TouchableOpacity
+                onPress={()=> {
+                    this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
+                }}
+                disabled={!this.state.amiowner}
+                style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
+                <Text style = {styles.concerto}>START GAME</Text>
+            </TouchableOpacity>
+        </View>
+        } else {
+            return <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
+                <View style = {{flex:1,flexDirection:'row',
+                    backgroundColor:this.state.amiowner?colors.main:colors.disabled,borderRadius:15}}>
+                    <TouchableOpacity
+                        style = {{
+                            justifyContent:'center', alignItems:'center', flex:1
+                        }}
+                        onPress = {()=>{this._recommendedBtnPress('easy',this.state.playercount)}}
+                    >
+                        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',fontSize:15}}>
+                            Easy</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style = {{
+                            flex:1, justifyContent:'center', alignItems:'center'
+                        }}
+                        onPress = {()=>{this._recommendedBtnPress('medium',this.state.playercount)}}
+                    >
+                        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',fontSize:15}}>
+                            Normal</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style = {{
+                            justifyContent:'center', alignItems:'center', flex:1
+                        }}
+                        onPress = {()=>{this._recommendedBtnPress('hard',this.state.playercount)}}
+                    >
+                        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',fontSize:15}}>
+                            Difficult</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
         }
     }
 
@@ -709,7 +758,7 @@ class Lobby_Screen extends React.Component {
 
             <View style = {{flex:0.15}}/>
 
-            <View style = {{flex:8.65, flexDirection:'row',justifyContent:'center'}}>
+            <View style = {{flex:10.3, flexDirection:'row',justifyContent:'center'}}>
                 <View style = {{flex:0.85,justifyContent:'center'}}>
                     {this._renderListComponent()}
                 </View>
@@ -717,55 +766,8 @@ class Lobby_Screen extends React.Component {
             
             <View style = {{flex:0.15}}/>
 
-            <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
-                <View style = {{flex:0.66,justifyContent:'center',backgroundColor:colors.main,borderRadius:15}}>
-                    <TouchableOpacity
-                        onPress={()=> {
-                            this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
-                        }}
-                        disabled={!this.state.amiowner}>
-                        <Text style = {styles.concerto}>START GAME</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            <View style = {{flex:0.15}}/>
-
-            <View style = {{flex:1.5,justifyContent:'center',alignItems:'center'}}>
-                <Text style = {{fontFamily:'ConcertOne-Regular', fontSize:23, color:colors.main, flex:1}}>
-                    Recommended Set-Up</Text>
-                <View style = {{flex:1,flexDirection:'row'}}>
-                    <TouchableOpacity
-                        style = {{
-                            backgroundColor:colors.main, borderBottomLeftRadius: 10, borderTopLeftRadius: 10,
-                            justifyContent:'center', alignItems:'center', flex:0.3
-                        }}
-                        onPress = {()=>{this._recommendedBtnPress('easy',this.state.playercount)}}
-                    >
-                        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',fontSize:15}}>
-                            Easy</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style = {{
-                            backgroundColor:colors.main, flex:0.3, 
-                            justifyContent:'center', alignItems:'center'
-                        }}
-                        onPress = {()=>{this._recommendedBtnPress('medium',this.state.playercount)}}
-                    >
-                        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',fontSize:15}}>
-                            Normal</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style = {{
-                            backgroundColor:colors.main, borderBottomRightRadius: 10, borderTopRightRadius: 10,
-                            justifyContent:'center', alignItems:'center', flex:0.3
-                        }}
-                        onPress = {()=>{this._recommendedBtnPress('hard',this.state.playercount)}}
-                    >
-                        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',fontSize:15}}>
-                            Difficult</Text>
-                    </TouchableOpacity>
-                </View>
+            <View style = {{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
+                {this._renderBottomComponent()}
             </View>
 
             <View style = {{flex:0.15}}/>

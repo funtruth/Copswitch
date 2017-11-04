@@ -385,7 +385,7 @@ componentWillMount() {
     })
 
     this.popularVoteRef.on('value',snap=>{
-        if(snap.exists()){
+        if(snap.exists() && this.state.amiowner){
             snap.forEach((child)=>{
                 if(child.val().votes + 1 > this.state.triggernum){
                     firebase.database().ref('phases').child(this.state.phase).once('value',phase=>{
@@ -1054,13 +1054,15 @@ _actionPhase() {
             //Detective
             else if (child.val().roleid == 'A' && !child.val().E) {
                 this.listRef.child(child.val().target).once('value',insidesnap=>{
-                    if(insidesnap.val().c || insidesnap.val().suspicious){
-                        this._noticeMsg(child.key,'#34cd0e',child.val().targetname 
-                            + ' is suspicious ...');
-                    } else {
-                        this._noticeMsg(child.key,'#34cd0e',child.val().targetname
-                            + 'is not suspicious.');
-                    }
+                    this.roomRef.child('actions').child(child.val().target).once('value',scheme=>{
+                        if(scheme.val().c || insidesnap.val().suspicious){
+                            this._noticeMsg(child.key,'#34cd0e',child.val().targetname 
+                                + ' is suspicious ...');
+                        } else {
+                            this._noticeMsg(child.key,'#34cd0e',child.val().targetname
+                                + ' is not suspicious.');
+                        }
+                    })
                 })
             }
             //Investigator

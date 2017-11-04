@@ -13,7 +13,8 @@ export default colors = {
     color2:     '#6D849C',
     color3:     '#9793A6',
     
-    immune:   '#6D849C',
+    immune:     '#e3c382',
+    disabled:   '#495D7A',
 
     //Blue Palette
     main:       '#1F476E',
