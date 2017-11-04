@@ -49,15 +49,7 @@ export const SignedOut = StackNavigator(
           ),
           
         }
-      },/*
-      Profile: {
-        screen: Profile,
-        navigationOptions: {
-          tabBarIcon: ({ tintColor }) => (
-            <MaterialIcons name="person" style={styles.icon}/>
-          ),
-        }
-      },*/
+      },
     },
     {
       tabBarPosition: 'bottom',

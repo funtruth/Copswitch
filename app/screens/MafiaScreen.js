@@ -47,6 +47,7 @@ constructor(props) {
     this.state = {
         roomname: params.roomname,
         phase:              '',
+        daycounter:         '',
         screencolor:        colors.background,
         phasename:          '',
         bottommessage:      '',
@@ -95,10 +96,10 @@ constructor(props) {
     this.msgRef             = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
     this.globalMsgRef       = firebase.database().ref('globalmsgs/' + roomname);
     this.listRef            = this.roomRef.child('listofplayers');
-    this.playernumListener  = this.roomRef.child('playernum');
-    this.nominationListener = this.roomRef.child('nominate');
+    this.playernumRef       = this.roomRef.child('playernum');
+    this.nominationRef      = this.roomRef.child('nominate');
     this.ownerRef           = this.roomRef.child('owner');
-    this.phaseListener      = this.roomRef.child('phase');
+    this.phaseRef           = this.roomRef.child('phase');
 
     //Owner Listening
     this.countRef           = this.roomRef.child('count');
@@ -221,27 +222,41 @@ componentWillMount() {
     this.listRef.on('value',snap=>{
         if(snap.exists()){
             //Update colors + options for Player Name Buttons
-            this._updatePlayerState();
+            var list = [];
+            snap.forEach((child)=> {
+                list.push({
+                    actionbtnvalue: child.val().actionbtnvalue,
+                    name:           child.val().name,
+                    dead:           child.val().dead,
+                    immune:         child.val().immune,
+                    type:           child.val().type,
+                    votes:          child.val().votes,
+    
+                    key:            child.key,
+                })
+            })
+    
+            this.setState({namelist:list})
         }
     })
 
-    this.playernumListener.on('value',snap=>{
+    this.playernumRef.on('value',snap=>{
         if(snap.exists()){
             //this.state.triggernum, playernum
             this._updateNumbers(snap.val());
 
             this.mafiaRef.orderByChild('alive').equalTo(true).once('value',mafia=>{
                 if(mafia.numChildren() == 0){
-                    this.phaseListener.set(6)
+                    this.phaseRef.set(6)
                 }
                 else if(mafia.numChildren()*2+1 > snap.val()){
-                    this.phaseListener.set(7)
+                    this.phaseRef.set(7)
                 }
             })
         }
     })
 
-    this.phaseListener.on('value',snap=>{
+    this.phaseRef.on('value',snap=>{
         this.setState({loaded:false})
 
         if(snap.exists()){
@@ -420,14 +435,14 @@ componentWillUnmount() {
     if(this.listRef){
         this.listRef.off();
     }
-    if(this.playernumListener){
-        this.playernumListener.off();
+    if(this.playernumRef){
+        this.playernumRef.off();
     }
-    if(this.phaseListener){
-        this.phaseListener.off();
+    if(this.phaseRef){
+        this.phaseRef.off();
     }
-    if(this.nominationListener){
-        this.nominationListener.off();
+    if(this.nominationRef){
+        this.nominationRef.off();
     }
 
     //Owner Listeners
@@ -447,26 +462,6 @@ componentWillUnmount() {
 
 }
 
-_updatePlayerState() {
-    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers').once('value', snap=>{
-        
-        var list = [];
-        snap.forEach((child)=> {
-            list.push({
-                actionbtnvalue: child.val().actionbtnvalue,
-                name:           child.val().name,
-                dead:           child.val().dead,
-                immune:         child.val().immune,
-                type:           child.val().type,
-                votes:          child.val().votes,
-
-                key:            child.key,
-            })
-        })
-
-        this.setState({namelist:list})
-    })
-}
 
 _updateNumbers(playernum) {
     const mod = playernum%2;
@@ -479,9 +474,9 @@ _updateNumbers(playernum) {
 _updateNominate(){
     //Checks the nominated player and updates state for his uid/name
     //Then checks if you are the nominated player.
-    this.nominationListener.once('value',snap=>{
+    this.nominationRef.once('value',snap=>{
         if(snap.exists()){
-            firebase.database().ref('rooms/'+this.state.roomname+'/listofplayers/'+snap.val()).once('value',sp=>{
+            this.listRef.child(snap.val()).once('value',sp=>{
                 this.setState({nominate: snap.val(), nominee: sp.val().name})
             })
 
@@ -512,11 +507,9 @@ _changePhase(newphase){
 }
 
 _resetImmunity() {
-    firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/').once('value',snap=>{
+    this.listRef.once('value',snap=>{
         snap.forEach((child)=>{
-            //RESET IMMUNITY
-            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.key)
-                .update({immune:false})
+            this.listRef.child(child.key).update({immune:false})
         })
     })
 }
@@ -530,24 +523,18 @@ _pressedUid(uid){
 
 _changeCount(bool){
     if(bool){
-        firebase.database().ref('rooms/' + this.state.roomname + '/count').transaction((count)=>{
-            return count + 1;
-        })
+        this.countRef.transaction((count)=>{ return count + 1 })
     } else {
-         firebase.database().ref('rooms/' + this.state.roomname + '/count').transaction((count)=>{
-            return count - 1;
-        })
+        this.countRef.transaction((count)=>{ return count - 1 })
     }
 }
 
 _vote(bool) {
-    this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid).child('name').once('value',snap=>{
-        if(bool){
-            this.roomRef.child('guiltyvotes').child(firebase.auth().currentUser.uid).set(snap.val());
-        } else {
-            this.roomRef.child('guiltyvotes').child(firebase.auth().currentUser.uid).set(null);
-        }
-    })
+    if(bool){
+        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname);
+    } else {
+        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null);
+    }
 }
 
 //Pressing the Action Button at the Bottom of Screen
@@ -615,7 +602,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
             })
 
             firebase.database().ref('rooms/' + roomname + '/actions/' + uid + '/' 
-            + this.state.myroleid + '/' + firebase.auth().currentUser.uid).set(true);
+            + this.state.myroleid + '/' + firebase.auth().currentUser.uid).set(this.state.myname);
 
             this._pressedUid(uid);
             
@@ -638,7 +625,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
             })
 
             firebase.database().ref('rooms/' + roomname + '/actions/' + uid + '/' 
-            + this.state.roleid + '/' + firebase.auth().currentUser.uid).set(true);
+            + this.state.roleid + '/' + firebase.auth().currentUser.uid).set(this.state.myname);
 
             firebase.database().ref('rooms/' + roomname + '/actions/' + this.state.presseduid + '/' 
             + this.state.roleid + '/' + firebase.auth().currentUser.uid).remove();
@@ -975,11 +962,9 @@ _chatPress(chattype){
 //false -> decrease player count by 1
 _changePlayerCount(bool){
     if(bool){
-        firebase.database().ref('rooms/' + this.state.roomname + '/playernum')
-            .transaction((playernum)=>{return playernum+1})
+        this.playernumRef.transaction((playernum)=>{return playernum+1})
     } else {
-        firebase.database().ref('rooms/' + this.state.roomname + '/playernum')
-            .transaction((playernum)=>{return playernum-1})
+        this.playernumRef.transaction((playernum)=>{return playernum-1})
     }
 }
 
@@ -1118,9 +1103,20 @@ _actionPhase() {
             //Warden
             else if (child.val().roleid == 'G' && !child.val().E) {
                 this.roomRef.child('actions').child(child.val().target).once('value',insnap=>{
+                    var string = 'Nobody';
                     insnap.forEach((visitor)=>{
-                        
+                        if(visitor.key.length == 1){
+                            visitor.forEach((person)=>{
+                                if(string == 'Nobody'){
+                                    string = person.val();
+                                } else {
+                                    string = string + ', ' + person.val();
+                                }
+                            })
+                        }
                     })
+                    this._noticeMsg(child.key,'#34cd0e',string + ' visited ' + child.val().targetname 
+                        + "'s house last night.")
                 })
             }
             //Forensic
