@@ -139,6 +139,16 @@
     "suspicious" : false,
     "type" : 2
   },
+  "I" : {
+    "category" : "specialist",
+    "color" : "#8F626A",
+    "desc" : "Watches over a certain player.",
+    "image" : "lkjl",
+    "name" : "Overseer",
+    "rules" : "At night, the Overseer can choose a player to see if they visit anyone that night. If the target goes to another players house, the Overseer will be notified.",
+    "suspicious" : false,
+    "type" : 2
+  },
   "HG" : {
     "category" : "specialist",
     "color" : "#8F626A",
