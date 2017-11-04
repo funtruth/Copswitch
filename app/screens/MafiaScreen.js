@@ -1109,10 +1109,12 @@ _actionPhase() {
                     insnap.forEach((visitor)=>{
                         if(visitor.key.length == 1){
                             visitor.forEach((person)=>{
-                                if(string == 'Nobody'){
-                                    string = person.val();
-                                } else {
-                                    string = string + ', ' + person.val();
+                                if(person.key != child.key){
+                                    if(string == 'Nobody'){
+                                        string = person.val();
+                                    } else {
+                                        string = string + ', ' + person.val();
+                                    }
                                 }
                             })
                         }
@@ -1223,19 +1225,18 @@ if(!this.state.loaded){
 
 return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background}}>
 
-    <View style = {{flex:2}}/>
     
     <FadeInView style = {{flex:1.5,backgroundColor:colors.main,justifyContent:'center'}}>
         {this._renderTransitionHeader()}
     </FadeInView>
 
-    <View style = {{flex:7.5}}/>
+    <View style = {{flex:10.5}}/>
     
-    <View style = {{flex:1.5,flexDirection:'row',alignContent:'center',justifyContent:'center'}}>
+    <View style = {{flex:1.2,flexDirection:'row',alignContent:'center',justifyContent:'center'}}>
         {this._renderContinueBtn()}
     </View>
     
-    <View style = {{flex:2}}/>
+    <View style = {{flex:0.5}}/>
 
 </View>:
 <View style = {{flex:1, backgroundColor:colors.background}}>
