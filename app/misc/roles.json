@@ -48,6 +48,26 @@
     "suspicious" : true,
     "type" : 1
   },
+  "e" : {
+    "category" : "mischief",
+    "color" : "#4B4352",
+    "desc" : "Memory Wiper of the Mafia.",
+    "image" : "lol",
+    "name" : "Memory Wiper",
+    "rules" : "At night, the Memory Wiper can choose a player and make them forget anything that happened that night.",
+    "suspicious" : true,
+    "type" : 1
+  },
+  "f" : {
+    "category" : "mischief",
+    "color" : "#4B4352",
+    "desc" : "Silencer of the Mafia.",
+    "image" : "lol",
+    "name" : "Silencer",
+    "rules" : "At night, the Silence can choose a player and stop them from talking for the next day.",
+    "suspicious" : true,
+    "type" : 1
+  },
   "j" : {
     "category" : "none",
     "color" : "#4B4352",
@@ -128,6 +148,7 @@
     "image" : "lkjl",
     "name" : "Forensic",
     "rules" : "At night, the Forensic can choose a dead player to uncover their role.",
+    "targetdead" : true,
     "type" : 2
   },
   "I" : {

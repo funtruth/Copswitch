@@ -221,6 +221,8 @@ componentWillMount() {
                     name:           child.val().name,
                     dead:           child.val().dead?true:false,
                     immune:         child.val().immune?true:false,
+                    status:         child.val().status?true:false,
+                    statusname:     child.val().status,
                     type:           child.val().type,
                     votes:          child.val().votes,
     
@@ -286,7 +288,7 @@ componentWillMount() {
                 //Phase 2 + 4 Handling CONTINUE
                 if(phase.val().actionreset){
                     this.roomRef.child('actions').remove();
-                    this._resetImmunity();
+                    this._resetDayStatuses();
                     this._changePhase(phase.val().continue);
                 };
                 //Phase 3 Handling both CONTINUE and TRIGGER
@@ -360,7 +362,7 @@ componentWillMount() {
                         new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
                             
                             this.guiltyVotesRef.remove();
-                            this._resetImmunity();
+                            this._resetDayStatuses();
                             
                             this._changePhase(phase.val().continue);
 
@@ -498,10 +500,13 @@ _changePhase(newphase){
     })
 }
 
-_resetImmunity() {
+_resetDayStatuses() {
     this.listRef.once('value',snap=>{
         snap.forEach((child)=>{
-            this.listRef.child(child.key).update({immune:false})
+            this.listRef.child(child.key).update({
+                immune:null, 
+                status:null
+            })
         })
     })
 }
@@ -699,12 +704,13 @@ _renderListComponent(){
                     onLongPress={()=>{
                         this._nameBtnLongPress(item.key,item.name,this.state.phase,this.state.roomname)
                     }}
-                    style = {item.dead ? styles.dead : (item.immune? styles.immune : styles.alive)}
+                    style = {item.dead ? styles.dead : (item.immune? styles.immune : 
+                        (item.status?styles.status:styles.alive))}
                     disabled = {this.state.amidead?true:(item.immune?true:item.dead)}>
                     <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
                         <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
                         <MaterialCommunityIcons name={item.dead?'skull':item.actionbtnvalue?
-                            'check-circle':(item.immune?'needle':null)}
+                            'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
                             style={{color:'white', fontSize:26}}/>
                         </View>
                         <View style = {{flex:5}}>
@@ -1044,6 +1050,12 @@ _actionPhase() {
                 })
 
             }
+            //Silencer
+            else if (child.val().roleid == 'f' && !child.val().E) {
+                this.listRef.child(child.val().target).update({ status: 'volume-mute' })
+                this._noticeMsg(child.key,'#34cd0e','You silenced ' + child.val().targetname + '.');
+                this._noticeMsg(child.val().target,'#34cd0e','You were silenced.');
+            }
             //Detective
             else if (child.val().roleid == 'A' && !child.val().E) {
                 this.listRef.child(child.val().target).once('value',insidesnap=>{
@@ -1365,6 +1377,13 @@ const styles = StyleSheet.create({
     immune: {
         height:40,
         backgroundColor: colors.immune,
+        margin: 3,
+        borderRadius:5,
+        justifyContent:'center',
+    },
+    status: {
+        height:40,
+        backgroundColor: colors.highlight,
         margin: 3,
         borderRadius:5,
         justifyContent:'center',
