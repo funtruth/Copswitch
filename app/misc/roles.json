@@ -185,15 +185,7 @@
     "image" : "lkjl",
     "name" : "Hunter",
     "rules" : "At night, the Hunter can choose to shoot another player. You are limited to performing this action once per game.",
-    "type" : 2
-  },
-  "K" : {
-    "category" : "specialist",
-    "color" : "#8F626A",
-    "desc" : "You are out of bullets.",
-    "image" : "lkjl",
-    "name" : "Hunter",
-    "rules" : "At night, the Hunter can choose to shoot another player. You are limited to performing this action once per game.",
+    "charges" : 1,
     "type" : 2
   },
   "U" : {

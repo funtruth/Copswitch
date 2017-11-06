@@ -543,12 +543,13 @@ class Lobby_Screen extends React.Component {
                     var randomrole = randomstring.charAt(randomnumber-1);
 
                     firebase.database().ref('roles/'+randomrole)
-                    .once('value',suspicious=>{
+                    .once('value',character=>{
                         firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
                         + child.key).update({
-                            roleid: randomrole,
-                            type: suspicious.val().type,
-                            suspicious:suspicious.val().suspicious,
+                            roleid:         randomrole,
+                            charges:        character.val().charges,
+                            suspicious:     character.val().suspicious,
+                            type:           character.val().type,
                         })
                     })
 

@@ -179,7 +179,6 @@ componentWillMount() {
             snap.forEach((child)=>{   
                 msg.push({
                     from:       child.val().from,
-                    color:      child.val().color,
                     message:    child.val().message,
                     key:        child.key,
                 })
@@ -968,9 +967,9 @@ _changePlayerCount(bool){
 }
 
 //Sends a private notice message
-_noticeMsg(target,color,message){
+_noticeMsg(target,message){
     firebase.database().ref('messages/' + target)
-        .push({from: 'Private', color: color, message: message})
+        .push({from: 'Private', message: message})
 }
 
 //Creates a public notice message
@@ -1007,12 +1006,11 @@ _actionPhase() {
                         this.myInfoRef.update({bloody:true});
                         this._changePlayerCount(false);
 
-                        this._noticeMsg(child.val().target,'#d31d1d','You were stabbed.');
+                        this._noticeMsg(child.val().target,'You were stabbed.');
                         this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
                             child.val().targetname + ' was killed.');
                     } 
-                    this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
-                        + child.val().targetname + '.');
+                    this._noticeMsg(child.key,'You have stabbed ' + child.val().targetname + '.');
                 })
     
             }
@@ -1025,26 +1023,24 @@ _actionPhase() {
                         this.myInfoRef.update({bloody:true});
                         this._changePlayerCount(false);
 
-                        this._noticeMsg(child.val().target,'#d31d1d','You were stabbed.');
+                        this._noticeMsg(child.val().target,'You were stabbed.');
                         this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
                             child.val().targetname + ' was killed.');
                     }
-                    this._noticeMsg(child.key,'#d31d1d','You have stabbed ' 
-                        + child.val().targetname + '.');
+                    this._noticeMsg(child.key,'You have stabbed ' + child.val().targetname + '.');
                 })
    
             }
             //Schemer
             else if (child.val().roleid == 'c' && !child.val().E) {
-                this._noticeMsg(child.key,'#34cd0e','You framed ' 
-                    + child.val().targetname +" last night.");
+                this._noticeMsg(child.key,'You framed ' + child.val().targetname +" last night.");
             }
             //Spy
             else if (child.val().roleid == 'd' && !child.val().E) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
-                        this._noticeMsg(child.key,'#34cd0e','You spied on ' + child.val().targetname 
+                        this._noticeMsg(child.key,'You spied on ' + child.val().targetname 
                         + ". They are a " + rolename.val().name + '.');
                     })
                 })
@@ -1053,19 +1049,17 @@ _actionPhase() {
             //Silencer
             else if (child.val().roleid == 'f' && !child.val().E) {
                 this.listRef.child(child.val().target).update({ status: 'volume-mute' })
-                this._noticeMsg(child.key,'#34cd0e','You silenced ' + child.val().targetname + '.');
-                this._noticeMsg(child.val().target,'#34cd0e','You were silenced.');
+                this._noticeMsg(child.key,'You silenced ' + child.val().targetname + '.');
+                this._noticeMsg(child.val().target,'You were silenced.');
             }
             //Detective
             else if (child.val().roleid == 'A' && !child.val().E) {
                 this.listRef.child(child.val().target).once('value',insidesnap=>{
                     this.roomRef.child('actions').child(child.val().target).once('value',scheme=>{
                         if(scheme.val().c || insidesnap.val().suspicious){
-                            this._noticeMsg(child.key,'#34cd0e',child.val().targetname 
-                                + ' is suspicious ...');
+                            this._noticeMsg(child.key, child.val().targetname + ' is suspicious ...');
                         } else {
-                            this._noticeMsg(child.key,'#34cd0e',child.val().targetname
-                                + ' is not suspicious.');
+                            this._noticeMsg(child.key, child.val().targetname + ' is not suspicious.');
                         }
                     })
                 })
@@ -1075,11 +1069,10 @@ _actionPhase() {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     if(innersnap.val().bloody){
-                        this._noticeMsg(child.key,'#34cd0e', 
-                            child.val().targetname +" has blood on their hands.");
+                        this._noticeMsg(child.key, child.val().targetname + " has blood on their hands.");
                     } else {
-                        this._noticeMsg(child.key,'#34cd0e',
-                            child.val().targetname +" does not have blood on their hands.");
+                        this._noticeMsg(child.key, child.val().targetname 
+                        + " does not have blood on their hands.");
                     }
                 })
 
@@ -1092,20 +1085,17 @@ _actionPhase() {
                     if(insidesnap.val().a || insidesnap.val().b){
                         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                             + firebase.auth().currentUser.uid).update({bloody:true});
-                        this._noticeMsg(child.val().target,'#34cd0e','The Doctor took care of your stab wounds.');
-                        this._noticeMsg(child.key,'#34cd0e','You healed ' 
-                            + child.val().targetname +"'s stab wounds.");
+                        this._noticeMsg(child.val().target,'The Doctor took care of your stab wounds.');
+                        this._noticeMsg(child.key,'You healed ' + child.val().targetname +"'s stab wounds.");
                     } else {
-                        this._noticeMsg(child.key,'#34cd0e','You visited '+ child.val().targetname + '.');
+                        this._noticeMsg(child.key, 'You visited '+ child.val().targetname + '.');
                     }
                 })
             }
             //Escort
             else if (child.val().roleid == 'E' && !child.val().E) {
-                this._noticeMsg(child.val().target,'#34cd0e',
-                    'You were distracted last night.');
-                this._noticeMsg(child.key,'#34cd0e','You distracted '
-                    + child.val().targetname +" last night.");     
+                this._noticeMsg(child.val().target, 'You were distracted last night.');
+                this._noticeMsg(child.key, 'You distracted ' + child.val().targetname +" last night.");     
             }
             //Warden
             else if (child.val().roleid == 'G' && !child.val().E) {
@@ -1133,7 +1123,7 @@ _actionPhase() {
                 firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                 + child.val().target).once('value',innersnap=>{
                     firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
-                        this._noticeMsg(child.key,'#34cd0e','You examined the body of ' 
+                        this._noticeMsg(child.key,'You examined the body of ' 
                         + child.val().targetname + ', the ' + rolename.val().name + '.');
                     })
                 })
@@ -1143,11 +1133,21 @@ _actionPhase() {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
                 + child.val().target).once('value',wheredhego=>{
                     if(wheredhego.val().targetname){
-                        this._noticeMsg(child.key,'#34cd0e', child.val().targetname + ' visited ' 
+                        this._noticeMsg(child.key, child.val().targetname + ' visited ' 
                         + wheredhego.val().targetname +"'s house last night.");
                     } else {
-                        this._noticeMsg(child.key,'#34cd0e', child.val().targetname 
+                        this._noticeMsg(child.key, child.val().targetname 
                         + ' did not leave their house last night.');
+                    }
+                })
+            }
+            //Hunter
+            else if (child.val().roleid == 'J' && !child.val().E) {
+                this.listRef.child(child.key).child('charges').once('value',charges=>{
+                    if(charges.val() > 0){
+
+                    } else {
+                        this._noticeMsg(child.key, 'You are out of bullets.')
                     }
                 })
             }
