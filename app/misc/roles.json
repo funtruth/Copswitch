@@ -51,20 +51,20 @@
   "e" : {
     "category" : "mischief",
     "color" : "#4B4352",
-    "desc" : "Memory Wiper of the Mafia.",
+    "desc" : "Memory worker of the Mafia.",
     "image" : "lol",
-    "name" : "Memory Wiper",
-    "rules" : "At night, the Memory Wiper can choose a player and make them forget anything that happened that night.",
+    "name" : "Mystic",
+    "rules" : "At night, the Mystic can choose a player and make them forget anything that happened that night.",
     "suspicious" : true,
     "type" : 1
   },
   "f" : {
     "category" : "mischief",
     "color" : "#4B4352",
-    "desc" : "Silencer of the Mafia.",
+    "desc" : "Extortionist of the Mafia.",
     "image" : "lol",
     "name" : "Silencer",
-    "rules" : "At night, the Silence can choose a player and stop them from talking for the next day.",
+    "rules" : "At night, the Silencer can choose a player and stop them from talking for the next day.",
     "suspicious" : true,
     "type" : 1
   },
@@ -160,7 +160,7 @@
     "rules" : "At night, the Overseer can choose a player to see if they visit anyone that night. If the target goes to another players house, the Overseer will be notified.",
     "type" : 2
   },
-  "HG" : {
+  "IHG" : {
     "category" : "specialist",
     "color" : "#8F626A",
     "desc" : "Random specialist Town member.",
@@ -176,6 +176,24 @@
     "image" : "lkjlk",
     "name" : "Town",
     "rules" : "",
+    "type" : 2
+  },
+  "J" : {
+    "category" : "specialist",
+    "color" : "#8F626A",
+    "desc" : "Hunter of the Town.",
+    "image" : "lkjl",
+    "name" : "Hunter",
+    "rules" : "At night, the Hunter can choose to shoot another player. You are limited to performing this action once per game.",
+    "type" : 2
+  },
+  "K" : {
+    "category" : "specialist",
+    "color" : "#8F626A",
+    "desc" : "You are out of bullets.",
+    "image" : "lkjl",
+    "name" : "Hunter",
+    "rules" : "At night, the Hunter can choose to shoot another player. You are limited to performing this action once per game.",
     "type" : 2
   },
   "U" : {
