@@ -121,9 +121,6 @@ class Create_Screen extends React.Component {
                 name:               this.state.alias,
                 actionbtnvalue:     false,
                 presseduid:         'foo',
-                dead:               false,
-                immune:             false,
-                bloody:             false,
         });
         
         this.props.navigation.dispatch(
@@ -251,10 +248,6 @@ class Join_Screen extends React.Component {
                 name:               this.state.alias,
                 actionbtnvalue:     false,
                 presseduid:         'foo',
-                dead:               false,
-                immune:             false,
-                bloody:             false,
-                suspicious:         false,
         });   
 
         firebase.database().ref('rooms/' + roomname + '/playernum').transaction((playernum) => {

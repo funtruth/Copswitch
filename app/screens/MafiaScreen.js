@@ -56,6 +56,7 @@ constructor(props) {
         myname:             '',
         myrole:             '',
         myroleid:           '',
+        targetdead:        '',
         roledesc:           '',
         mafialist:          dataSource,
 
@@ -119,23 +120,14 @@ componentWillMount() {
             if(snap.val().roleid){
                 //Role information
                 firebase.database().ref('roles/' + snap.val().roleid).once('value',rolename=>{
-                    if(rolename.val().type == 1){
-                        this.setState({
-                            myroleid:snap.val().roleid,
-                            myrole:rolename.val().name,
-                            roledesc:rolename.val().desc,
-                            rolerules:rolename.val().rules,
-                            amimafia:true
-                        })
-                    } else {
-                        this.setState({
-                            myroleid:snap.val().roleid,
-                            myrole:rolename.val().name,
-                            roledesc:rolename.val().desc,
-                            rolerules:rolename.val().rules,
-                            amimafia:false
-                        })
-                    }
+                    this.setState({
+                        myroleid:snap.val().roleid,
+                        myrole:rolename.val().name,
+                        roledesc:rolename.val().desc,
+                        rolerules:rolename.val().rules,
+                        amimafia: rolename.val().type == 1,
+                        targetdead: rolename.val().targetdead?true:false
+                    })
                 })
             }
 
@@ -227,8 +219,8 @@ componentWillMount() {
                 list.push({
                     actionbtnvalue: child.val().actionbtnvalue,
                     name:           child.val().name,
-                    dead:           child.val().dead,
-                    immune:         child.val().immune,
+                    dead:           child.val().dead?true:false,
+                    immune:         child.val().immune?true:false,
                     type:           child.val().type,
                     votes:          child.val().votes,
     
@@ -799,7 +791,8 @@ _renderListComponent(){
                         this._nameBtnLongPress(item.key,item.name,this.state.phase,this.state.roomname)
                     }}
                     style = {item.dead ? styles.dead : (item.immune? styles.immune : styles.alive)}
-                    disabled = {this.state.amidead?true:(item.immune?true:item.dead)}>
+                    disabled = {this.state.amidead?true:(item.immune?true:(item.dead?
+                        (this.state.targetdead?false:true):(this.state.targetdead?true:false)))}>
                     <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
                         <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
                         <MaterialCommunityIcons name={item.dead?'skull':item.actionbtnvalue?
@@ -999,7 +992,7 @@ _actionPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
 
-              //Assassin
+            //Assassin
             if (child.val().roleid == 'a' && !child.val().E) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
                 .once('value',innersnap=>{
@@ -1225,7 +1218,6 @@ if(!this.state.loaded){
 
 return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background}}>
 
-    
     <FadeInView style = {{flex:1.5,backgroundColor:colors.main,justifyContent:'center'}}>
         {this._renderTransitionHeader()}
     </FadeInView>
