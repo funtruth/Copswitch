@@ -44,6 +44,18 @@ class General_Screen extends Component {
         this.props.navigation.navigate('Roles_Screen',{type:type})
     }
 
+    componentWillMount() {
+        firebase.database().ref('roles').once('value',snap=>{
+            
+            AsyncStorage.setItem('Roles',JSON.stringify(snap))
+
+            /*
+            AsyncStorage.getItem('Roles').then(res => {
+                alert(JSON.parse(res))
+            })
+            */
+        })
+    }
 
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background}}>
@@ -121,6 +133,7 @@ class Roles_Screen extends Component {
     componentWillMount() {
 
         firebase.database().ref('roles').once('value', deepshot => {
+
             var list = [];
             deepshot.forEach((child)=> {
                 if(child.val().type == this.state.type){
