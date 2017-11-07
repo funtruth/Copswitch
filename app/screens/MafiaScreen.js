@@ -56,7 +56,8 @@ constructor(props) {
         myname:             '',
         myrole:             '',
         myroleid:           '',
-        targetdead:        '',
+        targetdead:         '',
+        targettown:         '',
         roledesc:           '',
         mafialist:          dataSource,
 
@@ -121,12 +122,13 @@ componentWillMount() {
                 //Role information
                 firebase.database().ref('roles/' + snap.val().roleid).once('value',rolename=>{
                     this.setState({
-                        myroleid:snap.val().roleid,
-                        myrole:rolename.val().name,
-                        roledesc:rolename.val().desc,
-                        rolerules:rolename.val().rules,
-                        amimafia: rolename.val().type == 1,
-                        targetdead: rolename.val().targetdead?true:false
+                        myroleid:       snap.val().roleid,
+                        myrole:         rolename.val().name,
+                        roledesc:       rolename.val().desc,
+                        rolerules:      rolename.val().rules,
+                        amimafia:       rolename.val().type == 1,
+                        targetdead:     rolename.val().targetdead?true:false,
+                        targettown:     rolename.val().targettown?true:false,
                     })
                 })
             }
@@ -791,13 +793,16 @@ _renderListComponent(){
                 <TouchableOpacity 
                     onPress={() => {this.state.disabled?{}:
                         this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                        this.state.phase,this.state.roomname)}}
+                            this.state.phase,this.state.roomname)
+                    }}
                     onLongPress={()=>{
                         this._nameBtnLongPress(item.key,item.name,this.state.phase,this.state.roomname)
                     }}
-                    style = {item.dead ? styles.dead : (item.immune? styles.immune : styles.alive)}
-                    disabled = {this.state.amidead?true:(item.immune?true:(item.dead?
-                        (this.state.targetdead?false:true):(this.state.targetdead?true:false)))}>
+                    style = {item.dead ? styles.dead : styles.alive}
+                    disabled = {this.state.amidead?true:this.state.targettown?
+                        (this.state.targetdead? (item.type==1 || !item.dead) : item.type == 1 ) 
+                        : (this.state.targetdead? !item.dead : false )}>
+                            
                     <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
                         <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
                         <MaterialCommunityIcons name={item.dead?'skull':item.actionbtnvalue?
@@ -968,8 +973,7 @@ _changePlayerCount(bool){
 
 //Sends a private notice message
 _noticeMsg(target,message){
-    firebase.database().ref('messages/' + target)
-        .push({from: 'Private', message: message})
+    firebase.database().ref('messages/' + target).push({from: 'Private', message: message})
 }
 
 //Creates a public notice message
@@ -996,160 +1000,177 @@ _adjustmentPhase() {
 _actionPhase() {
     firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
         snap.forEach((child)=>{
+            if(!child.val().E){
+                //Assassin
+                if (child.val().roleid == 'a') {
+                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
+                    .once('value',innersnap=>{
+                        if(!innersnap.val().D){
+                            this.listRef.child(child.val().target).update({dead:true});
+                            this.myInfoRef.update({bloody:true});
+                            this._changePlayerCount(false);
 
-            //Assassin
-            if (child.val().roleid == 'a' && !child.val().E) {
-                firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
-                .once('value',innersnap=>{
-                    if(!innersnap.val().D){
-                        this.listRef.child(child.val().target).update({dead:true});
-                        this.myInfoRef.update({bloody:true});
-                        this._changePlayerCount(false);
+                            this._noticeMsg(child.val().target,'You were stabbed.');
+                            this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                                child.val().targetname + ' was killed.');
+                        } 
+                        this._noticeMsg(child.key,'You have stabbed ' + child.val().targetname + '.');
+                    })
+        
+                }
+                //Murderer 
+                else if (child.val().roleid == 'b') {
+                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
+                    .once('value',innersnap=>{
+                        if(!innersnap.val().D){
+                            this.listRef.child(child.val().target).update({dead:true});
+                            this.myInfoRef.update({bloody:true});
+                            this._changePlayerCount(false);
 
-                        this._noticeMsg(child.val().target,'You were stabbed.');
-                        this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                            child.val().targetname + ' was killed.');
-                    } 
-                    this._noticeMsg(child.key,'You have stabbed ' + child.val().targetname + '.');
-                })
+                            this._noticeMsg(child.val().target,'You were stabbed.');
+                            this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                                child.val().targetname + ' was killed.');
+                        }
+                        this._noticeMsg(child.key,'You have stabbed ' + child.val().targetname + '.');
+                    })
     
-            }
-            //Murderer 
-            else if (child.val().roleid == 'b' && !child.val().E) {
-                firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
-                .once('value',innersnap=>{
-                    if(!innersnap.val().D){
-                        this.listRef.child(child.val().target).update({dead:true});
-                        this.myInfoRef.update({bloody:true});
-                        this._changePlayerCount(false);
-
-                        this._noticeMsg(child.val().target,'You were stabbed.');
-                        this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                            child.val().targetname + ' was killed.');
-                    }
-                    this._noticeMsg(child.key,'You have stabbed ' + child.val().targetname + '.');
-                })
-   
-            }
-            //Schemer
-            else if (child.val().roleid == 'c' && !child.val().E) {
-                this._noticeMsg(child.key,'You framed ' + child.val().targetname +" last night.");
-            }
-            //Spy
-            else if (child.val().roleid == 'd' && !child.val().E) {
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + child.val().target).once('value',innersnap=>{
-                    firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
-                        this._noticeMsg(child.key,'You spied on ' + child.val().targetname 
-                        + ". They are a " + rolename.val().name + '.');
+                }
+                //Schemer
+                else if (child.val().roleid == 'c') {
+                    this._noticeMsg(child.key,'You framed ' + child.val().targetname +" last night.");
+                }
+                //Spy
+                else if (child.val().roleid == 'd') {
+                    this.listRef.child(child.val().target).once('value',innersnap=>{
+                        firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
+                            this._noticeMsg(child.key,'You spied on ' + child.val().targetname 
+                            + ". They are a " + rolename.val().name + '.');
+                        })
                     })
-                })
 
-            }
-            //Silencer
-            else if (child.val().roleid == 'f' && !child.val().E) {
-                this.listRef.child(child.val().target).update({ status: 'volume-mute' })
-                this._noticeMsg(child.key,'You silenced ' + child.val().targetname + '.');
-                this._noticeMsg(child.val().target,'You were silenced.');
-            }
-            //Detective
-            else if (child.val().roleid == 'A' && !child.val().E) {
-                this.listRef.child(child.val().target).once('value',insidesnap=>{
-                    this.roomRef.child('actions').child(child.val().target).once('value',scheme=>{
-                        if(scheme.val().c || insidesnap.val().suspicious){
-                            this._noticeMsg(child.key, child.val().targetname + ' is suspicious ...');
+                }
+                //Silencer
+                else if (child.val().roleid == 'f') {
+                    this.listRef.child(child.val().target).update({ status: 'volume-mute' })
+                    this._noticeMsg(child.key,'You silenced ' + child.val().targetname + '.');
+                    this._noticeMsg(child.val().target,'You were silenced.');
+                }
+                //Detective
+                else if (child.val().roleid == 'A') {
+                    this.listRef.child(child.val().target).once('value',insidesnap=>{
+                        this.roomRef.child('actions').child(child.val().target).once('value',scheme=>{
+                            if(scheme.val().c || insidesnap.val().suspicious){
+                                this._noticeMsg(child.key, child.val().targetname + ' is suspicious ...');
+                            } else {
+                                this._noticeMsg(child.key, child.val().targetname + ' is not suspicious.');
+                            }
+                        })
+                    })
+                }
+                //Investigator
+                else if (child.val().roleid == 'B') {
+                    this.listRef.child(child.val().target).once('value',innersnap=>{
+                        if(innersnap.val().bloody){
+                            this._noticeMsg(child.key, child.val().targetname + " has blood on their hands.");
                         } else {
-                            this._noticeMsg(child.key, child.val().targetname + ' is not suspicious.');
+                            this._noticeMsg(child.key, child.val().targetname 
+                            + " does not have blood on their hands.");
                         }
                     })
-                })
-            }
-            //Investigator
-            else if (child.val().roleid == 'B' && !child.val().E) {
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + child.val().target).once('value',innersnap=>{
-                    if(innersnap.val().bloody){
-                        this._noticeMsg(child.key, child.val().targetname + " has blood on their hands.");
-                    } else {
-                        this._noticeMsg(child.key, child.val().targetname 
-                        + " does not have blood on their hands.");
-                    }
-                })
 
-                
-            }
-            //Doctor
-            else if (child.val().roleid == 'D' && !child.val().E) {
-                firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
-                .once('value',insidesnap=>{
-                    if(insidesnap.val().a || insidesnap.val().b){
-                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                            + firebase.auth().currentUser.uid).update({bloody:true});
-                        this._noticeMsg(child.val().target,'The Doctor took care of your stab wounds.');
-                        this._noticeMsg(child.key,'You healed ' + child.val().targetname +"'s stab wounds.");
-                    } else {
-                        this._noticeMsg(child.key, 'You visited '+ child.val().targetname + '.');
-                    }
-                })
-            }
-            //Escort
-            else if (child.val().roleid == 'E' && !child.val().E) {
-                this._noticeMsg(child.val().target, 'You were distracted last night.');
-                this._noticeMsg(child.key, 'You distracted ' + child.val().targetname +" last night.");     
-            }
-            //Warden
-            else if (child.val().roleid == 'G' && !child.val().E) {
-                this.roomRef.child('actions').child(child.val().target).once('value',insnap=>{
-                    var string = 'Nobody';
-                    insnap.forEach((visitor)=>{
-                        if(visitor.key.length == 1){
-                            visitor.forEach((person)=>{
-                                if(person.key != child.key){
-                                    if(string == 'Nobody'){
-                                        string = person.val();
-                                    } else {
-                                        string = string + ', ' + person.val();
+                    
+                }
+                //Doctor
+                else if (child.val().roleid == 'D') {
+                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
+                    .once('value',insidesnap=>{
+                        if(insidesnap.val().a || insidesnap.val().b){
+                            this.listRef.child(child.key).update({bloody:true});
+                            this._noticeMsg(child.val().target,'The Doctor took care of your stab wounds.');
+                            this._noticeMsg(child.key,'You healed ' + child.val().targetname +"'s stab wounds.");
+                        } else {
+                            this._noticeMsg(child.key, 'You visited '+ child.val().targetname + '.');
+                        }
+                    })
+                }
+                //Escort
+                else if (child.val().roleid == 'E') {
+                    this._noticeMsg(child.val().target, 'You were distracted last night.');
+                    this._noticeMsg(child.key, 'You distracted ' + child.val().targetname +" last night.");     
+                }
+                //Warden
+                else if (child.val().roleid == 'G') {
+                    this.roomRef.child('actions').child(child.val().target).once('value',insnap=>{
+                        var string = 'Nobody';
+                        insnap.forEach((visitor)=>{
+                            if(visitor.key.length == 1){
+                                visitor.forEach((person)=>{
+                                    if(person.key != child.key){
+                                        if(string == 'Nobody'){
+                                            string = person.val();
+                                        } else {
+                                            string = string + ', ' + person.val();
+                                        }
                                     }
-                                }
-                            })
+                                })
+                            }
+                        })
+                        this._noticeMsg(child.key,'#34cd0e',string + ' visited ' + child.val().targetname 
+                            + "'s house last night.")
+                    })
+                }
+                //Forensic
+                else if (child.val().roleid == 'H') {
+                    this.listRef.child(child.val().target).once('value',innersnap=>{
+                        firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
+                            this._noticeMsg(child.key, child.val().targetname 
+                            + "'s body resembles a " + rolename.val().name + '.');
+                        })
+                    })
+                }
+                //Overseer
+                else if (child.val().roleid == 'I') {
+                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
+                    + child.val().target).once('value',wheredhego=>{
+                        if(wheredhego.val().targetname){
+                            this._noticeMsg(child.key, child.val().targetname + ' visited ' 
+                            + wheredhego.val().targetname +"'s house last night.");
+                        } else {
+                            this._noticeMsg(child.key, child.val().targetname 
+                            + ' did not leave their house last night.');
                         }
                     })
-                    this._noticeMsg(child.key,'#34cd0e',string + ' visited ' + child.val().targetname 
-                        + "'s house last night.")
-                })
-            }
-            //Forensic
-            else if (child.val().roleid == 'H' && !child.val().E) {
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + child.val().target).once('value',innersnap=>{
-                    firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
-                        this._noticeMsg(child.key,'You examined the body of ' 
-                        + child.val().targetname + ', the ' + rolename.val().name + '.');
+                }
+                //Hunter
+                else if (child.val().roleid == 'J') {
+                    this.listRef.child(child.key).child('charges').once('value',charges=>{
+                        if(charges.val() > 0){
+                            firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
+                            .once('value',innersnap=>{
+                                if(!innersnap.val().D){
+                                    this.listRef.child(child.val().target).update({dead:true});
+                                    this._changePlayerCount(false);
+            
+                                    this._noticeMsg(child.val().target,'You were shot.');
+                                    this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                                        child.val().targetname + ' was killed.');
+                                } 
+                                this._noticeMsg(child.key, 'You shot ' + child.val().targetname + '.');
+                            })
+                            this.listRef.child(child.key).update({charges: (charges.val()-1)})
+                            
+                        } else {
+                            this._noticeMsg(child.key, 'You are out of bullets.')
+                        }
                     })
-                })
-            }
-            //Overseer
-            else if (child.val().roleid == 'I' && !child.val().E) {
-                firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
-                + child.val().target).once('value',wheredhego=>{
-                    if(wheredhego.val().targetname){
-                        this._noticeMsg(child.key, child.val().targetname + ' visited ' 
-                        + wheredhego.val().targetname +"'s house last night.");
-                    } else {
-                        this._noticeMsg(child.key, child.val().targetname 
-                        + ' did not leave their house last night.');
-                    }
-                })
-            }
-            //Hunter
-            else if (child.val().roleid == 'J' && !child.val().E) {
-                this.listRef.child(child.key).child('charges').once('value',charges=>{
-                    if(charges.val() > 0){
-
-                    } else {
-                        this._noticeMsg(child.key, 'You are out of bullets.')
-                    }
-                })
+                }
+                //Disguiser
+                else if (child.val().roleid == 'K') {
+                    this.listRef.child(child.val().target).once('value',role=>{
+                        this.myInfoRef.update({roleid:role.val().roleid})
+                        this._noticeMsg(child.key,'You took ' + child.val().targetname + "'s role.")
+                    })
+                }
             }
         })
     })

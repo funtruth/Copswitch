@@ -217,6 +217,7 @@ class Character_Screen extends Component {
             roleid: params.roleid,
 
             name:           '',
+            image:          "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
             desc:           '',
             team:           '',
             suspicious:     '',
@@ -235,6 +236,7 @@ class Character_Screen extends Component {
             this.setState({
                 name:       snap.val().name,
                 desc:       snap.val().desc,
+                image:      snap.val().image,
                 team:       snap.val().type,
                 suspicious: snap.val().suspicious,
                 rules:      snap.val().rules,
@@ -258,7 +260,12 @@ class Character_Screen extends Component {
                 <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
                     {this.state.desc}</Text>
             </View>
-            <View style = {{flex:3}}/>
+            <View style = {{flex:4,justifyContent:'center',alignItems:'center'}}>
+                <Image 
+                    style={{width:250,height:250}}
+                    source={{uri: this.state.image}}
+                />
+            </View>
             <View style = {{flex:3,marginLeft:10}}>
                 <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
                     {'Team: ' + this.state.team}</Text>
