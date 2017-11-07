@@ -12,7 +12,6 @@ import colors from './app/misc/colors.js';
 
 import Lists from "./app/screens/ListsScreen";
 import Room from "./app/screens/RoomScreen";
-import Profile from "./app/screens/ProfileScreen";
 
 export const SignedOut = StackNavigator(
   {

@@ -22,6 +22,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import randomize from 'randomatic';
 
 import { Button } from "react-native-elements";
+import { MenuButton } from '../components/MenuButton.js';
 
 import { isInGame } from "../auth";
 import { isInRoom } from "../auth";
@@ -50,33 +51,39 @@ class Room_Screen extends React.Component {
         this.props.navigation.navigate('Join_Screen');
     }
 
-    render() {
-        return <View style = {{ flex:1, backgroundColor:colors.background, }}>
-            <TouchableWithoutFeedback 
-                style = {{ flex:1,justifyContent:'center' }}
-                onPress={()=>{ this._createRoom() }}>
-                <View style = {{flex:1,backgroundColor:colors.main,
-                    justifyContent:'center',alignItems:'center'}}>
-                    <Text style = {{
-                        fontFamily:'ConcertOne-Regular',
-                        color:colors.font,
-                        fontSize:30,
-                        justifyContent:'center'}}>Make a Room</Text>
-                </View>
-            </TouchableWithoutFeedback>
+    _logOut() {
+        if(firebase.auth().currentUser.isAnonymous){
+            onSignOut().then(() => { firebase.auth().currentUser.delete() })
+            this.props.navigation.navigate('SignedOut');
+        } else {
+            onSignOut().then(() => { firebase.auth().signOut() }) 
+            this.props.navigation.navigate('SignedOut');
+        }
+    }
 
-            <TouchableWithoutFeedback 
-                style = {{ flex:1,justifyContent:'center' }}
-                onPress={()=>{ this._findRoom() }}>
-                <View style = {{flex:1,backgroundColor:colors.color2,
-                    justifyContent:'center',alignItems:'center'}}>
-                    <Text style = {{
-                        fontFamily:'ConcertOne-Regular',
-                        color:colors.font,
-                        fontSize:30,
-                        justifyContent:'center'}}>Join a Room</Text>
-                </View>
-            </TouchableWithoutFeedback>
+    render() {
+        return <View style = {{ flex:1, backgroundColor:colors.background, justifyContent:'center' }}>
+
+            <View style = {{flex:0.8}}/>
+            <View style = {{ flexDirection:'row', flex:0.12,
+                justifyContent:'center', alignItems:'center' }}>
+                <MenuButton
+                    flex = {0.9}
+                    fontSize = {25}
+                    title = 'Make Room'
+                    onPress = {()=>{ this._createRoom() }}
+                />
+            </View>
+            <View style = {{ flexDirection:'row', flex:0.12,
+                justifyContent:'center', alignItems:'center' }}>
+                <MenuButton
+                    flex = {0.9}
+                    fontSize = {25}
+                    title = 'Join Room'
+                    onPress = {()=>{ this._findRoom() }}
+                />
+            </View>
+            <View style = {{flex:0.01}}/>
         </View>
     }
 }
