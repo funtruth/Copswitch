@@ -157,16 +157,17 @@ class Create_Screen extends React.Component {
             <View style = {{flex:1,backgroundColor:colors.color2,
                 justifyContent:'center',alignItems:'center'}}>
 
-                <View style = {{ justifyContent: 'center', flexDirection: 'row', marginBottom:10 }}>
+                <View style = {{ justifyContent: 'center', flexDirection: 'row', marginBottom:5 }}>
                     <TextInput
-                        placeholder="Who are you? ..."
+                        placeholder="Who are you?"
                         placeholderTextColor={colors.main}
                         style={{
-                            backgroundColor: colors.color2,
-                            flex:0.6,
+                            backgroundColor: colors.background,
+                            flex:0.8,
                             fontFamily:'ConcertOne-Regular',
                             fontSize: 20,
                             color:colors.font,
+                            textAlign:'center',
                         }}
                         value={this.state.alias}
                         onChangeText = {(text) => {this.setState({alias: text})}}
@@ -176,20 +177,16 @@ class Create_Screen extends React.Component {
                 </View>
 
                 <View style = {{ justifyContent: 'center', alignItems:'center', flexDirection: 'row' }}>
-                    <View style = {{flex:0.75}}>
-                    <Button
+                    <MenuButton
                         title="Create Room"
-                        fontFamily='ConcertOne-Regular'
+                        flex = {0.9}
                         fontSize={20}
-                        color={colors.font}
-                        borderRadius={15}
-                        backgroundColor={colors.main}
                         onPress={()=>{
                             if(this._validName(this.state.alias)){
                                 this._createRoom()
                             }
                         }}
-                    /></View>
+                    />
                 </View>
 
                 {/*Make-shift Keyboard Avoiding View*/}
@@ -278,16 +275,19 @@ class Join_Screen extends React.Component {
             <View style = {{flex:1,backgroundColor:colors.color2,
                 justifyContent:'center',alignItems:'center'}}>
 
+                <View style = {{flex:0.15}}/>
                 <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
+                    <View style = {{flex:0.1}}/>
                     <TextInput
-                        placeholder="Who are you? ..."
+                        placeholder="Who are you?"
                         placeholderTextColor={colors.main}
                         style={{
-                            backgroundColor: colors.color2,
-                            flex:0.6,
+                            backgroundColor: colors.background,
+                            flex:0.5,
                             fontFamily:'ConcertOne-Regular',
                             fontSize: 20,
                             color:colors.font,
+                            textAlign:'center',
                         }}
                         value={this.state.alias}
                         autoFocus = {true}
@@ -295,19 +295,17 @@ class Join_Screen extends React.Component {
                         onChangeText = {(text) => {this.setState({alias: text})}}
                         onSubmitEditing = {()=>this.refs['roomcode'].focus()}
                     />
-                </View>
-
-                <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
                     <TextInput
                         ref='roomcode'
-                        placeholder="Room Code ..."
+                        placeholder="Room Code"
                         placeholderTextColor={colors.main}
                         style={{
-                            backgroundColor: colors.color2,
-                            flex:0.6,
+                            backgroundColor: colors.background,
+                            flex:0.5,
                             fontFamily:'ConcertOne-Regular',
                             fontSize: 20,
                             color:colors.font,
+                            textAlign:'center',
                         }}
                         value={this.state.roomname}
                         autoCapitalize='characters'
@@ -315,24 +313,21 @@ class Join_Screen extends React.Component {
                         onChangeText = {(text) => {this.setState({roomname: text})}}
                         onSubmitEditing = {()=>{Keyboard.dismiss()}}
                     />
+                    <View style = {{flex:0.1}}/>
                 </View>
 
-                <View style = {{ margin: 5, justifyContent: 'center', alignItems:'center', flexDirection: 'row' }}>
-                        <View style = {{flex:0.75}}>
-                        <Button
-                            title="Join Room"
-                            fontFamily='ConcertOne-Regular'
-                            fontSize={20}
-                            color={colors.font}
-                            borderRadius={15}
-                            backgroundColor={colors.main}
-                            onPress={()=>{
-                                this._valid(this.state.alias,this.state.roomname.toUpperCase())
-                            }}
-                        /></View>
+                <View style = {{ marginTop: 5, justifyContent: 'center', alignItems:'center', 
+                flexDirection: 'row' }}>
+                    <MenuButton 
+                        title="Join Room"
+                        flex = {0.9}
+                        fontSize={20}
+                        onPress={()=>{
+                            this._valid(this.state.alias,this.state.roomname.toUpperCase())
+                        }}
+                    />
                 </View>
 
-                {/*Makeshift Keyboard Avoiding View*/}
                 <View style = {{flex:0.4}}/>
             </View>
 
@@ -638,8 +633,7 @@ class Lobby_Screen extends React.Component {
     }
 
     _renderBottomComponent() {
-        if(this.state.listview){
-            return <View style = {{flex:0.7,justifyContent:'center', alignItems:'center',
+        return <View style = {{flex:0.7,justifyContent:'center', alignItems:'center',
                 backgroundColor:this.state.amiowner?colors.main:colors.disabled,borderRadius:15}}>
             <TouchableOpacity
                 onPress={()=> {
@@ -650,40 +644,6 @@ class Lobby_Screen extends React.Component {
                 <Text style = {styles.concerto}>START GAME</Text>
             </TouchableOpacity>
         </View>
-        } else {
-            return <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
-                <View style = {{flex:1,flexDirection:'row',
-                    backgroundColor:this.state.amiowner?colors.main:colors.disabled,borderRadius:15}}>
-                    <TouchableOpacity
-                        style = {{
-                            justifyContent:'center', alignItems:'center', flex:1
-                        }}
-                        onPress = {()=>{this._recommendedBtnPress('easy',this.state.playercount)}}
-                    >
-                        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',fontSize:15}}>
-                            Easy</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style = {{
-                            flex:1, justifyContent:'center', alignItems:'center'
-                        }}
-                        onPress = {()=>{this._recommendedBtnPress('medium',this.state.playercount)}}
-                    >
-                        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',fontSize:15}}>
-                            Normal</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                        style = {{
-                            justifyContent:'center', alignItems:'center', flex:1
-                        }}
-                        onPress = {()=>{this._recommendedBtnPress('hard',this.state.playercount)}}
-                    >
-                        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',fontSize:15}}>
-                            Difficult</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        }
     }
 
     render() {
@@ -716,7 +676,7 @@ class Lobby_Screen extends React.Component {
                 > 
                     <Text style = {{color:colors.font, alignSelf:'center',
                         fontFamily:'ConcertOne-Regular', fontSize:25}}>
-                        {'Room Name: ' + this.state.roomname}
+                        {'Room Code: ' + this.state.roomname}
                     </Text>
                 </View>
                 <View style = {{flex:1, justifyContent:'center'}}>
@@ -846,7 +806,6 @@ class Expired_Screen extends React.Component {
 }
     
 
-
 export default class App extends React.Component {
     constructor(props) {
         super(props);
@@ -899,7 +858,6 @@ export default class App extends React.Component {
         const { checkedInGame, inGame, checkedInRoom, inRoom,
             checkedExpired, isExpired, roomname } = this.state;
         
-        // If we haven't checked AsyncStorage yet, don't render anything (better ways to do this)
         if (!checkedInGame || !checkedInRoom || !checkedExpired) {
             return null;
         }
