@@ -7,7 +7,7 @@ import { StackNavigator, TabNavigator } from "react-navigation";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { Splash, SignUp, SignIn } from "./app/loginscreens/LogIn";
+import { Splash } from "./app/loginscreens/LogIn";
 import colors from './app/misc/colors.js';
 
 import Lists from "./app/screens/ListsScreen";
@@ -18,12 +18,6 @@ export const SignedOut = StackNavigator(
     Splash: {
         screen: Splash,
       },
-    SignIn: {
-        screen: SignIn,
-      },
-    SignUp: {
-        screen: SignUp,
-    },
   },
     {
     headerMode: 'none',
@@ -46,7 +40,6 @@ export const SignedOut = StackNavigator(
           tabBarIcon: ({ tintColor }) => (
             <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
           ),
-          
         }
       },
     },
