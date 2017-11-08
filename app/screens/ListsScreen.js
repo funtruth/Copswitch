@@ -19,6 +19,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
+import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
 
@@ -42,12 +43,6 @@ class General_Screen extends Component {
 
     _goToRules(type) {
         this.props.navigation.navigate('Roles_Screen',{type:type})
-    }
-
-    componentWillMount() {
-        firebase.database().ref('roles').once('value',snap=>{
-            AsyncStorage.setItem('Roles',JSON.stringify(snap))
-        })
     }
 
     render(){
@@ -124,19 +119,17 @@ class Roles_Screen extends Component {
         const { params } = this.props.navigation.state;
         const type = params.type;
 
-        AsyncStorage.getItem('Roles').then(res => {
-            var keys = Object.keys(JSON.parse(res)).sort()
-            var rolelist = [];
-            keys.forEach(function(key){
-                if(JSON.parse(res)[key].type == type)
-                rolelist.push({
-                    name: JSON.parse(res)[key].name,
-                    desc: JSON.parse(res)[key].desc,
-                    key: key,
-                })
+        var keys = Object.keys(Rolesheet).sort()
+        var rolelist = [];
+        keys.forEach(function(key){
+            if(Rolesheet[key].type == type)
+            rolelist.push({
+                name:   Rolesheet[key].name,
+                desc:   Rolesheet[key].desc,
+                key:    key,
             })
-            this.setState({rolelist:rolelist})
         })
+        this.setState({rolelist:rolelist})
 
     }
 
@@ -206,10 +199,6 @@ class Character_Screen extends Component {
 
     constructor(props) {
         super(props);
-    
-        const dataSource = new ListView.DataSource({
-            rowHasChanged: (row1, row2) => row1 !== row2,
-        });
 
         const { params } = this.props.navigation.state;
         const roleid = params.roleid;
@@ -218,7 +207,7 @@ class Character_Screen extends Component {
             roleid: params.roleid,
 
             name:           '',
-            image:          "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
+            image:          '',
             desc:           '',
             team:           '',
             suspicious:     '',
@@ -230,17 +219,15 @@ class Character_Screen extends Component {
 
 
     componentWillMount() {
-        AsyncStorage.getItem('Roles').then(res => {
-            this.setState({
-                name:           JSON.parse(res)[this.state.roleid].name,
-                image:          JSON.parse(res)[this.state.roleid].image,
-                desc:           JSON.parse(res)[this.state.roleid].desc,
-                team:           JSON.parse(res)[this.state.roleid].type,
-                suspicious:     JSON.parse(res)[this.state.roleid].suspicious,
-                blood:          JSON.parse(res)[this.state.roleid].blood,
-                visits:         JSON.parse(res)[this.state.roleid].visits,
-                rules:          JSON.parse(res)[this.state.roleid].rules,
-            })
+        this.setState({
+            name:           Rolesheet[this.state.roleid].name,
+            image:          Rolesheet[this.state.roleid].image,
+            desc:           Rolesheet[this.state.roleid].desc,
+            team:           Rolesheet[this.state.roleid].type,
+            suspicious:     Rolesheet[this.state.roleid].suspicious,
+            blood:          Rolesheet[this.state.roleid].blood,
+            visits:         Rolesheet[this.state.roleid].visits,
+            rules:          Rolesheet[this.state.roleid].rules,
         })
     }
 
