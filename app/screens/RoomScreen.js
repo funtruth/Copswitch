@@ -65,24 +65,20 @@ class Room_Screen extends React.Component {
         return <View style = {{ flex:1, backgroundColor:colors.background, justifyContent:'center' }}>
 
             <View style = {{flex:0.8}}/>
-            <View style = {{ flexDirection:'row', flex:0.12,
-                justifyContent:'center', alignItems:'center' }}>
-                <MenuButton
-                    flex = {0.9}
-                    fontSize = {25}
-                    title = 'Make Room'
-                    onPress = {()=>{ this._createRoom() }}
-                />
-            </View>
-            <View style = {{ flexDirection:'row', flex:0.12,
-                justifyContent:'center', alignItems:'center' }}>
-                <MenuButton
-                    flex = {0.9}
-                    fontSize = {25}
-                    title = 'Join Room'
-                    onPress = {()=>{ this._findRoom() }}
-                />
-            </View>
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Make Room'
+                onPress = {()=>{ this._createRoom() }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Join Room'
+                onPress = {()=>{ this._findRoom() }}
+            />
             <View style = {{flex:0.01}}/>
         </View>
     }
@@ -176,18 +172,16 @@ class Create_Screen extends React.Component {
                     />
                 </View>
 
-                <View style = {{ justifyContent: 'center', alignItems:'center', flexDirection: 'row' }}>
-                    <MenuButton
-                        title="Create Room"
-                        flex = {0.9}
-                        fontSize={20}
-                        onPress={()=>{
-                            if(this._validName(this.state.alias)){
-                                this._createRoom()
-                            }
-                        }}
-                    />
-                </View>
+                <MenuButton
+                    title="Create Room"
+                    flex = {0.75}
+                    fontSize={20}
+                    onPress={()=>{
+                        if(this._validName(this.state.alias)){
+                            this._createRoom()
+                        }
+                    }}
+                />
 
                 {/*Make-shift Keyboard Avoiding View*/}
                 <View style = {{flex:0.3}}/> 
@@ -277,56 +271,53 @@ class Join_Screen extends React.Component {
 
                 <View style = {{flex:0.15}}/>
                 <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
-                    <View style = {{flex:0.1}}/>
-                    <TextInput
-                        placeholder="Who are you?"
-                        placeholderTextColor={colors.main}
-                        style={{
-                            backgroundColor: colors.background,
-                            flex:0.5,
-                            fontFamily:'ConcertOne-Regular',
-                            fontSize: 20,
-                            color:colors.font,
-                            textAlign:'center',
-                        }}
-                        value={this.state.alias}
-                        autoFocus = {true}
-                        blurOnSubmit={false}
-                        onChangeText = {(text) => {this.setState({alias: text})}}
-                        onSubmitEditing = {()=>this.refs['roomcode'].focus()}
-                    />
-                    <TextInput
-                        ref='roomcode'
-                        placeholder="Room Code"
-                        placeholderTextColor={colors.main}
-                        style={{
-                            backgroundColor: colors.background,
-                            flex:0.5,
-                            fontFamily:'ConcertOne-Regular',
-                            fontSize: 20,
-                            color:colors.font,
-                            textAlign:'center',
-                        }}
-                        value={this.state.roomname}
-                        autoCapitalize='characters'
-                        blurOnSubmit={false}
-                        onChangeText = {(text) => {this.setState({roomname: text})}}
-                        onSubmitEditing = {()=>{Keyboard.dismiss()}}
-                    />
+                    <View style = {{flex:0.1,marginBottom:5}}/>
+                        <TextInput
+                            placeholder="Who are you?"
+                            placeholderTextColor={colors.main}
+                            style={{
+                                backgroundColor: colors.background,
+                                flex:0.5,
+                                fontFamily:'ConcertOne-Regular',
+                                fontSize: 20,
+                                color:colors.font,
+                                textAlign:'center',
+                            }}
+                            value={this.state.alias}
+                            autoFocus = {true}
+                            blurOnSubmit={false}
+                            onChangeText = {(text) => {this.setState({alias: text})}}
+                            onSubmitEditing = {()=>this.refs['roomcode'].focus()}
+                        />
+                        <TextInput
+                            ref='roomcode'
+                            placeholder="Room Code"
+                            placeholderTextColor={colors.main}
+                            style={{
+                                backgroundColor: colors.background,
+                                flex:0.5,
+                                fontFamily:'ConcertOne-Regular',
+                                fontSize: 20,
+                                color:colors.font,
+                                textAlign:'center',
+                            }}
+                            value={this.state.roomname}
+                            autoCapitalize='characters'
+                            blurOnSubmit={false}
+                            onChangeText = {(text) => {this.setState({roomname: text})}}
+                            onSubmitEditing = {()=>{Keyboard.dismiss()}}
+                        />
                     <View style = {{flex:0.1}}/>
                 </View>
 
-                <View style = {{ marginTop: 5, justifyContent: 'center', alignItems:'center', 
-                flexDirection: 'row' }}>
-                    <MenuButton 
-                        title="Join Room"
-                        flex = {0.9}
-                        fontSize={20}
-                        onPress={()=>{
-                            this._valid(this.state.alias,this.state.roomname.toUpperCase())
-                        }}
-                    />
-                </View>
+                <MenuButton 
+                    title="Join Room"
+                    flex = {0.75}
+                    fontSize={20}
+                    onPress={()=>{
+                        this._valid(this.state.alias,this.state.roomname.toUpperCase())
+                    }}
+                />
 
                 <View style = {{flex:0.4}}/>
             </View>

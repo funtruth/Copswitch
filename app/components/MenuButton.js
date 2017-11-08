@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import {
-    Button
-} from 'react-native-elements';
+import { Button } from 'react-native-elements';
+import { View } from 'react-native';
 
 import colors from '../misc/colors.js';
 
@@ -15,16 +14,19 @@ constructor(props) {
 render() {
 
     return (
-        <Button
-            backgroundColor = {colors.main}
-            color = {colors.font}
-            containerViewStyle = {{ flex:this.props.flex }}
-            fontFamily = 'ConcertOne-Regular'
-            fontSize = {this.props.fontSize}
-            borderRadius = {10}
-            title = {this.props.title}
-            onPress = {this.props.onPress}
-        />
+        <View style = {{flex:this.props.viewFlex, flexDirection:'row',
+        justifyContent:'center', alignItems:'center'}}>
+            <Button
+                backgroundColor = {colors.main}
+                color = {colors.font}
+                containerViewStyle = {{ flex:this.props.flex }}
+                fontFamily = 'ConcertOne-Regular'
+                fontSize = {this.props.fontSize}
+                borderRadius = {10}
+                title = {this.props.title}
+                onPress = {this.props.onPress}
+            />
+        </View>
     )
 }
 }

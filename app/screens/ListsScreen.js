@@ -15,6 +15,7 @@ import {
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { MenuButton } from '../components/MenuButton.js';
 
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
@@ -31,14 +32,6 @@ class General_Screen extends Component {
 
     constructor(props) {
         super(props);
-
-        const dataSource = new ListView.DataSource({
-            rowHasChanged: (row1, row2) => row1 !== row2,
-        });
-
-        this.state = {
-        }
-
     }
 
     _goToRules(type) {
@@ -46,45 +39,71 @@ class General_Screen extends Component {
     }
 
     render(){
-        return <View style = {{flex:1,backgroundColor:colors.background}}>
-        
-            <TouchableOpacity
-                style={{flex:1,justifyContent:'center',backgroundColor:colors.color1}}
-                onPress={()=>{this._goToRules(2)}}
-            >   
-                <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                    <Text style = {{
-                        fontFamily:'ConcertOne-Regular',
-                        color:colors.font,
-                        fontSize:30,
-                        justifyContent:'center'}}>Town</Text>
-                </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={{flex:1,justifyContent:'center',backgroundColor:colors.color2,}}
-                onPress={()=>{this._goToRules(1)}}
-            >   
-                <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                    <Text style = {{
-                        fontFamily:'ConcertOne-Regular',
-                        color:colors.font,
-                        fontSize:30,
-                        justifyContent:'center'}}>Mafia</Text>
-                </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={{flex:1,justifyContent:'center',backgroundColor:colors.color3,}}
-                onPress={()=>{this._goToRules(3)}}
-            >   
-                <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                    <Text style = {{
-                        fontFamily:'ConcertOne-Regular',
-                        color:colors.font,
-                        fontSize:30,
-                        justifyContent:'center'}}>Neutral</Text>
-                </View>
-            </TouchableOpacity>
-            
+        return <View style = {{flex:1,backgroundColor:colors.background,
+            justifyContent:'center', alignItems:'center'}}>
+            <View style = {{justifyContent:'center',flex:0.1}}>
+                <Text style = {{
+                    fontFamily:'ConcertOne-Regular',fontSize:30,color:colors.main,
+                    alignSelf:'center'}}>Roles
+                </Text>
+            </View>
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Town'
+                onPress = {()=>{ this._goToRules(2)}}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Mafia'
+                onPress = {()=>{ this._goToRules(1)}}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Neutral'
+                onPress = {()=>{ this._goToRules(3)}}
+            />
+            <View style = {{flex:0.02}}/>
+            <View style = {{justifyContent:'center',flex:0.08}}>
+                <Text style = {{
+                    fontFamily:'ConcertOne-Regular',fontSize:30,color:colors.main,
+                    alignSelf:'center'}}>How-to-Play
+                </Text>
+            </View>
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Rules'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Phases'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Setup'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Tutorial'
+                onPress = {()=>{ }}
+            />
+            <View style = {{flex:0.06}}/>
         </View>
     }
 }
