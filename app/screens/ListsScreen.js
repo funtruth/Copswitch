@@ -46,14 +46,7 @@ class General_Screen extends Component {
 
     componentWillMount() {
         firebase.database().ref('roles').once('value',snap=>{
-            
             AsyncStorage.setItem('Roles',JSON.stringify(snap))
-
-            /*
-            AsyncStorage.getItem('Roles').then(res => {
-                alert(JSON.parse(res))
-            })
-            */
         })
     }
 
@@ -119,12 +112,8 @@ class Roles_Screen extends Component {
             rowHasChanged: (row1, row2) => row1 !== row2,
         });
 
-        const { params } = this.props.navigation.state;
-        const type = params.type;
-
         this.state = {
             rolelist: dataSource,
-            type: params.type,
         }
         
     }
@@ -132,22 +121,21 @@ class Roles_Screen extends Component {
 
     componentWillMount() {
 
-        firebase.database().ref('roles').once('value', deepshot => {
+        const { params } = this.props.navigation.state;
+        const type = params.type;
 
-            var list = [];
-            deepshot.forEach((child)=> {
-                if(child.val().type == this.state.type){
-                    list.push({
-                        name: child.val().name,
-                        desc: child.val().desc,
-                        color: child.val().color,
-                        suspicious: child.val().suspicious,
-
-                        key: child.key,
-                    })
-                }
+        AsyncStorage.getItem('Roles').then(res => {
+            var keys = Object.keys(JSON.parse(res)).sort()
+            var rolelist = [];
+            keys.forEach(function(key){
+                if(JSON.parse(res)[key].type == type)
+                rolelist.push({
+                    name: JSON.parse(res)[key].name,
+                    desc: JSON.parse(res)[key].desc,
+                    key: key,
+                })
             })
-            this.setState({ rolelist:list }) 
+            this.setState({rolelist:rolelist})
         })
 
     }
@@ -238,29 +226,22 @@ class Character_Screen extends Component {
             visits:         '',
             rules:          '',
         }
-        
-        this.characterRef = firebase.database().ref('roles/' + params.roleid);
-    
     }
 
 
     componentWillMount() {
-        this.characterRef.on('value',snap=>{
+        AsyncStorage.getItem('Roles').then(res => {
             this.setState({
-                name:       snap.val().name,
-                desc:       snap.val().desc,
-                image:      snap.val().image,
-                team:       snap.val().type,
-                suspicious: snap.val().suspicious,
-                rules:      snap.val().rules,
+                name:           JSON.parse(res)[this.state.roleid].name,
+                image:          JSON.parse(res)[this.state.roleid].image,
+                desc:           JSON.parse(res)[this.state.roleid].desc,
+                team:           JSON.parse(res)[this.state.roleid].type,
+                suspicious:     JSON.parse(res)[this.state.roleid].suspicious,
+                blood:          JSON.parse(res)[this.state.roleid].blood,
+                visits:         JSON.parse(res)[this.state.roleid].visits,
+                rules:          JSON.parse(res)[this.state.roleid].rules,
             })
         })
-    }
-
-    componentWillUnmount() {
-        if(this.characterRef){
-            this.characterRef.off();
-        }
     }
 
     render(){
