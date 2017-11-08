@@ -143,9 +143,11 @@ class Roles_Screen extends Component {
         keys.forEach(function(key){
             if(Rolesheet[key].type == type)
             rolelist.push({
-                name:   Rolesheet[key].name,
-                desc:   Rolesheet[key].desc,
-                key:    key,
+                name:           Rolesheet[key].name,
+                desc:           Rolesheet[key].desc,
+                color:          Rolesheet[key].color,
+                suspicious:     Rolesheet[key].suspicious,
+                key:            key,
             })
         })
         this.setState({rolelist:rolelist})

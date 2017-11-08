@@ -18,6 +18,7 @@ import { NavigationActions } from 'react-navigation';
 
 import FadeInView from '../components/FadeInView.js';
 import colors from '../misc/colors.js';
+import Rolesheet from '../misc/roles.json';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -120,16 +121,14 @@ componentWillMount() {
             
             if(snap.val().roleid){
                 //Role information
-                firebase.database().ref('roles/' + snap.val().roleid).once('value',rolename=>{
-                    this.setState({
-                        myroleid:       snap.val().roleid,
-                        myrole:         rolename.val().name,
-                        roledesc:       rolename.val().desc,
-                        rolerules:      rolename.val().rules,
-                        amimafia:       rolename.val().type == 1,
-                        targetdead:     rolename.val().targetdead?true:false,
-                        targettown:     rolename.val().targettown?true:false,
-                    })
+                this.setState({
+                    myroleid:       snap.val().roleid,
+                    myrole:         Rolesheet[snap.val().roleid].name,
+                    roledesc:       Rolesheet[snap.val().roleid].desc,
+                    rolerules:      Rolesheet[snap.val().roleid].rules,
+                    amimafia:       Rolesheet[snap.val().roleid].type == 1,
+                    targetdead:     Rolesheet[snap.val().roleid].targetdead?true:false,
+                    targettown:     Rolesheet[snap.val().roleid].targettown?true:false,
                 })
             }
 
@@ -162,13 +161,11 @@ componentWillMount() {
         if(snap.exists()){
             var mafialist = [];
             snap.forEach((child)=>{
-                firebase.database().ref('roles/' + child.val().roleid).once('value',idtoname=>{
-                    mafialist.push({
-                        name: child.val().name,
-                        rolename: idtoname.val().name,
-                        alive: child.val().alive,
-                        key: child.key,
-                    })
+                mafialist.push({
+                    name:       child.val().name,
+                    rolename:   Rolesheet[child.val().roleid].name,
+                    alive:      child.val().alive,
+                    key:        child.key,
                 })
             })
             this.setState({mafialist:mafialist})
@@ -1042,10 +1039,8 @@ _actionPhase() {
                 //Spy
                 else if (child.val().roleid == 'd') {
                     this.listRef.child(child.val().target).once('value',innersnap=>{
-                        firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
-                            this._noticeMsg(child.key,'You spied on ' + child.val().targetname 
-                            + ". They are a " + rolename.val().name + '.');
-                        })
+                        this._noticeMsg(child.key,'You spied on ' + child.val().targetname 
+                        + ". They are a " + Rolesheet[innersnap.val().roleid].name + '.');
                     })
 
                 }
@@ -1122,10 +1117,8 @@ _actionPhase() {
                 //Forensic
                 else if (child.val().roleid == 'H') {
                     this.listRef.child(child.val().target).once('value',innersnap=>{
-                        firebase.database().ref('roles/' + innersnap.val().roleid).once('value',rolename=>{
-                            this._noticeMsg(child.key, child.val().targetname 
-                            + "'s body resembles a " + rolename.val().name + '.');
-                        })
+                        this._noticeMsg(child.key, child.val().targetname 
+                        + "'s body resembles a " + Rolesheet[innersnap.val().roleid].name + '.');
                     })
                 }
                 //Overseer

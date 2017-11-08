@@ -27,6 +27,7 @@ import { MenuButton } from '../components/MenuButton.js';
 import { isInGame } from "../auth";
 import { isInRoom } from "../auth";
 import colors from '../misc/colors.js';
+import Rolesheet from '../misc/roles.json';
 
 import Mafia_Screen from './MafiaScreen.js';
 
@@ -79,7 +80,7 @@ class Room_Screen extends React.Component {
                 title = 'Join Room'
                 onPress = {()=>{ this._findRoom() }}
             />
-            <View style = {{flex:0.01}}/>
+            <View style = {{flex:0.06}}/>
         </View>
     }
 }
@@ -529,21 +530,17 @@ class Lobby_Screen extends React.Component {
             var min = Math.ceil(1);
             var max = Math.ceil(charcount);
 
-            firebase.database().ref('rooms/' + roomname + '/listofplayers').once('value',insidesnap=>{
+            this.listRef.once('value',insidesnap=>{
                 insidesnap.forEach((child)=>{
 
                     var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
                     var randomrole = randomstring.charAt(randomnumber-1);
 
-                    firebase.database().ref('roles/'+randomrole)
-                    .once('value',character=>{
-                        firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
-                        + child.key).update({
-                            roleid:         randomrole,
-                            charges:        character.val().charges,
-                            suspicious:     character.val().suspicious,
-                            type:           character.val().type,
-                        })
+                    this.listRef.child(child.key).update({
+                        roleid:         randomrole,
+                        charges:        Rolesheet[randomrole].charges,
+                        suspicious:     Rolesheet[randomrole].suspicious,
+                        type:           Rolesheet[randomrole].type,
                     })
 
                     if(randomrole == randomrole.toLowerCase()){
