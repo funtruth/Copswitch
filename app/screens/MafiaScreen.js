@@ -186,6 +186,8 @@ componentWillMount() {
                 })
             })
             this.setState({msglist:msg})
+        } else {
+            this.setState({msglist:[]})
         }
     })
 
@@ -201,6 +203,8 @@ componentWillMount() {
                 })
             })
             this.setState({globallist:msg})
+        } else {
+            this.setState({globallist:[]})
         }
     })
 
@@ -855,40 +859,45 @@ _renderListComponent(){
 //Rendering Message Boxes
 _renderMessageComponent(){
     if (this.state.notificationchat){
-        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}><FlatList
+        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}>
+            <Text style = {styles.chatconcerto}>Public Messages</Text>
+            <FlatList
             data={this.state.globallist}
             renderItem={({item}) => (
-                <Text style={{color:colors.font,fontWeight:'bold',marginTop:5}}>
-                    {'[ ' + item.from + ' ] '+ item.message}</Text>
+                <Text style={styles.leftconcerto}>
+                    {'[' + item.from + '] '+ item.message}</Text>
             )}
             keyExtractor={item => item.key}
             /></View>
     } else if(this.state.messagechat){
-        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}><FlatList
-            data={this.state.msglist}
-            renderItem={({item}) => (
-                <Text style={{color:colors.font,fontWeight:'bold',marginTop:5}}>
-                      {'[ ' + item.from + ' ] ' + item.message}</Text>
-            )}
-            keyExtractor={item => item.key}
-            /></View>
+        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}>
+            <Text style = {styles.chatconcerto}>Private Messages</Text>
+            <FlatList
+                data={this.state.msglist}
+                renderItem={({item}) => (
+                    <Text style={styles.leftconcerto}>
+                        {'[' + item.from + '] ' + item.message}</Text>
+                )}
+                keyExtractor={item => item.key}
+            />
+        </View>
     } else if (this.state.showprofile){
-        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5,marginTop:10}}>
-                <Text style = {styles.leftconcerto}>{'-'+this.state.myrole+'-'}</Text>
-                {this.state.amimafia?<FlatList
-                    data={this.state.mafialist}
-                    renderItem={({item}) => (
-                        <Text style={{fontSize:17,
-                            fontFamily:'ConcertOne-Regular',
-                            color:colors.font,
-                            textDecorationLine:item.alive?'none':'line-through'}}>
-                            {'[ ' + item.name + ' ] ' + item.rolename}</Text>
-                    )}
-                    keyExtractor={item => item.key}
-                />:<View/>}
-                <Text style = {styles.leftconcerto}>{'Description: '+this.state.roledesc}</Text>
-                <Text style = {styles.leftconcerto}>{'Rules: '+this.state.rolerules}</Text>
-            </View>
+        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}>
+            <Text style = {styles.chatconcerto}>{'-'+this.state.myrole+'-'}</Text>
+            {this.state.amimafia?<FlatList
+                data={this.state.mafialist}
+                renderItem={({item}) => (
+                    <Text style={{fontSize:17,
+                        fontFamily:'ConcertOne-Regular',
+                        color:colors.font,
+                        textDecorationLine:item.alive?'none':'line-through'}}>
+                        {'[ ' + item.name + ' ] ' + item.rolename}</Text>
+                )}
+                keyExtractor={item => item.key}
+            />:<View/>}
+            <Text style = {styles.leftconcerto}>{'Description: '+this.state.roledesc}</Text>
+            <Text style = {styles.leftconcerto}>{'Rules: '+this.state.rolerules}</Text>
+        </View>
     }
 }
 
@@ -935,11 +944,11 @@ _renderContinueBtn() {
 //Pressing a chat button
 _chatPress(chattype){
     if(chattype=='messages'){
-        this.setState({messagechat:true, modalVisible:true})
+        this.setState({messagechat:true})
     } else if (chattype == 'notifications'){
-        this.setState({notificationchat:true, modalVisible:true})
+        this.setState({notificationchat:true})
     } else if (chattype == 'profile'){
-        this.setState({showprofile:true, modalVisible:true})
+        this.setState({showprofile:true})
     }
 }
 
@@ -1247,31 +1256,22 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
     <Modal
         animationType = 'slide'
         transparent
-        visible = {this.state.modalVisible}
+        visible = {this.state.messagechat || this.state.showprofile || this.state.notificationchat}
         onRequestClose = {()=>{
-            this.setState({
-                modalVisible:false,
-                notificationchat:false,
-                messagechat:false,
-                showprofile:false,
-            })
+            this.setState({ notificationchat:false, messagechat:false, showprofile:false })
         }}
     >   
         <View style = {{flex:1}}>
             <TouchableWithoutFeedback
                 onPress = {()=>{
-                    this.setState({
-                        modalVisible:false,
-                        notificationchat:false,
-                        messagechat:false,
-                        showprofile:false,
-                    })
+                    this.setState({ notificationchat:false, messagechat:false, showprofile:false })
             }}>
                 <View style = {{flex:0.5}}/>
             </TouchableWithoutFeedback>
-            <View style = {{flex:0.5,backgroundColor:colors.main,
-            justifyContent:'center',alignItems:'center'}}>
-                {this._renderMessageComponent()}
+            <View style = {{flex:0.5,flexDirection:'row',backgroundColor:colors.main }}>
+                <View style= {{flex:1}}>
+                    {this._renderMessageComponent()}
+                </View>
             </View>
         </View>
     </Modal>
@@ -1436,6 +1436,13 @@ const styles = StyleSheet.create({
         fontFamily:'ConcertOne-Regular',
         color:colors.font,
         alignSelf: 'center',
+    },
+    chatconcerto:{
+        fontSize:17,
+        fontFamily:'ConcertOne-Regular',
+        color:colors.font,
+        alignSelf: 'center',
+        marginTop:5
     },
     leftconcerto:{
         fontSize:17,
