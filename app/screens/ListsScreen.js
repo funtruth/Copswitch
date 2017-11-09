@@ -127,7 +127,10 @@ class Roles_Screen extends Component {
             rolelist: [],
             roleid:   'a',
             modalVisible: false,
+            ownermode:  false,
         }
+
+        this.listOfRoles = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
         
     }
 
@@ -140,37 +143,49 @@ class Roles_Screen extends Component {
         var keys = Object.keys(Rolesheet).sort()
         var rolelist = [];
         keys.forEach(function(key){
-            if(Rolesheet[key].type == type)
-            rolelist.push({
-                name:           Rolesheet[key].name,
-                category:       Rolesheet[key].category,
-                image:          Rolesheet[key].image,
-                color:          Rolesheet[key].color,
-                key:            key,
-            })
+            if(Rolesheet[key].type == type){
+                rolelist.push({
+                    name:           Rolesheet[key].name,
+                    category:       Rolesheet[key].category,
+                    image:          Rolesheet[key].image,
+                    color:          Rolesheet[key].color,
+                    key:            key,
+                })
+            }
         })
-        this.setState({rolelist:rolelist})
+        this.setState({rolelist:rolelist,ownermode:false})
 
     }
 
     _roleBtnPress(name,key,color,suspicious) {
-        AsyncStorage.getItem('OWNER-KEY',(error,result)=>{
-            if(result){
-                this._addRole(name,key,color,suspicious,result)
-            } else {
-                this.setState({roleid:key, modalVisible:true})
-            }
-        })
+        if(this.state.ownermode){
+            this._addRole(name,key,color,suspicious)
+        } else {
+            this.setState({roleid:key, modalVisible:true})
+        }
     }
 
-    _addRole(rolename,roleid,color,suspicious,roomname) {
-        firebase.database().ref('listofroles/' + roomname + '/' + rolename + '/count')
+    _addRole(rolename,roleid,color,suspicious) {
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+        + '/' + rolename + '/count')
             .transaction((count)=>{
                 return count + 1;
             })
 
-        firebase.database().ref('listofroles/' + roomname + '/' + rolename)
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid + '/' + rolename)
             .update({roleid:roleid,color:color,suspicious:suspicious})
+    }
+
+    _deleteRole(rolename){
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+        + '/' + rolename + '/count').transaction((count)=>{
+            if(count > 1){
+                return count - 1;
+            } else {
+                firebase.database().ref('listofroles/' 
+                + firebase.auth().currentUser.uid + '/' + rolename).remove();
+            }
+        })
     }
 
     _renderTitle() {
@@ -180,14 +195,12 @@ class Roles_Screen extends Component {
                 {Rolesheet[this.state.roleid].name}</Text>
         </View>
     }
-
     _renderDesc() {
         return <View style = {{flex:0.3,justifyContent:'center',alignItems:'center'}}>
             <Text style = {styles.normalFont}>
                 {Rolesheet[this.state.roleid].desc}</Text>
         </View>
     }
-
     _renderImage(){
         return <View style = {{flex:4,justifyContent:'center',alignItems:'center'}}>
             <Image 
@@ -196,7 +209,6 @@ class Roles_Screen extends Component {
             />
         </View>
     }
-
     _renderInfoBox() {
         return <View style = {{flex:3,marginLeft:10,marginRight:10}}>
             <Text style = {styles.normalFont}>{'Team: ' + Rolesheet[this.state.roleid].type}</Text>
@@ -205,7 +217,6 @@ class Roles_Screen extends Component {
             <Text style = {styles.normalFont}>{'Rules: ' + Rolesheet[this.state.roleid].rules}</Text>
         </View>
     }
-
     _renderCloseBtn() {
         return <MenuButton
             viewFlex = {1}
@@ -223,8 +234,7 @@ class Roles_Screen extends Component {
                 animationType = 'fade'
                 transparent
                 visible = {this.state.modalVisible}
-                onRequestClose = {()=>{this.setState({modalVisible:false})}}
-            >
+                onRequestClose = {()=>{this.setState({modalVisible:false})}} >
                 <TouchableWithoutFeedback 
                     style = {{flex:1}}
                     onPress = {()=>{this.setState({modalVisible:false})}}>
@@ -252,26 +262,42 @@ class Roles_Screen extends Component {
                         onPress = {()=>{
                             this._roleBtnPress(item.name,item.key,item.color,item.suspicious)  
                         }}
-                        style = {{backgroundColor:colors.main,flex:0.33,
-                            justifyContent:'center',alignItems:'center',borderRadius:10,
-                            marginTop:5,marginLeft:5}}>
-                        
-                        <Image 
-                            style={{width:100,height:100}}
-                            source = {{uri:item.image}}
-                        />
-                        <Text style = {{
-                            color:colors.font,
-                            fontFamily: 'ConcertOne-Regular',
-                            fontSize:20}}>{item.name}</Text>
-                        <Text style = {{
-                            color:colors.font,
-                            fontFamily: 'ConcertOne-Regular',
-                            fontSize:16,
-                            marginBottom:10}}>{item.category}</Text>
+                        style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.5,
+                            borderRadius:10, margin:5, flexDirection:'row' }}>
+                        <View style = {{margin:5,flex:1,justifyContent:'center',alignItems:'center',
+                            borderRadius:10,backgroundColor:colors.main}}>
+                            <TouchableOpacity
+                                style = {{flexDirection:'row'}}
+                                onPress={()=> {
+                                    {this._deleteRole(item.name)}
+                                }}
+                                disabled = {!this.state.ownermode}>
+                                <Text style = {{
+                                    fontFamily:'ConcertOne-Regular', fontSize: 18, 
+                                    color: colors.font, marginTop:3
+                                }}>{item.count}</Text>
+                                <View style = {{flex:0.85}}/>
+                                <MaterialCommunityIcons name={this.state.ownermode?'close-circle':null} 
+                                    style={{color:colors.font, fontSize:25, marginTop:3}}/>
+                            </TouchableOpacity>
+                            <Image 
+                                style={{width:100,height:100}}
+                                source = {{uri:item.image}}
+                            />
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:20}}>{item.name}</Text>
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:16,
+                                marginBottom:10}}>{item.category}</Text>
+                        </View>
                     </TouchableOpacity>
                 )}
-                numColumns = {3}
+                style={{margin:5}}
+                numColumns = {2}
                 keyExtractor={item => item.key}
             /></View>
         </View>

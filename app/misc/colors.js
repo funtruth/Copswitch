@@ -17,7 +17,7 @@ export default colors = {
     disabled:   '#495D7A', //Lobby Colors for Bottom Component
 
     //Blue Palette
-    main:       '#1F476E',
+    main:       '#1F476E', 
     highlight:  '#54537A',
     background: '#6D849C',
     title:      '#231715',
