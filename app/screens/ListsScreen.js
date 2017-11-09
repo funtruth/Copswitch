@@ -10,7 +10,8 @@ import {
     Keyboard,
     ListView,
     FlatList,
-    TouchableOpacity
+    TouchableOpacity,
+    Modal
 }   from 'react-native';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -128,6 +129,8 @@ class Roles_Screen extends Component {
 
         this.state = {
             rolelist: dataSource,
+            roleid:   'a',
+            modalVisible: false,
         }
         
     }
@@ -159,7 +162,7 @@ class Roles_Screen extends Component {
             if(result){
                 this._addRole(name,key,color,suspicious,result)
             } else {
-                this.props.navigation.navigate('Character_Screen',{roleid:key})
+                this.setState({roleid:key, modalVisible:true})
             }
         })
     }
@@ -177,7 +180,44 @@ class Roles_Screen extends Component {
     render(){
         return <View style = {{flex:1, backgroundColor:colors.background}}>
 
-            <View style = {{flex:9}}>
+            <Modal
+                animationType = 'slide'
+                transparent
+                visible = {this.state.modalVisible}
+                onRequestClose = {()=>{this.setState({modalVisible:false})}}
+            >
+                <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
+                    <View style = {{flex:0.7,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
+                        <View style = {{backgroundColor:colors.main,flex:0.9,borderRadius:10}}>
+                            <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
+                                <Text style = {styles.titleFont}>
+                                    {Rolesheet[this.state.roleid].name}</Text>
+                            </View>
+                            <View style = {{flex:0.3,justifyContent:'center',alignItems:'center'}}>
+                                <Text style = {styles.normalFont}>
+                                    {Rolesheet[this.state.roleid].desc}</Text>
+                            </View>
+                            <View style = {{flex:4,justifyContent:'center',alignItems:'center'}}>
+                                <Image 
+                                    style={{width:200,height:200}}
+                                    source={{uri: Rolesheet[this.state.roleid].image}}
+                                />
+                            </View>
+                            <View style = {{flex:3,marginLeft:10,marginRight:10}}>
+                                <Text style = {styles.normalFont}>
+                                    {'Team: ' + Rolesheet[this.state.roleid].team}</Text>
+                                <Text style = {styles.normalFont}>
+                                    {'Suspicious: ' + Rolesheet[this.state.roleid].suspicious}</Text>
+                                <Text style = {styles.normalFont}>
+                                    {'Visits: ' + Rolesheet[this.state.roleid].suspicious}</Text>
+                                <Text style = {styles.normalFont}>
+                                    {'Rules: ' + Rolesheet[this.state.roleid].rules}</Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
             <View><FlatList
                 data={this.state.rolelist}
                 renderItem={({item}) => (
@@ -202,85 +242,10 @@ class Roles_Screen extends Component {
                 )}
                 keyExtractor={item => item.key}
             /></View>
-            </View>
         </View>
     }
 }
 
-class Character_Screen extends Component {
-
-    static navigationOptions = {
-        headerTitle: <Text style = {{fontSize:20,
-            fontFamily: 'ConcertOne-Regular',
-            color:colors.font,
-            marginLeft:15}}>Rules</Text>,
-        headerStyle: { backgroundColor: colors.headerbackground },
-        headerTintColor: colors.headerfont,
-    };
-
-    constructor(props) {
-        super(props);
-
-        const { params } = this.props.navigation.state;
-        const roleid = params.roleid;
-
-        this.state = {
-            roleid: params.roleid,
-
-            name:           '',
-            image:          '',
-            desc:           '',
-            team:           '',
-            suspicious:     '',
-            blood:          '',
-            visits:         '',
-            rules:          '',
-        }
-    }
-
-
-    componentWillMount() {
-        this.setState({
-            name:           Rolesheet[this.state.roleid].name,
-            image:          Rolesheet[this.state.roleid].image,
-            desc:           Rolesheet[this.state.roleid].desc,
-            team:           Rolesheet[this.state.roleid].type,
-            suspicious:     Rolesheet[this.state.roleid].suspicious,
-            blood:          Rolesheet[this.state.roleid].blood,
-            visits:         Rolesheet[this.state.roleid].visits,
-            rules:          Rolesheet[this.state.roleid].rules,
-        })
-    }
-
-    render(){
-        return <View style = {{ flex:1, backgroundColor:colors.background }}>
-            <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
-                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:25,color:colors.main}}>
-                    {this.state.name}</Text>
-            </View>
-            <View style = {{flex:0.3,justifyContent:'center',alignItems:'center'}}>
-                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
-                    {this.state.desc}</Text>
-            </View>
-            <View style = {{flex:4,justifyContent:'center',alignItems:'center'}}>
-                <Image 
-                    style={{width:250,height:250}}
-                    source={{uri: this.state.image}}
-                />
-            </View>
-            <View style = {{flex:3,marginLeft:10}}>
-                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
-                    {'Team: ' + this.state.team}</Text>
-                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
-                    {'Suspicious: ' + this.state.suspicious}</Text>
-                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
-                    {'Visits: ' + this.state.suspicious}</Text>
-                <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:20,color:colors.main}}>
-                    {'Rules: ' + this.state.rules}</Text>
-            </View>
-        </View>
-    }
-}
 
 export default RuleBook = StackNavigator(
     {
@@ -290,12 +255,22 @@ export default RuleBook = StackNavigator(
       Roles_Screen: {
         screen: Roles_Screen,
       },
-      Character_Screen: {
-        screen: Character_Screen,
-      },
     },
     {
       initialRouteName: 'General_Screen',
       headerMode: 'screen',
     }
   );
+
+  const styles = StyleSheet.create({
+    normalFont: {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 18,
+        color: colors.font,
+    },
+    titleFont: {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 25,
+        color: colors.font,
+    },
+});
