@@ -13,6 +13,7 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     ActivityIndicator,
+    Modal
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -26,6 +27,7 @@ import { MenuButton } from '../components/MenuButton.js';
 
 import { isInGame } from "../auth";
 import { isInRoom } from "../auth";
+import FadeInView from '../components/FadeInView.js';
 import colors from '../misc/colors.js';
 import Rolesheet from '../misc/roles.json';
 
@@ -44,14 +46,6 @@ class Room_Screen extends React.Component {
         super(props);
     }
 
-    _createRoom() {
-        this.props.navigation.navigate('Create_Screen');
-    }
-
-    _findRoom() {
-        this.props.navigation.navigate('Join_Screen');
-    }
-
     _logOut() {
         if(firebase.auth().currentUser.isAnonymous){
             onSignOut().then(() => { firebase.auth().currentUser.delete() })
@@ -63,22 +57,22 @@ class Room_Screen extends React.Component {
     }
 
     render() {
-        return <View style = {{ flex:1, backgroundColor:colors.background, justifyContent:'center' }}>
+        return <View style = {{ flex:1, backgroundColor:colors.background }}>
 
-            <View style = {{flex:0.8}}/>
+            <View style = {{flex:0.7}}/>
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
                 title = 'Make Room'
-                onPress = {()=>{ this._createRoom() }}
+                onPress = {()=>{ this.props.navigation.navigate('Create_Screen') }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
                 title = 'Join Room'
-                onPress = {()=>{ this._findRoom() }}
+                onPress = {()=>{ this.props.navigation.navigate('Join_Screen') }}
             />
             <View style = {{flex:0.06}}/>
         </View>

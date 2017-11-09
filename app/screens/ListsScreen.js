@@ -229,22 +229,29 @@ class Roles_Screen extends Component {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
 
             <Modal
-                animationType = 'slide'
+                animationType = 'fade'
                 transparent
                 visible = {this.state.modalVisible}
                 onRequestClose = {()=>{this.setState({modalVisible:false})}}
             >
-                <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.7,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
-                        <View style = {{backgroundColor:colors.main,flex:0.9,borderRadius:10}}>
-                            {this._renderTitle()}
-                            {this._renderDesc()}
-                            {this._renderImage()}
-                            {this._renderInfoBox()}
-                            {this._renderCloseBtn()}
-                        </View>
+                <TouchableWithoutFeedback 
+                    style = {{flex:1}}
+                    onPress = {()=>{this.setState({modalVisible:false})}}>
+                    <View style = {{flex:1, backgroundColor:'rgba(109, 132, 156, 0.73)',
+                        justifyContent:'center',alignItems:'center'}}>
+                        <TouchableWithoutFeedback>
+                            <View style = {{flex:0.7,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
+                                <View style = {{backgroundColor:colors.main,flex:0.9,borderRadius:10}}>
+                                    {this._renderTitle()}
+                                    {this._renderDesc()}
+                                    {this._renderImage()}
+                                    {this._renderInfoBox()}
+                                    {this._renderCloseBtn()}
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
                     </View>
-                </View>
+                </TouchableWithoutFeedback>
             </Modal>
 
             <View><FlatList

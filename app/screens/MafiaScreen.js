@@ -1261,7 +1261,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
             this.setState({ notificationchat:false, messagechat:false, showprofile:false })
         }}
     >   
-        <View style = {{flex:1}}>
+        <View style = {{flex:1,}}>
             <TouchableWithoutFeedback
                 onPress = {()=>{
                     this.setState({ notificationchat:false, messagechat:false, showprofile:false })
