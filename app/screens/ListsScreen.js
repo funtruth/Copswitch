@@ -143,9 +143,9 @@ class Roles_Screen extends Component {
             if(Rolesheet[key].type == type)
             rolelist.push({
                 name:           Rolesheet[key].name,
-                desc:           Rolesheet[key].desc,
+                category:       Rolesheet[key].category,
+                image:          Rolesheet[key].image,
                 color:          Rolesheet[key].color,
-                suspicious:     Rolesheet[key].suspicious,
                 key:            key,
             })
         })
@@ -252,22 +252,26 @@ class Roles_Screen extends Component {
                         onPress = {()=>{
                             this._roleBtnPress(item.name,item.key,item.color,item.suspicious)  
                         }}
-                        style = {{backgroundColor:colors.background}}>
+                        style = {{backgroundColor:colors.main,flex:0.33,
+                            justifyContent:'center',alignItems:'center',borderRadius:10,
+                            marginTop:5,marginLeft:5}}>
+                        
+                        <Image 
+                            style={{width:100,height:100}}
+                            source = {{uri:item.image}}
+                        />
                         <Text style = {{
-                            marginTop: 10,
-                            marginLeft: 10,
-                            marginRight: 10,
-                            color:colors.color1,
+                            color:colors.font,
                             fontFamily: 'ConcertOne-Regular',
-                            fontSize:25}}>{item.name}</Text>
+                            fontSize:20}}>{item.name}</Text>
                         <Text style = {{
-                            marginLeft: 10,
-                            marginRight: 10,
-                            color:colors.main,
+                            color:colors.font,
                             fontFamily: 'ConcertOne-Regular',
-                            fontSize:18}}>{item.desc}</Text>
+                            fontSize:16,
+                            marginBottom:10}}>{item.category}</Text>
                     </TouchableOpacity>
                 )}
+                numColumns = {3}
                 keyExtractor={item => item.key}
             /></View>
         </View>

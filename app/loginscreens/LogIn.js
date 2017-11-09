@@ -35,7 +35,7 @@ export class Splash extends React.Component {
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center',alignItems:'center'}}>
-            <View style = {{flex:0.82}}/>
+            <View style = {{flex:0.92}}/>
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}

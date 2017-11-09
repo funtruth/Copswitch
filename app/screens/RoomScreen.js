@@ -59,7 +59,7 @@ class Room_Screen extends React.Component {
     render() {
         return <View style = {{ flex:1, backgroundColor:colors.background }}>
 
-            <View style = {{flex:0.7}}/>
+            <View style = {{flex:0.8}}/>
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
