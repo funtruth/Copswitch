@@ -47,7 +47,7 @@
     "visits" : true
   },
   "dc" : {
-    "category" : "mischief",
+    "category" : "random",
     "color" : "#4B4352",
     "desc" : "Random Mafia with a Mischief Role.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
@@ -110,7 +110,7 @@
     "visits" : true
   },
   "BA" : {
-    "category" : "inspective",
+    "category" : "random",
     "color" : "#8F626A",
     "desc" : "Random Inspective Town member.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
@@ -139,7 +139,7 @@
     "visits" : true
   },
   "ED" : {
-    "category" : "stalling",
+    "category" : "random",
     "color" : "#8F626A",
     "desc" : "Random protective Town member.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
@@ -179,7 +179,7 @@
     "visits" : true
   },
   "IHG" : {
-    "category" : "specialist",
+    "category" : "random",
     "color" : "#8F626A",
     "desc" : "Random specialist Town member.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
@@ -188,7 +188,7 @@
     "type" : 2
   },
   "IHGEDBA" : {
-    "category" : "none",
+    "category" : "random",
     "color" : "#8F626A",
     "desc" : "Random Town member.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
@@ -220,7 +220,7 @@
     "visits" : true
   },
   "U" : {
-    "category" : "normal",
+    "category" : "none",
     "color" : "#8F626A",
     "desc" : "Normal Town member.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
