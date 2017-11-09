@@ -10,7 +10,9 @@ import {
     Keyboard,
     FlatList,
     ListView,
-    TouchableOpacity
+    TouchableOpacity,
+    TouchableWithoutFeedback,
+    Modal
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -87,6 +89,7 @@ constructor(props) {
 
         gameover:           false,
         cover:              true,
+        modalVisible:       false,
 
         //Tagged onto Grabbing the PHASE NAME CURRENTLY because it takes the longest.
         loaded:             false,
@@ -932,29 +935,11 @@ _renderContinueBtn() {
 //Pressing a chat button
 _chatPress(chattype){
     if(chattype=='messages'){
-        if(this.state.messagechat){
-            this.setState({messagechat:false})
-        } else if (this.state.notificationchat || this.state.showprofile){
-            this.setState({messagechat:true,notificationchat:false,showprofile:false})
-        } else {
-            this.setState({messagechat:true})
-        }
+        this.setState({messagechat:true, modalVisible:true})
     } else if (chattype == 'notifications'){
-        if(this.state.notificationchat){
-            this.setState({notificationchat:false})
-        } else if (this.state.messagechat || this.state.showprofile){
-            this.setState({messagechat:false,notificationchat:true,showprofile:false})
-        } else {
-            this.setState({notificationchat:true})
-        }
+        this.setState({notificationchat:true, modalVisible:true})
     } else if (chattype == 'profile'){
-        if(this.state.showprofile){
-            this.setState({showprofile:false})
-        } else if (this.state.messagechat || this.state.notificationchat){
-            this.setState({messagechat:false,notificationchat:false,showprofile:true})
-        } else {
-            this.setState({showprofile:true})
-        }
+        this.setState({showprofile:true, modalVisible:true})
     }
 }
 
@@ -1259,116 +1244,142 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
 </View>:
 <View style = {{flex:1, backgroundColor:colors.background}}>
 
-<View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
-    <View style = {{flex:1}}/>
-    <View style = {{flex:4,backgroundColor:colors.main,justifyContent:'center',
-        borderBottomLeftRadius:15,borderBottomRightRadius:15}}>
-        {this._renderHeader()}
-    </View>
-    <View style = {{flex:1,justifyContent:'center'}}>
-        <TouchableOpacity
-            onPress={()=> {
-                this.state.xdisabled?
-                    this._enableCloseBtn():
-                    this.state.amiowner?this._deleteRoom():this._leaveRoom();
+    <Modal
+        animationType = 'slide'
+        transparent
+        visible = {this.state.modalVisible}
+        onRequestClose = {()=>{
+            this.setState({
+                modalVisible:false,
+                notificationchat:false,
+                messagechat:false,
+                showprofile:false,
+            })
+        }}
+    >   
+        <View style = {{flex:1}}>
+            <TouchableWithoutFeedback
+                onPress = {()=>{
+                    this.setState({
+                        modalVisible:false,
+                        notificationchat:false,
+                        messagechat:false,
+                        showprofile:false,
+                    })
             }}>
-            <MaterialCommunityIcons name='close-circle'
-                style={{color:this.state.xdisabled?colors.main:colors.highlight, 
-                    fontSize:26,alignSelf:'center'}}/>
-        </TouchableOpacity>
-    </View>
-</View>
+                <View style = {{flex:0.5}}/>
+            </TouchableWithoutFeedback>
+            <View style = {{flex:0.5,backgroundColor:colors.main,
+            justifyContent:'center',alignItems:'center'}}>
+                {this._renderMessageComponent()}
+            </View>
+        </View>
+    </Modal>
 
-<View style = {{flex:0.15}}/>
-
-<View style = {{
-    flex:11,
-    flexDirection:'row',
-}}>
-    <View style = {{flex:2}}>
+    <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
+        <View style = {{flex:1}}/>
+        <View style = {{flex:4,backgroundColor:colors.main,justifyContent:'center',
+            borderBottomLeftRadius:15,borderBottomRightRadius:15}}>
+            {this._renderHeader()}
+        </View>
+        <View style = {{flex:1,justifyContent:'center'}}>
+            <TouchableOpacity
+                onPress={()=> {
+                    this.state.xdisabled?
+                        this._enableCloseBtn():
+                        this.state.amiowner?this._deleteRoom():this._leaveRoom();
+                }}>
+                <MaterialCommunityIcons name='close-circle'
+                    style={{color:this.state.xdisabled?colors.main:colors.highlight, 
+                        fontSize:26,alignSelf:'center'}}/>
+            </TouchableOpacity>
+        </View>
     </View>
-    <View style = {{flex:13}}>
+
+    <View style = {{flex:0.15}}/>
+
+    <View style = {{
+        flex:11,
+        flexDirection:'row',
+    }}>
         <View style = {{flex:2}}>
+        </View>
+        <View style = {{flex:13}}>
             {this._renderListComponent()}
         </View>
-        <View style = {{flex:this.state.messagechat||this.state.notificationchat||
-            this.state.showprofile?3:0,backgroundColor:colors.color1,borderRadius:15}}>
-            {this._renderMessageComponent()}
+
+        <View style = {{flex:2, justifyContent:'center'}}>
+            <View style = {{flex:1}}/>
+            <View style = {{flex:0.6,justifyContent:'center'}}>
+                <TouchableOpacity
+                    onPress={()=> {
+                        this._chatPress('notifications')
+                    }}
+                    disabled={this.state.locked}>
+                    <MaterialCommunityIcons name='comment-alert'
+                        style={{color:this.state.notificationchat?colors.main:colors.icon, 
+                            fontSize:26,alignSelf:'center'}}/>
+                </TouchableOpacity>
+            </View>
+            <View style = {{flex:0.6,justifyContent:'center'}}>
+                <TouchableOpacity
+                    onPress={()=> {
+                        this._chatPress('messages')
+                    }}
+                    disabled={this.state.locked}>
+                    <MaterialCommunityIcons name='clipboard-text' 
+                        style={{color:this.state.messagechat?colors.main:colors.icon, 
+                            fontSize:26,alignSelf:'center'}}/>
+                </TouchableOpacity>
+            </View>
+            <View style = {{flex:3.3}}/>
+            <View style = {{flex:0.6,justifyContent:'center'}}>
+                <TouchableOpacity
+                    onPress={()=> {
+                        this._chatPress('profile')
+                    }}
+                    disabled={this.state.locked}>
+                    <FontAwesome name='user-secret'
+                        style={{color:this.state.showprofile?colors.main:colors.icon, 
+                            fontSize:35,alignSelf:'center'}}/>
+                </TouchableOpacity>
+            </View>
+            <View style = {{flex:0.2}}/>
+        </View>
+
+    </View>
+
+    <View style = {{flex:0.15}}/>
+
+    <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
+        <TouchableOpacity
+            disabled={this.state.gameover?false:
+                (this.state.disabled?true:(this.state.locked?true:this.state.amidead))}
+            onPress={()=> {this.state.gameover?this._gameOver():
+                (this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
+                this.state.triggernum,this.state.phase,this.state.roomname))}}
+            style = {{flex:0.82,justifyContent:'center',
+                backgroundColor:!this.state.locked && this.state.actionbtnvalue?colors.highlight:colors.main,
+                borderRadius:15}}>
+            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?colors.main:colors.font,
+                fontSize:26,alignSelf:'center', fontFamily:'ConcertOne-Regular'}}>
+                {this.state.gameover?'CONTINUE':
+                    (!this.state.locked && !this.state.amidead?'READY':'LOCKED')}
+            </Text>
+        </TouchableOpacity>
+    </View>
+
+    <View style = {{flex:0.15}}/>
+
+    <View style = {{flex:0.5,flexDirection:'row',justifyContent:'center'}}>
+        <View style = {{flex:0.7,backgroundColor:colors.main,borderRadius:10,
+            justifyContent:'center',alignItems:'center'}}>
+            <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',
+                fontSize:14}}>{this.state.bottommessage}</Text>
         </View>
     </View>
 
-    <View style = {{flex:2, justifyContent:'center'}}>
-        <View style = {{flex:1}}/>
-        <View style = {{flex:0.6,justifyContent:'center'}}>
-            <TouchableOpacity
-                onPress={()=> {
-                    this._chatPress('notifications')
-                }}
-                disabled={this.state.locked}>
-                <MaterialCommunityIcons name='comment-alert'
-                    style={{color:this.state.notificationchat?colors.highlight:colors.icon, 
-                        fontSize:26,alignSelf:'center'}}/>
-            </TouchableOpacity>
-        </View>
-        <View style = {{flex:0.6,justifyContent:'center'}}>
-            <TouchableOpacity
-                onPress={()=> {
-                    this._chatPress('messages')
-                }}
-                disabled={this.state.locked}>
-                <MaterialCommunityIcons name='clipboard-text' 
-                    style={{color:this.state.messagechat?colors.highlight:colors.icon, 
-                        fontSize:26,alignSelf:'center'}}/>
-            </TouchableOpacity>
-        </View>
-        <View style = {{flex:3.3}}/>
-        <View style = {{flex:0.6,justifyContent:'center'}}>
-            <TouchableOpacity
-                onPress={()=> {
-                    this._chatPress('profile')
-                }}
-                disabled={this.state.locked}>
-                <FontAwesome name='user-secret'
-                    style={{color:this.state.showprofile?colors.highlight:colors.icon, 
-                        fontSize:35,alignSelf:'center'}}/>
-            </TouchableOpacity>
-        </View>
-        <View style = {{flex:0.2}}/>
-    </View>
-
-</View>
-
-<View style = {{flex:0.15}}/>
-
-<View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
-    <TouchableOpacity
-        disabled={this.state.gameover?false:
-            (this.state.disabled?true:(this.state.locked?true:this.state.amidead))}
-        onPress={()=> {this.state.gameover?this._gameOver():
-            (this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
-            this.state.triggernum,this.state.phase,this.state.roomname))}}
-        style = {{flex:0.82,justifyContent:'center',
-            backgroundColor:!this.state.locked && this.state.actionbtnvalue?colors.highlight:colors.main,
-            borderRadius:15}}>
-        <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?colors.main:colors.font,
-            fontSize:26,alignSelf:'center', fontFamily:'ConcertOne-Regular'}}>
-            {this.state.gameover?'CONTINUE':
-                (!this.state.locked && !this.state.amidead?'READY':'LOCKED')}
-        </Text>
-    </TouchableOpacity>
-</View>
-
-<View style = {{flex:0.15}}/>
-
-<View style = {{flex:0.5,flexDirection:'row',justifyContent:'center'}}>
-    <View style = {{flex:0.7,backgroundColor:colors.main,borderRadius:10,
-        justifyContent:'center',alignItems:'center'}}>
-        <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',
-            fontSize:14}}>{this.state.bottommessage}</Text>
-    </View>
-</View>
-
-<View style = {{flex:0.15}}/>
+    <View style = {{flex:0.15}}/>
 </View>
 }
 }
