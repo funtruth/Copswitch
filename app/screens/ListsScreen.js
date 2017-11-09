@@ -11,6 +11,7 @@ import {
     ListView,
     FlatList,
     TouchableOpacity,
+    TouchableWithoutFeedback,
     Modal
 }   from 'react-native';
 
@@ -177,6 +178,53 @@ class Roles_Screen extends Component {
             .update({roleid:roleid,color:color,suspicious:suspicious})
     }
 
+    _renderTitle() {
+        return <View style = {{flex:0.7, flexDirection:'row',
+            justifyContent:'center',alignItems:'center'}}>
+            <Text style = {styles.titleFont}>
+                {Rolesheet[this.state.roleid].name}</Text>
+        </View>
+    }
+
+    _renderDesc() {
+        return <View style = {{flex:0.3,justifyContent:'center',alignItems:'center'}}>
+            <Text style = {styles.normalFont}>
+                {Rolesheet[this.state.roleid].desc}</Text>
+        </View>
+    }
+
+    _renderImage(){
+        return <View style = {{flex:4,justifyContent:'center',alignItems:'center'}}>
+            <Image 
+                style={{width:200,height:200}}
+                source={{uri: Rolesheet[this.state.roleid].image}}
+            />
+        </View>
+    }
+
+    _renderInfoBox() {
+        return <View style = {{flex:3,marginLeft:10,marginRight:10}}>
+            <Text style = {styles.normalFont}>
+                {'Team: ' + Rolesheet[this.state.roleid].team}</Text>
+            <Text style = {styles.normalFont}>
+                {'Suspicious: ' + Rolesheet[this.state.roleid].suspicious}</Text>
+            <Text style = {styles.normalFont}>
+                {'Visits: ' + Rolesheet[this.state.roleid].suspicious}</Text>
+            <Text style = {styles.normalFont}>
+                {'Rules: ' + Rolesheet[this.state.roleid].rules}</Text>
+        </View>
+    }
+
+    _renderCloseBtn() {
+        return <MenuButton
+            viewFlex = {1}
+            flex = {1}
+            fontSize = {20}
+            title = 'CLOSE'
+            onPress = {()=>{this.setState({modalVisible:false})}}
+        />
+    }
+
     render(){
         return <View style = {{flex:1, backgroundColor:colors.background}}>
 
@@ -189,30 +237,11 @@ class Roles_Screen extends Component {
                 <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
                         <View style = {{backgroundColor:colors.main,flex:0.9,borderRadius:10}}>
-                            <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
-                                <Text style = {styles.titleFont}>
-                                    {Rolesheet[this.state.roleid].name}</Text>
-                            </View>
-                            <View style = {{flex:0.3,justifyContent:'center',alignItems:'center'}}>
-                                <Text style = {styles.normalFont}>
-                                    {Rolesheet[this.state.roleid].desc}</Text>
-                            </View>
-                            <View style = {{flex:4,justifyContent:'center',alignItems:'center'}}>
-                                <Image 
-                                    style={{width:200,height:200}}
-                                    source={{uri: Rolesheet[this.state.roleid].image}}
-                                />
-                            </View>
-                            <View style = {{flex:3,marginLeft:10,marginRight:10}}>
-                                <Text style = {styles.normalFont}>
-                                    {'Team: ' + Rolesheet[this.state.roleid].team}</Text>
-                                <Text style = {styles.normalFont}>
-                                    {'Suspicious: ' + Rolesheet[this.state.roleid].suspicious}</Text>
-                                <Text style = {styles.normalFont}>
-                                    {'Visits: ' + Rolesheet[this.state.roleid].suspicious}</Text>
-                                <Text style = {styles.normalFont}>
-                                    {'Rules: ' + Rolesheet[this.state.roleid].rules}</Text>
-                            </View>
+                            {this._renderTitle()}
+                            {this._renderDesc()}
+                            {this._renderImage()}
+                            {this._renderInfoBox()}
+                            {this._renderCloseBtn()}
                         </View>
                     </View>
                 </View>
