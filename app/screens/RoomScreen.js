@@ -154,7 +154,7 @@ class Create_Screen extends React.Component {
                         placeholderTextColor={colors.main}
                         style={{
                             backgroundColor: colors.background,
-                            flex:0.8,
+                            flex:0.6,
                             fontFamily:'ConcertOne-Regular',
                             fontSize: 20,
                             color:colors.font,
@@ -264,45 +264,45 @@ class Join_Screen extends React.Component {
             <View style = {{flex:1,backgroundColor:colors.color2,
                 justifyContent:'center',alignItems:'center'}}>
 
-                <View style = {{flex:0.15}}/>
+                <View style = {{flex:0.1}}/>
                 <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
-                    <View style = {{flex:0.1,marginBottom:5}}/>
-                        <TextInput
-                            placeholder="Who are you?"
-                            placeholderTextColor={colors.main}
-                            style={{
-                                backgroundColor: colors.background,
-                                flex:0.5,
-                                fontFamily:'ConcertOne-Regular',
-                                fontSize: 20,
-                                color:colors.font,
-                                textAlign:'center',
-                            }}
-                            value={this.state.alias}
-                            autoFocus = {true}
-                            blurOnSubmit={false}
-                            onChangeText = {(text) => {this.setState({alias: text})}}
-                            onSubmitEditing = {()=>this.refs['roomcode'].focus()}
-                        />
-                        <TextInput
-                            ref='roomcode'
-                            placeholder="Room Code"
-                            placeholderTextColor={colors.main}
-                            style={{
-                                backgroundColor: colors.background,
-                                flex:0.5,
-                                fontFamily:'ConcertOne-Regular',
-                                fontSize: 20,
-                                color:colors.font,
-                                textAlign:'center',
-                            }}
-                            value={this.state.roomname}
-                            autoCapitalize='characters'
-                            blurOnSubmit={false}
-                            onChangeText = {(text) => {this.setState({roomname: text})}}
-                            onSubmitEditing = {()=>{Keyboard.dismiss()}}
-                        />
-                    <View style = {{flex:0.1}}/>
+                    <TextInput
+                        placeholder="Who are you?"
+                        placeholderTextColor={colors.main}
+                        style={{
+                            backgroundColor: colors.background,
+                            flex:0.6,
+                            fontFamily:'ConcertOne-Regular',
+                            fontSize: 20,
+                            color:colors.font,
+                            textAlign:'center',
+                        }}
+                        value={this.state.alias}
+                        autoFocus = {true}
+                        blurOnSubmit={false}
+                        onChangeText = {(text) => {this.setState({alias: text})}}
+                        onSubmitEditing = {()=>this.refs['roomcode'].focus()}
+                    />
+                </View>
+                <View style = {{ justifyContent: 'center', flexDirection: 'row', marginBottom:5 }}>
+                    <TextInput
+                        ref='roomcode'
+                        placeholder="Room Code"
+                        placeholderTextColor={colors.main}
+                        style={{
+                            backgroundColor: colors.background,
+                            flex:0.6,
+                            fontFamily:'ConcertOne-Regular',
+                            fontSize: 20,
+                            color:colors.font,
+                            textAlign:'center',
+                        }}
+                        value={this.state.roomname}
+                        autoCapitalize='characters'
+                        blurOnSubmit={false}
+                        onChangeText = {(text) => {this.setState({roomname: text})}}
+                        onSubmitEditing = {()=>{Keyboard.dismiss()}}
+                    />
                 </View>
 
                 <MenuButton 
@@ -314,7 +314,7 @@ class Join_Screen extends React.Component {
                     }}
                 />
 
-                <View style = {{flex:0.4}}/>
+                <View style = {{flex:0.5}}/>
             </View>
 
 

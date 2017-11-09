@@ -1332,7 +1332,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
                             fontSize:26,alignSelf:'center'}}/>
                 </TouchableOpacity>
             </View>
-            <View style = {{flex:3.3}}/>
+            <View style = {{flex:1.1}}/>
             <View style = {{flex:0.6,justifyContent:'center'}}>
                 <TouchableOpacity
                     onPress={()=> {
@@ -1344,7 +1344,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
                             fontSize:35,alignSelf:'center'}}/>
                 </TouchableOpacity>
             </View>
-            <View style = {{flex:0.2}}/>
+            <View style = {{flex:2.8}}/>
         </View>
 
     </View>
@@ -1438,7 +1438,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
     },
     chatconcerto:{
-        fontSize:17,
+        fontSize:20,
         fontFamily:'ConcertOne-Regular',
         color:colors.font,
         alignSelf: 'center',

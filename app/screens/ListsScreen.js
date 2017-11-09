@@ -8,7 +8,6 @@ import {
     AsyncStorage,
     StyleSheet,
     Keyboard,
-    ListView,
     FlatList,
     TouchableOpacity,
     TouchableWithoutFeedback,
@@ -123,13 +122,9 @@ class Roles_Screen extends Component {
 
     constructor(props) {
         super(props);
-    
-        const dataSource = new ListView.DataSource({
-            rowHasChanged: (row1, row2) => row1 !== row2,
-        });
 
         this.state = {
-            rolelist: dataSource,
+            rolelist: [],
             roleid:   'a',
             modalVisible: false,
         }
@@ -204,21 +199,17 @@ class Roles_Screen extends Component {
 
     _renderInfoBox() {
         return <View style = {{flex:3,marginLeft:10,marginRight:10}}>
-            <Text style = {styles.normalFont}>
-                {'Team: ' + Rolesheet[this.state.roleid].team}</Text>
-            <Text style = {styles.normalFont}>
-                {'Suspicious: ' + Rolesheet[this.state.roleid].suspicious}</Text>
-            <Text style = {styles.normalFont}>
-                {'Visits: ' + Rolesheet[this.state.roleid].suspicious}</Text>
-            <Text style = {styles.normalFont}>
-                {'Rules: ' + Rolesheet[this.state.roleid].rules}</Text>
+            <Text style = {styles.normalFont}>{'Team: ' + Rolesheet[this.state.roleid].type}</Text>
+            <Text style = {styles.normalFont}>{'Suspicious: ' + Rolesheet[this.state.roleid].suspicious}</Text>
+            <Text style = {styles.normalFont}>{'Visits: ' + Rolesheet[this.state.roleid].visits}</Text>
+            <Text style = {styles.normalFont}>{'Rules: ' + Rolesheet[this.state.roleid].rules}</Text>
         </View>
     }
 
     _renderCloseBtn() {
         return <MenuButton
             viewFlex = {1}
-            flex = {1}
+            flex = {0.6}
             fontSize = {20}
             title = 'CLOSE'
             onPress = {()=>{this.setState({modalVisible:false})}}
@@ -241,7 +232,7 @@ class Roles_Screen extends Component {
                         justifyContent:'center',alignItems:'center'}}>
                         <TouchableWithoutFeedback>
                             <View style = {{flex:0.7,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
-                                <View style = {{backgroundColor:colors.main,flex:0.9,borderRadius:10}}>
+                                <View style = {{backgroundColor:colors.main,flex:0.9,borderRadius:60}}>
                                     {this._renderTitle()}
                                     {this._renderDesc()}
                                     {this._renderImage()}
@@ -260,7 +251,8 @@ class Roles_Screen extends Component {
                     <TouchableOpacity
                         onPress = {()=>{
                             this._roleBtnPress(item.name,item.key,item.color,item.suspicious)  
-                        }}>
+                        }}
+                        style = {{backgroundColor:colors.background}}>
                         <Text style = {{
                             marginTop: 10,
                             marginLeft: 10,
