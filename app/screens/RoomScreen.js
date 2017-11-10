@@ -120,7 +120,8 @@ class Create_Screen extends React.Component {
                 presseduid:         'foo',
         });
         
-        firebase.database().ref('listofroles/'+firebase.auth().currentUser.uid+'/D').set(1)
+        firebase.database().ref('listofroles/'+firebase.auth().currentUser.uid)
+            .update({A:1,D:1,b:1})
 
         this.props.navigation.dispatch(
             NavigationActions.reset({
@@ -332,20 +333,14 @@ class Lobby_Screen extends React.Component {
     constructor(props) {
         super(props);
 
-        const dataSource = new ListView.DataSource({
-            rowHasChanged: (row1, row2) => row1 !== row2,
-        });
-
         //Navigation parameters
         const { params }    = this.props.navigation.state;
         const roomname      = params.roomname.toUpperCase();
 
         this.state = {
             roomname:       params.roomname.toUpperCase(),
-            listview:       true,
             xdisabled:      true,
-            namelist:       dataSource,
-            rolelist:       dataSource,
+            namelist:       [],
             rolecount:      0,
             playercount:    0,
             amiowner:       false,
@@ -400,11 +395,13 @@ class Lobby_Screen extends React.Component {
         
         //List of Roles information
         this.roleCount.on('value',snap=>{
-            var rolecount = 0;
-            snap.forEach((child)=>{
-                rolecount = rolecount + child.val();
-            })
-            this.setState({rolecount:rolecount})
+            if(snap.exists()){
+                var rolecount = 0;
+                snap.forEach((child)=>{
+                    rolecount = rolecount + child.val();
+                })
+                this.setState({rolecount:rolecount})
+            }
         });
     }
 
@@ -477,7 +474,7 @@ class Lobby_Screen extends React.Component {
 
             this._handOutRoles(roomname);
 
-            firebase.database().ref('listofroles/' + roomname).remove();
+            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
 
             this.setState({loading:true})
 
@@ -505,11 +502,11 @@ class Lobby_Screen extends React.Component {
         var randomstring = '';
         var charcount = 0;
 
-        firebase.database().ref('listofroles/' + roomname).once('value',snap=>{
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).once('value',snap=>{
 
             snap.forEach((child)=>{
-                for(i=0;i<child.val().count;i++){
-                    randomstring = randomstring + randomize('?', 1, {chars: child.val().roleid})
+                for(i=0;i<child.val();i++){
+                    randomstring = randomstring + randomize('?', 1, {chars: child.key})
                     charcount++
                 }
             })
@@ -574,16 +571,54 @@ class Lobby_Screen extends React.Component {
     }
 
     _renderBottomComponent() {
-        return <View style = {{flex:0.7,justifyContent:'center', alignItems:'center',
-                backgroundColor:this.state.amiowner?colors.main:colors.disabled,borderRadius:15}}>
-            <TouchableOpacity
-                onPress={()=> {
-                    this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
-                }}
-                disabled={!this.state.amiowner}
-                style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                <Text style = {styles.concerto}>START GAME</Text>
-            </TouchableOpacity>
+        return <View style = {{flex:0.15,flexDirection:'row',marginBottom:10}}>
+
+            <View style = {{flex:0.06}}/>
+            
+            <View style = {{flex:0.54,justifyContent:'center', alignItems:'center',
+                    backgroundColor:this.state.amiowner?colors.main:colors.disabled,borderRadius:5}}>
+                <TouchableOpacity
+                    onPress={()=> { }}
+                    disabled={!this.state.amiowner}
+                    style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
+                </TouchableOpacity>
+            </View>
+
+            <View style = {{flex:0.04}}/>
+
+            <View style = {{flex:0.3}}>
+                <TouchableOpacity
+                    style = {{
+                        flex:0.8, backgroundColor:this.state.amiowner?colors.main:colors.disabled, 
+                        borderRadius:5,justifyContent:'center', alignItems:'center', flexDirection:'row'
+                    }}
+                    fontSize = {17}
+                    onPress={()=> {
+                        alert('reset function')
+                    }}
+                    disabled={!this.state.amiowner}
+                >
+                    <MaterialCommunityIcons name='refresh'
+                        style={{color:colors.font,fontSize:22,alignSelf:'center'}}/>
+                    <Text style = {styles.concerto}>CLEAR</Text>
+                </TouchableOpacity>
+
+                <View style = {{flex:0.2}}/>
+
+                <TouchableOpacity
+                    style = {{
+                        flex:0.8, backgroundColor:this.state.amiowner?colors.main:colors.disabled, 
+                        borderRadius:5, justifyContent:'center', alignItems:'center'
+                    }}
+                    onPress={()=> {
+                        this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
+                    }}
+                    disabled={!this.state.amiowner}
+                ><Text style = {styles.concerto}>START</Text>
+                </TouchableOpacity>
+            </View>
+
+            <View style = {{flex:0.06}}/>
         </View>
     }
 
@@ -608,7 +643,7 @@ class Lobby_Screen extends React.Component {
             backgroundColor: colors.background,
             flex: 1,
         }}>
-            <View style = {{flex:1,flexDirection:'row'}}>
+            <View style = {{flex:0.1,flexDirection:'row'}}>
                 <View style = {{flex:1}}/>
                 <View style = {{
                     flex:4, 
@@ -634,21 +669,19 @@ class Lobby_Screen extends React.Component {
                 </View>
             </View>
 
-            <View style = {{flex:0.15}}/>
+            <View style = {{flex:0.01}}/>
 
-            <View style = {{flex:10.3, flexDirection:'row',justifyContent:'center'}}>
-                <View style = {{flex:0.85,justifyContent:'center'}}>
+            <View style = {{flex:0.71, flexDirection:'row',justifyContent:'center'}}>
+                <View style = {{flex:0.69,justifyContent:'center'}}>
                     {this._renderListComponent()}
                 </View>
             </View>
             
-            <View style = {{flex:0.15}}/>
+            <View style = {{flex:0.01}}/>
 
-            <View style = {{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-                {this._renderBottomComponent()}
-            </View>
+            {this._renderBottomComponent()}
 
-            <View style = {{flex:0.3}}/>
+            <View style = {{flex:0.02}}/>
 
         </View>
     }
