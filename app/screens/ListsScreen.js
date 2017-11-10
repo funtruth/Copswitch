@@ -142,26 +142,30 @@ class Roles_Screen extends Component {
 
         var keys = Object.keys(Rolesheet).sort()
         var rolelist = [];
-        var index = 0;
         keys.forEach(function(key){
             if(Rolesheet[key].type == type){
                 rolelist.push({
                     name:           Rolesheet[key].name,
-                    index:          index,
+                    index:          Rolesheet[key].index,
                     category:       Rolesheet[key].category,
                     count:          0,
                     image:          Rolesheet[key].image,
                     color:          Rolesheet[key].color,
                     key:            key,
                 })
-                index++;
             }
         })
         this.setState({rolelist:rolelist})
 
         this.listOfRoles.on('value',snap=>{
             if(snap.exists()){
-                this.setState({ownermode:true})
+                var array = this.state.rolelist;
+                snap.forEach((child)=>{
+                    if(Rolesheet[child.key].type == type){
+                        array[Rolesheet[child.key].index]['count'] = child.val()
+                    }
+                })
+                this.setState({ownermode:true,rolelist:array})
             } else {
                 this.setState({ownermode:false})
             }
@@ -181,10 +185,6 @@ class Roles_Screen extends Component {
             + '/' + key).transaction((count)=>{
                 return count + 1;
             })
-
-            var array = this.state.rolelist;
-            array[index]['count']++;
-            this.setState({rolelist:array})
         } else {
             this.setState({roleid:key, modalVisible:true})
         }
@@ -193,17 +193,8 @@ class Roles_Screen extends Component {
     _deleteRole(key,index){
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
         + '/' + key).transaction((count)=>{
-            if(count > 1){
                 return count - 1;
-            } else {
-                firebase.database().ref('listofroles/' 
-                + firebase.auth().currentUser.uid + '/' + key).remove();
-            }
         })
-
-        var array = this.state.rolelist;
-        array[index]['count']--;
-        this.setState({rolelist:array})
     }
 
     _renderTitle() {
@@ -287,14 +278,14 @@ class Roles_Screen extends Component {
                             onPress={()=> {
                                 {this._deleteRole(item.key,item.index)}
                             }}
-                            disabled = {!this.state.ownermode}>
+                            disabled = {!item.count}>
                             <Text style = {{
-                                fontFamily:'ConcertOne-Regular', fontSize: 18, 
-                                color: colors.font, marginTop:3
-                            }}>{item.count}</Text>
+                                fontFamily:'ConcertOne-Regular', fontSize: 20, 
+                                color: colors.font, marginTop:3, marginLeft:3
+                            }}>{item.count?item.count:null}</Text>
                             <View style = {{flex:0.85}}/>
                             <MaterialCommunityIcons name='close-circle' 
-                                style={{color:this.state.ownermode?colors.font:colors.main, 
+                                style={{color:item.count?colors.font:colors.disabled, 
                                     fontSize:25, marginTop:3}}/>
                         </TouchableOpacity>
                         <Image 
