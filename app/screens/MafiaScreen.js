@@ -1314,8 +1314,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
                 <TouchableOpacity
                     onPress={()=> {
                         this._chatPress('notifications')
-                    }}
-                    disabled={this.state.locked}>
+                    }}>
                     <MaterialCommunityIcons name='comment-alert'
                         style={{color:this.state.notificationchat?colors.main:colors.icon, 
                             fontSize:26,alignSelf:'center'}}/>
@@ -1325,8 +1324,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
                 <TouchableOpacity
                     onPress={()=> {
                         this._chatPress('messages')
-                    }}
-                    disabled={this.state.locked}>
+                    }}>
                     <MaterialCommunityIcons name='clipboard-text' 
                         style={{color:this.state.messagechat?colors.main:colors.icon, 
                             fontSize:26,alignSelf:'center'}}/>
@@ -1337,8 +1335,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
                 <TouchableOpacity
                     onPress={()=> {
                         this._chatPress('profile')
-                    }}
-                    disabled={this.state.locked}>
+                    }}>
                     <FontAwesome name='user-secret'
                         style={{color:this.state.showprofile?colors.main:colors.icon, 
                             fontSize:35,alignSelf:'center'}}/>
