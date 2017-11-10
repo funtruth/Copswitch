@@ -104,7 +104,6 @@ class Create_Screen extends React.Component {
         //TODO: Check if room already exists
         
         AsyncStorage.setItem('ROOM-KEY', roomname);
-        AsyncStorage.setItem('OWNER-KEY', roomname);
         
         firebase.database().ref('rooms/' + roomname).set({
             phase: 1,
@@ -121,6 +120,8 @@ class Create_Screen extends React.Component {
                 presseduid:         'foo',
         });
         
+        firebase.database().ref('listofroles/'+firebase.auth().currentUser.uid+'/D').set(1)
+
         this.props.navigation.dispatch(
             NavigationActions.reset({
                 index: 0,
@@ -352,7 +353,8 @@ class Lobby_Screen extends React.Component {
             loading:        false,
         };
 
-        this.roleCount      = firebase.database().ref('listofroles/' + roomname).orderByChild('roleid');
+        this.roleCount      = firebase.database().ref('listofroles/' 
+                              + firebase.auth().currentUser.uid);
         this.roomRef        = firebase.database().ref('rooms/' + roomname);
         this.listRef        = this.roomRef.child('listofplayers');
     }
@@ -399,17 +401,10 @@ class Lobby_Screen extends React.Component {
         //List of Roles information
         this.roleCount.on('value',snap=>{
             var rolecount = 0;
-            var list = [];
             snap.forEach((child)=>{
-                rolecount = rolecount + child.val().count;
-                list.push({
-                    name: child.key,
-                    count: child.val().count,
-                    color: child.val().color,
-                    key: child.val().roleid,
-                })
+                rolecount = rolecount + child.val();
             })
-            this.setState({rolecount:rolecount, rolelist:list})
+            this.setState({rolecount:rolecount})
         });
     }
 
@@ -426,10 +421,9 @@ class Lobby_Screen extends React.Component {
 
     _deleteRoom() {
         AsyncStorage.removeItem('ROOM-KEY');
-        AsyncStorage.removeItem('OWNER-KEY');
 
         firebase.database().ref('rooms/' + this.state.roomname).remove();
-        firebase.database().ref('listofroles/' + this.state.roomname).remove();
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
         
         this.props.navigation.dispatch(
             NavigationActions.reset({
@@ -480,7 +474,6 @@ class Lobby_Screen extends React.Component {
         if(rolecount==playercount){
 
             AsyncStorage.setItem('GAME-KEY',roomname);
-            AsyncStorage.removeItem('OWNER-KEY');
 
             this._handOutRoles(roomname);
 
@@ -555,63 +548,29 @@ class Lobby_Screen extends React.Component {
     }
 
     _renderListComponent(){
-        if(this.state.listview){
-            return <FlatList
-                data={this.state.namelist}
-                renderItem={({item}) => (
-                    <TouchableOpacity 
-                        onPress={() => { }}
-                        style = {{height:40,
-                            borderRadius:5,
-                            backgroundColor: colors.main,
-                            margin: 3,
-                            justifyContent:'center',
-                            alignItems:'center',
-                            flex:0.5,
-                            flexDirection:'row',
-                        }}
-                    > 
-                        <MaterialCommunityIcons name={item.owner?'crown':null}
-                            style={{color:'white', fontSize:20}}/>
-                        <Text style = {styles.concerto}>{item.name}</Text>
-                    </TouchableOpacity>
-                )}
-                numColumns={2}
-                keyExtractor={item => item.key}
-            />
-        } else {
-            return <FlatList
-                data={this.state.rolelist}
-                renderItem={({item}) => (
-                    <TouchableOpacity 
-                        onPress={() => {
-                            {this.state.amiowner?
-                                firebase.database().ref('listofroles/' + this.state.roomname 
-                                + '/' + item.name + '/count').transaction((count)=>{
-                                    if(count > 1){
-                                        return count - 1;
-                                    } else {
-                                        firebase.database().ref('listofroles/' 
-                                        + this.state.roomname + '/' + item.name).remove();
-                                    }
-                                })
-                            :{}}
-                        }}
-                        style = {{height:40,
-                            borderRadius:5,
-                            backgroundColor: item.color,
-                            margin: 3,
-                            justifyContent:'center',
-                            flex:0.5
-                        }}
-                    >
-                        <Text style = {styles.concerto}>{item.name + ' x' + item.count}</Text>
-                    </TouchableOpacity>
-                )}
-                numColumns={2}
-                keyExtractor={item => item.key}
-            />
-        }
+        return <FlatList
+            data={this.state.namelist}
+            renderItem={({item}) => (
+                <TouchableOpacity 
+                    onPress={() => { }}
+                    style = {{height:40,
+                        borderRadius:5,
+                        backgroundColor: colors.main,
+                        margin: 3,
+                        justifyContent:'center',
+                        alignItems:'center',
+                        flexDirection:'row',
+                    }}
+                > 
+                    <MaterialCommunityIcons name={item.owner?'crown':null}
+                        style={{color:'white', fontSize:20}}/>
+                    <Text style = {styles.concerto}>{item.name}</Text>
+                </TouchableOpacity>
+            )}
+            numColumns={1}
+            keyExtractor={item => item.key}
+        />
+        
     }
 
     _renderBottomComponent() {
@@ -677,30 +636,6 @@ class Lobby_Screen extends React.Component {
 
             <View style = {{flex:0.15}}/>
 
-            <View style = {{flex:0.85,flexDirection:'row', justifyContent:'center'}}>
-                <TouchableOpacity
-                    style = {{
-                        flex: 0.6,
-                        backgroundColor:colors.main,
-                        borderRadius: 15,
-                        justifyContent:'center',
-                    }}
-                    onPress = {()=>{
-                        if(this.state.listview){
-                            this.setState({listview:false})
-                        } else {
-                            this.setState({listview:true})
-                        }
-                    }}
-                >
-                    <Text style = {styles.concerto}>
-                        {this.state.listview?
-                            'View Role Selection':' View Players: ' + this.state.playercount}</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style = {{flex:0.15}}/>
-
             <View style = {{flex:10.3, flexDirection:'row',justifyContent:'center'}}>
                 <View style = {{flex:0.85,justifyContent:'center'}}>
                     {this._renderListComponent()}
@@ -713,7 +648,7 @@ class Lobby_Screen extends React.Component {
                 {this._renderBottomComponent()}
             </View>
 
-            <View style = {{flex:0.15}}/>
+            <View style = {{flex:0.3}}/>
 
         </View>
     }

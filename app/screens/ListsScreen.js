@@ -142,50 +142,68 @@ class Roles_Screen extends Component {
 
         var keys = Object.keys(Rolesheet).sort()
         var rolelist = [];
+        var index = 0;
         keys.forEach(function(key){
             if(Rolesheet[key].type == type){
                 rolelist.push({
                     name:           Rolesheet[key].name,
+                    index:          index,
                     category:       Rolesheet[key].category,
+                    count:          0,
                     image:          Rolesheet[key].image,
                     color:          Rolesheet[key].color,
                     key:            key,
                 })
+                index++;
             }
         })
-        this.setState({rolelist:rolelist,ownermode:false})
+        this.setState({rolelist:rolelist})
+
+        this.listOfRoles.on('value',snap=>{
+            if(snap.exists()){
+                this.setState({ownermode:true})
+            } else {
+                this.setState({ownermode:false})
+            }
+        })
 
     }
 
-    _roleBtnPress(name,key,color,suspicious) {
+    componentWillUnmount(){
+        if(this.listOfRoles){
+            this.listOfRoles.off();
+        }
+    }
+
+    _roleBtnPress(key,index) {
         if(this.state.ownermode){
-            this._addRole(name,key,color,suspicious)
+            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+            + '/' + key).transaction((count)=>{
+                return count + 1;
+            })
+
+            var array = this.state.rolelist;
+            array[index]['count']++;
+            this.setState({rolelist:array})
         } else {
             this.setState({roleid:key, modalVisible:true})
         }
     }
 
-    _addRole(rolename,roleid,color,suspicious) {
+    _deleteRole(key,index){
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-        + '/' + rolename + '/count')
-            .transaction((count)=>{
-                return count + 1;
-            })
-
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid + '/' + rolename)
-            .update({roleid:roleid,color:color,suspicious:suspicious})
-    }
-
-    _deleteRole(rolename){
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-        + '/' + rolename + '/count').transaction((count)=>{
+        + '/' + key).transaction((count)=>{
             if(count > 1){
                 return count - 1;
             } else {
                 firebase.database().ref('listofroles/' 
-                + firebase.auth().currentUser.uid + '/' + rolename).remove();
+                + firebase.auth().currentUser.uid + '/' + key).remove();
             }
         })
+
+        var array = this.state.rolelist;
+        array[index]['count']--;
+        this.setState({rolelist:array})
     }
 
     _renderTitle() {
@@ -260,40 +278,38 @@ class Roles_Screen extends Component {
                 renderItem={({item}) => (
                     <TouchableOpacity
                         onPress = {()=>{
-                            this._roleBtnPress(item.name,item.key,item.color,item.suspicious)  
+                            this._roleBtnPress(item.key,item.index)  
                         }}
                         style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.5,
-                            borderRadius:10, margin:5, flexDirection:'row' }}>
-                        <View style = {{margin:5,flex:1,justifyContent:'center',alignItems:'center',
-                            borderRadius:10,backgroundColor:colors.main}}>
-                            <TouchableOpacity
-                                style = {{flexDirection:'row'}}
-                                onPress={()=> {
-                                    {this._deleteRole(item.name)}
-                                }}
-                                disabled = {!this.state.ownermode}>
-                                <Text style = {{
-                                    fontFamily:'ConcertOne-Regular', fontSize: 18, 
-                                    color: colors.font, marginTop:3
-                                }}>{item.count}</Text>
-                                <View style = {{flex:0.85}}/>
-                                <MaterialCommunityIcons name={this.state.ownermode?'close-circle':null} 
-                                    style={{color:colors.font, fontSize:25, marginTop:3}}/>
-                            </TouchableOpacity>
-                            <Image 
-                                style={{width:100,height:100}}
-                                source = {{uri:item.image}}
-                            />
+                            borderRadius:10, margin:5, justifyContent:'center', alignItems:'center'}}>
+                        <TouchableOpacity
+                            style = {{flexDirection:'row'}}
+                            onPress={()=> {
+                                {this._deleteRole(item.key,item.index)}
+                            }}
+                            disabled = {!this.state.ownermode}>
                             <Text style = {{
-                                color:colors.font,
-                                fontFamily: 'ConcertOne-Regular',
-                                fontSize:20}}>{item.name}</Text>
-                            <Text style = {{
-                                color:colors.font,
-                                fontFamily: 'ConcertOne-Regular',
-                                fontSize:16,
-                                marginBottom:10}}>{item.category}</Text>
-                        </View>
+                                fontFamily:'ConcertOne-Regular', fontSize: 18, 
+                                color: colors.font, marginTop:3
+                            }}>{item.count}</Text>
+                            <View style = {{flex:0.85}}/>
+                            <MaterialCommunityIcons name='close-circle' 
+                                style={{color:this.state.ownermode?colors.font:colors.main, 
+                                    fontSize:25, marginTop:3}}/>
+                        </TouchableOpacity>
+                        <Image 
+                            style={{width:100,height:100}}
+                            source = {{uri:item.image}}
+                        />
+                        <Text style = {{
+                            color:colors.font,
+                            fontFamily: 'ConcertOne-Regular',
+                            fontSize:20}}>{item.name}</Text>
+                        <Text style = {{
+                            color:colors.font,
+                            fontFamily: 'ConcertOne-Regular',
+                            fontSize:16,
+                            marginBottom:10}}>{item.category}</Text>
                     </TouchableOpacity>
                 )}
                 style={{margin:5}}
