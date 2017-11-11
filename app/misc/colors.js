@@ -18,7 +18,7 @@ export default colors = {
 
     //Blue Palette
     main:       '#1F476E', 
-    highlight:  '#54537A',
+    highlight:  '#e3c382',
     background: '#6D849C',
     title:      '#231715',
     font:       'white',
