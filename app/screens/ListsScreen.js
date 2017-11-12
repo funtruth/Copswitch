@@ -256,7 +256,7 @@ class Roles_Screen extends Component {
                         justifyContent:'center',alignItems:'center'}}>
                         <TouchableWithoutFeedback>
                             <View style = {{flex:0.7,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
-                                <View style = {{backgroundColor:colors.main,flex:0.9,borderRadius:60}}>
+                                <View style = {{backgroundColor:colors.main,flex:0.9,borderRadius:10}}>
                                     {this._renderTitle()}
                                     {this._renderDesc()}
                                     {this._renderImage()}
@@ -277,8 +277,7 @@ class Roles_Screen extends Component {
                             this._roleBtnPress(item.key,item.index)  
                         }}
                         style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.5,
-                            borderRadius:10, margin:5, justifyContent:'center', alignItems:'center',
-                            flexDirection:'row'}}>
+                            borderRadius:10, margin:5, flexDirection:'row'}}>
                         <TouchableOpacity
                             style={{flex:0.2,justifyContent:'center',alignItems:'center'}}
                             onPress={()=> {
@@ -314,7 +313,18 @@ class Roles_Screen extends Component {
                         </TouchableOpacity>
                     </TouchableOpacity>
                 )}
-                renderSectionHeader = {({section})=><Text>{section.title}</Text>}
+                renderSectionHeader = {({section})=>(
+                    <TouchableOpacity
+                        style = {{backgroundColor:colors.font, borderRadius:2,
+                            justifyContent:'center', alignItems:'center',
+                            marginTop:10, marginBottom:10}}
+                    >
+                        <Text style = {{
+                            fontFamily:'ConcertOne-Regular',
+                            fontSize: 25, color: colors.main,
+                            marginTop:5, marginBottom:5}}>{section.title}</Text>
+                    </TouchableOpacity>
+                )}
                 sections = {[
                     {data: this.state.townlist, title: 'Town'},
                     {data: this.state.mafialist, title: 'Mafia'},
