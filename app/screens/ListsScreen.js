@@ -280,7 +280,7 @@ class Roles_Screen extends Component {
                             borderRadius:10, margin:5, justifyContent:'center', alignItems:'center',
                             flexDirection:'row'}}>
                         <TouchableOpacity
-                            style={{flex:0.2,borderWidth:1}}
+                            style={{flex:0.2,justifyContent:'center',alignItems:'center'}}
                             onPress={()=> {
                                 {this._deleteRole(item.key,item.index)}
                             }}
@@ -290,7 +290,7 @@ class Roles_Screen extends Component {
                                 color: colors.font, marginTop:3, marginLeft:3
                             }}>{item.count?item.count:null}</Text>
                         </TouchableOpacity>
-                        <View style = {{flex:0.6,justifyContent:'center',alignItems:'center',borderWidth:1}}>
+                        <View style = {{flex:0.6,justifyContent:'center',alignItems:'center'}}>
                             <Text style = {{
                                 color:colors.font,
                                 fontFamily: 'ConcertOne-Regular',
@@ -303,7 +303,7 @@ class Roles_Screen extends Component {
                                 marginBottom:5}}>{item.category}</Text>
                         </View>
                         <TouchableOpacity
-                            style= {{borderWidth:1,flex:0.2}}
+                            style= {{flex:0.2,justifyContent:'center',alignItems:'center'}}
                             onPress={()=> {
                                 {this._deleteRole(item.key,item.index)}
                             }}
