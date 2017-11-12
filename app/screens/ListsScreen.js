@@ -9,6 +9,7 @@ import {
     StyleSheet,
     Keyboard,
     FlatList,
+    SectionList,
     TouchableOpacity,
     TouchableWithoutFeedback,
     Modal
@@ -35,52 +36,21 @@ class General_Screen extends Component {
         super(props);
     }
 
-    _goToRules(type) {
-        this.props.navigation.navigate('Roles_Screen',{type:type})
-    }
-
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
-            <View style = {{justifyContent:'center',flex:0.1}}>
-                <Text style = {{
-                    fontFamily:'ConcertOne-Regular',fontSize:30,color:colors.main,
-                    alignSelf:'center'}}>Roles
-                </Text>
-            </View>
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
-                title = 'Town'
-                onPress = {()=>{ this._goToRules(2)}}
+                title = 'Characters'
+                onPress = {()=>{ this.props.navigation.navigate('Roles_Screen') }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
-                title = 'Mafia'
-                onPress = {()=>{ this._goToRules(1)}}
-            />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Neutral'
-                onPress = {()=>{ this._goToRules(3)}}
-            />
-            <View style = {{flex:0.02}}/>
-            <View style = {{justifyContent:'center',flex:0.08}}>
-                <Text style = {{
-                    fontFamily:'ConcertOne-Regular',fontSize:30,color:colors.main,
-                    alignSelf:'center'}}>How-to-Play
-                </Text>
-            </View>
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Rules'
+                title = 'How to Play'
                 onPress = {()=>{ }}
             />
             <MenuButton
@@ -104,7 +74,6 @@ class General_Screen extends Component {
                 title = 'Tutorial'
                 onPress = {()=>{ }}
             />
-            <View style = {{flex:0.06}}/>
         </View>
     }
 }
@@ -124,7 +93,9 @@ class Roles_Screen extends Component {
         super(props);
 
         this.state = {
-            rolelist: [],
+            townlist: [],
+            mafialist: [],
+            neutrallist: [],
             roleid:   'a',
             modalVisible: false,
             ownermode:  false,
@@ -137,14 +108,33 @@ class Roles_Screen extends Component {
 
     componentWillMount() {
 
-        const { params } = this.props.navigation.state;
-        const type = params.type;
-
         var keys = Object.keys(Rolesheet).sort()
-        var rolelist = [];
+        var townlist = [];
+        var mafialist = [];
+        var neutrallist = [];
         keys.forEach(function(key){
-            if(Rolesheet[key].type == type){
-                rolelist.push({
+            if(Rolesheet[key].type == 1){
+                mafialist.push({
+                    name:           Rolesheet[key].name,
+                    index:          Rolesheet[key].index,
+                    category:       Rolesheet[key].category,
+                    count:          0,
+                    image:          Rolesheet[key].image,
+                    color:          Rolesheet[key].color,
+                    key:            key,
+                })
+            } else if (Rolesheet[key].type == 2) {
+                townlist.push({
+                    name:           Rolesheet[key].name,
+                    index:          Rolesheet[key].index,
+                    category:       Rolesheet[key].category,
+                    count:          0,
+                    image:          Rolesheet[key].image,
+                    color:          Rolesheet[key].color,
+                    key:            key,
+                })
+            } else {
+                neutrallist.push({
                     name:           Rolesheet[key].name,
                     index:          Rolesheet[key].index,
                     category:       Rolesheet[key].category,
@@ -155,17 +145,32 @@ class Roles_Screen extends Component {
                 })
             }
         })
-        this.setState({rolelist:rolelist})
+        this.setState({
+            mafialist:mafialist,
+            townlist:townlist,
+            neutrallist:neutrallist,
+        })
 
         this.listOfRoles.on('value',snap=>{
             if(snap.exists()){
-                var array = this.state.rolelist;
+                var mafialist = this.state.mafialist;
+                var townlist = this.state.townlist;
+                var neutrallist = this.state.neutrallist;
                 snap.forEach((child)=>{
-                    if(Rolesheet[child.key].type == type){
-                        array[Rolesheet[child.key].index]['count'] = child.val()
+                    if(Rolesheet[child.key].type == 1){
+                        mafialist[Rolesheet[child.key].index]['count'] = child.val()
+                    } else if (Rolesheet[child.key].type == 2) {
+                        townlist[Rolesheet[child.key].index]['count'] = child.val()
+                    } else {
+                        neutrallist[Rolesheet[child.key].index]['count'] = child.val()
                     }
                 })
-                this.setState({ownermode:true,rolelist:array})
+                this.setState({
+                    ownermode:true,
+                    mafialist:mafialist,
+                    townlist:townlist,
+                    neutrallist:neutrallist
+                })
             } else {
                 this.setState({ownermode:false})
             }
@@ -264,49 +269,62 @@ class Roles_Screen extends Component {
                 </TouchableWithoutFeedback>
             </Modal>
 
-            <View><FlatList
-                data={this.state.rolelist}
+            <View><SectionList
+                data={this.state.townlist}
                 renderItem={({item}) => (
                     <TouchableOpacity
                         onPress = {()=>{
                             this._roleBtnPress(item.key,item.index)  
                         }}
                         style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.5,
-                            borderRadius:10, margin:5, justifyContent:'center', alignItems:'center'}}>
+                            borderRadius:10, margin:5, justifyContent:'center', alignItems:'center',
+                            flexDirection:'row'}}>
                         <TouchableOpacity
-                            style = {{flexDirection:'row'}}
+                            style={{flex:0.2,borderWidth:1}}
                             onPress={()=> {
                                 {this._deleteRole(item.key,item.index)}
                             }}
                             disabled = {!item.count}>
-                            <Text style = {{
+                            <Text style = {{flex:0.2,
                                 fontFamily:'ConcertOne-Regular', fontSize: 20, 
                                 color: colors.font, marginTop:3, marginLeft:3
                             }}>{item.count?item.count:null}</Text>
-                            <View style = {{flex:0.85}}/>
+                        </TouchableOpacity>
+                        <View style = {{flex:0.6,justifyContent:'center',alignItems:'center',borderWidth:1}}>
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:20,
+                                marginTop:5}}>{item.name}</Text>
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:16,
+                                marginBottom:5}}>{item.category}</Text>
+                        </View>
+                        <TouchableOpacity
+                            style= {{borderWidth:1,flex:0.2}}
+                            onPress={()=> {
+                                {this._deleteRole(item.key,item.index)}
+                            }}
+                            disabled = {!item.count}>
                             <MaterialCommunityIcons name='close-circle' 
                                 style={{color:item.count?colors.font:colors.disabled, 
-                                    fontSize:25, marginTop:3}}/>
+                                    fontSize:25, marginTop:3,flex:0.2}}/>
                         </TouchableOpacity>
-                        <Image 
-                            style={{width:100,height:100}}
-                            source = {{uri:item.image}}
-                        />
-                        <Text style = {{
-                            color:colors.font,
-                            fontFamily: 'ConcertOne-Regular',
-                            fontSize:20}}>{item.name}</Text>
-                        <Text style = {{
-                            color:colors.font,
-                            fontFamily: 'ConcertOne-Regular',
-                            fontSize:16,
-                            marginBottom:10}}>{item.category}</Text>
                     </TouchableOpacity>
                 )}
+                renderSectionHeader = {({section})=><Text>{section.title}</Text>}
+                sections = {[
+                    {data: this.state.townlist, title: 'Town'},
+                    {data: this.state.mafialist, title: 'Mafia'},
+                    {data: this.state.neutrallist, title: 'Neutral'},
+                ]}
                 style={{margin:5}}
                 numColumns = {2}
                 keyExtractor={item => item.key}
-            /></View>
+            />
+            </View>
         </View>
     }
 }

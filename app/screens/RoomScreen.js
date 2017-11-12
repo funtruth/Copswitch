@@ -38,10 +38,6 @@ import firebase from '../firebase/FirebaseController.js';
 
 class Room_Screen extends React.Component {
 
-    static navigationOptions = {
-        header: null
-    };
-
     constructor(props) {
         super(props);
     }
@@ -80,15 +76,6 @@ class Room_Screen extends React.Component {
 }
 
 class Create_Screen extends React.Component {
-    
-    static navigationOptions = {
-        headerTitle: <Text style = {{fontSize:20,
-            fontFamily: 'ConcertOne-Regular',
-            color:colors.font,
-            marginLeft:15}}>Make a Room</Text>,
-        headerStyle: { backgroundColor: colors.headerbackground},
-        headerTintColor: colors.headerfont,
-    };
 
     constructor(props) {
         super(props);
@@ -147,10 +134,22 @@ class Create_Screen extends React.Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.color2,
-                justifyContent:'center',alignItems:'center'}}>
+            <View style = {{flex:1,backgroundColor:colors.background}}>
 
-                <View style = {{ justifyContent: 'center', flexDirection: 'row', marginBottom:5 }}>
+                <TouchableOpacity
+                    style = {{flexDirection:'row',flex:0.2,
+                        justifyContent:'center',alignItems:'center'}}
+                    onPress = {()=>{
+                        this.props.navigation.goBack();
+                    }}
+                >
+                    <MaterialCommunityIcons name='home'
+                        style={{color:colors.main,fontSize:40,alignSelf:'center'}}/>
+                </TouchableOpacity>
+
+                <View style = {{flex:0.2}}/>
+
+                <View style = {{ justifyContent: 'center', flexDirection: 'row', flex:0.1}}>
                     <TextInput
                         placeholder="Who are you?"
                         placeholderTextColor={colors.main}
@@ -180,24 +179,12 @@ class Create_Screen extends React.Component {
                     }}
                 />
 
-                {/*Make-shift Keyboard Avoiding View*/}
-                <View style = {{flex:0.3}}/> 
             </View>
         </TouchableWithoutFeedback>
     }
 }
 
 class Join_Screen extends React.Component {
-
-    static navigationOptions = {
-        headerTitle: <Text style = {{
-            fontSize:20,
-            fontFamily: 'ConcertOne-Regular',
-            color:colors.font,
-            marginLeft:15}}>Join a Room</Text>,
-        headerStyle: { backgroundColor: colors.headerbackground},
-        headerTintColor: colors.headerfont,
-    };
 
     constructor(props) {
         super(props);
@@ -263,11 +250,22 @@ class Join_Screen extends React.Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.color2,
-                justifyContent:'center',alignItems:'center'}}>
+            <View style = {{flex:1,backgroundColor:colors.background}}>
+
+                <TouchableOpacity
+                    style = {{flexDirection:'row',flex:0.2,
+                        justifyContent:'center',alignItems:'center'}}
+                    onPress = {()=>{
+                        this.props.navigation.goBack();
+                    }}
+                >
+                    <MaterialCommunityIcons name='home'
+                        style={{color:colors.main,fontSize:40,alignSelf:'center'}}/>
+                </TouchableOpacity>
 
                 <View style = {{flex:0.1}}/>
-                <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
+
+                <View style = {{ justifyContent: 'center', flexDirection: 'row', flex:0.1 }}>
                     <TextInput
                         placeholder="Who are you?"
                         placeholderTextColor={colors.main}
@@ -286,7 +284,7 @@ class Join_Screen extends React.Component {
                         onSubmitEditing = {()=>this.refs['roomcode'].focus()}
                     />
                 </View>
-                <View style = {{ justifyContent: 'center', flexDirection: 'row', marginBottom:5 }}>
+                <View style = {{ justifyContent: 'center', flexDirection: 'row', flex:0.1 }}>
                     <TextInput
                         ref='roomcode'
                         placeholder="Room Code"
@@ -325,10 +323,6 @@ class Join_Screen extends React.Component {
 }
 
 class Lobby_Screen extends React.Component {
-
-    static navigationOptions = {
-        header: null
-    };
 
     constructor(props) {
         super(props);
@@ -571,55 +565,15 @@ class Lobby_Screen extends React.Component {
     }
 
     _renderBottomComponent() {
-        return <View style = {{flex:0.15,flexDirection:'row',marginBottom:10}}>
-
-            <View style = {{flex:0.06}}/>
-            
-            <View style = {{flex:0.54,justifyContent:'center', alignItems:'center',
-                    backgroundColor:this.state.amiowner?colors.main:colors.disabled,borderRadius:5}}>
-                <TouchableOpacity
-                    onPress={()=> { }}
-                    disabled={!this.state.amiowner}
-                    style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                </TouchableOpacity>
-            </View>
-
-            <View style = {{flex:0.04}}/>
-
-            <View style = {{flex:0.3}}>
-                <TouchableOpacity
-                    style = {{
-                        flex:0.8, backgroundColor:this.state.amiowner?colors.main:colors.disabled, 
-                        borderRadius:5,justifyContent:'center', alignItems:'center', flexDirection:'row'
-                    }}
-                    fontSize = {17}
-                    onPress={()=> {
-                        alert('reset function')
-                    }}
-                    disabled={!this.state.amiowner}
-                >
-                    <MaterialCommunityIcons name='refresh'
-                        style={{color:colors.font,fontSize:22,alignSelf:'center'}}/>
-                    <Text style = {styles.concerto}>CLEAR</Text>
-                </TouchableOpacity>
-
-                <View style = {{flex:0.2}}/>
-
-                <TouchableOpacity
-                    style = {{
-                        flex:0.8, backgroundColor:this.state.amiowner?colors.main:colors.disabled, 
-                        borderRadius:5, justifyContent:'center', alignItems:'center'
-                    }}
-                    onPress={()=> {
-                        this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
-                    }}
-                    disabled={!this.state.amiowner}
-                ><Text style = {styles.concerto}>START</Text>
-                </TouchableOpacity>
-            </View>
-
-            <View style = {{flex:0.06}}/>
-        </View>
+        return <MenuButton
+            viewFlex = {0.1}
+            flex = {0.9}
+            fontSize = {20}
+            title = 'START'
+            onPress = {()=>{
+                this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
+            }}
+        />
     }
 
     render() {
@@ -671,7 +625,7 @@ class Lobby_Screen extends React.Component {
 
             <View style = {{flex:0.01}}/>
 
-            <View style = {{flex:0.71, flexDirection:'row',justifyContent:'center'}}>
+            <View style = {{flex:0.75, flexDirection:'row',justifyContent:'center'}}>
                 <View style = {{flex:0.69,justifyContent:'center'}}>
                     {this._renderListComponent()}
                 </View>
@@ -681,18 +635,12 @@ class Lobby_Screen extends React.Component {
 
             {this._renderBottomComponent()}
 
-            <View style = {{flex:0.02}}/>
-
         </View>
     }
 }
 
 class Expired_Screen extends React.Component {
     
-    static navigationOptions = {
-        header: null
-    };
-
     constructor(props) {
         super(props);
     }
@@ -825,23 +773,23 @@ export const createRoomNavigator = (inGame,inRoom,isExpired,key) => {
                 screen: Room_Screen,
             },
             Create_Screen: {
-            screen: Create_Screen,
+                screen: Create_Screen,
             },
             Join_Screen: {
-            screen: Join_Screen,
+                screen: Join_Screen,
             },
             Expired_Screen: {
                 screen: Expired_Screen,
             },
             Lobby_Screen: {
-            screen: Lobby_Screen,
+                screen: Lobby_Screen,
             },
             Mafia_Screen: {
                 screen: Mafia_Screen,
             },
         },
             {
-                headerMode: 'screen',
+                headerMode: 'none',
                 initialRouteName: 
                     inRoom?(
                         inGame?(
