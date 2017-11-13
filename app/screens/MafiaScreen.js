@@ -76,7 +76,6 @@ constructor(props) {
         messagechat:        false,
         notificationchat:   false,
         showprofile:        false,
-        xdisabled:          true,
         disabled:           false,
 
         amidead:            true,
@@ -689,10 +688,17 @@ _voteBtnPress(presseduid,votebtn) {
 
 //Rendering the Main Game Header
 _renderHeader() {
-    return <View><Text style = {{color:colors.font, alignSelf:'center', 
-        fontFamily: 'ConcertOne-Regular', fontSize:25}}>
-        {this.state.phasename}
-    </Text></View>
+    return <View>
+        <Text style = {{color:colors.font, alignSelf:'center', 
+            fontFamily: 'ConcertOne-Regular', fontSize:25}}>
+            {this.state.phasename}
+        </Text>
+        
+        <Text style = {{color:colors.font, alignSelf:'center',
+            fontFamily: 'ConcertOne-Regular', fontSize:14}}>
+            {this.state.bottommessage}
+        </Text>
+    </View>
 }
 
 //Rendering Main Visuals of Game Board
@@ -1164,43 +1170,6 @@ _actionPhase() {
 
 }
 
-_leaveRoom() {
-    AsyncStorage.removeItem('ROOM-KEY');
-    AsyncStorage.removeItem('GAME-KEY');
-
-    this.msgRef.remove();
-
-    this.props.navigation.dispatch(
-        NavigationActions.reset({
-            index: 0,
-            key: null,
-            actions: [
-                NavigationActions.navigate({ routeName: 'Room_Screen'})
-            ]
-        })
-    )
-}
-_deleteRoom() {
-    AsyncStorage.removeItem('ROOM-KEY');
-    AsyncStorage.removeItem('GAME-KEY');
-
-    this.msgRef.remove();
-    this.globalMsgRef.remove();
-    this.roomRef.remove();
-    
-    this.props.navigation.dispatch(
-        NavigationActions.reset({
-            index: 0,
-            actions: [
-                NavigationActions.navigate({ routeName: 'Room_Screen'})
-            ]
-        })
-    )
-}
-_enableCloseBtn() {
-    this.setState({xdisabled:false});
-    this.timer = setTimeout(() => {this.setState({xdisabled: true})}, 2000);
-}
 _gameOver() {
     AsyncStorage.removeItem('ROOM-KEY');
     AsyncStorage.removeItem('GAME-KEY');
@@ -1222,6 +1191,7 @@ _gameOver() {
     this.props.navigation.dispatch(
         NavigationActions.reset({
             index: 0,
+            key: null,
             actions: [
                 NavigationActions.navigate({ routeName: 'Room_Screen'})
             ]
@@ -1259,8 +1229,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
         visible = {this.state.messagechat || this.state.showprofile || this.state.notificationchat}
         onRequestClose = {()=>{
             this.setState({ notificationchat:false, messagechat:false, showprofile:false })
-        }}
-    >   
+        }}>   
         <View style = {{flex:1,}}>
             <TouchableWithoutFeedback
                 onPress = {()=>{
@@ -1276,23 +1245,10 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
         </View>
     </Modal>
 
-    <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
-        <View style = {{flex:1}}/>
-        <View style = {{flex:4,backgroundColor:colors.main,justifyContent:'center',
+    <View style = {{flex:1.5,flexDirection:'row',justifyContent:'center'}}>
+        <View style = {{flex:0.9,backgroundColor:colors.main,justifyContent:'center',
             borderBottomLeftRadius:15,borderBottomRightRadius:15}}>
             {this._renderHeader()}
-        </View>
-        <View style = {{flex:1,justifyContent:'center'}}>
-            <TouchableOpacity
-                onPress={()=> {
-                    this.state.xdisabled?
-                        this._enableCloseBtn():
-                        this.state.amiowner?this._deleteRoom():this._leaveRoom();
-                }}>
-                <MaterialCommunityIcons name='close-circle'
-                    style={{color:this.state.xdisabled?colors.main:colors.highlight, 
-                        fontSize:26,alignSelf:'center'}}/>
-            </TouchableOpacity>
         </View>
     </View>
 
@@ -1368,15 +1324,6 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
 
     <View style = {{flex:0.15}}/>
 
-    <View style = {{flex:0.5,flexDirection:'row',justifyContent:'center'}}>
-        <View style = {{flex:0.7,backgroundColor:colors.main,borderRadius:10,
-            justifyContent:'center',alignItems:'center'}}>
-            <Text style = {{color:colors.font,fontFamily:'ConcertOne-Regular',
-                fontSize:14}}>{this.state.bottommessage}</Text>
-        </View>
-    </View>
-
-    <View style = {{flex:0.15}}/>
 </View>
 }
 }

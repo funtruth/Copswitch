@@ -55,7 +55,7 @@ class Room_Screen extends React.Component {
     render() {
         return <View style = {{ flex:1, backgroundColor:colors.background }}>
 
-            <View style = {{flex:0.8}}/>
+            <View style = {{flex:0.74}}/>
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
@@ -70,7 +70,7 @@ class Room_Screen extends React.Component {
                 title = 'Join Room'
                 onPress = {()=>{ this.props.navigation.navigate('Join_Screen') }}
             />
-            <View style = {{flex:0.06}}/>
+            <View style = {{flex:0.02}}/>
         </View>
     }
 }
@@ -107,8 +107,7 @@ class Create_Screen extends React.Component {
                 presseduid:         'foo',
         });
         
-        firebase.database().ref('listofroles/'+firebase.auth().currentUser.uid)
-            .update({A:1,D:1,b:1})
+        firebase.database().ref('listofroles/'+firebase.auth().currentUser.uid).update({b:0})
 
         this.props.navigation.dispatch(
             NavigationActions.reset({
@@ -445,11 +444,6 @@ class Lobby_Screen extends React.Component {
         )
     }
 
-    _enableCloseBtn() {
-        this.setState({xdisabled:false});
-        this.timer = setTimeout(() => {this.setState({xdisabled: true})}, 2000);
-    }
-
     _recommendedBtnPress(mode,playercount){
         this.roleCount.remove();
 
@@ -478,6 +472,7 @@ class Lobby_Screen extends React.Component {
                 this.props.navigation.dispatch(
                     NavigationActions.reset({
                         index: 0,
+                        key: null,
                         actions: [
                         NavigationActions.navigate({ routeName: 'Mafia_Screen',
                             params:{roomname:this.state.roomname}})
@@ -565,15 +560,25 @@ class Lobby_Screen extends React.Component {
     }
 
     _renderBottomComponent() {
-        return <MenuButton
-            viewFlex = {0.1}
-            flex = {0.9}
-            fontSize = {20}
-            title = 'START'
-            onPress = {()=>{
-                this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
-            }}
-        />
+        return <View style = {{flex:0.24}}>
+            <MenuButton
+                viewFlex = {0.5}
+                flex = {0.9}
+                fontSize = {20}
+                title = 'Start Game'
+                onPress = {()=>{
+                    this._startGame(this.state.rolecount,this.state.playercount,this.state.roomname)
+                }}
+            />
+            <MenuButton
+                viewFlex = {0.5}
+                flex = {0.9}
+                fontSize = {20}
+                title = {this.state.amiowner?'Delete Room':'Leave Room'}
+                onPress = {()=>{
+                    this.state.amiowner?this._deleteRoom():this._leaveRoom();
+                }}
+            /></View>
     }
 
     render() {
@@ -597,36 +602,27 @@ class Lobby_Screen extends React.Component {
             backgroundColor: colors.background,
             flex: 1,
         }}>
-            <View style = {{flex:0.1,flexDirection:'row'}}>
-                <View style = {{flex:1}}/>
+            <View style = {{flex:0.15,flexDirection:'row', justifyContent:'center'}}>
                 <View style = {{
-                    flex:4, 
+                    flex:0.9, 
                     borderBottomLeftRadius: 15, borderBottomRightRadius: 15, 
                     backgroundColor: colors.main, justifyContent: 'center', }}
                 > 
                     <Text style = {{color:colors.font, alignSelf:'center',
-                        fontFamily:'ConcertOne-Regular', fontSize:25}}>
-                        {'Room Code: ' + this.state.roomname}
+                        fontFamily:'ConcertOne-Regular', fontSize:18}}>
+                        Room Code
                     </Text>
-                </View>
-                <View style = {{flex:1, justifyContent:'center'}}>
-                    <TouchableOpacity
-                        onPress={()=> {
-                            this.state.xdisabled?
-                            this._enableCloseBtn():        
-                            this.state.amiowner?this._deleteRoom():this._leaveRoom(this.state.roomname);
-                        }}>
-                        <MaterialCommunityIcons name='close-circle'
-                            style={{color:this.state.xdisabled?colors.main:colors.highlight, 
-                                fontSize:26,alignSelf:'center'}}/>
-                    </TouchableOpacity>
+                    <Text style = {{color:colors.font, alignSelf:'center',
+                        fontFamily:'ConcertOne-Regular', fontSize:25}}>
+                        {this.state.roomname}
+                    </Text>
                 </View>
             </View>
 
             <View style = {{flex:0.01}}/>
 
-            <View style = {{flex:0.75, flexDirection:'row',justifyContent:'center'}}>
-                <View style = {{flex:0.69,justifyContent:'center'}}>
+            <View style = {{flex:0.77, flexDirection:'row',justifyContent:'center'}}>
+                <View style = {{flex:0.9,justifyContent:'center'}}>
                     {this._renderListComponent()}
                 </View>
             </View>
@@ -634,6 +630,8 @@ class Lobby_Screen extends React.Component {
             <View style = {{flex:0.01}}/>
 
             {this._renderBottomComponent()}
+
+            <View style = {{flex:0.04}}/>
 
         </View>
     }

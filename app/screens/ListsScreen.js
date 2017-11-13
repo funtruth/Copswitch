@@ -36,43 +36,98 @@ class General_Screen extends Component {
         super(props);
     }
 
+    _deleteRoom() {
+        AsyncStorage.removeItem('ROOM-KEY');
+        AsyncStorage.removeItem('GAME-KEY');
+    
+        firebase.database().ref('messages').child(firebase.auth().currentUser.uid).remove();
+        firebase.database().ref('listofroles').child(firebase.auth().currentUser.uid).remove();
+
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                key: null,
+                actions: [
+                    NavigationActions.navigate({ routeName: 'SignedIn'})
+                ]
+            })
+        )
+    }
+    
+    _exitRoom() {
+        AsyncStorage.removeItem('ROOM-KEY');
+
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
+        
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                key: null,
+                actions: [
+                    NavigationActions.navigate({ routeName: 'SignedIn'})
+                ]
+            })
+        )
+    }
+
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {25}
+                fontSize = {20}
                 title = 'Characters'
                 onPress = {()=>{ this.props.navigation.navigate('Roles_Screen') }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {25}
+                fontSize = {20}
                 title = 'How to Play'
                 onPress = {()=>{ }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {25}
+                fontSize = {20}
                 title = 'Phases'
                 onPress = {()=>{ }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {25}
+                fontSize = {20}
                 title = 'Setup'
                 onPress = {()=>{ }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {25}
+                fontSize = {20}
                 title = 'Tutorial'
                 onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {20}
+                title = 'Leave Room'
+                onPress = {()=>{ this._exitRoom() }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {20}
+                title = 'Quit Game'
+                onPress = {()=>{ this._deleteRoom() }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {20}
+                title = 'Log Out'
+                onPress = {()=>{ this.props.navigation.navigate('SignedOut')}}
             />
         </View>
     }
