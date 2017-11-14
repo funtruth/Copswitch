@@ -154,6 +154,11 @@ class Roles_Screen extends Component {
             roleid:   'a',
             modalVisible: false,
             ownermode:  false,
+
+            showfilter:  false,
+            showtown:    false,
+            showmafia:   false,
+            showneutral: false,
         }
 
         this.listOfRoles = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
@@ -164,6 +169,7 @@ class Roles_Screen extends Component {
     componentWillMount() {
 
         var keys = Object.keys(Rolesheet).sort()
+        var filterlist = [];
         var townlist = [];
         var mafialist = [];
         var neutrallist = [];
@@ -239,23 +245,24 @@ class Roles_Screen extends Component {
         }
     }
 
-    _roleBtnPress(key,index) {
+    _roleBtnPress(key,index,count) {
         if(this.state.ownermode){
-            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-            + '/' + key).transaction((count)=>{
-                return count + 1;
-            })
+            if(count>0){
+                firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+                + '/' + key).transaction((count)=>{
+                    return count - 1;
+                })
+            } else {
+                firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+                + '/' + key).transaction((count)=>{
+                    return count + 1;
+                })
+            }
         } else {
             this.setState({roleid:key, modalVisible:true})
         }
     }
 
-    _deleteRole(key,index){
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-        + '/' + key).transaction((count)=>{
-                return count - 1;
-        })
-    }
 
     _renderTitle() {
         return <View style = {{flex:0.7, flexDirection:'row',
@@ -324,72 +331,195 @@ class Roles_Screen extends Component {
                 </TouchableWithoutFeedback>
             </Modal>
 
-            <View><SectionList
+            <TouchableOpacity
+                style = {{backgroundColor:colors.font, borderRadius:2,
+                    justifyContent:'center', alignItems:'center', 
+                    marginTop:5, marginBottom:3, flex:0.075}}
+                onPress = {()=>{
+                    this.setState({
+                        showfilter:!this.state.showfilter,
+                    })
+                }} >
+                <Text style = {{
+                    fontFamily:'ConcertOne-Regular',
+                    fontSize: 25, color: colors.main,
+                    marginTop:5, marginBottom:3}}>Filters</Text>
+            </TouchableOpacity>
+
+            {!this.state.showfilter? null: <View style = {{flex:0.2}}><FlatList
                 data={this.state.townlist}
                 renderItem={({item}) => (
                     <TouchableOpacity
                         onPress = {()=>{
                             this._roleBtnPress(item.key,item.index)  
                         }}
-                        style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.5,
-                            borderRadius:10, margin:5, flexDirection:'row'}}>
-                        <TouchableOpacity
-                            style={{flex:0.2,justifyContent:'center',alignItems:'center'}}
-                            onPress={()=> {
-                                {this._deleteRole(item.key,item.index)}
-                            }}
-                            disabled = {!item.count}>
-                            <Text style = {{flex:0.2,
-                                fontFamily:'ConcertOne-Regular', fontSize: 20, 
-                                color: colors.font, marginTop:3, marginLeft:3
-                            }}>{item.count?item.count:null}</Text>
-                        </TouchableOpacity>
-                        <View style = {{flex:0.6,justifyContent:'center',alignItems:'center'}}>
+                        style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.33,
+                            borderRadius:10, margin:3}}>
+                        <View style = {{justifyContent:'center',alignItems:'center'}}>
                             <Text style = {{
                                 color:colors.font,
                                 fontFamily: 'ConcertOne-Regular',
-                                fontSize:20,
-                                marginTop:5}}>{item.name}</Text>
+                                fontSize:18}}>{item.name}</Text>
                             <Text style = {{
                                 color:colors.font,
                                 fontFamily: 'ConcertOne-Regular',
-                                fontSize:16,
+                                fontSize:14,
                                 marginBottom:5}}>{item.category}</Text>
                         </View>
-                        <TouchableOpacity
-                            style= {{flex:0.2,justifyContent:'center',alignItems:'center'}}
-                            onPress={()=> {
-                                {this._deleteRole(item.key,item.index)}
-                            }}
-                            disabled = {!item.count}>
-                            <MaterialCommunityIcons name='close-circle' 
-                                style={{color:item.count?colors.font:colors.disabled, 
-                                    fontSize:25, marginTop:3,flex:0.2}}/>
-                        </TouchableOpacity>
                     </TouchableOpacity>
                 )}
-                renderSectionHeader = {({section})=>(
-                    <TouchableOpacity
-                        style = {{backgroundColor:colors.font, borderRadius:2,
-                            justifyContent:'center', alignItems:'center',
-                            marginTop:10, marginBottom:10}}
-                    >
-                        <Text style = {{
-                            fontFamily:'ConcertOne-Regular',
-                            fontSize: 25, color: colors.main,
-                            marginTop:5, marginBottom:5}}>{section.title}</Text>
-                    </TouchableOpacity>
-                )}
-                sections = {[
-                    {data: this.state.townlist, title: 'Town'},
-                    {data: this.state.mafialist, title: 'Mafia'},
-                    {data: this.state.neutrallist, title: 'Neutral'},
-                ]}
-                style={{margin:5}}
-                numColumns = {2}
+                style={{margin:3}}
+                numColumns = {3}
                 keyExtractor={item => item.key}
             />
-            </View>
+            </View>}
+
+            <TouchableOpacity
+                style = {{backgroundColor:colors.font, borderRadius:2,
+                    justifyContent:'center', alignItems:'center',
+                    marginTop:3, marginBottom:3, flex:0.075}}
+                onPress = {()=>{
+                    this.setState({
+                        showtown:!this.state.showtown,
+                        showmafia:false,
+                        showneutral:false,
+                    })
+                }} >
+                <Text style = {{
+                    fontFamily:'ConcertOne-Regular',
+                    fontSize: 25, color: colors.main,
+                    marginTop:5, marginBottom:3}}>Town</Text>
+            </TouchableOpacity>
+
+            {!this.state.showtown? null: <View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+                data={this.state.townlist}
+                renderItem={({item}) => (
+                    <TouchableOpacity
+                        onPress = {()=>{
+                            this._roleBtnPress(item.key,item.index,item.count)  
+                        }}
+                        style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.33,
+                            borderRadius:10, margin:3}}>
+                        <View style = {{justifyContent:'center',alignItems:'center'}}>
+                            <Image 
+                                style={{width:70,height:70}}
+                                source={{uri: Rolesheet[item.key].image}}
+                            />
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:18}}>{item.name}</Text>
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:14,
+                                marginBottom:5}}>{item.category}</Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
+                style={{margin:3}}
+                numColumns = {3}
+                keyExtractor={item => item.key}
+            />
+            </View>}
+
+            <TouchableOpacity
+                style = {{backgroundColor:colors.font, borderRadius:2,
+                    justifyContent:'center', alignItems:'center',
+                    marginTop:3, marginBottom:3, flex:0.075}}
+                onPress = {()=>{
+                    this.setState({
+                        showmafia:!this.state.showmafia,
+                        showtown:false,
+                        showneutral:false,
+                    }) 
+                }} >
+                <Text style = {{
+                    fontFamily:'ConcertOne-Regular',
+                    fontSize: 25, color: colors.main,
+                    marginTop:5, marginBottom:5}}>Mafia</Text>
+            </TouchableOpacity>
+
+            {!this.state.showmafia?null:<View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+                data={this.state.mafialist}
+                renderItem={({item}) => (
+                    <TouchableOpacity
+                        onPress = {()=>{
+                            this._roleBtnPress(item.key,item.index,item.count)  
+                        }}
+                        style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.33,
+                            borderRadius:10, margin:3}}>
+                        <View style = {{justifyContent:'center',alignItems:'center'}}>
+                            <Image 
+                                style={{width:70,height:70}}
+                                source={{uri: Rolesheet[item.key].image}}
+                            />
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:18}}>{item.name}</Text>
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:14,
+                                marginBottom:5}}>{item.category}</Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
+                style={{margin:3}}
+                numColumns = {3}
+                keyExtractor={item => item.key}
+            />
+            </View>}
+
+            <TouchableOpacity
+                style = {{backgroundColor:colors.font, borderRadius:2,
+                    justifyContent:'center', alignItems:'center',
+                    marginTop:3, marginBottom:3, flex:0.075}}
+                onPress = {()=>{
+                    this.setState({
+                        showneutral:!this.state.showneutral,
+                        showtown:false,
+                        showmafia:false,
+                    })
+                }} >
+                <Text style = {{
+                    fontFamily:'ConcertOne-Regular',
+                    fontSize: 25, color: colors.main,
+                    marginTop:5, marginBottom:5}}>Neutral</Text>
+            </TouchableOpacity>
+
+            {!this.state.showneutral?null:<View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+                data={this.state.neutrallist}
+                renderItem={({item}) => (
+                    <TouchableOpacity
+                        onPress = {()=>{
+                            this._roleBtnPress(item.key,item.index,item.count)  
+                        }}
+                        style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.33,
+                            borderRadius:10, margin:3}}>
+                        <View style = {{justifyContent:'center',alignItems:'center'}}>
+                            <Image 
+                                style={{width:70,height:70}}
+                                source={{uri: Rolesheet[item.key].image}}
+                            />
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:18}}>{item.name}</Text>
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:14,
+                                marginBottom:5}}>{item.category}</Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
+                style={{margin:3}}
+                numColumns = {3}
+                keyExtractor={item => item.key}
+            />
+            </View>}
         </View>
     }
 }
