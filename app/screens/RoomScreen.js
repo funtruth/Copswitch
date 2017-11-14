@@ -32,6 +32,7 @@ import colors from '../misc/colors.js';
 import Rolesheet from '../misc/roles.json';
 
 import Mafia_Screen from './MafiaScreen.js';
+import { Creation } from '../../router';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -61,7 +62,9 @@ class Room_Screen extends React.Component {
                 flex = {0.9}
                 fontSize = {25}
                 title = 'Make Room'
-                onPress = {()=>{ this.props.navigation.navigate('Create_Screen') }}
+                onPress = {()=>{ 
+                    this.props.navigation.navigate('Creation')
+                 }}
             />
             <MenuButton
                 viewFlex = {0.12}
@@ -162,7 +165,7 @@ class Create_Screen extends React.Component {
                             }}
                             value={this.state.alias}
                             onChangeText = {(text) => {this.setState({alias: text})}}
-                            autoFocus={true}
+                            focus={true}
                             onSubmitEditing = {()=>{Keyboard.dismiss()}}
                         />
                     </View>
@@ -784,6 +787,9 @@ export const createRoomNavigator = (inGame,inRoom,isExpired,key) => {
             },
             Mafia_Screen: {
                 screen: Mafia_Screen,
+            },
+            Creation: {
+                screen: Creation,
             },
         },
             {
