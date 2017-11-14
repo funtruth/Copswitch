@@ -69,53 +69,30 @@ export const Creation = TabNavigator(
     Creation1: {
       screen: Creation1,
       navigationOptions : {
-        tabBarIcon: ({ tintColor }) => (
-          <MaterialIcons name="gamepad" style={styles.icon}/>
-        ),
         tabBarVisible: false,
       }
     },
     Creation2: {
       screen: Creation2,
       navigationOptions: {
-        tabBarIcon: ({ tintColor }) => (
-          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
-        ),
         tabBarVisible: false,
       }
     },
     Creation3: {
       screen: Creation3,
       navigationOptions: {
-        tabBarIcon: ({ tintColor }) => (
-          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
-        ),
         tabBarVisible: false,
       }
     },
     Creation4: {
       screen: Creation4,
       navigationOptions: {
-        tabBarIcon: ({ tintColor }) => (
-          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
-        ),
         tabBarVisible: false,
       }
     },
   },
   {
-    tabBarPosition: 'bottom',
-    tabBarOptions: {
-      showIcon: true,
-      showLabel: false,
-      style: {
-        backgroundColor: colors.tabbackground,
-      },
-      indicatorStyle: {
-        backgroundColor: colors.indicatorcolor,
-        height:5,
-      }
-    },
+    backBehavior: 'none',
     initialRouteName: 'Creation1',
   }
 );

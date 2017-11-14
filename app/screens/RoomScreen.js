@@ -22,7 +22,6 @@ import { NavigationActions } from 'react-navigation';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import randomize from 'randomatic';
 
-import { Button } from "react-native-elements";
 import { MenuButton } from '../components/MenuButton.js';
 
 import { isInGame } from "../auth";
@@ -43,14 +42,45 @@ class Room_Screen extends React.Component {
         super(props);
     }
 
-    _logOut() {
-        if(firebase.auth().currentUser.isAnonymous){
-            onSignOut().then(() => { firebase.auth().currentUser.delete() })
-            this.props.navigation.navigate('SignedOut');
-        } else {
-            onSignOut().then(() => { firebase.auth().signOut() }) 
-            this.props.navigation.navigate('SignedOut');
-        }
+    _createRoom() {
+        const roomname = randomize('A',4);
+
+        //TODO: Check if room already exists
+        
+        AsyncStorage.setItem('ROOM-KEY', roomname);
+        
+        firebase.database().ref('rooms/' + roomname).set({
+            phase: 1,
+            owner: firebase.auth().currentUser.uid,
+            playernum: 1,
+            daycounter:1,
+        });
+
+        firebase.database().ref('owners').child(firebase.auth().currentUser.uid)
+            .update({
+                roomname: roomname,
+            })
+
+        //Set up list of players
+        firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
+            + firebase.auth().currentUser.uid).set({
+                name:               'Owner',
+                actionbtnvalue:     false,
+                presseduid:         'foo',
+        });
+        
+        firebase.database().ref('listofroles/'+firebase.auth().currentUser.uid).update({b:0})
+
+        this.props.navigation.dispatch(
+            NavigationActions.reset({
+                index: 1,
+                actions: [
+                  NavigationActions.navigate({ routeName: 'Lobby_Screen', params:{roomname:roomname}}),
+                  NavigationActions.navigate({ routeName: 'Creation'})
+                ]
+            })
+        )
+        Keyboard.dismiss();
     }
 
     render() {
@@ -63,7 +93,7 @@ class Room_Screen extends React.Component {
                 fontSize = {25}
                 title = 'Make Room'
                 onPress = {()=>{ 
-                    this.props.navigation.navigate('Creation')
+                    this._createRoom()
                  }}
             />
             <MenuButton
@@ -563,7 +593,16 @@ class Lobby_Screen extends React.Component {
     }
 
     _renderBottomComponent() {
-        return <View style = {{flex:0.24}}>
+        return <View style = {{flex:0.36}}>
+            <MenuButton
+                viewFlex = {0.5}
+                flex = {0.9}
+                fontSize = {20}
+                title = 'Check Details'
+                onPress = {()=>{
+                    this.props.navigation.navigate('Creation')
+                }}
+            />
             <MenuButton
                 viewFlex = {0.5}
                 flex = {0.9}

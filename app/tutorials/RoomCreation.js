@@ -6,6 +6,7 @@ import {
     View,
     Image,
     StyleSheet,
+    AsyncStorage,
     Keyboard,
     TouchableOpacity,
     TouchableWithoutFeedback,
@@ -31,19 +32,47 @@ export class Creation1 extends Component {
 
         this.state = {
             alias:'',
+            roomname: '',
+
+            loading:true,
         };
+        
+        this.ownerRef = firebase.database().ref('owners').child(firebase.auth().currentUser.uid);
     }
 
-    _validName(name) {
-        if(name.length>0 && name.length < 11){
-            return true
-        } else {
-            alert('Name is not a valid length (10 characters or less)')
-            return false
+    
+    componentWillMount() {
+        this.ownerRef.on('value',snap=>{
+            this.setState({
+                roomname:snap.val().roomname,
+                loading:false,    
+            })
+        })
+    }
+
+    componentWillUnmount() {
+        if(this.ownerRef){
+            this.ownerRef.off()
         }
     }
 
+    _continue(name) {
+
+        if(name.length>0 && name.length < 11){
+            firebase.database
+            this.props.navigation.navigate('Creation2')
+        } else {
+            alert('Name is not a valid length (10 characters or less)')
+        }
+
+    }
+
     render() {
+
+        if(this.state.loading){
+            <View style = {{backgroundColor:colors.main}}/>
+        }
+
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
@@ -66,7 +95,7 @@ export class Creation1 extends Component {
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
                         <Text style = {styles.concerto}>Room Code</Text>
-                        <Text style = {styles.roomcode}>ABCD</Text>
+                        <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                     </View>
                 </View>
 
@@ -88,7 +117,7 @@ export class Creation1 extends Component {
                             autoFocus = {true}
                             onChangeText = {(text) => {this.setState({alias: text})}}
                             onSubmitEditing = {()=>{ 
-                                this.props.navigation.navigate('Creation2')
+                                this._continue(this.state.alias);
                             }}
                         />
                     </View>
@@ -106,10 +135,28 @@ export class Creation2 extends Component {
 
         this.state = {
             alias:'',
-
+            roomname:'',
             playercount: null,
-            xPosition: 0,
+            loading:true,
         };
+        
+        this.ownerRef = firebase.database().ref('owners').child(firebase.auth().currentUser.uid);
+    }
+
+
+    componentWillMount() {
+        this.ownerRef.on('value',snap=>{
+            this.setState({
+                roomname:snap.val().roomname,
+                loading:false,    
+            })
+        })
+    }
+
+    componentWillUnmount() {
+        if(this.ownerRef){
+            this.ownerRef.off()
+        }
     }
 
     _digit(digit) {
@@ -147,6 +194,11 @@ export class Creation2 extends Component {
     }
 
     render() {
+
+        if(this.state.loading){
+            return <View style = {{backgroundColor:colors.main}}/>
+        }
+
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
@@ -158,14 +210,7 @@ export class Creation2 extends Component {
                     <TouchableOpacity
                         style = {{flex:0.15}}
                         onPress = {()=>{
-                            this.props.navigation.dispatch(
-                                NavigationActions.reset({
-                                    index: 0,
-                                    actions: [
-                                    NavigationActions.navigate({ routeName: 'Room_Screen'})
-                                    ]
-                                })
-                            );
+                            this.props.navigation.dispatch(NavigationActions.back())
                         }} >
                         <MaterialCommunityIcons name='close'
                             style={{color:colors.font,fontSize:30}}/>
@@ -176,7 +221,7 @@ export class Creation2 extends Component {
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
                         <Text style = {styles.concerto}>Room Code</Text>
-                        <Text style = {styles.roomcode}>ABCD</Text>
+                        <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                     </View>
                 </View>
 
@@ -258,7 +303,27 @@ export class Creation3 extends Component {
 
         this.state = {
             alias:'',
+            roomname: '',
+            loading:true,
         };
+        
+        this.ownerRef = firebase.database().ref('owners').child(firebase.auth().currentUser.uid);
+    }
+
+
+    componentWillMount() {
+        this.ownerRef.on('value',snap=>{
+            this.setState({
+                roomname:snap.val().roomname,
+                loading:false,    
+            })
+        })
+    }
+
+    componentWillUnmount() {
+        if(this.ownerRef){
+            this.ownerRef.off()
+        }
     }
 
     _selectDifficulty(difficulty) {
@@ -266,6 +331,11 @@ export class Creation3 extends Component {
     }
 
     render() {
+
+        if(this.state.loading){
+            return <View style = {{backgroundColor:colors.main}}/>
+        }
+
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
@@ -277,14 +347,7 @@ export class Creation3 extends Component {
                     <TouchableOpacity
                         style = {{flex:0.15}}
                         onPress = {()=>{
-                            this.props.navigation.dispatch(
-                                NavigationActions.reset({
-                                    index: 0,
-                                    actions: [
-                                    NavigationActions.navigate({ routeName: 'Room_Screen'})
-                                    ]
-                                })
-                            );
+                            this.props.navigation.dispatch(NavigationActions.back());
                         }} >
                         <MaterialCommunityIcons name='close'
                             style={{color:colors.font,fontSize:30}}/>
@@ -295,7 +358,7 @@ export class Creation3 extends Component {
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
                         <Text style = {styles.concerto}>Room Code</Text>
-                        <Text style = {styles.roomcode}>ABCD</Text>
+                        <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                     </View>
                 </View>
 
@@ -328,7 +391,7 @@ export class Creation3 extends Component {
                         <MaterialCommunityIcons name='star-circle'
                             style={{color:colors.font,fontSize:30}}/>
                     </View>
-                <Text style = {styles.concerto}>Normal</Text>
+                <Text style = {styles.concerto}>Average</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -345,7 +408,7 @@ export class Creation3 extends Component {
                         <MaterialCommunityIcons name='star-circle'
                             style={{color:colors.font,fontSize:30}}/>
                     </View>
-                    <Text style = {styles.concerto}>Difficult</Text>
+                    <Text style = {styles.concerto}>Experts</Text>
                 </TouchableOpacity>
 
             </View>
@@ -360,10 +423,35 @@ export class Creation4 extends Component {
 
         this.state = {
             alias:'',
+            roomname: '',
+            loading:true,
         };
+        
+        this.ownerRef = firebase.database().ref('owners').child(firebase.auth().currentUser.uid);
+    }
+
+    
+    componentWillMount() {
+        this.ownerRef.on('value',snap=>{
+            this.setState({
+                roomname:snap.val().roomname,
+                loading:false,    
+            })
+        })
+    }
+
+    componentWillUnmount() {
+        if(this.ownerRef){
+            this.ownerRef.off()
+        }
     }
 
     render() {
+
+        if(this.state.loading){
+            return <View style = {{backgroundColor:colors.main}}/>
+        }
+
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
@@ -375,14 +463,7 @@ export class Creation4 extends Component {
                     <TouchableOpacity
                         style = {{flex:0.15}}
                         onPress = {()=>{
-                            this.props.navigation.dispatch(
-                                NavigationActions.reset({
-                                    index: 0,
-                                    actions: [
-                                    NavigationActions.navigate({ routeName: 'Room_Screen'})
-                                    ]
-                                })
-                            );
+                            this.props.navigation.dispatch(NavigationActions.back());
                         }} >
                         <MaterialCommunityIcons name='close'
                             style={{color:colors.font,fontSize:30}}/>
@@ -393,7 +474,7 @@ export class Creation4 extends Component {
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
                         <Text style = {styles.concerto}>Room Code</Text>
-                        <Text style = {styles.roomcode}>ABCD</Text>
+                        <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                     </View>
                 </View>
 
@@ -401,20 +482,7 @@ export class Creation4 extends Component {
                     justifyContent:'center', alignItems:'center'}}>
 
                     <View style = {{ flexDirection: 'row'}}>
-                        <TextInput
-                            placeholder="Who are you?"
-                            placeholderTextColor={colors.font}
-                            style={{
-                                backgroundColor: colors.main,
-                                flex:0.6,
-                                fontFamily:'ConcertOne-Regular',
-                                fontSize: 20,
-                                color:colors.font,
-                                textAlign:'center',
-                            }}
-                            value={this.state.alias}
-                            onChangeText = {(text) => {this.setState({alias: text})}}
-                        />
+                        
                     </View>
 
                 </View>

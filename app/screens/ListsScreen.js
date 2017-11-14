@@ -36,6 +36,16 @@ class General_Screen extends Component {
         super(props);
     }
 
+    _logOut() {
+        if(firebase.auth().currentUser.isAnonymous){
+            onSignOut().then(() => { firebase.auth().currentUser.delete() })
+            this.props.navigation.navigate('SignedOut');
+        } else {
+            onSignOut().then(() => { firebase.auth().signOut() }) 
+            this.props.navigation.navigate('SignedOut');
+        }
+    }
+
     _deleteRoom() {
         AsyncStorage.removeItem('ROOM-KEY');
         AsyncStorage.removeItem('GAME-KEY');
@@ -127,7 +137,7 @@ class General_Screen extends Component {
                 flex = {0.9}
                 fontSize = {25}
                 title = 'Log Out'
-                onPress = {()=>{ this.props.navigation.navigate('SignedOut')}}
+                onPress = {()=>{ this._logOut() }}
             />
         </View>
     }
