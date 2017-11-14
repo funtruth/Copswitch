@@ -80,7 +80,7 @@ export class Creation1 extends Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.background}}>
+            <View style = {{flex:1,backgroundColor:colors.main}}>
 
                 <View style = {{flexDirection:'row', flex:0.1, marginTop:20, 
                     justifyContent:'center',alignItems:'center'}}>
@@ -91,7 +91,7 @@ export class Creation1 extends Component {
                             this.props.navigation.navigate('SignedIn');
                         }} >
                         <MaterialCommunityIcons name='close'
-                            style={{color:colors.main,fontSize:30}}/>
+                            style={{color:colors.font,fontSize:30}}/>
                     </TouchableOpacity>
                 </View>
 
@@ -103,15 +103,14 @@ export class Creation1 extends Component {
                     </View>
                 </View>
 
-                <View style = {{flex:0.3,backgroundColor:colors.background, 
-                    justifyContent:'center', alignItems:'center'}}>
+                <View style = {{flex:0.3, justifyContent:'center', alignItems:'center'}}>
 
                     <View style = {{ flexDirection: 'row'}}>
                         <TextInput
                             placeholder="Who are you?"
-                            placeholderTextColor={colors.main}
+                            placeholderTextColor={colors.font}
                             style={{
-                                backgroundColor: colors.background,
+                                backgroundColor: colors.main,
                                 flex:0.6,
                                 fontFamily:'ConcertOne-Regular',
                                 fontSize: 20,
@@ -121,7 +120,7 @@ export class Creation1 extends Component {
                             value={this.state.alias}
                             onChangeText = {(text) => {this.setState({alias: text})}}
                             autoFocus={true}
-                            onSubmitEditing = {()=>{ this.props.navigation.navigate('Screenb')}}
+                            onSubmitEditing = {()=>{ this.props.navigation.navigate('Creation2')}}
                         />
                     </View>
 
@@ -230,7 +229,7 @@ export class Creation2 extends Component {
                             value={this.state.alias}
                             onChangeText = {(text) => {this.setState({alias: text})}}
                             autoFocus={true}
-                            onSubmitEditing = {()=>{ this.props.navigation.navigate('Screenb')}}
+                            onSubmitEditing = {()=>{ this.props.navigation.navigate('Creation3')}}
                         />
                     </View>
 
@@ -338,7 +337,7 @@ export class Creation3 extends Component {
                             value={this.state.alias}
                             onChangeText = {(text) => {this.setState({alias: text})}}
                             autoFocus={true}
-                            onSubmitEditing = {()=>{ this.props.navigation.navigate('Screenb')}}
+                            onSubmitEditing = {()=>{ this.props.navigation.navigate('Creation4')}}
                         />
                     </View>
 
@@ -459,7 +458,7 @@ export class Creation4 extends Component {
 
 const styles = StyleSheet.create({
     roomcode: {
-        fontSize: 30,
+        fontSize: 40,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
         color: colors.font,
@@ -468,7 +467,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.main,
+        color: colors.font,
     },
 
 });
