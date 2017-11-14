@@ -144,8 +144,8 @@ class Create_Screen extends React.Component {
                         onPress = {()=>{
                             this.props.navigation.goBack();
                         }} >
-                        <MaterialCommunityIcons name='home'
-                            style={{color:colors.main,fontSize:40}}/>
+                        <MaterialCommunityIcons name='close'
+                            style={{color:colors.font,fontSize:40}}/>
                     </TouchableOpacity>
 
                     <View style = {{ flexDirection: 'row'}}>

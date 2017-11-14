@@ -13,6 +13,8 @@ import colors from './app/misc/colors.js';
 import Lists from "./app/screens/ListsScreen";
 import Room from "./app/screens/RoomScreen";
 
+import { Creation1, Creation2, Creation3, Creation4 } from './app/tutorials/RoomCreation.js';
+
 export const SignedOut = StackNavigator(
   {
     Splash: {
@@ -24,7 +26,7 @@ export const SignedOut = StackNavigator(
     }
   );
   
-  export const SignedIn = TabNavigator(
+export const SignedIn = TabNavigator(
     {
       Room: {
         screen: Room,
@@ -32,6 +34,7 @@ export const SignedOut = StackNavigator(
           tabBarIcon: ({ tintColor }) => (
             <MaterialIcons name="gamepad" style={styles.icon}/>
           ),
+          //tabBarVisible: false,
         }
       },
       Lists: {
@@ -45,6 +48,7 @@ export const SignedOut = StackNavigator(
     },
     {
       tabBarPosition: 'bottom',
+      //swipeEnabled: false,
       tabBarOptions: {
         showIcon: true,
         showLabel: false,
@@ -58,9 +62,66 @@ export const SignedOut = StackNavigator(
       },
       initialRouteName: 'Room',
     }
-  );
-  
-  export const createRootNavigator = (signedIn) => {
+);
+
+export const Creation = TabNavigator(
+  {
+    Creation1: {
+      screen: Creation1,
+      navigationOptions : {
+        tabBarIcon: ({ tintColor }) => (
+          <MaterialIcons name="gamepad" style={styles.icon}/>
+        ),
+        tabBarVisible: false,
+      }
+    },
+    Creation2: {
+      screen: Creation2,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
+        ),
+        tabBarVisible: false,
+      }
+    },
+    Creation3: {
+      screen: Creation3,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
+        ),
+        tabBarVisible: false,
+      }
+    },
+    Creation4: {
+      screen: Creation4,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
+        ),
+        tabBarVisible: false,
+      }
+    },
+  },
+  {
+    tabBarPosition: 'bottom',
+    tabBarOptions: {
+      showIcon: true,
+      showLabel: false,
+      style: {
+        backgroundColor: colors.tabbackground,
+      },
+      indicatorStyle: {
+        backgroundColor: colors.indicatorcolor,
+        height:5,
+      }
+    },
+    initialRouteName: 'Creation1',
+  }
+);
+
+
+export const createRootNavigator = (signedIn) => {
     
     return StackNavigator(
       {
@@ -75,6 +136,12 @@ export const SignedOut = StackNavigator(
           navigationOptions: {
             gesturesEnabled: false,
           }
+        },
+        Creation: {
+          screen: Creation,
+          navigationOptions: {
+            gesturesEnabled: false,
+          }
         }
       },
       {
@@ -83,7 +150,7 @@ export const SignedOut = StackNavigator(
         initialRouteName: signedIn ? "SignedIn" : "SignedOut",
       }
     );
-  };
+};
 
 
 const styles = StyleSheet.create({
