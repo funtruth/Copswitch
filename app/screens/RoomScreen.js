@@ -134,50 +134,51 @@ class Create_Screen extends React.Component {
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
             <View style = {{flex:1,backgroundColor:colors.background}}>
+                <View style = {{flex:0.5,backgroundColor:colors.background, 
+                    justifyContent:'center', alignItems:'center'}}>
 
-                <TouchableOpacity
-                    style = {{flexDirection:'row',flex:0.2,
-                        justifyContent:'center',alignItems:'center'}}
-                    onPress = {()=>{
-                        this.props.navigation.goBack();
-                    }}
-                >
-                    <MaterialCommunityIcons name='home'
-                        style={{color:colors.main,fontSize:40,alignSelf:'center'}}/>
-                </TouchableOpacity>
+                    <View style ={{flex:0.4}}/>
 
-                <View style = {{flex:0.2}}/>
+                    <TouchableOpacity
+                        style = {{flexDirection:'row'}}
+                        onPress = {()=>{
+                            this.props.navigation.goBack();
+                        }} >
+                        <MaterialCommunityIcons name='home'
+                            style={{color:colors.main,fontSize:40}}/>
+                    </TouchableOpacity>
 
-                <View style = {{ justifyContent: 'center', flexDirection: 'row', flex:0.1}}>
-                    <TextInput
-                        placeholder="Who are you?"
-                        placeholderTextColor={colors.main}
-                        style={{
-                            backgroundColor: colors.background,
-                            flex:0.6,
-                            fontFamily:'ConcertOne-Regular',
-                            fontSize: 20,
-                            color:colors.font,
-                            textAlign:'center',
+                    <View style = {{ flexDirection: 'row'}}>
+                        <TextInput
+                            placeholder="Who are you?"
+                            placeholderTextColor={colors.main}
+                            style={{
+                                backgroundColor: colors.background,
+                                flex:0.6,
+                                fontFamily:'ConcertOne-Regular',
+                                fontSize: 20,
+                                color:colors.font,
+                                textAlign:'center',
+                            }}
+                            value={this.state.alias}
+                            onChangeText = {(text) => {this.setState({alias: text})}}
+                            autoFocus={true}
+                            onSubmitEditing = {()=>{Keyboard.dismiss()}}
+                        />
+                    </View>
+
+                    <MenuButton
+                        title="Create Room"
+                        flex = {0.75}
+                        fontSize={20}
+                        onPress={()=>{
+                            if(this._validName(this.state.alias)){
+                                this._createRoom()
+                            }
                         }}
-                        value={this.state.alias}
-                        onChangeText = {(text) => {this.setState({alias: text})}}
-                        autoFocus={true}
-                        onSubmitEditing = {()=>{Keyboard.dismiss()}}
                     />
+
                 </View>
-
-                <MenuButton
-                    title="Create Room"
-                    flex = {0.75}
-                    fontSize={20}
-                    onPress={()=>{
-                        if(this._validName(this.state.alias)){
-                            this._createRoom()
-                        }
-                    }}
-                />
-
             </View>
         </TouchableWithoutFeedback>
     }
@@ -250,73 +251,72 @@ class Join_Screen extends React.Component {
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
             <View style = {{flex:1,backgroundColor:colors.background}}>
+                <View style = {{flex:0.5,backgroundColor:colors.background,
+                    justifyContent:'center', alignItems:'center'}}>
 
-                <TouchableOpacity
-                    style = {{flexDirection:'row',flex:0.2,
-                        justifyContent:'center',alignItems:'center'}}
-                    onPress = {()=>{
-                        this.props.navigation.goBack();
-                    }}
-                >
-                    <MaterialCommunityIcons name='home'
-                        style={{color:colors.main,fontSize:40,alignSelf:'center'}}/>
-                </TouchableOpacity>
+                    <View style ={{flex:0.4}}/>
 
-                <View style = {{flex:0.1}}/>
-
-                <View style = {{ justifyContent: 'center', flexDirection: 'row', flex:0.1 }}>
-                    <TextInput
-                        placeholder="Who are you?"
-                        placeholderTextColor={colors.main}
-                        style={{
-                            backgroundColor: colors.background,
-                            flex:0.6,
-                            fontFamily:'ConcertOne-Regular',
-                            fontSize: 20,
-                            color:colors.font,
-                            textAlign:'center',
+                    <TouchableOpacity
+                        style = {{flexDirection:'row'}}
+                        onPress = {()=>{
+                            this.props.navigation.goBack();
                         }}
-                        value={this.state.alias}
-                        autoFocus = {true}
-                        blurOnSubmit={false}
-                        onChangeText = {(text) => {this.setState({alias: text})}}
-                        onSubmitEditing = {()=>this.refs['roomcode'].focus()}
-                    />
-                </View>
-                <View style = {{ justifyContent: 'center', flexDirection: 'row', flex:0.1 }}>
-                    <TextInput
-                        ref='roomcode'
-                        placeholder="Room Code"
-                        placeholderTextColor={colors.main}
-                        style={{
-                            backgroundColor: colors.background,
-                            flex:0.6,
-                            fontFamily:'ConcertOne-Regular',
-                            fontSize: 20,
-                            color:colors.font,
-                            textAlign:'center',
+                    >
+                        <MaterialCommunityIcons name='home'
+                            style={{color:colors.main,fontSize:40,alignSelf:'center'}}/>
+                    </TouchableOpacity>
+
+                    <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
+                        <TextInput
+                            placeholder="Who are you?"
+                            placeholderTextColor={colors.main}
+                            style={{
+                                backgroundColor: colors.background,
+                                flex:0.6,
+                                fontFamily:'ConcertOne-Regular',
+                                fontSize: 20,
+                                color:colors.font,
+                                textAlign:'center',
+                            }}
+                            value={this.state.alias}
+                            autoFocus = {true}
+                            blurOnSubmit={false}
+                            onChangeText = {(text) => {this.setState({alias: text})}}
+                            onSubmitEditing = {()=>this.refs['roomcode'].focus()}
+                        />
+                    </View>
+                    <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
+                        <TextInput
+                            ref='roomcode'
+                            placeholder="Room Code"
+                            placeholderTextColor={colors.main}
+                            style={{
+                                backgroundColor: colors.background,
+                                flex:0.6,
+                                fontFamily:'ConcertOne-Regular',
+                                fontSize: 20,
+                                color:colors.font,
+                                textAlign:'center',
+                            }}
+                            value={this.state.roomname}
+                            autoCapitalize='characters'
+                            blurOnSubmit={false}
+                            onChangeText = {(text) => {this.setState({roomname: text})}}
+                            onSubmitEditing = {()=>{Keyboard.dismiss()}}
+                        />
+                    </View>
+
+                    <MenuButton 
+                        title="Join Room"
+                        flex = {0.75}
+                        fontSize={20}
+                        onPress={()=>{
+                            this._valid(this.state.alias,this.state.roomname.toUpperCase())
                         }}
-                        value={this.state.roomname}
-                        autoCapitalize='characters'
-                        blurOnSubmit={false}
-                        onChangeText = {(text) => {this.setState({roomname: text})}}
-                        onSubmitEditing = {()=>{Keyboard.dismiss()}}
                     />
+
                 </View>
-
-                <MenuButton 
-                    title="Join Room"
-                    flex = {0.75}
-                    fontSize={20}
-                    onPress={()=>{
-                        this._valid(this.state.alias,this.state.roomname.toUpperCase())
-                    }}
-                />
-
-                <View style = {{flex:0.5}}/>
             </View>
-
-
         </TouchableWithoutFeedback>
     }
 }

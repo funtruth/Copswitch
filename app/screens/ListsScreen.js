@@ -76,56 +76,56 @@ class General_Screen extends Component {
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {20}
+                fontSize = {25}
                 title = 'Characters'
                 onPress = {()=>{ this.props.navigation.navigate('Roles_Screen') }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {20}
+                fontSize = {25}
                 title = 'How to Play'
                 onPress = {()=>{ }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {20}
+                fontSize = {25}
                 title = 'Phases'
                 onPress = {()=>{ }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {20}
+                fontSize = {25}
                 title = 'Setup'
                 onPress = {()=>{ }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {20}
+                fontSize = {25}
                 title = 'Tutorial'
                 onPress = {()=>{ }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {20}
+                fontSize = {25}
                 title = 'Leave Room'
                 onPress = {()=>{ this._exitRoom() }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {20}
+                fontSize = {25}
                 title = 'Quit Game'
                 onPress = {()=>{ this._deleteRoom() }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
-                fontSize = {20}
+                fontSize = {25}
                 title = 'Log Out'
                 onPress = {()=>{ this.props.navigation.navigate('SignedOut')}}
             />
