@@ -18,7 +18,6 @@ import {
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
-import FadeInView from '../components/FadeInView.js';
 import colors from '../misc/colors.js';
 import Rolesheet from '../misc/roles.json';
 
@@ -1208,9 +1207,9 @@ if(!this.state.loaded){
 
 return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background}}>
 
-    <FadeInView style = {{flex:1.5,backgroundColor:colors.main,justifyContent:'center'}}>
+    <View style = {{flex:1.5,backgroundColor:colors.main,justifyContent:'center'}}>
         {this._renderTransitionHeader()}
-    </FadeInView>
+    </View>
 
     <View style = {{flex:10.5}}/>
     

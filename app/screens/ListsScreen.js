@@ -314,7 +314,7 @@ class Roles_Screen extends Component {
     }
 
     render(){
-        return <View style = {{flex:1, backgroundColor:colors.background}}>
+        return <View style = {{flex:1, backgroundColor:colors.main}}>
 
             <Modal
                 animationType = 'fade'

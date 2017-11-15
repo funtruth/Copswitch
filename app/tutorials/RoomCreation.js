@@ -33,36 +33,39 @@ export class Creation1 extends Component {
         this.state = {
             alias:'',
             roomname: '',
-
             loading:true,
+            errormessage:null,
         };
         
-        this.ownerRef = firebase.database().ref('owners').child(firebase.auth().currentUser.uid);
     }
 
     
     componentWillMount() {
-        this.ownerRef.on('value',snap=>{
-            this.setState({
-                roomname:snap.val().roomname,
-                loading:false,    
+        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+            firebase.database().ref('rooms').child(result).child('listofplayers')
+            .child(firebase.auth().currentUser.uid).child('name').once('value',snap=>{
+                this.setState({
+                    alias:snap.val(),
+                    roomname: result,
+                    loading:false,
+                })
             })
         })
-    }
-
-    componentWillUnmount() {
-        if(this.ownerRef){
-            this.ownerRef.off()
-        }
     }
 
     _continue(name) {
 
         if(name.length>0 && name.length < 11){
-            firebase.database
-            this.props.navigation.navigate('Creation2')
+            firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
+            .child(firebase.auth().currentUser.uid).update({
+                name: name,
+            }).then(()=>{
+                this.setState({errormessage:null})
+                this.props.navigation.navigate('Creation2')
+            })
         } else {
-            alert('Name is not a valid length (10 characters or less)')
+            this.setState({errormessage:'Your name must be 1 - 10 Characters'})
+            this.refs.nameerror.shake(800)
         }
 
     }
@@ -91,7 +94,7 @@ export class Creation1 extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <View style = {{flexDirection:'row', flex:0.1, marginTop:20, 
+                <View style = {{flexDirection:'row', flex:0.1, 
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
                         <Text style = {styles.concerto}>Room Code</Text>
@@ -99,10 +102,12 @@ export class Creation1 extends Component {
                     </View>
                 </View>
 
-                <View style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}>
+                <View style = {{flex:0.1}}/>
 
-                    <View style = {{ flexDirection: 'row'}}>
+                <View style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}>
+                    <View style = {{flex:0.4,flexDirection:'row'}}>
                         <TextInput
+                            ref={(input) => { this.textInput = input; }}
                             placeholder="Who are you?"
                             placeholderTextColor={colors.font}
                             style={{
@@ -114,14 +119,29 @@ export class Creation1 extends Component {
                                 textAlign:'center',
                             }}
                             value={this.state.alias}
-                            autoFocus = {true}
                             onChangeText = {(text) => {this.setState({alias: text})}}
                             onSubmitEditing = {()=>{ 
                                 this._continue(this.state.alias);
                             }}
                         />
                     </View>
+                    <View style = {{flex:0.6}}>
+                    <Animatable.Text style = {styles.sconcerto} ref = 'nameerror'>
+                    {this.state.errormessage}</Animatable.Text></View>
+                </View>
 
+                <View style = {{flex:0.4}}/>
+                    
+                <View style = {{flex:0.1, flexDirection:'row', 
+                    justifyContent:'center', alignItems:'center'}}>
+                    <MaterialCommunityIcons name='checkbox-blank-circle'
+                        style={{color:colors.font,fontSize:15}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -140,23 +160,23 @@ export class Creation2 extends Component {
             loading:true,
         };
         
-        this.ownerRef = firebase.database().ref('owners').child(firebase.auth().currentUser.uid);
     }
 
 
     componentWillMount() {
-        this.ownerRef.on('value',snap=>{
-            this.setState({
-                roomname:snap.val().roomname,
-                loading:false,    
+        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+            firebase.database().ref('rooms').child(result).once('value',snap=>{
+                this.setState({
+                    playercount: snap.val().playernum,
+                    roomname: result,
+                    loading: false,
+                })
             })
         })
     }
 
     componentWillUnmount() {
-        if(this.ownerRef){
-            this.ownerRef.off()
-        }
+        
     }
 
     _digit(digit) {
@@ -175,21 +195,18 @@ export class Creation2 extends Component {
         }
     }
     _backspace() {
-        if(this.state.playercount.length > 1){
-            this.setState({
-                playercount: this.state.playercount.slice(0,1)
-            })
-        } else {
-            this.setState({
-                playercount: null
-            })
-        }
+        this.setState({ playercount: null })
     }
     _done() {
         if(this.state.playercount < 6 || this.state.playercount > 15){
             this.refs.error.shake(800)
+            this.setState({playercount:null})
         } else {
-            this.props.navigation.navigate('Creation3')
+            firebase.database().ref('rooms').child(this.state.roomname).update({
+                playernum: Number(this.state.playercount)
+            }).then(()=>{
+                this.props.navigation.navigate('Creation3')
+            })
         }
     }
 
@@ -217,7 +234,7 @@ export class Creation2 extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <View style = {{flexDirection:'row', flex:0.1, marginTop:20, 
+                <View style = {{flexDirection:'row', flex:0.1,
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
                         <Text style = {styles.concerto}>Room Code</Text>
@@ -232,7 +249,7 @@ export class Creation2 extends Component {
                     <View style = {{flex:0.5, flexDirection:'row'}}>
                         <TouchableOpacity
                             style = {{flex:0.25, backgroundColor:colors.font, marginTop:10,
-                                borderRadius:10, justifyContent:'center', alignItems:'center'}}
+                                borderRadius:15, justifyContent:'center', alignItems:'center'}}
                         >
                             <Text style = {styles.bigdarkconcerto}>
                                 {this.state.playercount?this.state.playercount:'?'}</Text>
@@ -280,16 +297,28 @@ export class Creation2 extends Component {
                     <View style = {{flex:0.25, flexDirection:'row'}}>
                         <TouchableOpacity style = {styles.symbol}
                             onPress = {()=>{this._backspace()}}>
-                            <MaterialCommunityIcons name='close-circle'
-                                style={{color:'#f84416',fontSize:30}}/></TouchableOpacity>
+                            <Text style = {styles.sconcerto}>CLEAR</Text></TouchableOpacity>
                         <TouchableOpacity style = {styles.digit}
                             onPress = {()=>{this._digit(0)}}><Text style={styles.dconcerto}>
                             0</Text></TouchableOpacity>
                         <TouchableOpacity style = {styles.symbol}
                             onPress = {()=>{this._done()}}>
-                            <MaterialCommunityIcons name='check-circle'
-                                style={{color:'#00e600',fontSize:30}}/></TouchableOpacity>
+                            <Text style = {styles.sconcerto}>NEXT</Text></TouchableOpacity>
                     </View>
+                </View>
+
+                <View style = {{flex:0.05}}/>
+
+                <View style = {{flex:0.1, flexDirection:'row', 
+                justifyContent:'center', alignItems:'center'}}>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
                 </View>
 
             </View>
@@ -304,30 +333,32 @@ export class Creation3 extends Component {
         this.state = {
             alias:'',
             roomname: '',
+            difficulty: null,
             loading:true,
         };
         
-        this.ownerRef = firebase.database().ref('owners').child(firebase.auth().currentUser.uid);
     }
 
 
     componentWillMount() {
-        this.ownerRef.on('value',snap=>{
-            this.setState({
-                roomname:snap.val().roomname,
-                loading:false,    
+        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+            firebase.database().ref('rooms').child(result).child('difficulty').once('value',snap=>{
+                this.setState({
+                    roomname:result,
+                    loading: false,
+                    difficulty: snap.val(),
+                })
             })
         })
     }
 
-    componentWillUnmount() {
-        if(this.ownerRef){
-            this.ownerRef.off()
-        }
-    }
-
     _selectDifficulty(difficulty) {
-        this.props.navigation.navigate('Creation4')
+        firebase.database().ref('rooms').child(this.state.roomname).update({
+            difficulty: difficulty
+        }).then(()=>{
+            this.setState({difficulty:difficulty})
+            this.props.navigation.navigate('Creation4')
+        })
     }
 
     render() {
@@ -354,7 +385,7 @@ export class Creation3 extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <View style = {{flexDirection:'row', flex:0.1, marginTop:20, 
+                <View style = {{flexDirection:'row', flex:0.1, 
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
                         <Text style = {styles.concerto}>Room Code</Text>
@@ -369,47 +400,65 @@ export class Creation3 extends Component {
                 </View>
 
                 <TouchableOpacity
-                    style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}
+                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
+                    backgroundColor:this.state.difficulty==1?colors.font:colors.main,
+                    marginLeft:15, marginRight:10, borderRadius:10}}
                     onPress = {()=>{
                         this._selectDifficulty(1)
-                    }}
-                >
+                    }} >
                     <MaterialCommunityIcons name='star-circle'
-                        style={{color:colors.font,fontSize:30}}/>
-                    <Text style = {styles.concerto}>New</Text>
+                        style={{color:this.state.difficulty==1?colors.main:colors.font,fontSize:30}}/>
+                    <Text style = {this.state.difficulty==1?styles.dconcerto:styles.concerto}>New</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}
+                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
+                    backgroundColor:this.state.difficulty==2?colors.font:colors.main,
+                    marginLeft:15, marginRight:10, borderRadius:10}}
                     onPress = {()=>{
                         this._selectDifficulty(2)
-                    }}
-                >
+                    }} >
                     <View style = {{flexDirection:'row'}}>
                         <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
+                            style={{color:this.state.difficulty==2?colors.main:colors.font,fontSize:30}}/>
                         <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
+                            style={{color:this.state.difficulty==2?colors.main:colors.font,fontSize:30}}/>
                     </View>
-                <Text style = {styles.concerto}>Average</Text>
+                <Text style = {this.state.difficulty==2?styles.dconcerto:styles.concerto}>Average</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}
+                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
+                    backgroundColor:this.state.difficulty==3?colors.font:colors.main,
+                    marginLeft:15, marginRight:10, borderRadius:10}}
                     onPress = {()=>{
                         this._selectDifficulty(3)
                     }}
                 >   
                     <View style = {{flexDirection:'row'}}>
                         <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
+                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
                         <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
+                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
                         <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
+                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
                     </View>
-                    <Text style = {styles.concerto}>Experts</Text>
+                    <Text style = {this.state.difficulty==3?styles.dconcerto:styles.concerto}>Experts</Text>
                 </TouchableOpacity>
+
+                <View style = {{flex:0.05}}/>
+
+                <View style = {{flex:0.1, flexDirection:'row', 
+                justifyContent:'center', alignItems:'center'}}>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                </View>
 
             </View>
         </TouchableWithoutFeedback>
@@ -432,18 +481,16 @@ export class Creation4 extends Component {
 
     
     componentWillMount() {
-        this.ownerRef.on('value',snap=>{
+        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
             this.setState({
-                roomname:snap.val().roomname,
-                loading:false,    
+                roomname: result,
+                loading: false,
             })
         })
     }
 
     componentWillUnmount() {
-        if(this.ownerRef){
-            this.ownerRef.off()
-        }
+        
     }
 
     render() {
@@ -459,7 +506,11 @@ export class Creation4 extends Component {
 
                 <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
                     justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.85}}/>
+                    <View style = {{flex:0.15}}/>
+                    <View style = {{flex:0.70}}>
+                        <Text style = {styles.concerto}>
+                        {'Select' + ' 10 ' + 'Roles'}</Text>
+                    </View>
                     <TouchableOpacity
                         style = {{flex:0.15}}
                         onPress = {()=>{
@@ -470,7 +521,7 @@ export class Creation4 extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <View style = {{flexDirection:'row', flex:0.1, marginTop:20, 
+                <View style = {{flexDirection:'row', flex:0.1,  
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
                         <Text style = {styles.concerto}>Room Code</Text>
@@ -486,6 +537,21 @@ export class Creation4 extends Component {
                     </View>
 
                 </View>
+
+                <View style = {{flex:0.5}}/>
+
+                <View style = {{flex:0.1, flexDirection:'row', 
+                justifyContent:'center', alignItems:'center'}}>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                </View>
+                
             </View>
         </TouchableWithoutFeedback>
     }
