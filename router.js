@@ -34,7 +34,7 @@ export const SignedIn = TabNavigator(
           tabBarIcon: ({ tintColor }) => (
             <MaterialIcons name="gamepad" style={styles.icon}/>
           ),
-          tabBarVisible: false,
+          //tabBarVisible: false,
         }
       },
       Lists: {

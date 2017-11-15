@@ -116,7 +116,7 @@ class General_Screen extends Component {
                 flex = {0.9}
                 fontSize = {25}
                 title = 'Tutorial'
-                onPress = {()=>{ this.props.navigation.navigate('Creation') }}
+                onPress = {()=>{  }}
             />
             <MenuButton
                 viewFlex = {0.12}
