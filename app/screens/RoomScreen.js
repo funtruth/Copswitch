@@ -35,7 +35,7 @@ import { Creation } from '../../router';
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
-class Room_Screen extends React.Component {
+export default class Room_Screen extends React.Component {
 
     constructor(props) {
         super(props);
@@ -64,15 +64,25 @@ class Room_Screen extends React.Component {
         firebase.database().ref('listofroles/'+firebase.auth().currentUser.uid).update({b:0})
 
         this.props.navigation.dispatch(
-            NavigationActions.reset({
-                index: 1,
-                actions: [
-                  NavigationActions.navigate({ routeName: 'Lobby_Screen', params:{roomname:roomname}}),
-                  NavigationActions.navigate({ routeName: 'Creation'})
-                ]
+            NavigationActions.navigate({
+                routeName: 'CreationTutorial',
+                action: NavigationActions.navigate({ 
+                    routeName: 'Creation1',
+                    params: {roomname:roomname}
+                })
             })
         )
-        Keyboard.dismiss();
+    }
+
+    _joinRoom() {
+        this.props.navigation.dispatch(
+            NavigationActions.navigate({
+                routeName: 'JoinTutorial',
+                action: NavigationActions.navigate({ 
+                    routeName: 'Join1'
+                })
+            })
+        )
     }
 
     render() {
@@ -85,7 +95,7 @@ class Room_Screen extends React.Component {
                 fontSize = {25}
                 title = 'Make Room'
                 onPress = {()=>{ 
-                    this._createRoom()
+                    this._createRoom();
                  }}
             />
             <MenuButton
@@ -93,7 +103,9 @@ class Room_Screen extends React.Component {
                 flex = {0.9}
                 fontSize = {25}
                 title = 'Join Room'
-                onPress = {()=>{ this.props.navigation.navigate('Join_Screen') }}
+                onPress = {()=>{ 
+                    this._joinRoom();
+                 }}
             />
             <View style = {{flex:0.02}}/>
         </View>
@@ -626,7 +638,7 @@ class Expired_Screen extends React.Component {
 }
     
 
-export default class App extends React.Component {
+export class App extends React.Component {
     constructor(props) {
         super(props);
     
@@ -705,9 +717,6 @@ export const createRoomNavigator = (inGame,inRoom,isExpired,key) => {
             },
             Mafia_Screen: {
                 screen: Mafia_Screen,
-            },
-            Creation: {
-                screen: Creation,
             },
         },
             {

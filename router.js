@@ -13,7 +13,8 @@ import colors from './app/misc/colors.js';
 import Lists from "./app/screens/ListsScreen";
 import Room from "./app/screens/RoomScreen";
 
-import { Creation1, Creation2, Creation3, Creation4 } from './app/tutorials/RoomCreation.js';
+import { Creation1, Creation2, Creation3, Creation4, Creation5 } from './app/tutorials/RoomCreation.js';
+import { Join1, Join2 } from './app/tutorials/RoomJoin.js';
 
 export const SignedOut = StackNavigator(
   {
@@ -64,7 +65,7 @@ export const SignedIn = TabNavigator(
     }
 );
 
-export const Creation = TabNavigator(
+export const CreationTutorial = TabNavigator(
   {
     Creation1: {
       screen: Creation1,
@@ -90,14 +91,39 @@ export const Creation = TabNavigator(
         tabBarVisible: false,
       }
     },
+    Creation5: {
+      screen: Creation5,
+      navigationOptions: {
+        tabBarVisible: false,
+      }
+    },
   },
   {
-    //swipeEnabled: false,
     backBehavior: 'none',
     initialRouteName: 'Creation1',
   }
 );
 
+export const JoinTutorial = TabNavigator(
+  {
+    Join1: {
+      screen: Join1,
+      navigationOptions : {
+        tabBarVisible: false,
+      }
+    },
+    Join2: {
+      screen: Join2,
+      navigationOptions: {
+        tabBarVisible: false,
+      }
+    },
+  },
+  {
+    backBehavior: 'none',
+    initialRouteName: 'Join1',
+  }
+);
 
 export const createRootNavigator = (signedIn) => {
     
@@ -115,8 +141,14 @@ export const createRootNavigator = (signedIn) => {
             gesturesEnabled: false,
           }
         },
-        Creation: {
-          screen: Creation,
+        CreationTutorial: {
+          screen: CreationTutorial,
+          navigationOptions: {
+            gesturesEnabled: false,
+          }
+        },
+        JoinTutorial: {
+          screen: JoinTutorial,
           navigationOptions: {
             gesturesEnabled: false,
           }

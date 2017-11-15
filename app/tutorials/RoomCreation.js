@@ -6,8 +6,10 @@ import {
     View,
     Image,
     StyleSheet,
+    FlatList,
     AsyncStorage,
     Keyboard,
+    BackHandler,
     TouchableOpacity,
     TouchableWithoutFeedback,
 }   from 'react-native';
@@ -30,32 +32,47 @@ export class Creation1 extends Component {
     constructor(props) {
         super(props);
 
+        const { params } = this.props.navigation.state;
+        const roomname = params.roomname;
+
         this.state = {
+            roomname: params.roomname,
             alias:'',
-            roomname: '',
             loading:true,
             errormessage:null,
         };
+
+        this.nameRef = firebase.database().ref('rooms').child(params.roomname)
+            .child('listofplayers').child(firebase.auth().currentUser.uid).child('name');
         
     }
 
     
     componentWillMount() {
-        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
-            firebase.database().ref('rooms').child(result).child('listofplayers')
-            .child(firebase.auth().currentUser.uid).child('name').once('value',snap=>{
-                this.setState({
-                    alias:snap.val(),
-                    roomname: result,
-                    loading:false,
-                })
+        this.nameRef.once('value',snap=>{
+            this.setState({
+                alias:snap.val(),
+                loading:false,
             })
+        })
+
+        BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
+    }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener("hardwareBackPress", this._onBackPress);
+    }
+
+    _onBackPress = () => {
+        firebase.database().ref('rooms').child(this.state.roomname).remove().then(()=>{
+            this.props.navigation.dispatch(NavigationActions.back({key:'Room'}));
         })
     }
 
+
     _continue(name) {
 
-        if(name.length>0 && name.length < 11){
+        if(name && name.length>0 && name.length < 11){
             firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
             .child(firebase.auth().currentUser.uid).update({
                 name: name,
@@ -142,6 +159,8 @@ export class Creation1 extends Component {
                         style={{color:colors.font,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
                         style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -157,6 +176,7 @@ export class Creation2 extends Component {
             alias:'',
             roomname:'',
             playercount: null,
+            playernum: 1,
             loading:true,
         };
         
@@ -175,13 +195,11 @@ export class Creation2 extends Component {
         })
     }
 
-    componentWillUnmount() {
-        
-    }
-
     _digit(digit) {
         if(this.state.playercount){
             if(this.state.playercount.length > 1){
+                this.refs.error.shake(800)
+            } else if (Number(this.state.playercount + digit.toString()>15)) {
                 this.refs.error.shake(800)
             } else {
                 this.setState({
@@ -198,7 +216,7 @@ export class Creation2 extends Component {
         this.setState({ playercount: null })
     }
     _done() {
-        if(this.state.playercount < 6 || this.state.playercount > 15){
+        if(!this.state.playercount || this.state.playercount < 6 || this.state.playercount > 15){
             this.refs.error.shake(800)
             this.setState({playercount:null})
         } else {
@@ -216,113 +234,110 @@ export class Creation2 extends Component {
             return <View style = {{backgroundColor:colors.main}}/>
         }
 
-        return <TouchableWithoutFeedback 
-        style = {{ flex:1 }}
-        onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.main}}>
+        return <View style = {{flex:1,backgroundColor:colors.main}}>
 
-                <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.85}}/>
+            <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
+                justifyContent:'center',alignItems:'center'}}>
+                <View style = {{flex:0.85}}/>
+                <TouchableOpacity
+                    style = {{flex:0.15}}
+                    onPress = {()=>{
+                        this.props.navigation.dispatch(NavigationActions.back())
+                    }} >
+                    <MaterialCommunityIcons name='close'
+                        style={{color:colors.font,fontSize:30}}/>
+                </TouchableOpacity>
+            </View>
+
+            <View style = {{flexDirection:'row', flex:0.1,
+                justifyContent:'center',alignItems:'center'}}>
+                <View style = {{flex:0.7}}> 
+                    <Text style = {styles.concerto}>Room Code</Text>
+                    <Text style = {styles.roomcode}>{this.state.roomname}</Text>
+                </View>
+            </View>
+
+            <View style = {{flex:0.3,backgroundColor:colors.main,
+                justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.concerto}>Total Number of Players:</Text>
+                <View style = {{flex:0.4, flexDirection:'row'}}>
                     <TouchableOpacity
-                        style = {{flex:0.15}}
-                        onPress = {()=>{
-                            this.props.navigation.dispatch(NavigationActions.back())
-                        }} >
-                        <MaterialCommunityIcons name='close'
-                            style={{color:colors.font,fontSize:30}}/>
+                        style = {{flex:0.25, backgroundColor:colors.font, marginTop:10,
+                            borderRadius:15, justifyContent:'center', alignItems:'center'}}
+                    >
+                        <Text style = {styles.bigdarkconcerto}>
+                            {this.state.playercount?this.state.playercount:'?'}</Text>
                     </TouchableOpacity>
                 </View>
-
-                <View style = {{flexDirection:'row', flex:0.1,
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.7}}> 
-                        <Text style = {styles.concerto}>Room Code</Text>
-                        <Text style = {styles.roomcode}>{this.state.roomname}</Text>
-                    </View>
-                </View>
-
-                <View style = {{flex:0.3,backgroundColor:colors.main,
-                    justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.concerto}>How many Players?</Text>
-
-                    <View style = {{flex:0.5, flexDirection:'row'}}>
-                        <TouchableOpacity
-                            style = {{flex:0.25, backgroundColor:colors.font, marginTop:10,
-                                borderRadius:15, justifyContent:'center', alignItems:'center'}}
-                        >
-                            <Text style = {styles.bigdarkconcerto}>
-                                {this.state.playercount?this.state.playercount:'?'}</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-
-                <View style = {{flex:0.35, justifyContent:'center', alignItems:'center'}}>
-                    <Animatable.Text style = {styles.sconcerto}
-                        ref='error'>
-                        Must be a number from 6 - 15</Animatable.Text>
-                    <View style = {{flex:0.25, flexDirection:'row'}}>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(1)}}><Text style={styles.dconcerto}>
-                            1</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(2)}}><Text style={styles.dconcerto}>
-                            2</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(3)}}><Text style={styles.dconcerto}>
-                            3</Text></TouchableOpacity>
-                    </View>
-                    <View style = {{flex:0.25, flexDirection:'row'}}>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(4)}}><Text style={styles.dconcerto}>
-                            4</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(5)}}><Text style={styles.dconcerto}>
-                            5</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(6)}}><Text style={styles.dconcerto}>
-                            6</Text></TouchableOpacity>
-                    </View>
-                    <View style = {{flex:0.25, flexDirection:'row'}}>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(7)}}><Text style={styles.dconcerto}>
-                            7</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(8)}}><Text style={styles.dconcerto}>
-                            8</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(9)}}><Text style={styles.dconcerto}>
-                            9</Text></TouchableOpacity>
-                    </View>
-                    <View style = {{flex:0.25, flexDirection:'row'}}>
-                        <TouchableOpacity style = {styles.symbol}
-                            onPress = {()=>{this._backspace()}}>
-                            <Text style = {styles.sconcerto}>CLEAR</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(0)}}><Text style={styles.dconcerto}>
-                            0</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.symbol}
-                            onPress = {()=>{this._done()}}>
-                            <Text style = {styles.sconcerto}>NEXT</Text></TouchableOpacity>
-                    </View>
-                </View>
-
-                <View style = {{flex:0.05}}/>
-
-                <View style = {{flex:0.1, flexDirection:'row', 
-                justifyContent:'center', alignItems:'center'}}>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
-                </View>
-
             </View>
-        </TouchableWithoutFeedback>
+
+            <View style = {{flex:0.35, justifyContent:'center', alignItems:'center'}}>
+                <Animatable.Text style = {styles.sconcerto}
+                    ref='error'>
+                    Must be a number from 6 - 15</Animatable.Text>
+                <View style = {{flex:0.25, flexDirection:'row'}}>
+                    <TouchableOpacity style = {styles.digit}
+                        onPress = {()=>{this._digit(1)}}><Text style={styles.dconcerto}>
+                        1</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.digit}
+                        onPress = {()=>{this._digit(2)}}><Text style={styles.dconcerto}>
+                        2</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.digit}
+                        onPress = {()=>{this._digit(3)}}><Text style={styles.dconcerto}>
+                        3</Text></TouchableOpacity>
+                </View>
+                <View style = {{flex:0.25, flexDirection:'row'}}>
+                    <TouchableOpacity style = {styles.digit}
+                        onPress = {()=>{this._digit(4)}}><Text style={styles.dconcerto}>
+                        4</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.digit}
+                        onPress = {()=>{this._digit(5)}}><Text style={styles.dconcerto}>
+                        5</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.digit}
+                        onPress = {()=>{this._digit(6)}}><Text style={styles.dconcerto}>
+                        6</Text></TouchableOpacity>
+                </View>
+                <View style = {{flex:0.25, flexDirection:'row'}}>
+                    <TouchableOpacity style = {styles.digit}
+                        onPress = {()=>{this._digit(7)}}><Text style={styles.dconcerto}>
+                        7</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.digit}
+                        onPress = {()=>{this._digit(8)}}><Text style={styles.dconcerto}>
+                        8</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.digit}
+                        onPress = {()=>{this._digit(9)}}><Text style={styles.dconcerto}>
+                        9</Text></TouchableOpacity>
+                </View>
+                <View style = {{flex:0.25, flexDirection:'row'}}>
+                    <TouchableOpacity style = {styles.symbol}
+                        onPress = {()=>{this._backspace()}}>
+                        <Text style = {styles.sconcerto}>CLEAR</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.digit}
+                        onPress = {()=>{this._digit(0)}}><Text style={styles.dconcerto}>
+                        0</Text></TouchableOpacity>
+                    <TouchableOpacity style = {styles.symbol}
+                        onPress = {()=>{this._done()}}>
+                        <Text style = {styles.sconcerto}>DONE</Text></TouchableOpacity>
+                </View>
+            </View>
+
+            <View style = {{flex:0.05}}/>
+
+            <View style = {{flex:0.1, flexDirection:'row', 
+            justifyContent:'center', alignItems:'center'}}>
+                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                    style={{color:colors.font,fontSize:15}}/>
+                <MaterialCommunityIcons name='checkbox-blank-circle'
+                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+            </View>
+
+        </View>
     }
 }
 
@@ -458,6 +473,8 @@ export class Creation3 extends Component {
                         style={{color:colors.font,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
                         style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
                 </View>
 
             </View>
@@ -468,29 +485,355 @@ export class Creation3 extends Component {
 export class Creation4 extends Component {
 
     constructor(props) {
+        
         super(props);
 
         this.state = {
-            alias:'',
+
             roomname: '',
-            loading:true,
-        };
+            difficulty: 3,
+
+            townlist: [],
+            mafialist: [],
+            neutrallist: [],
+            roleid:   'a',
+            modalVisible: false,
+            ownermode:  false,
+
+            showtown:    false,
+            showmafia:   false,
+            showneutral: false,
+        }
+
+        this.listOfRoles = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
         
-        this.ownerRef = firebase.database().ref('owners').child(firebase.auth().currentUser.uid);
     }
 
-    
+
     componentWillMount() {
+
         AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
             this.setState({
                 roomname: result,
                 loading: false,
             })
         })
+
+        var keys = Object.keys(Rolesheet).sort()
+        var townlist = [];
+        var mafialist = [];
+        var neutrallist = [];
+        keys.forEach(function(key){
+            if(Rolesheet[key].type == 1){
+                mafialist.push({
+                    name:           Rolesheet[key].name,
+                    index:          Rolesheet[key].index,
+                    category:       Rolesheet[key].category,
+                    count:          0,
+                    image:          Rolesheet[key].image,
+                    color:          Rolesheet[key].color,
+                    key:            key,
+                })
+            } else if (Rolesheet[key].type == 2) {
+                townlist.push({
+                    name:           Rolesheet[key].name,
+                    index:          Rolesheet[key].index,
+                    category:       Rolesheet[key].category,
+                    count:          0,
+                    image:          Rolesheet[key].image,
+                    color:          Rolesheet[key].color,
+                    key:            key,
+                })
+            } else {
+                neutrallist.push({
+                    name:           Rolesheet[key].name,
+                    index:          Rolesheet[key].index,
+                    category:       Rolesheet[key].category,
+                    count:          0,
+                    image:          Rolesheet[key].image,
+                    color:          Rolesheet[key].color,
+                    key:            key,
+                })
+            }
+        })
+        this.setState({
+            mafialist:mafialist,
+            townlist:townlist,
+            neutrallist:neutrallist,
+        })
+
+        this.listOfRoles.on('value',snap=>{
+            if(snap.exists()){
+                var mafialist = this.state.mafialist;
+                var townlist = this.state.townlist;
+                var neutrallist = this.state.neutrallist;
+                snap.forEach((child)=>{
+                    if(Rolesheet[child.key].type == 1){
+                        mafialist[Rolesheet[child.key].index]['count'] = child.val()
+                    } else if (Rolesheet[child.key].type == 2) {
+                        townlist[Rolesheet[child.key].index]['count'] = child.val()
+                    } else {
+                        neutrallist[Rolesheet[child.key].index]['count'] = child.val()
+                    }
+                })
+                this.setState({
+                    ownermode:true,
+                    mafialist:mafialist,
+                    townlist:townlist,
+                    neutrallist:neutrallist
+                })
+            } else {
+                this.setState({ownermode:false})
+            }
+        })
+
     }
 
-    componentWillUnmount() {
+    componentWillUnmount(){
+        if(this.listOfRoles){
+            this.listOfRoles.off();
+        }
+    }
+
+    _roleBtnPress(key,index,count) {
+        if(count>0){
+            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+            + '/' + key).transaction((count)=>{
+                return count - 1;
+            })
+        } else {
+            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
+            + '/' + key).transaction((count)=>{
+                return count + 1;
+            })
+        }
+    }
+
+    render() {
+
+        return <View style = {{flex:1,backgroundColor:colors.main}}>
+
+            <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
+                justifyContent:'center',alignItems:'center'}}>
+                <View style = {{flex:0.15}}/>
+                <View style = {{flex:0.70}}>
+                    <Text style = {styles.concerto}>
+                    {'Select' + ' 10 ' + 'Roles'}</Text>
+                </View>
+                <TouchableOpacity
+                    style = {{flex:0.15}}
+                    onPress = {()=>{
+                        this.props.navigation.dispatch(NavigationActions.back());
+                    }} >
+                    <MaterialCommunityIcons name='close'
+                        style={{color:colors.font,fontSize:30}}/>
+                </TouchableOpacity>
+            </View>
+
+            <View style = {{flex:0.8, backgroundColor:colors.main, justifyContent:'center'}}>
+
+                <TouchableOpacity
+                    style = {{backgroundColor:colors.font, borderRadius:2,
+                        justifyContent:'center', alignItems:'center',
+                        marginLeft:10, marginRight:10, marginTop:3, marginBottom:3, 
+                        flex:0.075}}
+                    onPress = {()=>{
+                        this.setState({
+                            showtown:!this.state.showtown,
+                            showmafia:false,
+                            showneutral:false,
+                        })
+                    }} >
+                    <Text style = {{
+                        fontFamily:'ConcertOne-Regular',
+                        fontSize: 25, color: colors.main,
+                        marginTop:5, marginBottom:3}}>Town</Text>
+                </TouchableOpacity>
+    
+                {!this.state.showtown? null: <View style = {{flex:0.7}}><FlatList
+                    data={this.state.townlist}
+                    renderItem={({item}) => (
+                        <TouchableOpacity
+                            onPress = {()=>{
+                                this._roleBtnPress(item.key,item.index,item.count)  
+                            }}
+                            style = {{backgroundColor:item.count?colors.font:colors.main,flex:0.33,
+                                borderRadius:10, margin:3}}>
+                            <View style = {{justifyContent:'center',alignItems:'center'}}>
+                                <Image 
+                                    style={{width:70,height:70}}
+                                    source={{uri: Rolesheet[item.key].image}}
+                                />
+                                <Text style = {{
+                                    color:item.count?colors.background:colors.font,
+                                    fontFamily: 'ConcertOne-Regular',
+                                    fontSize:18}}>{item.name}</Text>
+                                <Text style = {{
+                                    color:item.count?colors.background:colors.font,
+                                    fontFamily: 'ConcertOne-Regular',
+                                    fontSize:14,
+                                    marginBottom:5}}>{item.category}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                    style={{margin:3}}
+                    numColumns = {3}
+                    keyExtractor={item => item.key}
+                />
+                </View>}
+    
+                <TouchableOpacity
+                    style = {{backgroundColor:colors.font, borderRadius:2,
+                        justifyContent:'center', alignItems:'center',
+                        marginTop:3, marginBottom:3, marginLeft:10, marginRight:10,
+                        flex:0.075}}
+                    onPress = {()=>{
+                        this.setState({
+                            showmafia:!this.state.showmafia,
+                            showtown:false,
+                            showneutral:false,
+                        }) 
+                    }} >
+                    <Text style = {{
+                        fontFamily:'ConcertOne-Regular',
+                        fontSize: 25, color: colors.main,
+                        marginTop:5, marginBottom:5}}>Mafia</Text>
+                </TouchableOpacity>
+    
+                {!this.state.showmafia?null:<View style = {{flex:0.7}}><FlatList
+                    data={this.state.mafialist}
+                    renderItem={({item}) => (
+                        <TouchableOpacity
+                            onPress = {()=>{
+                                this._roleBtnPress(item.key,item.index,item.count)  
+                            }}
+                            style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.33,
+                                borderRadius:10, margin:3}}>
+                            <View style = {{justifyContent:'center',alignItems:'center'}}>
+                                <Image 
+                                    style={{width:70,height:70}}
+                                    source={{uri: Rolesheet[item.key].image}}
+                                />
+                                <Text style = {{
+                                    color:colors.font,
+                                    fontFamily: 'ConcertOne-Regular',
+                                    fontSize:18}}>{item.name}</Text>
+                                <Text style = {{
+                                    color:colors.font,
+                                    fontFamily: 'ConcertOne-Regular',
+                                    fontSize:14,
+                                    marginBottom:5}}>{item.category}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                    style={{margin:3}}
+                    numColumns = {3}
+                    keyExtractor={item => item.key}
+                />
+                </View>}
+    
+                <TouchableOpacity
+                    style = {{backgroundColor:colors.font, borderRadius:2,
+                        justifyContent:'center', alignItems:'center',
+                        marginTop:3, marginBottom:3, marginLeft:10, marginRight:10, 
+                        flex:0.075}}
+                    onPress = {()=>{
+                        this.setState({
+                            showneutral:!this.state.showneutral,
+                            showtown:false,
+                            showmafia:false,
+                        })
+                    }} >
+                    <Text style = {{
+                        fontFamily:'ConcertOne-Regular',
+                        fontSize: 25, color: colors.main,
+                        marginTop:5, marginBottom:5}}>Neutral</Text>
+                </TouchableOpacity>
+    
+                {!this.state.showneutral?null:<View style = {{flex:0.7}}><FlatList
+                    data={this.state.neutrallist}
+                    renderItem={({item}) => (
+                        <TouchableOpacity
+                            onPress = {()=>{
+                                this._roleBtnPress(item.key,item.index,item.count)  
+                            }}
+                            style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.33,
+                                borderRadius:10, margin:3}}>
+                            <View style = {{justifyContent:'center',alignItems:'center'}}>
+                                <Image 
+                                    style={{width:70,height:70}}
+                                    source={{uri: Rolesheet[item.key].image}}
+                                />
+                                <Text style = {{
+                                    color:colors.font,
+                                    fontFamily: 'ConcertOne-Regular',
+                                    fontSize:18}}>{item.name}</Text>
+                                <Text style = {{
+                                    color:colors.font,
+                                    fontFamily: 'ConcertOne-Regular',
+                                    fontSize:14,
+                                    marginBottom:5}}>{item.category}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )}
+                    style={{margin:3}}
+                    numColumns = {3}
+                    keyExtractor={item => item.key}
+                />
+                </View>}
+            </View>
+
+            <View style = {{flex:0.1, flexDirection:'row', 
+            justifyContent:'center', alignItems:'center'}}>
+                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                    style={{color:colors.font,fontSize:15}}/>
+                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                <MaterialCommunityIcons name='checkbox-blank-circle'
+                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+            </View>
+            
+        </View>
+    }
+}
+
+export class Creation5 extends Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            alias:'',
+            roomname: '',
+            difficulty: null,
+            loading:true,
+        };
         
+    }
+
+
+    componentWillMount() {
+        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+            firebase.database().ref('rooms').child(result).child('difficulty').once('value',snap=>{
+                this.setState({
+                    roomname:result,
+                    loading: false,
+                    difficulty: snap.val(),
+                })
+            })
+        })
+    }
+
+    _selectDifficulty(difficulty) {
+        firebase.database().ref('rooms').child(this.state.roomname).update({
+            difficulty: difficulty
+        }).then(()=>{
+            this.setState({difficulty:difficulty})
+            this.props.navigation.navigate('Creation4')
+        })
     }
 
     render() {
@@ -506,11 +849,7 @@ export class Creation4 extends Component {
 
                 <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
                     justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.15}}/>
-                    <View style = {{flex:0.70}}>
-                        <Text style = {styles.concerto}>
-                        {'Select' + ' 10 ' + 'Roles'}</Text>
-                    </View>
+                    <View style = {{flex:0.85}}/>
                     <TouchableOpacity
                         style = {{flex:0.15}}
                         onPress = {()=>{
@@ -521,7 +860,7 @@ export class Creation4 extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <View style = {{flexDirection:'row', flex:0.1,  
+                <View style = {{flexDirection:'row', flex:0.1, 
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
                         <Text style = {styles.concerto}>Room Code</Text>
@@ -531,14 +870,58 @@ export class Creation4 extends Component {
 
                 <View style = {{flex:0.2,backgroundColor:colors.main, 
                     justifyContent:'center', alignItems:'center'}}>
-
-                    <View style = {{ flexDirection: 'row'}}>
-                        
-                    </View>
-
+                    <Text style = {styles.concerto}>How experienced</Text>
+                    <Text style = {styles.concerto}>is your Group?</Text>
                 </View>
 
-                <View style = {{flex:0.5}}/>
+                <TouchableOpacity
+                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
+                    backgroundColor:this.state.difficulty==1?colors.font:colors.main,
+                    marginLeft:15, marginRight:10, borderRadius:10}}
+                    onPress = {()=>{
+                        this._selectDifficulty(1)
+                    }} >
+                    <MaterialCommunityIcons name='star-circle'
+                        style={{color:this.state.difficulty==1?colors.main:colors.font,fontSize:30}}/>
+                    <Text style = {this.state.difficulty==1?styles.dconcerto:styles.concerto}>New</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
+                    backgroundColor:this.state.difficulty==2?colors.font:colors.main,
+                    marginLeft:15, marginRight:10, borderRadius:10}}
+                    onPress = {()=>{
+                        this._selectDifficulty(2)
+                    }} >
+                    <View style = {{flexDirection:'row'}}>
+                        <MaterialCommunityIcons name='star-circle'
+                            style={{color:this.state.difficulty==2?colors.main:colors.font,fontSize:30}}/>
+                        <MaterialCommunityIcons name='star-circle'
+                            style={{color:this.state.difficulty==2?colors.main:colors.font,fontSize:30}}/>
+                    </View>
+                <Text style = {this.state.difficulty==2?styles.dconcerto:styles.concerto}>Average</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
+                    backgroundColor:this.state.difficulty==3?colors.font:colors.main,
+                    marginLeft:15, marginRight:10, borderRadius:10}}
+                    onPress = {()=>{
+                        this._selectDifficulty(3)
+                    }}
+                >   
+                    <View style = {{flexDirection:'row'}}>
+                        <MaterialCommunityIcons name='star-circle'
+                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
+                        <MaterialCommunityIcons name='star-circle'
+                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
+                        <MaterialCommunityIcons name='star-circle'
+                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
+                    </View>
+                    <Text style = {this.state.difficulty==3?styles.dconcerto:styles.concerto}>Experts</Text>
+                </TouchableOpacity>
+
+                <View style = {{flex:0.05}}/>
 
                 <View style = {{flex:0.1, flexDirection:'row', 
                 justifyContent:'center', alignItems:'center'}}>
@@ -548,10 +931,12 @@ export class Creation4 extends Component {
                         style={{color:colors.font,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
                         style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
+                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle'
                         style={{color:colors.font,fontSize:15, marginLeft:20}}/>
                 </View>
-                
+
             </View>
         </TouchableWithoutFeedback>
     }
