@@ -12,6 +12,7 @@ import colors from './app/misc/colors.js';
 
 import Lists from "./app/screens/ListsScreen";
 import Room from "./app/screens/RoomScreen";
+import MafiaRoom from "./app/screens/MafiaScreen";
 
 import { Creation1, Creation2, Creation3, Creation4, Creation5 } from './app/tutorials/RoomCreation.js';
 import { Join1, Join2 } from './app/tutorials/RoomJoin.js';
@@ -125,6 +126,51 @@ export const JoinTutorial = TabNavigator(
   }
 );
 
+export const Mafia = TabNavigator(
+  {
+    MafiaRoom: {
+      screen: MafiaRoom,
+      navigationOptions : {
+        tabBarIcon: ({ tintColor }) => (
+          <MaterialIcons name="gamepad" style={styles.icon}/>
+        ),
+      }
+    },
+    Lists: {
+      screen: Lists,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
+        ),
+      }
+    },
+    Listsy: {
+      screen: Lists,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
+        ),
+      }
+    },
+  },
+  {
+    tabBarPosition: 'bottom',
+    //swipeEnabled: false,
+    tabBarOptions: {
+      showIcon: true,
+      showLabel: false,
+      style: {
+        backgroundColor: colors.tabbackground,
+      },
+      indicatorStyle: {
+        backgroundColor: colors.indicatorcolor,
+        height:5,
+      }
+    },
+    initialRouteName: 'MafiaRoom',
+  }
+);
+
 export const createRootNavigator = (signedIn) => {
     
     return StackNavigator(
@@ -149,6 +195,12 @@ export const createRootNavigator = (signedIn) => {
         },
         JoinTutorial: {
           screen: JoinTutorial,
+          navigationOptions: {
+            gesturesEnabled: false,
+          }
+        },
+        Mafia: {
+          screen: Mafia,
           navigationOptions: {
             gesturesEnabled: false,
           }
