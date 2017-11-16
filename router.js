@@ -6,13 +6,16 @@ import { StackNavigator, TabNavigator } from "react-navigation";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { Splash } from "./app/loginscreens/LogIn";
 import colors from './app/misc/colors.js';
 
-import Lists from "./app/screens/ListsScreen";
 import Room from "./app/screens/RoomScreen";
+import Lists from "./app/screens/ListsScreen";
+
 import MafiaRoom from "./app/screens/MafiaScreen";
+import { Messages, Profile } from "./app/screens/DetailsScreen";
 
 import { Creation1, Creation2, Creation3, Creation4, Creation5 } from './app/tutorials/RoomCreation.js';
 import { Join1, Join2 } from './app/tutorials/RoomJoin.js';
@@ -136,6 +139,14 @@ export const Mafia = TabNavigator(
         ),
       }
     },
+    Messages: {
+      screen: Messages,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <MaterialCommunityIcons name="comment-alert" style={styles.icon}/>
+        ),
+      }
+    },
     Lists: {
       screen: Lists,
       navigationOptions: {
@@ -144,11 +155,11 @@ export const Mafia = TabNavigator(
         ),
       }
     },
-    Listsy: {
-      screen: Lists,
+    Profile: {
+      screen: Profile,
       navigationOptions: {
         tabBarIcon: ({ tintColor }) => (
-          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
+          <FontAwesome name='user-secret' style={styles.icon}/>
         ),
       }
     },
@@ -171,7 +182,7 @@ export const Mafia = TabNavigator(
   }
 );
 
-export const createRootNavigator = (signedIn) => {
+export const createRootNavigator = (signedIn, inGame) => {
     
     return StackNavigator(
       {
@@ -209,7 +220,7 @@ export const createRootNavigator = (signedIn) => {
       {
         headerMode: "none",
         mode: "modal",
-        initialRouteName: signedIn ? "SignedIn" : "SignedOut",
+        initialRouteName: signedIn ? (inGame?"JoinTutorial":"SignedIn") : "SignedOut",
       }
     );
 };

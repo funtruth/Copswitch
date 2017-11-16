@@ -53,13 +53,6 @@ export default class Room_Screen extends React.Component {
             owner: firebase.auth().currentUser.uid,
             daycounter:1,
         });
-
-        //Set up list of players
-        firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
-            + firebase.auth().currentUser.uid).set({
-                actionbtnvalue:     false,
-                presseduid:         'foo',
-        });
         
         firebase.database().ref('listofroles/'+firebase.auth().currentUser.uid).update({b:0})
 

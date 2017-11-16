@@ -1186,13 +1186,12 @@ _gameOver() {
         }
     })
     
-    //this.props.navigation.navigate('Room_Screen')
     this.props.navigation.dispatch(
         NavigationActions.reset({
             index: 0,
             key: null,
             actions: [
-                NavigationActions.navigate({ routeName: 'Room_Screen'})
+                NavigationActions.navigate({ routeName: 'SignedIn'})
             ]
         })
     )

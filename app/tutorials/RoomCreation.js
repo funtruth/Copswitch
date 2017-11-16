@@ -75,7 +75,9 @@ export class Creation1 extends Component {
         if(name && name.length>0 && name.length < 11){
             firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
             .child(firebase.auth().currentUser.uid).update({
-                name: name,
+                name:               name,
+                actionbtnvalue:     false,
+                presseduid:         'foo',
             }).then(()=>{
                 this.setState({errormessage:null})
                 this.props.navigation.navigate('Creation2')
@@ -638,10 +640,7 @@ export class Creation4 extends Component {
                                 showneutral:false,
                             })
                         }} >
-                        <Text style = {{
-                            fontFamily:'ConcertOne-Regular',
-                            fontSize: 25, color: colors.main,
-                            marginTop:5, marginBottom:3}}>Town</Text>
+                        <Text style = {styles.mdconcerto}>Town</Text>
                     </TouchableOpacity>
         
                     {!this.state.showtown? null: <View style = {{flex:0.7}}><FlatList
@@ -688,10 +687,7 @@ export class Creation4 extends Component {
                                 showneutral:false,
                             }) 
                         }} >
-                        <Text style = {{
-                            fontFamily:'ConcertOne-Regular',
-                            fontSize: 25, color: colors.main,
-                            marginTop:5, marginBottom:5}}>Mafia</Text>
+                        <Text style = {styles.mdconcerto}>Mafia</Text>
                     </TouchableOpacity>
         
                     {!this.state.showmafia?null:<View style = {{flex:0.7}}><FlatList
@@ -738,10 +734,7 @@ export class Creation4 extends Component {
                                 showmafia:false,
                             })
                         }} >
-                        <Text style = {{
-                            fontFamily:'ConcertOne-Regular',
-                            fontSize: 25, color: colors.main,
-                            marginTop:5, marginBottom:5}}>Neutral</Text>
+                        <Text style = {styles.mdconcerto}>Neutral</Text>
                     </TouchableOpacity>
         
                     {!this.state.showneutral?null:<View style = {{flex:0.7}}><FlatList
@@ -803,18 +796,100 @@ export class Creation5 extends Component {
             alias:'',
             roomname: '',
             difficulty: null,
+            
+            namelist:[],
+
+            players:null,       //ListOfPlayers count
+            playernum: null,    //Creation2 number
+            rolecount:null,     //ListOfRoles count
         };
+
+        this.listOfRolesRef = firebase.database().ref('listofroles')
+            .child(firebase.auth().currentUser.uid);
         
     }
 
     componentWillMount() {
         AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
-            firebase.database().ref('rooms').child(result).once('value',snap=>{
+
+            this.setState({roomname:result})
+           
+            this.listofplayersRef = firebase.database().ref('rooms').child(result).child('listofplayers')
+            this.listofplayersRef.on('value',snap=>{
+                var list = [];
+                snap.forEach((child)=> {
+                    list.push({
+                        name: child.val().name,
+                        key: child.key,
+                    })
+                })
+                this.setState({namelist:list,players:snap.numChildren()})
+            })
+
+            this.playernumRef = firebase.database().ref('rooms').child(result).child('playernum')
+            this.playernumRef.on('value',snap=>{
                 this.setState({
-                    roomname: result,
+                    playernum: snap.val(),
                 })
             })
         })
+
+        this.listOfRolesRef.on('value',snap=>{
+            if(snap.exists()){
+                var rolecount = 0;
+                snap.forEach((child)=>{
+                    rolecount = rolecount + child.val();
+                })
+                this.setState({rolecount:rolecount})
+            }
+        })
+    }
+
+    componentWillUnmount() {
+        if(this.listOfRolesRef){
+            this.listOfRolesRef.off();
+        }
+        if(this.listofplayersRef){
+            this.listofplayersRef.off();
+        }
+        if(this.playernumRef){
+            this.playernumRef.off();
+        }
+    }
+
+    _renderListComponent(){
+        return <FlatList
+            data={this.state.namelist}
+            renderItem={({item}) => (
+                <TouchableOpacity 
+                    onPress={() => { }}
+                    style = {{ justifyContent:'center', marginTop:5, marginBottom:5 }} > 
+                    <Text style = {styles.concerto}>{item.name}</Text>
+                </TouchableOpacity>
+            )}
+            numColumns={1}
+            keyExtractor={item => item.key}
+        />
+    }
+
+    _renderOptions() {
+        return <TouchableOpacity
+            style = {{
+            backgroundColor:colors.font, flex:0.6, alignItems:'center',
+            justifyContent:'center', marginLeft:15, marginRight:10, borderRadius:2}}
+            onPress = {()=>{
+                this.props.navigation.dispatch(
+                    NavigationActions.navigate({
+                        routeName: 'Mafia',
+                        action: NavigationActions.navigate({ 
+                            routeName: 'MafiaRoom',
+                            params: {roomname:this.state.roomname}
+                        })
+                    })
+                )
+            }} >
+            <Text style = {styles.mdconcerto}>Start Game</Text>
+        </TouchableOpacity>
     }
 
     render() {
@@ -844,32 +919,26 @@ export class Creation5 extends Component {
                         <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                     </View>
                 </View>
-
-                <View style = {{flex:0.2,backgroundColor:colors.main, 
+                
+                <View style = {{flex:0.025}}/>
+                        
+                <View style = {{flex:0.075,backgroundColor:colors.main, 
                     justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.concerto}>How experienced</Text>
-                    <Text style = {styles.concerto}>is your Group?</Text>
+                    <Text style = {styles.mconcerto}>Players:</Text>
                 </View>
 
-                <TouchableOpacity
-                    style = {{flex:0.5, justifyContent:'center', alignItems:'center',
-                    backgroundColor:this.state.difficulty==1?colors.font:colors.main,
-                    marginLeft:15, marginRight:10, borderRadius:10}}
-                    onPress = {()=>{
-                        this.props.navigation.dispatch(
-                            NavigationActions.navigate({
-                                routeName: 'Mafia',
-                                action: NavigationActions.navigate({ 
-                                    routeName: 'MafiaRoom',
-                                    params: {roomname:this.state.roomname}
-                                })
-                            })
-                        )
-                    }} >
-                    <MaterialCommunityIcons name='star-circle'
-                        style={{color:this.state.difficulty==1?colors.main:colors.font,fontSize:30}}/>
-                    <Text style = {this.state.difficulty==1?styles.dconcerto:styles.concerto}>New</Text>
-                </TouchableOpacity>
+                <View style = {{flex:0.49, flexDirection:'row',justifyContent:'center',
+                    marginTop:10, marginBottom:10}}>
+                    <View style = {{flex:0.9,justifyContent:'center', alignItems:'center'}}>
+                        {this._renderListComponent()}
+                    </View>
+                </View>
+
+                <View style = {{flex:0.06, flexDirection:'row', justifyContent:'center'}}>
+                    {this._renderOptions()}
+                </View>
+
+                <View style = {{flex:0.05}}/>
 
                 <View style = {{flex:0.1, flexDirection:'row', 
                 justifyContent:'center', alignItems:'center'}}>
@@ -896,6 +965,17 @@ const styles = StyleSheet.create({
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
         color: colors.font,
+    },
+    mconcerto: {
+        fontSize: 30,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.font,
+    },
+    mdconcerto: {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 25, color: colors.main,
+        marginTop:5, marginBottom:5
     },
     sconcerto: {
         fontSize: 15,
