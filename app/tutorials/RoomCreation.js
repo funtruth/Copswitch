@@ -47,21 +47,36 @@ export class Creation1 extends Component {
         this.nameRef = firebase.database().ref('rooms').child(params.roomname)
             .child('listofplayers').child(firebase.auth().currentUser.uid).child('name');
         
+        this.connectedRef = firebase.database().ref(".info/connected");
     }
 
     
     componentWillMount() {
-        this.nameRef.once('value',snap=>{
+        this.nameRef.on('value',snap=>{
             this.setState({
                 alias:snap.val(),
                 loading:false,
             })
         })
 
+        this.connectedRef.on('value',snap=>{
+            if(snap.val()===true){
+                this.setState({loading:false})
+            } else {
+                this.setState({loading:true})
+            }
+        })
+
         BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
     }
 
     componentWillUnmount() {
+        if(this.connectedRef){
+            this.connectedRef.off();
+        }
+        if(this.nameRef){
+            this.nameRef.off();
+        }
         BackHandler.removeEventListener("hardwareBackPress", this._onBackPress);
     }
 
@@ -73,30 +88,28 @@ export class Creation1 extends Component {
 
 
     _continue(name) {
-
-        if(name && name.length>0 && name.length < 11){
-            firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
-            .child(firebase.auth().currentUser.uid).update({
-                name:               name,
-                actionbtnvalue:     false,
-                presseduid:         'foo',
-            }).then(()=>{
-                this.setState({errormessage:null})
-                this.props.navigation.navigate('Creation2')
-            })
-        } else {
-            this.setState({errormessage:'Your name must be 1 - 10 Characters'})
+        if(this.state.loading){
+            this.setState({errormessage:'Wi-Fi connection Required.'})
             this.refs.nameerror.shake(800)
+        } else {
+            if(name && name.length>0 && name.length < 11){
+                firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
+                .child(firebase.auth().currentUser.uid).update({
+                    name:               name,
+                    actionbtnvalue:     false,
+                    presseduid:         'foo',
+                }).then(()=>{
+                    this.setState({errormessage:null})
+                    this.props.navigation.navigate('Creation2')
+                })
+            } else {
+                this.setState({errormessage:'Your name must be 1 - 10 Characters'})
+                this.refs.nameerror.shake(800)
+            }
         }
-
     }
 
     render() {
-
-        if(this.state.loading){
-            <View style = {{backgroundColor:colors.main}}/>
-        }
-
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
@@ -187,10 +200,12 @@ export class Creation2 extends Component {
 
     componentWillMount() {
         AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+
+            this.setState({roomname:result})
+
             firebase.database().ref('rooms').child(result).once('value',snap=>{
                 this.setState({
                     playercount: snap.val().playernum,
-                    roomname: result,
                     loading: false,
                 })
             })
@@ -231,11 +246,6 @@ export class Creation2 extends Component {
     }
 
     render() {
-
-        if(this.state.loading){
-            return <View style = {{backgroundColor:colors.background}}/>
-        }
-
         return <View style = {{flex:1,backgroundColor:colors.background}}>
 
             <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
@@ -359,9 +369,11 @@ export class Creation3 extends Component {
 
     componentWillMount() {
         AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+
+            this.setState({roomname:result})
+
             firebase.database().ref('rooms').child(result).child('difficulty').once('value',snap=>{
                 this.setState({
-                    roomname:result,
                     loading: false,
                     difficulty: snap.val(),
                 })
@@ -379,11 +391,6 @@ export class Creation3 extends Component {
     }
 
     render() {
-
-        if(this.state.loading){
-            return <View style = {{backgroundColor:colors.background}}/>
-        }
-
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
@@ -798,7 +805,8 @@ export class Creation5 extends Component {
             alias:'',
             roomname: '',
             difficulty: null,
-            loading: false,
+            loading: true,
+            starting:false,
 
             namelist:[],
 
@@ -826,7 +834,11 @@ export class Creation5 extends Component {
                         key: child.key,
                     })
                 })
-                this.setState({namelist:list,players:snap.numChildren()})
+                this.setState({
+                    namelist:list,
+                    players:snap.numChildren(),
+                    loading:false
+                })
             })
 
             this.playernumRef = firebase.database().ref('rooms').child(result).child('playernum')
@@ -867,7 +879,7 @@ export class Creation5 extends Component {
 
         firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
 
-        this.setState({loading:true})
+        this.setState({starting:true})
 
         setTimeout(()=>{
             firebase.database().ref('rooms').child(roomname).child('phase').set(2).then(()=>{
@@ -960,7 +972,7 @@ export class Creation5 extends Component {
 
     render() {
 
-        if(this.state.loading){
+        if(this.state.starting){
             return <View style = {{
                 backgroundColor: colors.background,
                 flex: 1,
@@ -1000,7 +1012,7 @@ export class Creation5 extends Component {
                         <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                     </View>
                 </View>
-                
+
                 <View style = {{flex:0.025}}/>
                         
                 <View style = {{flex:0.075,backgroundColor:colors.background, 

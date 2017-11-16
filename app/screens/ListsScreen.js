@@ -25,6 +25,7 @@ import { NavigationActions } from 'react-navigation';
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
+import { onSignOut } from "../auth";
 
 class General_Screen extends Component {
     
