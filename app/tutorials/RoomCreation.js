@@ -10,6 +10,7 @@ import {
     AsyncStorage,
     Keyboard,
     BackHandler,
+    ActivityIndicator,
     TouchableOpacity,
     TouchableWithoutFeedback,
 }   from 'react-native';
@@ -26,6 +27,7 @@ import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
 
 import * as Animatable from 'react-native-animatable';
+import randomize from 'randomatic';
 
 export class Creation1 extends Component {
 
@@ -796,7 +798,8 @@ export class Creation5 extends Component {
             alias:'',
             roomname: '',
             difficulty: null,
-            
+            loading: false,
+
             namelist:[],
 
             players:null,       //ListOfPlayers count
@@ -857,6 +860,77 @@ export class Creation5 extends Component {
         }
     }
 
+    _startGame(roomname) {
+        AsyncStorage.setItem('GAME-KEY',roomname);
+        
+        this._handOutRoles(roomname);
+
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
+
+        this.setState({loading:true})
+
+        setTimeout(()=>{
+            firebase.database().ref('rooms').child(roomname).child('phase').set(2).then(()=>{
+                this.props.navigation.dispatch(
+                    NavigationActions.navigate({
+                        routeName: 'Mafia',
+                        action: NavigationActions.navigate({ 
+                            routeName: 'MafiaRoom',
+                            params: {roomname:roomname}
+                        })
+                    })
+                )
+            })
+        },5000)
+    }
+
+    _handOutRoles(roomname){
+        
+        var randomstring = '';
+        var charcount = 0;
+
+        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).once('value',snap=>{
+
+            snap.forEach((child)=>{
+                for(i=0;i<child.val();i++){
+                    randomstring = randomstring + randomize('?', 1, {chars: child.key})
+                    charcount++
+                }
+            })
+
+            var min = Math.ceil(1);
+            var max = Math.ceil(charcount);
+
+            this.listofplayersRef.once('value',insidesnap=>{
+                insidesnap.forEach((child)=>{
+
+                    var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
+                    var randomrole = randomstring.charAt(randomnumber-1);
+
+                    this.listofplayersRef.child(child.key).update({
+                        roleid:         randomrole,
+                        charges:        Rolesheet[randomrole].charges,
+                        suspicious:     Rolesheet[randomrole].suspicious,
+                        type:           Rolesheet[randomrole].type,
+                    })
+
+                    if(randomrole == randomrole.toLowerCase()){
+                        firebase.database().ref('rooms/' + roomname + '/mafia/' 
+                        + child.key).update({
+                            roleid:randomrole,
+                            name: child.val().name,
+                            alive: true,
+                        })
+                    }
+                    
+                    max = max - 1;
+                    randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);
+                })
+            })
+
+        })
+    }
+
     _renderListComponent(){
         return <FlatList
             data={this.state.namelist}
@@ -878,21 +952,28 @@ export class Creation5 extends Component {
             backgroundColor:colors.font, flex:0.6, alignItems:'center',
             justifyContent:'center', marginLeft:15, marginRight:10, borderRadius:2}}
             onPress = {()=>{
-                this.props.navigation.dispatch(
-                    NavigationActions.navigate({
-                        routeName: 'Mafia',
-                        action: NavigationActions.navigate({ 
-                            routeName: 'MafiaRoom',
-                            params: {roomname:this.state.roomname}
-                        })
-                    })
-                )
+                this._startGame(this.state.roomname);
             }} >
             <Text style = {styles.mdconcerto}>Start Game</Text>
         </TouchableOpacity>
     }
 
     render() {
+
+        if(this.state.loading){
+            return <View style = {{
+                backgroundColor: colors.main,
+                flex: 1,
+                justifyContent:'center'}}>
+                    <ActivityIndicator size='large' color={colors.font}/>
+                    <Text style = {{fontSize:23,
+                    fontFamily:'ConcertOne-Regular',
+                    color:colors.font,
+                    alignSelf: 'center',
+                    }}>Handing out Roles</Text>
+                    <View style = {{flex:0.25}}/>
+                </View>
+        }
 
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}

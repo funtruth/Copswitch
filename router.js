@@ -6,12 +6,12 @@ import { StackNavigator, TabNavigator } from "react-navigation";
 
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { Splash } from "./app/loginscreens/LogIn";
 import colors from './app/misc/colors.js';
 
 import Room from "./app/screens/RoomScreen";
+import { Expired_Screen } from "./app/screens/RoomScreen";
 import Lists from "./app/screens/ListsScreen";
 
 import MafiaRoom from "./app/screens/MafiaScreen";
@@ -159,7 +159,7 @@ export const Mafia = TabNavigator(
       screen: Profile,
       navigationOptions: {
         tabBarIcon: ({ tintColor }) => (
-          <FontAwesome name='user-secret' style={styles.icon}/>
+          <MaterialIcons name="person" style={styles.icon}/>
         ),
       }
     },
@@ -215,12 +215,18 @@ export const createRootNavigator = (signedIn, inGame) => {
           navigationOptions: {
             gesturesEnabled: false,
           }
-        }
+        },
+        Expired: {
+          screen: Expired_Screen,
+          navigationOptions: {
+            gesturesEnabled: false,
+          }
+        },
       },
       {
         headerMode: "none",
         mode: "modal",
-        initialRouteName: signedIn ? (inGame?"JoinTutorial":"SignedIn") : "SignedOut",
+        initialRouteName: signedIn ? (inGame?"Expired":"SignedIn") : "SignedOut",
       }
     );
 };

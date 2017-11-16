@@ -16,6 +16,7 @@ import {
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { MenuButton } from '../components/MenuButton.js';
 
 import { StackNavigator, TabNavigator } from 'react-navigation';
@@ -174,142 +175,113 @@ export class Profile extends Component {
         super(props);
 
         this.state = {
-            alias:'',
             roomname: '',
-            difficulty: null,
+
+            myrole:             '',
+            amimafia:           false,
+            roledesc:           '',
+            rolerules:          '',
+            mafialist:          [],
+
         };
         
     }
 
     componentWillMount() {
-        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
-            firebase.database().ref('rooms').child(result).once('value',snap=>{
+        AsyncStorage.getItem('GAME-KEY',(error,result)=>{
+
+            this.myRef = firebase.database().ref('rooms').child(result)
+                .child('listofplayers').child(firebase.auth().currentUser.uid);
+            this.myRef.on('value',snap=>{
                 this.setState({
+                    myrole: Rolesheet[snap.val().roleid].name,
+                    roledesc: Rolesheet[snap.val().roleid].desc,
+                    rolerules: Rolesheet[snap.val().roleid].rules,
+                    amimafia: snap.val().roleid.toLowerCase()==snap.val().roleid,
                     roomname: result,
                 })
+            })
+
+            this.mafiaRef = firebase.database().ref('rooms').child(result)
+            .child('mafia').on('value',snap=>{
+                if(snap.exists()){
+                    var mafialist = [];
+                    snap.forEach((child)=>{
+                        mafialist.push({
+                            name:       child.val().name,
+                            rolename:   Rolesheet[child.val().roleid].name,
+                            alive:      child.val().alive,
+                            key:        child.key,
+                        })
+                    })
+                    this.setState({mafialist:mafialist})
+                }
             })
         })
     }
 
+    componentWillUnmount() {
+        if(this.myRef){
+            this.myRef.off();
+        }
+        if(this.mafiaRef){
+            this.mafiaRef.off();
+        }
+    }
+
     render() {
 
-        return <TouchableWithoutFeedback 
-        style = {{ flex:1 }}
-        onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.main}}>
-
-                <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.85}}/>
-                    <TouchableOpacity
-                        style = {{flex:0.15}}
-                        onPress = {()=>{
-                            this.props.navigation.dispatch(NavigationActions.back());
-                        }} >
-                        <MaterialCommunityIcons name='close'
-                            style={{color:colors.font,fontSize:30}}/>
-                    </TouchableOpacity>
-                </View>
-
-                <View style = {{flexDirection:'row', flex:0.1, 
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.7}}> 
-                        <Text style = {styles.concerto}>Room Code</Text>
-                        <Text style = {styles.roomcode}>{this.state.roomname}</Text>
-                    </View>
-                </View>
-
-                <View style = {{flex:0.2,backgroundColor:colors.main, 
-                    justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.concerto}>How experienced</Text>
-                    <Text style = {styles.concerto}>is your Group?</Text>
-                </View>
-
-                <TouchableOpacity
-                    style = {{flex:0.5, justifyContent:'center', alignItems:'center',
-                    backgroundColor:this.state.difficulty==1?colors.font:colors.main,
-                    marginLeft:15, marginRight:10, borderRadius:10}}
-                    onPress = {()=>{
-                        this.props.navigation.dispatch(
-                            NavigationActions.navigate({
-                                routeName: 'Mafia',
-                                action: NavigationActions.navigate({ 
-                                    routeName: 'MafiaRoom',
-                                    params: {roomname:this.state.roomname}
-                                })
-                            })
-                        )
-                    }} >
-                    <MaterialCommunityIcons name='star-circle'
-                        style={{color:this.state.difficulty==1?colors.main:colors.font,fontSize:30}}/>
-                    <Text style = {this.state.difficulty==1?styles.dconcerto:styles.concerto}>New</Text>
-                </TouchableOpacity>
-
-                <View style = {{flex:0.1, flexDirection:'row', 
+        return <TouchableWithoutFeedback style = {{flex:1}}
+                onPressIn={()=>{ this.setState({show:true}) }}
+                onPressOut={()=>{ this.setState({show:false}) }}>
+            <View style = {{flex:1, backgroundColor:colors.main,
                 justifyContent:'center', alignItems:'center'}}>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
-                </View>
-
+                <FontAwesome name='user-secret' style={{color:colors.font, fontSize: 30}}/>
+                {this.state.show?
+                    <View>
+                    <Text style = {styles.concerto}>{this.state.myrole}</Text>
+                    <Text style = {styles.sconcerto}>{this.state.roledesc}</Text>
+                    <Text style = {styles.sconcerto}>{this.state.rolerules}</Text>
+                    {this.state.amimafia?<View style = {{flex:0.1}}><FlatList
+                        data={this.state.mafialist}
+                        renderItem={({item}) => (
+                            <Text style={{fontSize:17,
+                                fontFamily:'ConcertOne-Regular',
+                                color:'#24527f',
+                                textDecorationLine:item.alive?'none':'line-through'}}>
+                                {'[ ' + item.name + ' ] ' + item.rolename}</Text>
+                        )}
+                        keyExtractor={item => item.key}
+                    /></View>:<View/>}
+                    </View>:<View/>
+                }
             </View>
         </TouchableWithoutFeedback>
     }
 }
 
 const styles = StyleSheet.create({
-    roomcode: {
-        fontSize: 40,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.font,
-    },
     sconcerto: {
         fontSize: 15,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
         color: colors.font,
+        marginLeft: 40,
+        marginRight:40,
+    },
+    hidden: {
+        fontSize: 15,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.background,
+        marginLeft: 40,
+        marginRight:40,
     },
     concerto: {
         fontSize: 20,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
         color: colors.font,
-    },
-    bigdarkconcerto: {
-        fontSize: 40,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.main,
-    },
-    dconcerto: {
-        fontSize: 20,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.main,
-    },
-    digit: {
-        flex:0.2,
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:colors.font, 
-        borderRadius:10,
-        margin:5
-    },
-    symbol: {
-        flex:0.2,
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:colors.main, 
-        borderRadius:10,
-        margin:5
     },
     
 

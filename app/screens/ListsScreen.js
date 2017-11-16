@@ -122,20 +122,6 @@ class General_Screen extends Component {
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
-                title = 'Leave Room'
-                onPress = {()=>{ this._exitRoom() }}
-            />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Quit Game'
-                onPress = {()=>{ this._deleteRoom() }}
-            />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
                 title = 'Log Out'
                 onPress = {()=>{ this._logOut() }}
             />

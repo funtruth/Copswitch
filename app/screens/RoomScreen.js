@@ -566,12 +566,26 @@ class Lobby_Screen extends React.Component {
     }
 }
 
-class Expired_Screen extends React.Component {
+export class Expired_Screen extends React.Component {
     
     constructor(props) {
         super(props);
     }
     
+    _continueGame() {
+        AsyncStorage.getItem('GAME-KEY',(error,result)=>{
+            this.props.navigation.dispatch(
+                NavigationActions.navigate({
+                    routeName: 'Mafia',
+                    action: NavigationActions.navigate({ 
+                        routeName: 'MafiaRoom',
+                        params: {roomname:result}
+                    })
+                })
+            )
+        })
+    }
+
     _resetGame(){
         AsyncStorage.removeItem('ROOM-KEY');
         AsyncStorage.removeItem('GAME-KEY');
@@ -584,7 +598,7 @@ class Expired_Screen extends React.Component {
             NavigationActions.reset({
                 index: 0,
                 actions: [
-                  NavigationActions.navigate({ routeName: 'Room_Screen'})
+                  NavigationActions.navigate({ routeName: 'SignedIn'})
                 ]
             })
         )
@@ -597,35 +611,40 @@ class Expired_Screen extends React.Component {
     
     _renderImage() {
         return <Text style = {{fontFamily:'ConcertOne-Regular',fontSize:25,color:colors.font}}>
-        awww poor baby</Text>
+        You are in a Game</Text>
     }
     
     render() {
-        return <View style = {{flex:3,backgroundColor:colors.color2}}>
-            <View style = {{flex:1,justifyContent:'center'}}>
+        return <View style = {{flex:3,backgroundColor:colors.main,justifyContent:'center'}}>
+            <View style = {{flex:0.8,justifyContent:'center'}}>
                 <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
-                    {this._renderHeader()}
+                    
                 </View>
             </View>
-            <View style = {{flex:5,justifyContent:'center'}}>
-                <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
-                    {this._renderImage()}
-                </View>
-            </View>
-            <View style = {{flex:1,justifyContent:'center',flexDirection:'row'}}>
+            <View style = {{flex:0.1,justifyContent:'center',flexDirection:'row'}}>
                 <TouchableOpacity
-                    onPress={()=>{this._resetGame()}}
+                    onPress={()=>{this._continueGame()}}
                     style={{
                         flex:0.7,
                         justifyContent:'center',
-                        backgroundColor:colors.main,
+                        backgroundColor:colors.font,
                         borderRadius:15,
                     }}
-                ><Text style = {{alignSelf:'center',color:'white',
-                    fontFamily:'ConcertOne-Regular',fontSize:25}}>CONTINUE</Text>
+                ><Text style = {{alignSelf:'center',color:colors.main,
+                    fontFamily:'ConcertOne-Regular',fontSize:25}}>CONTINUE?</Text>
                 </TouchableOpacity>
             </View>
-            <View style = {{flex:1}}/>
+            <View style = {{flex:0.1,justifyContent:'center',flexDirection:'row'}}>
+                <TouchableOpacity
+                    onPress={()=>{this._resetGame()}}
+                    style={{
+                        flex:0.2,
+                        justifyContent:'center',
+                    }}
+                ><Text style = {{alignSelf:'center',color:colors.font,
+                    fontFamily:'ConcertOne-Regular',fontSize:20}}>QUIT</Text>
+                </TouchableOpacity>
+            </View>
         </View>
         }
 }
