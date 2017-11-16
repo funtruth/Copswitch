@@ -63,16 +63,12 @@ constructor(props) {
         roledesc:           '',
 
         namelist:           dataSource,
-        globallist:         dataSource,
-        msglist:            dataSource,
 
         triggernum:         1000,
         playernum:          1000,
 
         actionbtnvalue:     false,
         presseduid:         '',
-        messagechat:        false,
-        notificationchat:   false,
         disabled:           false,
 
         amidead:            true,
@@ -95,8 +91,6 @@ constructor(props) {
     this.myInfoRef          = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid);
     this.mafiaRef           = this.roomRef.child('mafia');
     
-    this.msgRef             = firebase.database().ref('messages/' + firebase.auth().currentUser.uid);
-    this.globalMsgRef       = firebase.database().ref('globalmsgs/' + roomname);
     this.listRef            = this.roomRef.child('listofplayers');
     this.playernumRef       = this.roomRef.child('playernum');
     this.nominationRef      = this.roomRef.child('nominate');
@@ -153,39 +147,6 @@ componentWillMount() {
                 }) 
             }
 
-        }
-    })
-
-    this.msgRef.on('value',snap=>{
-        if(snap.exists()){
-            var msg = [];
-            snap.forEach((child)=>{   
-                msg.push({
-                    from:       child.val().from,
-                    message:    child.val().message,
-                    key:        child.key,
-                })
-            })
-            this.setState({msglist:msg})
-        } else {
-            this.setState({msglist:[]})
-        }
-    })
-
-    this.globalMsgRef.on('value',snap=>{
-        if(snap.exists()){
-            var msg = [];
-            snap.forEach((child)=>{   
-                msg.push({
-                    from:       child.val().from,
-                    color:      child.val().color,
-                    message:    child.val().message,
-                    key:        child.key,
-                })
-            })
-            this.setState({globallist:msg})
-        } else {
-            this.setState({globallist:[]})
         }
     })
 
@@ -401,12 +362,6 @@ componentWillUnmount() {
 
     if(this.myInfoRef){
         this.myInfoRef.off();
-    }
-    if(this.msgRef){
-        this.msgRef.off();
-    }
-    if(this.globalMsgRef){
-        this.globalMsgRef.off();
     }
     if(this.ownerRef){
         this.ownerRef.off();
@@ -843,34 +798,6 @@ _renderListComponent(){
     }
 }
 
-//Rendering Message Boxes
-_renderMessageComponent(){
-    if (this.state.notificationchat){
-        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}>
-            <Text style = {styles.chatconcerto}>Public Messages</Text>
-            <FlatList
-            data={this.state.globallist}
-            renderItem={({item}) => (
-                <Text style={styles.leftconcerto}>
-                    {'[' + item.from + '] '+ item.message}</Text>
-            )}
-            keyExtractor={item => item.key}
-            /></View>
-    } else if(this.state.messagechat){
-        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}>
-            <Text style = {styles.chatconcerto}>Private Messages</Text>
-            <FlatList
-                data={this.state.msglist}
-                renderItem={({item}) => (
-                    <Text style={styles.leftconcerto}>
-                        {'[' + item.from + '] ' + item.message}</Text>
-                )}
-                keyExtractor={item => item.key}
-            />
-        </View>
-    } 
-}
-
 //Rendering the Transition Header
 _renderTransitionHeader() {
     if(this.state.phase == 2 || this.state.phase == 5){
@@ -1187,82 +1114,53 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
     <Modal
         animationType = 'slide'
         transparent
-        visible = {this.state.messagechat || this.state.notificationchat}
+        visible = {this.state.modalVisible}
         onRequestClose = {()=>{
-            this.setState({ notificationchat:false, messagechat:false })
+            this.setState({ modalVisible:false })
         }}>   
         <View style = {{flex:1,}}>
             <TouchableWithoutFeedback
                 onPress = {()=>{
-                    this.setState({ notificationchat:false, messagechat:false })
+                    this.setState({ modalVisible:false })
             }}>
                 <View style = {{flex:0.5}}/>
             </TouchableWithoutFeedback>
             <View style = {{flex:0.5,flexDirection:'row',backgroundColor:colors.main }}>
-                <View style= {{flex:1}}>
-                    {this._renderMessageComponent()}
-                </View>
+
             </View>
         </View>
     </Modal>
 
-    <View style = {{flex:1.5,flexDirection:'row',justifyContent:'center'}}>
-        <View style = {{flex:0.9,backgroundColor:colors.main,justifyContent:'center',
+    <View style = {{flex:0.13,flexDirection:'row',justifyContent:'center'}}>
+        <View style = {{flex:0.8,backgroundColor:colors.main,justifyContent:'center',
             borderBottomLeftRadius:15,borderBottomRightRadius:15}}>
             {this._renderHeader()}
         </View>
     </View>
 
-    <View style = {{flex:0.15}}/>
+    <View style = {{flex:0.01}}/>
 
     <View style = {{
-        flex:11,
+        flex:0.76,
         flexDirection:'row',
+        justifyContent:'center'
     }}>
-        <View style = {{flex:2}}>
-        </View>
-        <View style = {{flex:13}}>
+        <View style = {{flex:0.8}}>
             {this._renderListComponent()}
-        </View>
-
-        <View style = {{flex:2, justifyContent:'center'}}>
-            <View style = {{flex:1}}/>
-            <View style = {{flex:0.6,justifyContent:'center'}}>
-                <TouchableOpacity
-                    onPress={()=> {
-                        this._chatPress('notifications')
-                    }}>
-                    <MaterialCommunityIcons name='comment-alert'
-                        style={{color:this.state.notificationchat?colors.main:colors.icon, 
-                            fontSize:26,alignSelf:'center'}}/>
-                </TouchableOpacity>
-            </View>
-            <View style = {{flex:0.6,justifyContent:'center'}}>
-                <TouchableOpacity
-                    onPress={()=> {
-                        this._chatPress('messages')
-                    }}>
-                    <MaterialCommunityIcons name='clipboard-text' 
-                        style={{color:this.state.messagechat?colors.main:colors.icon, 
-                            fontSize:26,alignSelf:'center'}}/>
-                </TouchableOpacity>
-            </View>
-            <View style = {{flex:1.7}}/>
-            <View style = {{flex:2.8}}/>
         </View>
 
     </View>
 
-    <View style = {{flex:0.15}}/>
+    <View style = {{flex:0.01}}/>
 
-    <View style = {{flex:1,flexDirection:'row',justifyContent:'center'}}>
+    <View style = {{flex:0.07,flexDirection:'row',justifyContent:'center'}}>
         <TouchableOpacity
             disabled={this.state.gameover?false:
                 (this.state.disabled?true:(this.state.locked?true:this.state.amidead))}
             onPress={()=> {this.state.gameover?this._gameOver():
                 (this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
                 this.state.triggernum,this.state.phase,this.state.roomname))}}
-            style = {{flex:0.82,justifyContent:'center',
+            style = {{flex:0.8,justifyContent:'center',
                 backgroundColor:!this.state.locked && this.state.actionbtnvalue?colors.highlight:colors.main,
                 borderRadius:15}}>
             <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?colors.main:colors.font,
@@ -1273,7 +1171,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
         </TouchableOpacity>
     </View>
 
-    <View style = {{flex:0.15}}/>
+    <View style = {{flex:0.02}}/>
 
 </View>
 }
