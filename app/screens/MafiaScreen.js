@@ -358,6 +358,8 @@ componentWillMount() {
         }
     })
 
+    BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
+
 }
 
 componentWillUnmount() {
@@ -394,10 +396,16 @@ componentWillUnmount() {
         this.dayCounterRef.off();
     }
 
-    clearTimeout(this.timer);
+    BackHandler.removeEventListener("hardwareBackPress", this._onBackPress);
 
 }
 
+_onBackPress = () => {
+    if(this.props.route == 2){
+        return false
+    }
+    return true
+}
 
 _updateNumbers(playernum) {
     const mod = playernum%2;
