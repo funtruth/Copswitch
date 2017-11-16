@@ -37,23 +37,21 @@ export const SignedIn = TabNavigator(
         screen: Room,
         navigationOptions : {
           tabBarIcon: ({ tintColor }) => (
-            <MaterialIcons name="gamepad" style={styles.icon}/>
+            <MaterialIcons name="home" style={styles.icon}/>
           ),
-          //tabBarVisible: false,
         }
       },
       Lists: {
         screen: Lists,
         navigationOptions: {
           tabBarIcon: ({ tintColor }) => (
-            <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
+            <MaterialCommunityIcons name="menu" style={styles.icon}/>
           ),
         }
       },
     },
     {
       tabBarPosition: 'bottom',
-      //swipeEnabled: false,
       tabBarOptions: {
         showIcon: true,
         showLabel: false,
@@ -135,7 +133,7 @@ export const Mafia = TabNavigator(
       screen: MafiaRoom,
       navigationOptions : {
         tabBarIcon: ({ tintColor }) => (
-          <MaterialIcons name="gamepad" style={styles.icon}/>
+          <MaterialIcons name="home" style={styles.icon}/>
         ),
       }
     },
@@ -143,7 +141,7 @@ export const Mafia = TabNavigator(
       screen: Messages,
       navigationOptions: {
         tabBarIcon: ({ tintColor }) => (
-          <MaterialCommunityIcons name="comment-alert" style={styles.icon}/>
+          <MaterialCommunityIcons name="comment" style={styles.icon}/>
         ),
       }
     },
@@ -159,7 +157,7 @@ export const Mafia = TabNavigator(
       screen: Lists,
       navigationOptions: {
         tabBarIcon: ({ tintColor }) => (
-          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
+          <MaterialCommunityIcons name="menu" style={styles.icon}/>
         ),
       }
     },

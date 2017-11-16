@@ -19,17 +19,18 @@ export class Splash extends React.Component {
 
     _signInAnon(){
         firebase.auth().signInAnonymously().then(() => {
-            onSignIn();
-            this.props.navigation.dispatch(
-                NavigationActions.reset({
-                    key: null,
-                    index: 0,
-                    actions: [
-                        NavigationActions.navigate({ routeName: 'SignedIn'})
-                    ]
-                })
-            )
-        })
+            onSignIn().then(()=>{
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        key: null,
+                        index: 0,
+                        actions: [
+                            NavigationActions.navigate({ routeName: 'SignedIn'})
+                        ]
+                    })
+                )
+            })
+        }).catch(function(error){alert(error)})
     }
 
     render(){

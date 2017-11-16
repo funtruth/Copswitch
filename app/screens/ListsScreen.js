@@ -39,11 +39,34 @@ class General_Screen extends Component {
 
     _logOut() {
         if(firebase.auth().currentUser.isAnonymous){
-            onSignOut().then(() => { firebase.auth().currentUser.delete() })
-            this.props.navigation.navigate('SignedOut');
+            onSignOut().then(() => { 
+                firebase.auth().currentUser.delete().then(()=>{
+                    this.props.navigation.dispatch(
+                        NavigationActions.reset({
+                            index: 0,
+                            key: null,
+                            actions: [
+                                NavigationActions.navigate({ routeName: 'SignedOut'})
+                            ]
+                        })
+                    )
+                })
+            })
+            
         } else {
-            onSignOut().then(() => { firebase.auth().signOut() }) 
-            this.props.navigation.navigate('SignedOut');
+            onSignOut().then(() => { 
+                firebase.auth().signOut()
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        key: null,
+                        actions: [
+                            NavigationActions.navigate({ routeName: 'SignedOut'})
+                        ]
+                    })
+                )
+            }) 
+            
         }
     }
 
