@@ -171,6 +171,7 @@ export class Profile extends Component {
 
             myrole:             '',
             amimafia:           false,
+            show:               false,
             roledesc:           '',
             rolerules:          '',
             mafialist:          [],
@@ -194,8 +195,8 @@ export class Profile extends Component {
                 })
             })
 
-            this.mafiaRef = firebase.database().ref('rooms').child(result)
-            .child('mafia').on('value',snap=>{
+            this.mafiaRef = firebase.database().ref('rooms').child(result).child('mafia')
+            this.mafiaRef.on('value',snap=>{
                 if(snap.exists()){
                     var mafialist = [];
                     snap.forEach((child)=>{
@@ -224,7 +225,8 @@ export class Profile extends Component {
     render() {
 
         return <TouchableWithoutFeedback style = {{flex:1}}
-                onPressIn={()=>{ this.setState({show:true}) }}
+                delayLongPress={300}
+                onLongPress={()=>{ this.setState({show:true}) }}
                 onPressOut={()=>{ this.setState({show:false}) }}>
             <View style = {{flex:1, backgroundColor:colors.main,
                 justifyContent:'center', alignItems:'center'}}>
@@ -234,12 +236,14 @@ export class Profile extends Component {
                     <Text style = {styles.concerto}>{this.state.myrole}</Text>
                     <Text style = {styles.sconcerto}>{this.state.roledesc}</Text>
                     <Text style = {styles.sconcerto}>{this.state.rolerules}</Text>
-                    {this.state.amimafia?<View style = {{flex:0.1}}><FlatList
+                    {this.state.amimafia?<View style = {{flex:0.2}}><FlatList
                         data={this.state.mafialist}
                         renderItem={({item}) => (
                             <Text style={{fontSize:17,
                                 fontFamily:'ConcertOne-Regular',
                                 color:'#24527f',
+                                justifyContent:'center',
+                                alignSelf:'center',
                                 textDecorationLine:item.alive?'none':'line-through'}}>
                                 {'[ ' + item.name + ' ] ' + item.rolename}</Text>
                         )}
