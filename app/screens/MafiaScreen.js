@@ -61,7 +61,6 @@ constructor(props) {
         targetdead:         '',
         targettown:         '',
         roledesc:           '',
-        mafialist:          dataSource,
 
         namelist:           dataSource,
         globallist:         dataSource,
@@ -74,7 +73,6 @@ constructor(props) {
         presseduid:         '',
         messagechat:        false,
         notificationchat:   false,
-        showprofile:        false,
         disabled:           false,
 
         amidead:            true,
@@ -155,21 +153,6 @@ componentWillMount() {
                 }) 
             }
 
-        }
-    })
-
-    this.mafiaRef.on('value',snap=>{
-        if(snap.exists()){
-            var mafialist = [];
-            snap.forEach((child)=>{
-                mafialist.push({
-                    name:       child.val().name,
-                    rolename:   Rolesheet[child.val().roleid].name,
-                    alive:      child.val().alive,
-                    key:        child.key,
-                })
-            })
-            this.setState({mafialist:mafialist})
         }
     })
 
@@ -262,7 +245,6 @@ componentWillMount() {
                 cover:true, 
                 messagechat:false, 
                 notificationchat:false, 
-                showprofile:false,
                 phase:snap.val()
             })
             
@@ -886,24 +868,7 @@ _renderMessageComponent(){
                 keyExtractor={item => item.key}
             />
         </View>
-    } else if (this.state.showprofile){
-        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5}}>
-            <Text style = {styles.chatconcerto}>{'-'+this.state.myrole+'-'}</Text>
-            {this.state.amimafia?<FlatList
-                data={this.state.mafialist}
-                renderItem={({item}) => (
-                    <Text style={{fontSize:17,
-                        fontFamily:'ConcertOne-Regular',
-                        color:colors.font,
-                        textDecorationLine:item.alive?'none':'line-through'}}>
-                        {'[ ' + item.name + ' ] ' + item.rolename}</Text>
-                )}
-                keyExtractor={item => item.key}
-            />:<View/>}
-            <Text style = {styles.leftconcerto}>{'Description: '+this.state.roledesc}</Text>
-            <Text style = {styles.leftconcerto}>{'Rules: '+this.state.rolerules}</Text>
-        </View>
-    }
+    } 
 }
 
 //Rendering the Transition Header
@@ -952,8 +917,6 @@ _chatPress(chattype){
         this.setState({messagechat:true})
     } else if (chattype == 'notifications'){
         this.setState({notificationchat:true})
-    } else if (chattype == 'profile'){
-        this.setState({showprofile:true})
     }
 }
 
@@ -1224,14 +1187,14 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
     <Modal
         animationType = 'slide'
         transparent
-        visible = {this.state.messagechat || this.state.showprofile || this.state.notificationchat}
+        visible = {this.state.messagechat || this.state.notificationchat}
         onRequestClose = {()=>{
-            this.setState({ notificationchat:false, messagechat:false, showprofile:false })
+            this.setState({ notificationchat:false, messagechat:false })
         }}>   
         <View style = {{flex:1,}}>
             <TouchableWithoutFeedback
                 onPress = {()=>{
-                    this.setState({ notificationchat:false, messagechat:false, showprofile:false })
+                    this.setState({ notificationchat:false, messagechat:false })
             }}>
                 <View style = {{flex:0.5}}/>
             </TouchableWithoutFeedback>
@@ -1284,17 +1247,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
                             fontSize:26,alignSelf:'center'}}/>
                 </TouchableOpacity>
             </View>
-            <View style = {{flex:1.1}}/>
-            <View style = {{flex:0.6,justifyContent:'center'}}>
-                <TouchableOpacity
-                    onPress={()=> {
-                        this._chatPress('profile')
-                    }}>
-                    <FontAwesome name='user-secret'
-                        style={{color:this.state.showprofile?colors.main:colors.icon, 
-                            fontSize:35,alignSelf:'center'}}/>
-                </TouchableOpacity>
-            </View>
+            <View style = {{flex:1.7}}/>
             <View style = {{flex:2.8}}/>
         </View>
 

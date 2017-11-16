@@ -38,135 +38,127 @@ export class Messages extends Component {
             roomname: '',
             difficulty: null,
             loading:true,
+
+            globallist: [],
+            msglist:    [],
+
+            publicchat: true,
         };
-        
+     
+        this.privateRef = firebase.database().ref('messages').child(firebase.auth().currentUser.uid);
     }
 
 
     componentWillMount() {
         AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
-            firebase.database().ref('rooms').child(result).child('difficulty').once('value',snap=>{
-                this.setState({
-                    roomname:result,
-                    loading: false,
-                    difficulty: snap.val(),
-                })
+
+            this.setState({roomname:result, loading:false})
+
+            this.publicRef = firebase.database().ref('globalmsgs').child(result);
+            this.publicRef.on('value',snap=>{
+                if(snap.exists()){
+                    var msg = [];
+                    snap.forEach((child)=>{   
+                        msg.push({
+                            from:       child.val().from,
+                            color:      child.val().color,
+                            message:    child.val().message,
+                            key:        child.key,
+                        })
+                    })
+                    this.setState({globallist:msg})
+                } else {
+                    this.setState({globallist:[]})
+                }
             })
+        })
+
+        this.privateRef.on('value',snap=>{
+            if(snap.exists()){
+                var msg = [];
+                snap.forEach((child)=>{   
+                    msg.push({
+                        from:       child.val().from,
+                        message:    child.val().message,
+                        key:        child.key,
+                    })
+                })
+                this.setState({msglist:msg})
+            } else {
+                this.setState({msglist:[]})
+            }
         })
     }
 
-    _selectDifficulty(difficulty) {
-        firebase.database().ref('rooms').child(this.state.roomname).update({
-            difficulty: difficulty
-        }).then(()=>{
-            this.setState({difficulty:difficulty})
-            this.props.navigation.navigate('Creation4')
-        })
+    componentWillUnmount() {
+        if(this.publicRef){
+            this.publicRef.off();
+        }
+        if(this.privateRef){
+            this.privateRef.off();
+        }
+    }
+
+    _renderTitle() {
+        return <View style = {{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+
+            <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
+                borderRadius:2, backgroundColor:this.state.publicchat?colors.font:colors.main}}
+                onPress = {()=>{this.setState({publicchat:true})}}>
+                <Text style = {this.state.publicchat?styles.dchat:styles.chat}>Public</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
+                borderRadius:2, backgroundColor:this.state.publicchat?colors.main:colors.font}}
+                onPress = {()=>{this.setState({publicchat:false})}}>
+                <Text style = {this.state.publicchat?styles.chat:styles.dchat}>Private</Text>
+            </TouchableOpacity>
+
+        </View>
+    }
+
+    _renderMessageComponent(){
+        if (this.state.publicchat){
+            return <View style = {{marginLeft:10,marginRight:10,marginBottom:5,
+                flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+                <View style = {{flex:0.8}}>
+                <FlatList
+                data={this.state.globallist}
+                renderItem={({item}) => (
+                    <Text style={styles.leftconcerto}>
+                        {'[' + item.from + '] '+ item.message}</Text>
+                )}
+                keyExtractor={item => item.key}
+                /></View></View>
+        } else {
+            return <View style = {{marginLeft:10,marginRight:10,marginBottom:5,
+                flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+                <View style = {{flex:0.8}}>
+                <FlatList
+                    data={this.state.msglist}
+                    renderItem={({item}) => (
+                        <Text style={styles.leftconcerto}>
+                            {'[' + item.from + '] ' + item.message}</Text>
+                    )}
+                    keyExtractor={item => item.key}
+                />
+            </View></View>
+        } 
     }
 
     render() {
 
         if(this.state.loading){
-            return <View style = {{backgroundColor:colors.main}}/>
+            return <View style = {{flex:1,backgroundColor:colors.main}}/>
         }
 
-        return <TouchableWithoutFeedback 
-        style = {{ flex:1 }}
-        onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.main}}>
-
-                <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.85}}/>
-                    <TouchableOpacity
-                        style = {{flex:0.15}}
-                        onPress = {()=>{
-                            this.props.navigation.dispatch(NavigationActions.back());
-                        }} >
-                        <MaterialCommunityIcons name='close'
-                            style={{color:colors.font,fontSize:30}}/>
-                    </TouchableOpacity>
-                </View>
-
-                <View style = {{flexDirection:'row', flex:0.1, 
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.7}}> 
-                        <Text style = {styles.concerto}>Room Code</Text>
-                        <Text style = {styles.roomcode}>{this.state.roomname}</Text>
-                    </View>
-                </View>
-
-                <View style = {{flex:0.2,backgroundColor:colors.main, 
-                    justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.concerto}>How experienced</Text>
-                    <Text style = {styles.concerto}>is your Group?</Text>
-                </View>
-
-                <TouchableOpacity
-                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
-                    backgroundColor:this.state.difficulty==1?colors.font:colors.main,
-                    marginLeft:15, marginRight:10, borderRadius:10}}
-                    onPress = {()=>{
-                        this._selectDifficulty(1)
-                    }} >
-                    <MaterialCommunityIcons name='star-circle'
-                        style={{color:this.state.difficulty==1?colors.main:colors.font,fontSize:30}}/>
-                    <Text style = {this.state.difficulty==1?styles.dconcerto:styles.concerto}>New</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
-                    backgroundColor:this.state.difficulty==2?colors.font:colors.main,
-                    marginLeft:15, marginRight:10, borderRadius:10}}
-                    onPress = {()=>{
-                        this._selectDifficulty(2)
-                    }} >
-                    <View style = {{flexDirection:'row'}}>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:this.state.difficulty==2?colors.main:colors.font,fontSize:30}}/>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:this.state.difficulty==2?colors.main:colors.font,fontSize:30}}/>
-                    </View>
-                <Text style = {this.state.difficulty==2?styles.dconcerto:styles.concerto}>Average</Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
-                    backgroundColor:this.state.difficulty==3?colors.font:colors.main,
-                    marginLeft:15, marginRight:10, borderRadius:10}}
-                    onPress = {()=>{
-                        this._selectDifficulty(3)
-                    }}
-                >   
-                    <View style = {{flexDirection:'row'}}>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
-                    </View>
-                    <Text style = {this.state.difficulty==3?styles.dconcerto:styles.concerto}>Experts</Text>
-                </TouchableOpacity>
-
-                <View style = {{flex:0.05}}/>
-
-                <View style = {{flex:0.1, flexDirection:'row', 
-                justifyContent:'center', alignItems:'center'}}>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
-                </View>
-
-            </View>
-        </TouchableWithoutFeedback>
+        return <View style = {{flex:1,backgroundColor:colors.main}}>
+            <View style = {{flex:0.03}}/>
+            <View style = {{flex:0.1, flexDirection:'row', 
+            justifyContent:'center', alignItems:'center'}}>{this._renderTitle()}</View>
+            <View style = {{flex:0.84}}>{this._renderMessageComponent()}</View>
+            <View style = {{flex:0.03}}/>
+        </View>
     }
 }
 
@@ -282,6 +274,28 @@ const styles = StyleSheet.create({
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
         color: colors.font,
+    },
+    chat:{
+        fontSize:20,
+        fontFamily:'ConcertOne-Regular',
+        color:colors.font,
+        alignSelf: 'center',
+        marginTop:5,
+        marginBottom:5,
+    },
+    dchat:{
+        fontSize:20,
+        fontFamily:'ConcertOne-Regular',
+        color:colors.main,
+        alignSelf: 'center',
+        marginTop:5,
+        marginBottom:5,
+    },
+    leftconcerto:{
+        fontSize:17,
+        fontFamily:'ConcertOne-Regular',
+        color:colors.font,
+        marginTop:5,
     },
     
 
