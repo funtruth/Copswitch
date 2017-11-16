@@ -103,13 +103,13 @@ export class Messages extends Component {
         return <View style = {{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
 
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
-                borderRadius:2, backgroundColor:this.state.publicchat?colors.font:colors.main}}
+                borderRadius:2, backgroundColor:this.state.publicchat?colors.main:colors.background}}
                 onPress = {()=>{this.setState({publicchat:true})}}>
                 <Text style = {this.state.publicchat?styles.dchat:styles.chat}>Public</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
-                borderRadius:2, backgroundColor:this.state.publicchat?colors.main:colors.font}}
+                borderRadius:2, backgroundColor:this.state.publicchat?colors.background:colors.main}}
                 onPress = {()=>{this.setState({publicchat:false})}}>
                 <Text style = {this.state.publicchat?styles.chat:styles.dchat}>Private</Text>
             </TouchableOpacity>
@@ -149,10 +149,10 @@ export class Messages extends Component {
     render() {
 
         if(this.state.loading){
-            return <View style = {{flex:1,backgroundColor:colors.main}}/>
+            return <View style = {{flex:1,backgroundColor:colors.background}}/>
         }
 
-        return <View style = {{flex:1,backgroundColor:colors.main}}>
+        return <View style = {{flex:1,backgroundColor:colors.background}}>
             <View style = {{flex:0.03}}/>
             <View style = {{flex:0.1, flexDirection:'row', 
             justifyContent:'center', alignItems:'center'}}>{this._renderTitle()}</View>
@@ -228,9 +228,10 @@ export class Profile extends Component {
                 delayLongPress={300}
                 onLongPress={()=>{ this.setState({show:true}) }}
                 onPressOut={()=>{ this.setState({show:false}) }}>
-            <View style = {{flex:1, backgroundColor:colors.main,
+            <View style = {{flex:1, backgroundColor:colors.background,
                 justifyContent:'center', alignItems:'center'}}>
-                <FontAwesome name='user-secret' style={{color:colors.font, fontSize: 30}}/>
+                <FontAwesome name='user-secret' style={{color:colors.main, 
+                    fontSize: this.state.show?30:80}}/>
                 {this.state.show?
                     <View>
                     <Text style = {styles.concerto}>{this.state.myrole}</Text>
@@ -261,7 +262,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.font,
+        color: colors.main,
         marginLeft: 40,
         marginRight:40,
     },
@@ -277,17 +278,9 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.font,
+        color: colors.main,
     },
     chat:{
-        fontSize:20,
-        fontFamily:'ConcertOne-Regular',
-        color:colors.font,
-        alignSelf: 'center',
-        marginTop:5,
-        marginBottom:5,
-    },
-    dchat:{
         fontSize:20,
         fontFamily:'ConcertOne-Regular',
         color:colors.main,
@@ -295,10 +288,18 @@ const styles = StyleSheet.create({
         marginTop:5,
         marginBottom:5,
     },
+    dchat:{
+        fontSize:20,
+        fontFamily:'ConcertOne-Regular',
+        color:colors.background,
+        alignSelf: 'center',
+        marginTop:5,
+        marginBottom:5,
+    },
     leftconcerto:{
         fontSize:17,
         fontFamily:'ConcertOne-Regular',
-        color:colors.font,
+        color:colors.main,
         marginTop:5,
     },
     

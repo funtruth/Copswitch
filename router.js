@@ -147,14 +147,6 @@ export const Mafia = TabNavigator(
         ),
       }
     },
-    Lists: {
-      screen: Lists,
-      navigationOptions: {
-        tabBarIcon: ({ tintColor }) => (
-          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
-        ),
-      }
-    },
     Profile: {
       screen: Profile,
       navigationOptions: {
@@ -163,10 +155,17 @@ export const Mafia = TabNavigator(
         ),
       }
     },
+    Lists: {
+      screen: Lists,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <MaterialCommunityIcons name="book-open-variant" style={styles.icon}/>
+        ),
+      }
+    },
   },
   {
     tabBarPosition: 'bottom',
-    //swipeEnabled: false,
     tabBarOptions: {
       showIcon: true,
       showLabel: false,

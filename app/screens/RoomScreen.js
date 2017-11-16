@@ -615,7 +615,7 @@ export class Expired_Screen extends React.Component {
     }
     
     render() {
-        return <View style = {{flex:3,backgroundColor:colors.main,justifyContent:'center'}}>
+        return <View style = {{flex:3,backgroundColor:colors.background,justifyContent:'center'}}>
             <View style = {{flex:0.8,justifyContent:'center'}}>
                 <View style = {{flex:0.7,justifyContent:'center',alignItems:'center'}}>
                     
@@ -627,24 +627,25 @@ export class Expired_Screen extends React.Component {
                     style={{
                         flex:0.7,
                         justifyContent:'center',
-                        backgroundColor:colors.font,
+                        backgroundColor:colors.main,
                         borderRadius:15,
                     }}
-                ><Text style = {{alignSelf:'center',color:colors.main,
+                ><Text style = {{alignSelf:'center',color:colors.background,
                     fontFamily:'ConcertOne-Regular',fontSize:25}}>CONTINUE?</Text>
                 </TouchableOpacity>
             </View>
-            <View style = {{flex:0.1,justifyContent:'center',flexDirection:'row'}}>
+            <View style = {{flex:0.07,justifyContent:'center',flexDirection:'row'}}>
                 <TouchableOpacity
                     onPress={()=>{this._resetGame()}}
                     style={{
                         flex:0.2,
                         justifyContent:'center',
                     }}
-                ><Text style = {{alignSelf:'center',color:colors.font,
+                ><Text style = {{alignSelf:'center',color:colors.main,
                     fontFamily:'ConcertOne-Regular',fontSize:20}}>QUIT</Text>
                 </TouchableOpacity>
             </View>
+            <View style = {{flex:0.03}}/>
         </View>
         }
 }

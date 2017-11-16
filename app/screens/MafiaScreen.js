@@ -105,6 +105,8 @@ constructor(props) {
     //Transition Screen
     this.dayCounterRef      = this.roomRef.child('daycounter');
 
+    this.msgRef             = firebase.database().ref('messages').child(firebase.auth().currentUser.uid);
+    this.globalMsgRef       = firebase.database().ref('globalmsgs').child(roomname);
 }
 
 componentWillMount() {
@@ -577,7 +579,7 @@ _nameBtnLongPress(uid,name,phase,roomname){
         if(this.state.amimafia){
             this.mafiaRef.once('value',snap=>{
                 snap.forEach((child)=>{
-                    this._noticeMsg(uid,colors.font,this.state.myname+' wants to kill '+name+'.')
+                    this._noticeMsg(uid,colors.main,this.state.myname+' wants to kill '+name+'.')
                 })
             })
         }
@@ -625,12 +627,12 @@ _voteBtnPress(presseduid,votebtn) {
 //Rendering the Main Game Header
 _renderHeader() {
     return <View>
-        <Text style = {{color:colors.font, alignSelf:'center', 
+        <Text style = {{color:colors.background, alignSelf:'center', 
             fontFamily: 'ConcertOne-Regular', fontSize:25}}>
             {this.state.phasename}
         </Text>
         
-        <Text style = {{color:colors.font, alignSelf:'center',
+        <Text style = {{color:colors.background, alignSelf:'center',
             fontFamily: 'ConcertOne-Regular', fontSize:14}}>
             {this.state.bottommessage}
         </Text>
@@ -695,7 +697,7 @@ _renderListComponent(){
             <View style = {{flexDirection:'row',flex:0.3,}}>
             <TouchableOpacity style = {{flex:1,borderRadius:10,backgroundColor:colors.main,
                 justifyContent:'center',alignItems:'center'}}>
-                <Text style = {{fontFamily:'ConcertOne-Regular',color:colors.font}}>
+                <Text style = {{fontFamily:'ConcertOne-Regular',color:colors.main}}>
                     {this.state.nominee + ' has been Nominated.'}</Text>
             </TouchableOpacity>
             </View>
@@ -725,7 +727,7 @@ _renderListComponent(){
                     disabled = {this.state.amipicking?item.dead:false}
                     > 
                     {item.dead?<MaterialCommunityIcons name={item.dead?'skull':null}
-                        style={{color:colors.font, fontSize:26,alignSelf:'center'}}/>:
+                        style={{color:colors.main, fontSize:26,alignSelf:'center'}}/>:
                         <Text style = {styles.concerto}>{item.name}</Text>}
                 </TouchableOpacity>
             )}
@@ -1163,7 +1165,7 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
             style = {{flex:0.8,justifyContent:'center',
                 backgroundColor:!this.state.locked && this.state.actionbtnvalue?colors.highlight:colors.main,
                 borderRadius:15}}>
-            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?colors.main:colors.font,
+            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?colors.background:colors.background,
                 fontSize:26,alignSelf:'center', fontFamily:'ConcertOne-Regular'}}>
                 {this.state.gameover?'CONTINUE':
                     (!this.state.locked && !this.state.amidead?'READY':'LOCKED')}
@@ -1209,13 +1211,13 @@ const styles = StyleSheet.create({
     headerFont: {
         fontFamily:'ConcertOne-Regular',
         fontSize: 30,
-        color: colors.font,
+        color: colors.background,
         alignSelf:'center',
     },
     continueFont: {
         fontFamily:'ConcertOne-Regular',
         fontSize: 25,
-        color: colors.font,
+        color: colors.background,
         alignSelf:'center',
     },
     messageFont: {
@@ -1227,20 +1229,20 @@ const styles = StyleSheet.create({
     concerto: {
         fontSize:17,
         fontFamily:'ConcertOne-Regular',
-        color:colors.font,
+        color:colors.background,
         alignSelf: 'center',
     },
     chatconcerto:{
         fontSize:20,
         fontFamily:'ConcertOne-Regular',
-        color:colors.font,
+        color:colors.main,
         alignSelf: 'center',
         marginTop:5
     },
     leftconcerto:{
         fontSize:17,
         fontFamily:'ConcertOne-Regular',
-        color:colors.font,
+        color:colors.main,
         marginTop:5,
     }
 });

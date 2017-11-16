@@ -100,7 +100,7 @@ export class Creation1 extends Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.main}}>
+            <View style = {{flex:1,backgroundColor:colors.background}}>
 
                 <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
                     justifyContent:'center',alignItems:'center'}}>
@@ -132,7 +132,7 @@ export class Creation1 extends Component {
                             placeholder="Who are you?"
                             placeholderTextColor={colors.font}
                             style={{
-                                backgroundColor: colors.main,
+                                backgroundColor: colors.background,
                                 flex:0.6,
                                 fontFamily:'ConcertOne-Regular',
                                 fontSize: 20,
@@ -233,10 +233,10 @@ export class Creation2 extends Component {
     render() {
 
         if(this.state.loading){
-            return <View style = {{backgroundColor:colors.main}}/>
+            return <View style = {{backgroundColor:colors.background}}/>
         }
 
-        return <View style = {{flex:1,backgroundColor:colors.main}}>
+        return <View style = {{flex:1,backgroundColor:colors.background}}>
 
             <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
                 justifyContent:'center',alignItems:'center'}}>
@@ -259,7 +259,7 @@ export class Creation2 extends Component {
                 </View>
             </View>
 
-            <View style = {{flex:0.3,backgroundColor:colors.main,
+            <View style = {{flex:0.3,backgroundColor:colors.background,
                 justifyContent:'center', alignItems:'center'}}>
                 <Text style = {styles.concerto}>Total Number of Players:</Text>
                 <View style = {{flex:0.4, flexDirection:'row'}}>
@@ -381,13 +381,13 @@ export class Creation3 extends Component {
     render() {
 
         if(this.state.loading){
-            return <View style = {{backgroundColor:colors.main}}/>
+            return <View style = {{backgroundColor:colors.background}}/>
         }
 
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.main}}>
+            <View style = {{flex:1,backgroundColor:colors.background}}>
 
                 <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
                     justifyContent:'center',alignItems:'center'}}>
@@ -410,7 +410,7 @@ export class Creation3 extends Component {
                     </View>
                 </View>
 
-                <View style = {{flex:0.2,backgroundColor:colors.main, 
+                <View style = {{flex:0.2,backgroundColor:colors.background, 
                     justifyContent:'center', alignItems:'center'}}>
                     <Text style = {styles.concerto}>How experienced</Text>
                     <Text style = {styles.concerto}>is your Group?</Text>
@@ -418,35 +418,35 @@ export class Creation3 extends Component {
 
                 <TouchableOpacity
                     style = {{flex:0.15, justifyContent:'center', alignItems:'center',
-                    backgroundColor:this.state.difficulty==1?colors.font:colors.main,
+                    backgroundColor:this.state.difficulty==1?colors.font:colors.background,
                     marginLeft:15, marginRight:10, borderRadius:10}}
                     onPress = {()=>{
                         this._selectDifficulty(1)
                     }} >
                     <MaterialCommunityIcons name='star-circle'
-                        style={{color:this.state.difficulty==1?colors.main:colors.font,fontSize:30}}/>
+                        style={{color:this.state.difficulty==1?colors.background:colors.font,fontSize:30}}/>
                     <Text style = {this.state.difficulty==1?styles.dconcerto:styles.concerto}>New</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style = {{flex:0.15, justifyContent:'center', alignItems:'center',
-                    backgroundColor:this.state.difficulty==2?colors.font:colors.main,
+                    backgroundColor:this.state.difficulty==2?colors.font:colors.background,
                     marginLeft:15, marginRight:10, borderRadius:10}}
                     onPress = {()=>{
                         this._selectDifficulty(2)
                     }} >
                     <View style = {{flexDirection:'row'}}>
                         <MaterialCommunityIcons name='star-circle'
-                            style={{color:this.state.difficulty==2?colors.main:colors.font,fontSize:30}}/>
+                            style={{color:this.state.difficulty==2?colors.background:colors.font,fontSize:30}}/>
                         <MaterialCommunityIcons name='star-circle'
-                            style={{color:this.state.difficulty==2?colors.main:colors.font,fontSize:30}}/>
+                            style={{color:this.state.difficulty==2?colors.background:colors.font,fontSize:30}}/>
                     </View>
                 <Text style = {this.state.difficulty==2?styles.dconcerto:styles.concerto}>Average</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style = {{flex:0.15, justifyContent:'center', alignItems:'center',
-                    backgroundColor:this.state.difficulty==3?colors.font:colors.main,
+                    backgroundColor:this.state.difficulty==3?colors.font:colors.background,
                     marginLeft:15, marginRight:10, borderRadius:10}}
                     onPress = {()=>{
                         this._selectDifficulty(3)
@@ -454,11 +454,11 @@ export class Creation3 extends Component {
                 >   
                     <View style = {{flexDirection:'row'}}>
                         <MaterialCommunityIcons name='star-circle'
-                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
+                            style={{color:this.state.difficulty==3?colors.background:colors.font,fontSize:30}}/>
                         <MaterialCommunityIcons name='star-circle'
-                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
+                            style={{color:this.state.difficulty==3?colors.background:colors.font,fontSize:30}}/>
                         <MaterialCommunityIcons name='star-circle'
-                            style={{color:this.state.difficulty==3?colors.main:colors.font,fontSize:30}}/>
+                            style={{color:this.state.difficulty==3?colors.background:colors.font,fontSize:30}}/>
                     </View>
                     <Text style = {this.state.difficulty==3?styles.dconcerto:styles.concerto}>Experts</Text>
                 </TouchableOpacity>
@@ -608,7 +608,7 @@ export class Creation4 extends Component {
 
     render() {
 
-        return <View style = {{flex:1,backgroundColor:colors.main}}>
+        return <View style = {{flex:1,backgroundColor:colors.background}}>
 
             <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
                 justifyContent:'center',alignItems:'center'}}>
@@ -628,7 +628,7 @@ export class Creation4 extends Component {
             </View>
 
             <View style = {{flex:0.8, justifyContent:'center', flexDirection:'row'}}>
-                <View style = {{flex:0.7, backgroundColor:colors.main, justifyContent:'center'}}>
+                <View style = {{flex:0.7, backgroundColor:colors.background, justifyContent:'center'}}>
 
                     <TouchableOpacity
                         style = {{backgroundColor:colors.font, borderRadius:2,
@@ -652,7 +652,7 @@ export class Creation4 extends Component {
                                 onPress = {()=>{
                                     this._roleBtnPress(item.key,item.index,item.count)  
                                 }}
-                                style = {{backgroundColor:item.count?colors.background:colors.main,flex:0.5,
+                                style = {{backgroundColor:item.count?colors.main:colors.background,flex:0.5,
                                     borderRadius:2, margin:3}}>
                                 <View style = {{justifyContent:'center',alignItems:'center'}}>
                                     <Image 
@@ -699,7 +699,7 @@ export class Creation4 extends Component {
                                 onPress = {()=>{
                                     this._roleBtnPress(item.key,item.index,item.count)  
                                 }}
-                                style = {{backgroundColor:item.count?colors.background:colors.main,flex:0.5,
+                                style = {{backgroundColor:item.count?colors.main:colors.background,flex:0.5,
                                     borderRadius:2, margin:3}}>
                                 <View style = {{justifyContent:'center',alignItems:'center'}}>
                                     <Image 
@@ -746,7 +746,7 @@ export class Creation4 extends Component {
                                 onPress = {()=>{
                                     this._roleBtnPress(item.key,item.index,item.count)  
                                 }}
-                                style = {{backgroundColor:item.count?colors.background:colors.main,flex:0.5,
+                                style = {{backgroundColor:item.count?colors.main:colors.background,flex:0.5,
                                     borderRadius:2, margin:3}}>
                                 <View style = {{justifyContent:'center',alignItems:'center'}}>
                                     <Image 
@@ -962,7 +962,7 @@ export class Creation5 extends Component {
 
         if(this.state.loading){
             return <View style = {{
-                backgroundColor: colors.main,
+                backgroundColor: colors.background,
                 flex: 1,
                 justifyContent:'center'}}>
                     <ActivityIndicator size='large' color={colors.font}/>
@@ -978,7 +978,7 @@ export class Creation5 extends Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.main}}>
+            <View style = {{flex:1,backgroundColor:colors.background}}>
 
                 <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
                     justifyContent:'center',alignItems:'center'}}>
@@ -1003,7 +1003,7 @@ export class Creation5 extends Component {
                 
                 <View style = {{flex:0.025}}/>
                         
-                <View style = {{flex:0.075,backgroundColor:colors.main, 
+                <View style = {{flex:0.075,backgroundColor:colors.background, 
                     justifyContent:'center', alignItems:'center'}}>
                     <Text style = {styles.mconcerto}>Players:</Text>
                 </View>
@@ -1055,7 +1055,7 @@ const styles = StyleSheet.create({
     },
     mdconcerto: {
         fontFamily:'ConcertOne-Regular',
-        fontSize: 25, color: colors.main,
+        fontSize: 25, color: colors.background,
         marginTop:5, marginBottom:5
     },
     sconcerto: {
@@ -1074,13 +1074,13 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.main,
+        color: colors.background,
     },
     dconcerto: {
         fontSize: 20,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.main,
+        color: colors.background,
     },
     digit: {
         flex:0.2,
@@ -1094,7 +1094,7 @@ const styles = StyleSheet.create({
         flex:0.2,
         justifyContent:'center',
         alignItems:'center',
-        backgroundColor:colors.main, 
+        backgroundColor:colors.background, 
         borderRadius:10,
         margin:5
     },

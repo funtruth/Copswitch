@@ -18,7 +18,7 @@ render() {
         justifyContent:'center', alignItems:'center'}}>
             <Button
                 backgroundColor = {colors.main}
-                color = {colors.font}
+                color = {colors.background}
                 containerViewStyle = {{ flex:this.props.flex }}
                 fontFamily = 'ConcertOne-Regular'
                 fontSize = {this.props.fontSize}

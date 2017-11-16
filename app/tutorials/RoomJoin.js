@@ -60,7 +60,7 @@ export class Join1 extends Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.main}}>
+            <View style = {{flex:1,backgroundColor:colors.background}}>
 
                 <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
                     justifyContent:'center',alignItems:'center'}}>
@@ -92,7 +92,7 @@ export class Join1 extends Component {
                             placeholder="Who are you?"
                             placeholderTextColor={colors.font}
                             style={{
-                                backgroundColor: colors.main,
+                                backgroundColor: colors.background,
                                 flex:0.6,
                                 fontFamily:'ConcertOne-Regular',
                                 fontSize: 20,
@@ -174,7 +174,7 @@ export class Join2 extends Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.main}}>
+            <View style = {{flex:1,backgroundColor:colors.background}}>
 
                 <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
                     justifyContent:'center',alignItems:'center'}}>
@@ -197,7 +197,7 @@ export class Join2 extends Component {
                     </View>
                 </View>
 
-                <View style = {{flex:0.3,backgroundColor:colors.main,
+                <View style = {{flex:0.3,backgroundColor:colors.background,
                     justifyContent:'center', alignItems:'center'}}>
                     <Text style = {styles.concerto}>How many Players?</Text>
 
@@ -301,13 +301,13 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.main,
+        color: colors.background,
     },
     dconcerto: {
         fontSize: 20,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.main,
+        color: colors.background,
     },
     digit: {
         flex:0.2,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
         flex:0.2,
         justifyContent:'center',
         alignItems:'center',
-        backgroundColor:colors.main, 
+        backgroundColor:colors.background, 
         borderRadius:10,
         margin:5
     },

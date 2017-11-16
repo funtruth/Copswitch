@@ -241,22 +241,8 @@ class Roles_Screen extends Component {
         }
     }
 
-    _roleBtnPress(key,index,count) {
-        if(this.state.ownermode){
-            if(count>0){
-                firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-                + '/' + key).transaction((count)=>{
-                    return count - 1;
-                })
-            } else {
-                firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-                + '/' + key).transaction((count)=>{
-                    return count + 1;
-                })
-            }
-        } else {
-            this.setState({roleid:key, modalVisible:true})
-        }
+    _roleBtnPress(key) {
+        this.setState({roleid:key, modalVisible:true})
     }
 
 
@@ -300,7 +286,7 @@ class Roles_Screen extends Component {
     }
 
     render(){
-        return <View style = {{flex:1, backgroundColor:colors.main}}>
+        return <View style = {{flex:1, backgroundColor:colors.background}}>
 
             <Modal
                 animationType = 'fade'
@@ -338,7 +324,7 @@ class Roles_Screen extends Component {
                 }} >
                 <Text style = {{
                     fontFamily:'ConcertOne-Regular',
-                    fontSize: 25, color: colors.main,
+                    fontSize: 25, color: colors.background,
                     marginTop:5, marginBottom:3}}>Filters</Text>
             </TouchableOpacity>
 
@@ -349,7 +335,7 @@ class Roles_Screen extends Component {
                         onPress = {()=>{
                             this._roleBtnPress(item.key,item.index)  
                         }}
-                        style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.33,
+                        style = {{backgroundColor:item.count?colors.immune:colors.background,flex:0.33,
                             borderRadius:10, margin:3}}>
                         <View style = {{justifyContent:'center',alignItems:'center'}}>
                             <Text style = {{
@@ -383,7 +369,7 @@ class Roles_Screen extends Component {
                 }} >
                 <Text style = {{
                     fontFamily:'ConcertOne-Regular',
-                    fontSize: 25, color: colors.main,
+                    fontSize: 25, color: colors.background,
                     marginTop:5, marginBottom:3}}>Town</Text>
             </TouchableOpacity>
 
@@ -394,7 +380,7 @@ class Roles_Screen extends Component {
                         onPress = {()=>{
                             this._roleBtnPress(item.key,item.index,item.count)  
                         }}
-                        style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.33,
+                        style = {{backgroundColor:item.count?colors.immune:colors.background,flex:0.33,
                             borderRadius:10, margin:3}}>
                         <View style = {{justifyContent:'center',alignItems:'center'}}>
                             <Image 
@@ -432,7 +418,7 @@ class Roles_Screen extends Component {
                 }} >
                 <Text style = {{
                     fontFamily:'ConcertOne-Regular',
-                    fontSize: 25, color: colors.main,
+                    fontSize: 25, color: colors.background,
                     marginTop:5, marginBottom:5}}>Mafia</Text>
             </TouchableOpacity>
 
@@ -443,7 +429,7 @@ class Roles_Screen extends Component {
                         onPress = {()=>{
                             this._roleBtnPress(item.key,item.index,item.count)  
                         }}
-                        style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.33,
+                        style = {{backgroundColor:item.count?colors.immune:colors.background,flex:0.33,
                             borderRadius:10, margin:3}}>
                         <View style = {{justifyContent:'center',alignItems:'center'}}>
                             <Image 
@@ -481,7 +467,7 @@ class Roles_Screen extends Component {
                 }} >
                 <Text style = {{
                     fontFamily:'ConcertOne-Regular',
-                    fontSize: 25, color: colors.main,
+                    fontSize: 25, color: colors.background,
                     marginTop:5, marginBottom:5}}>Neutral</Text>
             </TouchableOpacity>
 
@@ -492,7 +478,7 @@ class Roles_Screen extends Component {
                         onPress = {()=>{
                             this._roleBtnPress(item.key,item.index,item.count)  
                         }}
-                        style = {{backgroundColor:item.count?colors.immune:colors.main,flex:0.33,
+                        style = {{backgroundColor:item.count?colors.immune:colors.background,flex:0.33,
                             borderRadius:10, margin:3}}>
                         <View style = {{justifyContent:'center',alignItems:'center'}}>
                             <Image 
@@ -540,11 +526,11 @@ export default RuleBook = StackNavigator(
     normalFont: {
         fontFamily:'ConcertOne-Regular',
         fontSize: 18,
-        color: colors.font,
+        color: colors.background,
     },
     titleFont: {
         fontFamily:'ConcertOne-Regular',
         fontSize: 25,
-        color: colors.font,
+        color: colors.background,
     },
 });
