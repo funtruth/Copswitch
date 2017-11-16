@@ -176,7 +176,7 @@ class Roles_Screen extends Component {
             ownermode:  false,
 
             showfilter:  false,
-            showtown:    false,
+            showtown:    true,
             showmafia:   false,
             showneutral: false,
         }
