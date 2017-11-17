@@ -37,6 +37,7 @@ export default class Room_Screen extends React.Component {
 
         this.state = {
             connected: false,
+            loading: false,
         }
 
         this.connectedRef = firebase.database().ref(".info/connected");

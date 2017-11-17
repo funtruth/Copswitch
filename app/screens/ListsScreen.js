@@ -72,18 +72,21 @@ class General_Screen extends Component {
         AsyncStorage.removeItem('ROOM-KEY');
         AsyncStorage.removeItem('GAME-KEY');
     
-        firebase.database().ref('messages').child(firebase.auth().currentUser.uid).remove();
-        firebase.database().ref('listofroles').child(firebase.auth().currentUser.uid).remove();
-
-        this.props.navigation.dispatch(
-            NavigationActions.reset({
-                index: 0,
-                key: null,
-                actions: [
-                    NavigationActions.navigate({ routeName: 'SignedIn'})
-                ]
+        firebase.database().ref('messages').child(firebase.auth().currentUser.uid)
+        .remove().then(()=>{
+            firebase.database().ref('listofroles').child(firebase.auth().currentUser.uid)
+            .remove().then(()=>{
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        key: null,
+                        actions: [
+                            NavigationActions.navigate({ routeName: 'SignedIn'})
+                        ]
+                    })
+                )
             })
-        )
+        })
     }
     
     _exitRoom() {
@@ -105,6 +108,7 @@ class General_Screen extends Component {
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
+            <Text style = {styles.titleFont}>Rules</Text>
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
@@ -123,13 +127,6 @@ class General_Screen extends Component {
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
-                title = 'Phases'
-                onPress = {()=>{ }}
-            />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
                 title = 'Setup'
                 onPress = {()=>{ }}
             />
@@ -139,6 +136,15 @@ class General_Screen extends Component {
                 fontSize = {25}
                 title = 'Tutorial'
                 onPress = {()=>{  }}
+            />
+            <View style = {{flex:0.1}}/>
+            <Text style = {styles.titleFont}>Personal</Text>
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Quit Game'
+                onPress = {()=>{ this._deleteRoom()}}
             />
             <MenuButton
                 viewFlex = {0.12}
@@ -553,6 +559,6 @@ export default RuleBook = StackNavigator(
     titleFont: {
         fontFamily:'ConcertOne-Regular',
         fontSize: 25,
-        color: colors.background,
+        color: colors.main,
     },
 });
