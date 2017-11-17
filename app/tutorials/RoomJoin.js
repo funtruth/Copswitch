@@ -16,7 +16,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { MenuButton } from '../components/MenuButton.js';
 
-import { StackNavigator, TabNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
 import Rolesheet from '../misc/roles.json';

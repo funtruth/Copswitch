@@ -7,9 +7,7 @@ import {
     BackHandler,
     AsyncStorage,
     StyleSheet,
-    Keyboard,
     FlatList,
-    SectionList,
     TouchableOpacity,
     TouchableWithoutFeedback,
     Modal

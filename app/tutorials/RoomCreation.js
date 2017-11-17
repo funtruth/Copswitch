@@ -19,7 +19,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { MenuButton } from '../components/MenuButton.js';
 
-import { StackNavigator, TabNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
 import Rolesheet from '../misc/roles.json';
@@ -83,7 +82,8 @@ export class Creation1 extends Component {
     _onBackPress = () => {
         firebase.database().ref('rooms').child(this.state.roomname).remove().then(()=>{
             this.props.navigation.dispatch(NavigationActions.back({key:'Room'}));
-        })
+            return true
+        })  
     }
 
 
@@ -105,6 +105,7 @@ export class Creation1 extends Component {
             } else {
                 this.setState({errormessage:'Your name must be 1 - 10 Characters'})
                 this.refs.nameerror.shake(800)
+                this.textInput.focus()
             }
         }
     }
@@ -112,7 +113,10 @@ export class Creation1 extends Component {
     render() {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
-        onPress={()=>{ Keyboard.dismiss() }}>
+        onPress={()=>{ 
+            Keyboard.dismiss()
+            this._continue    
+        }}>
             <View style = {{flex:1,backgroundColor:colors.background}}>
 
                 <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
@@ -121,7 +125,10 @@ export class Creation1 extends Component {
                     <TouchableOpacity
                         style = {{flex:0.15}}
                         onPress = {()=>{
-                            this.props.navigation.dispatch(NavigationActions.back());
+                            firebase.database().ref('rooms').child(this.state.roomname).remove()
+                            .then(()=>{
+                                this.props.navigation.dispatch(NavigationActions.back());
+                            })
                         }} >
                         <MaterialCommunityIcons name='close'
                             style={{color:colors.font,fontSize:30}}/>
@@ -142,7 +149,7 @@ export class Creation1 extends Component {
                     <View style = {{flex:0.4,flexDirection:'row'}}>
                         <TextInput
                             ref={(input) => { this.textInput = input; }}
-                            placeholder="Who are you?"
+                            placeholder="What is your name?"
                             placeholderTextColor={colors.font}
                             style={{
                                 backgroundColor: colors.background,
@@ -154,7 +161,7 @@ export class Creation1 extends Component {
                             }}
                             value={this.state.alias}
                             onChangeText = {(text) => {this.setState({alias: text})}}
-                            onSubmitEditing = {()=>{ 
+                            onEndEditing = {()=>{ 
                                 this._continue(this.state.alias);
                             }}
                         />
@@ -269,21 +276,19 @@ export class Creation2 extends Component {
                 </View>
             </View>
 
-            <View style = {{flex:0.3,backgroundColor:colors.background,
+            <View style = {{flex:0.25,backgroundColor:colors.background,
                 justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.concerto}>Total Number of Players:</Text>
-                <View style = {{flex:0.4, flexDirection:'row'}}>
-                    <TouchableOpacity
-                        style = {{flex:0.25, backgroundColor:colors.font, marginTop:10,
-                            borderRadius:15, justifyContent:'center', alignItems:'center'}}
-                    >
+                <Text style = {styles.concerto}>How many people</Text>
+                <Text style = {styles.concerto}>are Playing?</Text>
+                <View style = {{flex:0.7, flexDirection:'row'}}>
+                    <TouchableOpacity style = {styles.digit} >
                         <Text style = {styles.bigdarkconcerto}>
                             {this.state.playercount?this.state.playercount:'?'}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
 
-            <View style = {{flex:0.35, justifyContent:'center', alignItems:'center'}}>
+            <View style = {{flex:0.45, justifyContent:'center', alignItems:'center'}}>
                 <Animatable.Text style = {styles.sconcerto}
                     ref='error'>
                     Must be a number from 6 - 15</Animatable.Text>
@@ -323,17 +328,15 @@ export class Creation2 extends Component {
                 <View style = {{flex:0.25, flexDirection:'row'}}>
                     <TouchableOpacity style = {styles.symbol}
                         onPress = {()=>{this._backspace()}}>
-                        <Text style = {styles.sconcerto}>CLEAR</Text></TouchableOpacity>
+                        <Text style = {styles.concerto}>CLEAR</Text></TouchableOpacity>
                     <TouchableOpacity style = {styles.digit}
                         onPress = {()=>{this._digit(0)}}><Text style={styles.dconcerto}>
                         0</Text></TouchableOpacity>
                     <TouchableOpacity style = {styles.symbol}
                         onPress = {()=>{this._done()}}>
-                        <Text style = {styles.sconcerto}>DONE</Text></TouchableOpacity>
+                        <Text style = {styles.concerto}>DONE</Text></TouchableOpacity>
                 </View>
             </View>
-
-            <View style = {{flex:0.05}}/>
 
             <View style = {{flex:0.1, flexDirection:'row', 
             justifyContent:'center', alignItems:'center'}}>
@@ -417,14 +420,14 @@ export class Creation3 extends Component {
                     </View>
                 </View>
 
-                <View style = {{flex:0.2,backgroundColor:colors.background, 
+                <View style = {{flex:0.13,backgroundColor:colors.background, 
                     justifyContent:'center', alignItems:'center'}}>
                     <Text style = {styles.concerto}>How experienced</Text>
                     <Text style = {styles.concerto}>is your Group?</Text>
                 </View>
 
                 <TouchableOpacity
-                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
+                    style = {{flex:0.19, justifyContent:'center', alignItems:'center',
                     backgroundColor:this.state.difficulty==1?colors.font:colors.background,
                     marginLeft:15, marginRight:10, borderRadius:10}}
                     onPress = {()=>{
@@ -433,10 +436,12 @@ export class Creation3 extends Component {
                     <MaterialCommunityIcons name='star-circle'
                         style={{color:this.state.difficulty==1?colors.background:colors.font,fontSize:30}}/>
                     <Text style = {this.state.difficulty==1?styles.dconcerto:styles.concerto}>New</Text>
+                    <Text style = {this.state.difficulty==1?styles.dsconcerto:styles.sconcerto}>
+                        {'We are just trying out' + '\n' + 'Mafia for the first time!'}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
+                    style = {{flex:0.19, justifyContent:'center', alignItems:'center',
                     backgroundColor:this.state.difficulty==2?colors.font:colors.background,
                     marginLeft:15, marginRight:10, borderRadius:10}}
                     onPress = {()=>{
@@ -449,10 +454,12 @@ export class Creation3 extends Component {
                             style={{color:this.state.difficulty==2?colors.background:colors.font,fontSize:30}}/>
                     </View>
                 <Text style = {this.state.difficulty==2?styles.dconcerto:styles.concerto}>Average</Text>
+                <Text style = {this.state.difficulty==1?styles.dsconcerto:styles.sconcerto}>
+                        {'We play once and a while' + '\n' + 'and know most of the roles.'}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style = {{flex:0.15, justifyContent:'center', alignItems:'center',
+                    style = {{flex:0.19, justifyContent:'center', alignItems:'center',
                     backgroundColor:this.state.difficulty==3?colors.font:colors.background,
                     marginLeft:15, marginRight:10, borderRadius:10}}
                     onPress = {()=>{
@@ -467,10 +474,10 @@ export class Creation3 extends Component {
                         <MaterialCommunityIcons name='star-circle'
                             style={{color:this.state.difficulty==3?colors.background:colors.font,fontSize:30}}/>
                     </View>
-                    <Text style = {this.state.difficulty==3?styles.dconcerto:styles.concerto}>Experts</Text>
+                    <Text style = {this.state.difficulty==3?styles.dconcerto:styles.concerto}>Expert</Text>
+                    <Text style = {this.state.difficulty==1?styles.dsconcerto:styles.sconcerto}>
+                        {'We play very frequently' + '\n' + 'and enjoy complicated gameplay.'}</Text>
                 </TouchableOpacity>
-
-                <View style = {{flex:0.05}}/>
 
                 <View style = {{flex:0.1, flexDirection:'row', 
                 justifyContent:'center', alignItems:'center'}}>
@@ -635,7 +642,7 @@ export class Creation4 extends Component {
             </View>
 
             <View style = {{flex:0.8, justifyContent:'center', flexDirection:'row'}}>
-                <View style = {{flex:0.7, backgroundColor:colors.background, justifyContent:'center'}}>
+                <View style = {{flex:0.9, backgroundColor:colors.background, justifyContent:'center'}}>
 
                     <TouchableOpacity
                         style = {{backgroundColor:colors.font, borderRadius:2,
@@ -893,7 +900,7 @@ export class Creation5 extends Component {
                     })
                 )
             })
-        },5000)
+        },2000)
     }
 
     _handOutRoles(roomname){
@@ -1094,8 +1101,14 @@ const styles = StyleSheet.create({
         textAlign:'center',
         color: colors.background,
     },
+    dsconcerto: {
+        fontSize: 15,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.background,
+    },
     digit: {
-        flex:0.2,
+        flex:0.3,
         justifyContent:'center',
         alignItems:'center',
         backgroundColor:colors.font, 
@@ -1103,7 +1116,7 @@ const styles = StyleSheet.create({
         margin:5
     },
     symbol: {
-        flex:0.2,
+        flex:0.3,
         justifyContent:'center',
         alignItems:'center',
         backgroundColor:colors.background, 

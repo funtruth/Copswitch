@@ -186,13 +186,15 @@ export class Profile extends Component {
             this.myRef = firebase.database().ref('rooms').child(result)
                 .child('listofplayers').child(firebase.auth().currentUser.uid);
             this.myRef.on('value',snap=>{
-                this.setState({
-                    myrole: Rolesheet[snap.val().roleid].name,
-                    roledesc: Rolesheet[snap.val().roleid].desc,
-                    rolerules: Rolesheet[snap.val().roleid].rules,
-                    amimafia: snap.val().roleid.toLowerCase()==snap.val().roleid,
-                    roomname: result,
-                })
+                if(snap.exists()){
+                    this.setState({
+                        myrole: Rolesheet[snap.val().roleid].name,
+                        roledesc: Rolesheet[snap.val().roleid].desc,
+                        rolerules: Rolesheet[snap.val().roleid].rules,
+                        amimafia: snap.val().roleid.toLowerCase()==snap.val().roleid,
+                        roomname: result,
+                    })
+                }
             })
 
             this.mafiaRef = firebase.database().ref('rooms').child(result).child('mafia')
