@@ -294,7 +294,7 @@ export class Profile extends Component {
 
         return <TouchableWithoutFeedback style = {{flex:1}}
         onPressOut = {()=>{ this.handlePressOut()}}
-        onPressIn={() =>  {this.handlePressIn()}} >
+        onPressIn={() =>  {this.handlePressIn()}}>
             <View style = {{flex:1, backgroundColor:colors.background,
                 justifyContent:'center', alignItems:'center'}}>
                     

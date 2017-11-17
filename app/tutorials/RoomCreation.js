@@ -13,6 +13,7 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     TouchableWithoutFeedback,
+    Animated,
 }   from 'react-native';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -135,7 +136,7 @@ export class Creation1 extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <View style = {{flexDirection:'row', flex:0.1, 
+                <View animation='fadeIn' style = {{flexDirection:'row', flex:0.1, 
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
                         <Text style = {styles.concerto}>Room Code</Text>
@@ -215,7 +216,7 @@ export class Creation2 extends Component {
 
             firebase.database().ref('rooms').child(result).once('value',snap=>{
                 this.setState({
-                    playercount: snap.val().playernum,
+                    playercount: snap.val().playernum?snap.val().playernum:null,
                     loading: false,
                 })
             })

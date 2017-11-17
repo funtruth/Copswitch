@@ -13,6 +13,7 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     ActivityIndicator,
+    Animated,
     Modal
 }   from 'react-native';
 
@@ -22,6 +23,9 @@ import { NavigationActions } from 'react-navigation';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import randomize from 'randomatic';
 import * as Animatable from 'react-native-animatable';
+const QUICK_ANIM    = 400;
+const MED_ANIM      = 600;
+const SLOW_ANIM     = 1000;
 
 import { MenuButton } from '../components/MenuButton.js';
 
@@ -39,6 +43,10 @@ export default class Room_Screen extends React.Component {
         this.state = {
             connected: false,
             loading: false,
+
+            pressFlex:      new Animated.Value(0.69),
+            textOpacity:    new Animated.Value(0),
+            btnOpacity:    new Animated.Value(0),
         }
 
         this.connectedRef = firebase.database().ref(".info/connected");
@@ -52,6 +60,8 @@ export default class Room_Screen extends React.Component {
                 this.setState({connected:false})
             }
         })
+
+
     }
 
     componentWillUnmount() {
@@ -60,36 +70,102 @@ export default class Room_Screen extends React.Component {
         }
     }
 
+    componentDidMount() {
+        Animated.sequence(
+            Animated.timing(
+                this.state.pressFlex, {
+                    duration: SLOW_ANIM,
+                    toValue: 0.69
+            }).start(),
+            Animated.timing(
+                this.state.btnOpacity, {
+                    duration: SLOW_ANIM,
+                    toValue: 1
+            }).start(),
+            Animated.timing(
+                this.state.textOpacity, {
+                    duration: SLOW_ANIM,
+                    toValue: 1
+            }).start(),
+        )
+    }
+
     _createRoom() {
         if(this.state.connected){
-            const roomname = randomize('A',4);
-            
-            //TODO: Check if room already exists
-            
-            AsyncStorage.setItem('ROOM-KEY', roomname);
-            
-            firebase.database().ref('rooms/' + roomname).set({
-                phase: 1,
-                owner: firebase.auth().currentUser.uid,
-                daycounter:1,
-            }).then(()=>{
-                firebase.database().ref('listofroles/'+firebase.auth().currentUser.uid)
-                .update({b:0}).then(()=>{
-                    this.props.navigation.dispatch(
-                        NavigationActions.navigate({
-                            routeName: 'CreationTutorial',
-                            action: NavigationActions.navigate({ 
-                                routeName: 'Creation1',
-                                params: {roomname:roomname}
+            this._handleCreate()
+
+            setTimeout(() => {
+                
+                const roomname = randomize('A',4);
+                //TODO: Check if room already exists
+                AsyncStorage.setItem('ROOM-KEY', roomname);
+                firebase.database().ref('rooms/' + roomname).set({
+                    phase: 1,
+                    owner: firebase.auth().currentUser.uid,
+                    daycounter:1,
+                }).then(()=>{
+                    firebase.database().ref('listofroles/'+firebase.auth().currentUser.uid)
+                    .update({b:0}).then(()=>{
+                        this.props.navigation.dispatch(
+                            NavigationActions.navigate({
+                                routeName: 'CreationTutorial',
+                                action: NavigationActions.navigate({ 
+                                    routeName: 'Creation1',
+                                    params: {roomname:roomname}
+                                })
                             })
-                        })
-                    )
+                        )
+    
+                        this._returnView()
+                    })
                 })
-            })
+
+            }, MED_ANIM);
+
+            
         } else {
             this.refs.wifi.shake(800)
         }
             
+    }
+
+    _handleCreate() {
+        Animated.sequence(
+            Animated.timing(
+                this.state.pressFlex, {
+                    duration: MED_ANIM,
+                    toValue: 0.4
+            }).start(),
+            Animated.timing(
+                this.state.btnOpacity, {
+                    duration: QUICK_ANIM,
+                    toValue: 0
+            }).start(),
+            Animated.timing(
+                this.state.textOpacity, {
+                    duration: QUICK_ANIM,
+                    toValue: 0
+            }).start(),
+        )
+    }
+    _returnView() {
+        Animated.sequence(
+            Animated.timing(
+                this.state.pressFlex, {
+                    duration: SLOW_ANIM,
+                    toValue: 0.69
+            }).start(),
+            Animated.timing(
+                this.state.btnOpacity, {
+                    duration: SLOW_ANIM,
+                    toValue: 1
+            }).start(),
+            Animated.timing(
+                this.state.textOpacity, {
+                    duration: SLOW_ANIM,
+                    toValue: 1
+            }).start(),
+        )
     }
 
     _joinRoom() {
@@ -108,43 +184,32 @@ export default class Room_Screen extends React.Component {
     }
 
     render() {
-        return <View style = {{ flex:1, backgroundColor:colors.background }}>
+        return <Animated.View style = {{ flex:1, backgroundColor:colors.background }}>
 
-            <View style = {{flex:0.69}}/>
-            <View style = {{flex:0.05}}>
-                <Animatable.Text ref = 'wifi' style = {styles.concerto}>
+            <Animated.View style = {{flex:this.state.pressFlex}}/>
+            <Animated.View style = {{flex:0.05, opacity:this.state.textOpacity}}>
+                <Animatable.Text ref = 'wifi' animation='fadeIn' style = {styles.concerto}>
                     {this.state.connected?'You are connected to Wi-Fi':
                     'You are not connected to Wi-Fi'}</Animatable.Text>
-            </View>
-            <MenuButton
-                refs = 'makeroom'
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Make Room'
-                onPress = {()=>{ 
-                    this._createRoom();
-                 }}
-            />
-            <Animatable.View ref = 'joinroom' animation = 'fadeIn' 
-                style = {{flex:0.12, flexDirection:'row',
-                justifyContent:'center', alignItems:'center'}}>
-                    <Button
-                        backgroundColor = {colors.main}
-                        color = {colors.background}
-                        containerViewStyle = {{ flex:0.9 }}
-                        fontFamily = 'ConcertOne-Regular'
-                        fontSize = {25}
-                        borderRadius = {10}
-                        title = 'Join Room'
-                        onPress = {()=>{
-                            this.refs.joinroom.fadeOut(800)
-                            //this._joinRoom();
-                         }}
-                    />
-            </Animatable.View>
+            </Animated.View>
+            <Animated.View style = {{flex:0.12,opacity:this.state.btnOpacity,
+                justifyContent:'center', alignItems:'center', backgroundColor:colors.background}}>
+                <MenuButton viewFlex = {0.8}
+                    flex = {0.9}
+                    fontSize = {25}
+                    title = 'Make Room'
+                    onPress = {()=>{ this._createRoom() }}/>
+            </Animated.View>
+            <Animated.View style = {{flex:0.12,opacity:this.state.btnOpacity,
+                justifyContent:'center', alignItems:'center', backgroundColor:colors.background}}>
+                <MenuButton viewFlex = {0.8}
+                    flex = {0.9}
+                    fontSize = {25}
+                    title = 'Join Room'
+                    onPress = {()=>{ this._joinRoom() }}/>
+            </Animated.View>
             <View style = {{flex:0.02}}/>
-        </View>
+        </Animated.View>
     }
 }
 

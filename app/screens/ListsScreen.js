@@ -22,8 +22,10 @@ import { NavigationActions } from 'react-navigation';
 
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
+
 import colors from '../misc/colors.js';
 import { onSignOut } from "../auth";
+import * as Animatable from 'react-native-animatable';
 
 class General_Screen extends Component {
     
@@ -106,7 +108,7 @@ class General_Screen extends Component {
     }
 
     render(){
-        return <View style = {{flex:1,backgroundColor:colors.background,
+        return <Animatable.View animation='fadeIn' style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
             <Text style = {styles.titleFont}>Rules</Text>
             <MenuButton
@@ -153,7 +155,7 @@ class General_Screen extends Component {
                 title = 'Log Out'
                 onPress = {()=>{ this._logOut() }}
             />
-        </View>
+        </Animatable.View>
     }
 }
 
