@@ -849,15 +849,6 @@ _renderContinueBtn() {
     }
 }
 
-//Pressing a chat button
-_chatPress(chattype){
-    if(chattype=='messages'){
-        this.setState({messagechat:true})
-    } else if (chattype == 'notifications'){
-        this.setState({notificationchat:true})
-    }
-}
-
 //true  -> increase player count by 1
 //false -> decrease player count by 1
 _changePlayerCount(bool){
@@ -1129,16 +1120,18 @@ return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background
         onRequestClose = {()=>{
             this.setState({ modalVisible:false })
         }}>   
-        <View style = {{flex:1,}}>
+        <View style = {{flex:1}}>
             <TouchableWithoutFeedback
-                onPress = {()=>{
-                    this.setState({ modalVisible:false })
-            }}>
-                <View style = {{flex:0.5}}/>
-            </TouchableWithoutFeedback>
-            <View style = {{flex:0.5,flexDirection:'row',backgroundColor:colors.main }}>
+                onPress = {()=>{ this.setState({ modalVisible:false }) }} style = {{flex:1}}>
+                <View style = {{flex:1}}>
+                    <View style = {{flex:0.82}}/>
+                    <View style = {{flex:0.1,flexDirection:'row',backgroundColor:colors.main }}>
 
-            </View>
+                    </View>
+                    <View style = {{flex:0.08}}/>
+                </View>
+            </TouchableWithoutFeedback>
+            
         </View>
     </Modal>
 

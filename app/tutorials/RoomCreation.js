@@ -170,7 +170,7 @@ export class Creation1 extends Component {
                             }}
                             value={this.state.alias}
                             onChangeText = {(text) => {this.setState({alias: text})}}
-                            onEndEditing = {()=>{ 
+                            onSubmitEditing = {()=>{ 
                                 this._continue(this.state.alias);
                             }}
                         />

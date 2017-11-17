@@ -246,13 +246,13 @@ export class Profile extends Component {
             Animated.timing(
                 this.state.iconVertical, {
                     duration: QUICK_ANIM,
-                    toValue: 100
+                    toValue: 120
                 }
             ).start(),
             Animated.timing(
                 this.state.descVertical, {
                     duration: QUICK_ANIM,
-                    toValue: 100
+                    toValue: 120
                 }
             ).start(),
             Animated.timing(
