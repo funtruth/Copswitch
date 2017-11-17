@@ -96,7 +96,7 @@ export default class Room_Screen extends React.Component {
 
             setTimeout(() => {
                 
-                const roomname = randomize('A',4);
+                const roomname = randomize('0',6);
                 //TODO: Check if room already exists
                 AsyncStorage.setItem('ROOM-KEY', roomname);
                 firebase.database().ref('rooms/' + roomname).set({

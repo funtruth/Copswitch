@@ -159,7 +159,7 @@ export class Creation1 extends Component {
                             placeholderTextColor={colors.color2}
                             style={{
                                 backgroundColor: colors.main,
-                                flex:0.6,
+                                flex:0.7,
                                 fontFamily:'ConcertOne-Regular',
                                 fontSize: 20,
                                 color:colors.background,
@@ -175,9 +175,10 @@ export class Creation1 extends Component {
                             }}
                         />
                     </View>
-                    <View style = {{flex:0.6}}>
+                    <View style = {{flex:0.2}}>
                     <Animatable.Text style = {styles.sconcerto} ref = 'nameerror'>
                     {this.state.errormessage}</Animatable.Text></View>
+                    <View style = {{flex:0.4}}/>
                 </View>
 
                 <View style = {{flex:0.4}}/>

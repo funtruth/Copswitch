@@ -18,7 +18,8 @@ import MafiaRoom from "./app/screens/MafiaScreen";
 import { Messages, Profile } from "./app/screens/DetailsScreen";
 
 import { Creation1, Creation2, Creation3, Creation4, Creation5 } from './app/tutorials/RoomCreation.js';
-import { Join1, Join2 } from './app/tutorials/RoomJoin.js';
+import { Join1 } from './app/tutorials/RoomJoin.js';
+import { Lobby1, Lobby2 } from './app/tutorials/RoomJoin.js';
 
 export const SignedOut = StackNavigator(
   {
@@ -114,8 +115,23 @@ export const JoinTutorial = TabNavigator(
         tabBarVisible: false,
       }
     },
-    Join2: {
-      screen: Join2,
+  },
+  {
+    backBehavior: 'none',
+    initialRouteName: 'Join1',
+  }
+);
+
+export const LobbyTutorial = TabNavigator(
+  {
+    Lobby1: {
+      screen: Lobby1,
+      navigationOptions : {
+        tabBarVisible: false,
+      }
+    },
+    Lobby2: {
+      screen: Lobby2,
       navigationOptions: {
         tabBarVisible: false,
       }
@@ -123,7 +139,7 @@ export const JoinTutorial = TabNavigator(
   },
   {
     backBehavior: 'none',
-    initialRouteName: 'Join1',
+    initialRouteName: 'Lobby1',
   }
 );
 
@@ -203,6 +219,12 @@ export const createRootNavigator = (signedIn, inGame) => {
         },
         JoinTutorial: {
           screen: JoinTutorial,
+          navigationOptions: {
+            gesturesEnabled: false,
+          }
+        },
+        LobbyTutorial: {
+          screen: LobbyTutorial,
           navigationOptions: {
             gesturesEnabled: false,
           }
