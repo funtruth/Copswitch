@@ -233,7 +233,7 @@ export class Profile extends Component {
             <View style = {{flex:1, backgroundColor:colors.background,
                 justifyContent:'center', alignItems:'center'}}>
                 <FontAwesome name='user-secret' style={{color:colors.main, 
-                    fontSize: this.state.show?30:80}}/>
+                    fontSize: this.state.show?30:60}}/>
                 {this.state.show?
                     <View>
                     <Text style = {styles.concerto}>{this.state.myrole}</Text>

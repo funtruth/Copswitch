@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { Button } from 'react-native-elements';
 import {
     View,
     Image,
@@ -116,6 +117,7 @@ export default class Room_Screen extends React.Component {
                     'You are not connected to Wi-Fi'}</Animatable.Text>
             </View>
             <MenuButton
+                refs = 'makeroom'
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
@@ -124,15 +126,23 @@ export default class Room_Screen extends React.Component {
                     this._createRoom();
                  }}
             />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Join Room'
-                onPress = {()=>{ 
-                    this._joinRoom();
-                 }}
-            />
+            <Animatable.View ref = 'joinroom' animation = 'fadeIn' 
+                style = {{flex:0.12, flexDirection:'row',
+                justifyContent:'center', alignItems:'center'}}>
+                    <Button
+                        backgroundColor = {colors.main}
+                        color = {colors.background}
+                        containerViewStyle = {{ flex:0.9 }}
+                        fontFamily = 'ConcertOne-Regular'
+                        fontSize = {25}
+                        borderRadius = {10}
+                        title = 'Join Room'
+                        onPress = {()=>{
+                            this.refs.joinroom.fadeOut(800)
+                            //this._joinRoom();
+                         }}
+                    />
+            </Animatable.View>
             <View style = {{flex:0.02}}/>
         </View>
     }

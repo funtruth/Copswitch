@@ -26,6 +26,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import randomize from 'randomatic';
+import * as Animatable from 'react-native-animatable';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
