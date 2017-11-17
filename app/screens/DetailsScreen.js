@@ -12,6 +12,7 @@ import {
     BackHandler,
     TouchableOpacity,
     TouchableWithoutFeedback,
+    Animated,
 }   from 'react-native';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -27,7 +28,10 @@ import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
 
 import * as Animatable from 'react-native-animatable';
+const AnimatedIcon = Animated.createAnimatedComponent(FontAwesome)
 
+const QUICK_ANIM = 400;
+const SLOW_ANIM = 1000;
 
 export class Messages extends Component {
     constructor(props) {
@@ -171,11 +175,18 @@ export class Profile extends Component {
 
             myrole:             '',
             amimafia:           false,
-            show:               false,
             roledesc:           '',
             rolerules:          '',
             mafialist:          [],
 
+            size:               30,
+            marginbot:          0,
+            opacity:            0,
+
+            pressOpacity:        new Animated.Value(0),
+            iconSize:            new Animated.Value(40),
+            iconVertical:        new Animated.Value(30),
+            descVertical:        new Animated.Value(10),
         };
         
     }
@@ -224,36 +235,94 @@ export class Profile extends Component {
         }
     }
 
+    handlePressIn() {
+        Animated.sequence(
+            Animated.timing(
+                this.state.pressOpacity, {
+                    duration: QUICK_ANIM,
+                    toValue: 1
+                }
+            ).start(),
+            Animated.timing(
+                this.state.iconVertical, {
+                    duration: QUICK_ANIM,
+                    toValue: 100
+                }
+            ).start(),
+            Animated.timing(
+                this.state.descVertical, {
+                    duration: QUICK_ANIM,
+                    toValue: 100
+                }
+            ).start(),
+            Animated.timing(
+                this.state.iconSize, {
+                    duration: QUICK_ANIM,
+                    toValue: 60
+                }
+            ).start(),
+        )
+    }
+    handlePressOut() {
+        Animated.sequence(
+            Animated.timing(
+                this.state.pressOpacity, {
+                    duration: QUICK_ANIM,
+                    toValue: 0
+            }).start(),
+            Animated.timing(
+                this.state.iconVertical, {
+                    duration: QUICK_ANIM,
+                    toValue: 0
+            }).start(),
+            Animated.timing(
+                this.state.descVertical, {
+                    duration: QUICK_ANIM,
+                    toValue: 10
+            }).start(),
+            Animated.timing(
+                this.state.iconSize, {
+                    duration: QUICK_ANIM,
+                    toValue: 40
+                }
+            ).start(),
+        )
+        
+    }
+
     render() {
 
         return <TouchableWithoutFeedback style = {{flex:1}}
-                delayLongPress={300}
-                onLongPress={()=>{ this.setState({show:true}) }}
-                onPressOut={()=>{ this.setState({show:false}) }}>
+        onPressOut = {()=>{ this.handlePressOut()}}
+        onPressIn={() =>  {this.handlePressIn()}} >
             <View style = {{flex:1, backgroundColor:colors.background,
                 justifyContent:'center', alignItems:'center'}}>
-                <FontAwesome name='user-secret' style={{color:colors.main, 
-                    fontSize: this.state.show?30:60}}/>
-                {this.state.show?
-                    <View>
-                    <Text style = {styles.concerto}>{this.state.myrole}</Text>
-                    <Text style = {styles.sconcerto}>{this.state.roledesc}</Text>
-                    <Text style = {styles.sconcerto}>{this.state.rolerules}</Text>
-                    {this.state.amimafia?<View style = {{flex:0.2}}><FlatList
-                        data={this.state.mafialist}
-                        renderItem={({item}) => (
-                            <Text style={{fontSize:17,
-                                fontFamily:'ConcertOne-Regular',
-                                color:'#24527f',
-                                justifyContent:'center',
-                                alignSelf:'center',
-                                textDecorationLine:item.alive?'none':'line-through'}}>
-                                {'[ ' + item.name + ' ] ' + item.rolename}</Text>
-                        )}
-                        keyExtractor={item => item.key}
-                    /></View>:<View/>}
-                    </View>:<View/>
-                }
+                    
+                    <Animated.View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: this.state.iconVertical, 
+                        justifyContent: 'center', alignItems: 'center'}}>
+                        <AnimatedIcon name='user-secret' style={{ color:colors.main, fontSize: this.state.iconSize }}/>
+                    </Animated.View>
+                
+                    <Animated.View style = {{ opacity:this.state.pressOpacity || 0,
+                        position: 'absolute', bottom: 0, left: 0, right: 0, top: this.state.descVertical, 
+                        justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style = {styles.concerto}>{this.state.myrole}</Text>
+                        <Text style = {styles.sconcerto}>{this.state.roledesc}</Text>
+                        <Text style = {styles.sconcerto}>{this.state.rolerules}</Text>
+                        {this.state.amimafia?<View style = {{flex:0.2}}><FlatList
+                            data={this.state.mafialist}
+                            renderItem={({item}) => (
+                                <Text style={{fontSize:17,
+                                    fontFamily:'ConcertOne-Regular',
+                                    color:'#24527f',
+                                    justifyContent:'center',
+                                    alignSelf:'center',
+                                    textDecorationLine:item.alive?'none':'line-through'}}>
+                                    {'[ ' + item.name + ' ] ' + item.rolename}</Text>
+                            )}
+                            keyExtractor={item => item.key}
+                        /></View>:<View/>}
+                    </Animated.View>
             </View>
         </TouchableWithoutFeedback>
     }
