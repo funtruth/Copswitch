@@ -42,6 +42,8 @@ export class Creation1 extends Component {
             alias:'',
             loading:true,
             errormessage:null,
+            
+            firsttime: true,
         };
 
         this.nameRef = firebase.database().ref('rooms').child(params.roomname)
@@ -101,7 +103,10 @@ export class Creation1 extends Component {
                     presseduid:         'foo',
                 }).then(()=>{
                     this.setState({errormessage:null})
-                    this.props.navigation.navigate('Creation2')
+                    if(this.state.firsttime){
+                        this.props.navigation.navigate('Creation2')
+                        this.setState({firsttime:false})
+                    }
                 })
             } else {
                 this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
@@ -206,6 +211,8 @@ export class Creation2 extends Component {
             playercount: null,
             playernum: 1,
             loading:true,
+            
+            firsttime: true,
         };
     }
 
@@ -251,7 +258,10 @@ export class Creation2 extends Component {
             firebase.database().ref('rooms').child(this.state.roomname).update({
                 playernum: Number(this.state.playercount)
             }).then(()=>{
-                this.props.navigation.navigate('Creation3')
+                if(this.state.firsttime){
+                    this.props.navigation.navigate('Creation3')
+                    this.setState({firsttime:false})
+                }
             })
         }
     }
@@ -373,6 +383,8 @@ export class Creation3 extends Component {
             roomname: '',
             difficulty: null,
             loading:true,
+            
+            firsttime: true,
         };
         
     }
@@ -397,7 +409,10 @@ export class Creation3 extends Component {
             difficulty: difficulty
         }).then(()=>{
             this.setState({difficulty:difficulty})
-            this.props.navigation.navigate('Creation4')
+            if(this.state.firsttime){
+                this.props.navigation.navigate('Creation4')
+                this.setState({firsttime:false})
+            }
         })
     }
 

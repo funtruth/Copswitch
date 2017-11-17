@@ -92,7 +92,7 @@ export default class Room_Screen extends React.Component {
 
     _createRoom() {
         if(this.state.connected){
-            this._handleCreate()
+            this._handlePress()
 
             setTimeout(() => {
                 
@@ -129,7 +129,7 @@ export default class Room_Screen extends React.Component {
             
     }
 
-    _handleCreate() {
+    _handlePress() {
         Animated.sequence(
             Animated.timing(
                 this.state.pressFlex, {
@@ -170,21 +170,27 @@ export default class Room_Screen extends React.Component {
 
     _joinRoom() {
         if(this.state.connected){
-            this.props.navigation.dispatch(
-                NavigationActions.navigate({
-                    routeName: 'JoinTutorial',
-                    action: NavigationActions.navigate({ 
-                        routeName: 'Join1'
+            this._handlePress()
+
+            setTimeout(() => {
+                this.props.navigation.dispatch(
+                    NavigationActions.navigate({
+                        routeName: 'JoinTutorial',
+                        action: NavigationActions.navigate({ 
+                            routeName: 'Join1'
+                        })
                     })
-                })
-            )
+                );
+                this._returnView()
+            }, MED_ANIM)
+            
         } else {
             this.refs.wifi.shake(800)
         }
     }
 
     render() {
-        return <Animated.View style = {{ flex:1, backgroundColor:colors.background }}>
+        return <View style = {{ flex:1, backgroundColor:colors.background }}>
 
             <Animated.View style = {{flex:this.state.pressFlex}}/>
             <Animated.View style = {{flex:0.05, opacity:this.state.textOpacity}}>
@@ -209,7 +215,7 @@ export default class Room_Screen extends React.Component {
                     onPress = {()=>{ this._joinRoom() }}/>
             </Animated.View>
             <View style = {{flex:0.02}}/>
-        </Animated.View>
+        </View>
     }
 }
 

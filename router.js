@@ -7,7 +7,7 @@ import { StackNavigator, TabNavigator } from "react-navigation";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { Splash } from "./app/loginscreens/LogIn";
+import { Splash } from "./app/screens/LogIn";
 import colors from './app/misc/colors.js';
 
 import Room from "./app/screens/RoomScreen";
