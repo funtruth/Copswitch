@@ -309,7 +309,7 @@ export class Creation2 extends Component {
             </View>
 
             <View style = {{flex:0.42, justifyContent:'center', alignItems:'center',
-                backgroundColor:colors.color2, marginLeft:10, marginRight:10, borderRadius:10,
+                backgroundColor:colors.color2, marginLeft:10, marginRight:10, borderRadius:2,
                 paddingTop:5, paddingBottom:5}}>
                 <Animatable.Text style = {styles.sconcerto}
                     ref='error'>
@@ -458,7 +458,7 @@ export class Creation3 extends Component {
                 <TouchableOpacity
                     style = {{flex:0.19, justifyContent:'center', alignItems:'center',
                     backgroundColor:this.state.difficulty==1?colors.font:colors.color2,
-                    marginLeft:10, marginRight:10, marginTop:10, borderRadius:10}}
+                    marginLeft:10, marginRight:10, marginTop:10, borderRadius:2}}
                     onPress = {()=>{
                         this._selectDifficulty(1)
                     }} >
@@ -472,7 +472,7 @@ export class Creation3 extends Component {
                 <TouchableOpacity
                     style = {{flex:0.19, justifyContent:'center', alignItems:'center',
                     backgroundColor:this.state.difficulty==2?colors.font:colors.color2,
-                    marginLeft:10, marginRight:10, marginTop:10, borderRadius:10}}
+                    marginLeft:10, marginRight:10, marginTop:10, borderRadius:2}}
                     onPress = {()=>{
                         this._selectDifficulty(2)
                     }} >
@@ -490,7 +490,7 @@ export class Creation3 extends Component {
                 <TouchableOpacity
                     style = {{flex:0.19, justifyContent:'center', alignItems:'center',
                     backgroundColor:this.state.difficulty==3?colors.font:colors.color2,
-                    marginLeft:10, marginRight:10, marginTop:10, borderRadius:10}}
+                    marginLeft:10, marginRight:10, marginTop:10, borderRadius:2}}
                     onPress = {()=>{
                         this._selectDifficulty(3)
                     }}
@@ -1145,7 +1145,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         backgroundColor:colors.font, 
-        borderRadius:10,
+        borderRadius:2,
         margin:5
     },
     symbol: {

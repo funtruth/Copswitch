@@ -135,7 +135,7 @@ export class Join1 extends Component {
                                 fontSize: 40,
                                 color:colors.background,
                                 textAlign:'center',
-                                borderRadius:10,
+                                borderRadius:2,
                             }}
                             editable={false}
                             value={this.state.roomname}
@@ -145,7 +145,7 @@ export class Join1 extends Component {
                 </View>
 
                 <View style = {{flex:0.42, justifyContent:'center', alignItems:'center',
-                backgroundColor:colors.color2, marginLeft:10, marginRight:10, borderRadius:10,
+                backgroundColor:colors.color2, marginLeft:10, marginRight:10, borderRadius:2,
                 paddingTop:5, paddingBottom:5}}>
                     <Animatable.Text style = {styles.sconcerto}
                         ref='error'>
@@ -423,7 +423,6 @@ export class Lobby2 extends Component {
             this.phaseRef.on('value',snap=>{
                 if(snap.exists()){
                     if(snap.val()>1){
-
                         AsyncStorage.setItem('GAME-KEY',result);
 
                         this.props.navigation.dispatch(
@@ -652,7 +651,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         backgroundColor:colors.font, 
-        borderRadius:10,
+        borderRadius:2,
         margin:5
     },
     symbol: {

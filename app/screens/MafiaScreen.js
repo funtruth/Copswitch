@@ -296,7 +296,7 @@ componentWillMount() {
                             this._noticeMsgGlobal(this.state.roomname,'#34cd0e',this.state.nominee 
                                 + ' was not hung.',1)
 
-                            this.listRef.child(firebase.auth().currentUser.uid)
+                            this.listRef.child(this.state.nominate)
                                 .update({immune:true})
 
                             this._changePhase(phase.val().continue)
@@ -583,12 +583,12 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     } 
 }
 
-_nameBtnLongPress(uid,name,phase,roomname){
+_nameBtnLongPress(uid,name,phase){
     if(phase == 5) {
         if(this.state.amimafia){
             this.mafiaRef.once('value',snap=>{
                 snap.forEach((child)=>{
-                    this._noticeMsg(uid,colors.main,this.state.myname+' wants to kill '+name+'.')
+                    this._noticeMsg(child.key,this.state.myname+' wants to kill '+name+'.')
                 })
             })
         }
@@ -660,7 +660,7 @@ _renderListComponent(){
                         this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     onLongPress={()=>{
-                        this._nameBtnLongPress(item.key,item.name,this.state.phase,this.state.roomname)
+                        this._nameBtnLongPress(item.key,item.name,this.state.phase)
                     }}
                     style = {item.dead ? styles.dead : (item.immune? styles.immune : 
                         (item.status?styles.status:styles.alive))}
@@ -669,19 +669,19 @@ _renderListComponent(){
                         <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
                         <MaterialCommunityIcons name={item.dead?'skull':item.actionbtnvalue?
                             'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
-                            style={{color:'white', fontSize:26}}/>
+                            style={{color:colors.background, fontSize:26}}/>
                         </View>
                         <View style = {{flex:5}}>
                             {item.dead?
-                                <Text style = {styles.concerto}>
+                                <Text style = {styles.dconcerto}>
                                     {item.name + ' ' + (item.type==2?'(Town)':
                                     item.type==1?'(Mafia)':'(Neutral)')}</Text>
                                 :
-                                <Text style = {styles.concerto}>{item.name}</Text>
+                                <Text style = {styles.dconcerto}>{item.name}</Text>
                             }
                         </View>
                         <View style = {{flex:1}}>
-                            <Text style = {styles.concerto}>{item.votes>0?item.votes:null}</Text>
+                            <Text style = {styles.dconcerto}>{item.votes>0?item.votes:null}</Text>
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -701,12 +701,13 @@ _renderListComponent(){
                 <MaterialCommunityIcons name={'thumb-up'} 
                     style={{color:colors.main, fontSize:40,alignSelf:'center',
                         opacity:this.state.amidead?0.25:1}}/>
+                <Text style = {styles.concerto}>Innocent</Text>
             </TouchableOpacity>
 
             <View style = {{flexDirection:'row',flex:0.3,}}>
             <TouchableOpacity style = {{flex:1,borderRadius:10,backgroundColor:colors.main,
                 justifyContent:'center',alignItems:'center'}}>
-                <Text style = {{fontFamily:'ConcertOne-Regular',color:colors.main}}>
+                <Text style = {{fontFamily:'ConcertOne-Regular',color:colors.background}}>
                     {this.state.nominee + ' has been Nominated.'}</Text>
             </TouchableOpacity>
             </View>
@@ -721,6 +722,7 @@ _renderListComponent(){
                 <MaterialCommunityIcons name={'thumb-down'} 
                     style={{color:colors.main, fontSize:40,alignSelf:'center',
                         opacity:this.state.amidead?0.25:1}}/>
+                <Text style = {styles.concerto}>Guilty</Text>
             </TouchableOpacity>
         </View>
 
@@ -737,7 +739,7 @@ _renderListComponent(){
                     > 
                     {item.dead?<MaterialCommunityIcons name={item.dead?'skull':null}
                         style={{color:colors.main, fontSize:26,alignSelf:'center'}}/>:
-                        <Text style = {styles.concerto}>{item.name}</Text>}
+                        <Text style = {styles.dconcerto}>{item.name}</Text>}
                 </TouchableOpacity>
             )}
             keyExtractor={item => item.key}
@@ -753,7 +755,7 @@ _renderListComponent(){
                             this.state.phase,this.state.roomname)
                     }}
                     onLongPress={()=>{
-                        this._nameBtnLongPress(item.key,item.name,this.state.phase,this.state.roomname)
+                        this._nameBtnLongPress(item.key,item.name,this.state.phase)
                     }}
                     style = {item.dead ? styles.dead : styles.alive}
                     disabled = {this.state.amidead?true:this.state.targettown?
@@ -768,15 +770,15 @@ _renderListComponent(){
                         </View>
                         <View style = {{flex:5}}>
                             {item.dead?
-                                <Text style = {styles.concerto}>
+                                <Text style = {styles.dconcerto}>
                                     {item.name + ' ' + (item.type==2?'(Town)':
                                     item.type==1?'(Mafia)':'(Neutral)')}</Text>
                                 :
-                                <Text style = {styles.concerto}>{item.name}</Text>
+                                <Text style = {styles.dconcerto}>{item.name}</Text>
                             }
                         </View>
                         <View style = {{flex:1}}>
-                            <Text style = {styles.concerto}>{item.votes>0?item.votes:null}</Text>
+                            <Text style = {styles.dconcerto}>{item.votes>0?item.votes:null}</Text>
                         </View>
                     </View>
                 </TouchableOpacity>
@@ -796,7 +798,7 @@ _renderListComponent(){
                             style={{color:'white', fontSize:26}}/>
                         </View>
                         <View style = {{flex:5}}>
-                            <Text style = {styles.concerto}>
+                            <Text style = {styles.dconcerto}>
                                 {item.name + ' ' + (item.type==2?'(Town)':
                                 item.type==1?'(Mafia)':'(Neutral)')}</Text>
                         </View>
@@ -1222,29 +1224,16 @@ const styles = StyleSheet.create({
         color: colors.background,
         alignSelf:'center',
     },
-    messageFont: {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 24,
-        color: colors.title,
-        alignSelf:'center',
-    },
     concerto: {
+        fontSize:17,
+        fontFamily:'ConcertOne-Regular',
+        color:colors.main,
+        alignSelf: 'center',
+    },
+    dconcerto: {
         fontSize:17,
         fontFamily:'ConcertOne-Regular',
         color:colors.background,
         alignSelf: 'center',
     },
-    chatconcerto:{
-        fontSize:20,
-        fontFamily:'ConcertOne-Regular',
-        color:colors.main,
-        alignSelf: 'center',
-        marginTop:5
-    },
-    leftconcerto:{
-        fontSize:17,
-        fontFamily:'ConcertOne-Regular',
-        color:colors.main,
-        marginTop:5,
-    }
 });
