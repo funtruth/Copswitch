@@ -423,6 +423,9 @@ export class Lobby2 extends Component {
             this.phaseRef.on('value',snap=>{
                 if(snap.exists()){
                     if(snap.val()>1){
+
+                        AsyncStorage.setItem('GAME-KEY',result);
+
                         this.props.navigation.dispatch(
                             NavigationActions.navigate({
                                 routeName: 'Mafia',
@@ -458,6 +461,9 @@ export class Lobby2 extends Component {
         }
         if(this.playernumRef){
             this.playernumRef.off();
+        }
+        if(this.phaseRef){
+            this.phaseRef.off();
         }
     }
 
