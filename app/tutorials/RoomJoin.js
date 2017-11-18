@@ -63,6 +63,7 @@ export class Join1 extends Component {
     _digit(digit) {
         if(this.state.roomname){
             if(this.state.roomname.length > 5 ){
+                this.setState({errormessage:'Code must be 6 Digits long'})
                 this.refs.error.shake(800)
             } else {
                 this.setState({
@@ -140,6 +141,7 @@ export class Join1 extends Component {
                             value={this.state.roomname}
                         />
                     </View>
+                    <View style = {{flex:0.4}}/>
                 </View>
 
                 <View style = {{flex:0.42, justifyContent:'center', alignItems:'center',
@@ -316,7 +318,7 @@ export class Lobby1 extends Component {
                 <View animation='fadeIn' style = {{flexDirection:'row', flex:0.1, 
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
-                        <Text style = {styles.concerto}>Room Code</Text>
+                        <Text style = {styles.concerto}>You joined Room</Text>
                         <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                     </View>
                 </View>
@@ -324,10 +326,11 @@ export class Lobby1 extends Component {
                 <View style = {{flex:0.1}}/>
 
                 <View style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}>
-                    <View style = {{flex:0.4,flexDirection:'row'}}>
+                    <Text style = {styles.concerto}>What is your name?</Text>
+                    <View style = {{flex:0.4,flexDirection:'row', marginTop:3}}>
                         <TextInput
                             ref={(input) => { this.textInput = input; }}
-                            placeholder="What is your name?"
+                            placeholder="... or make one up"
                             placeholderTextColor={colors.color2}
                             style={{
                                 backgroundColor: colors.main,
@@ -336,9 +339,7 @@ export class Lobby1 extends Component {
                                 fontSize: 20,
                                 color:colors.background,
                                 textAlign:'center',
-                                borderRadius:10,
-                                borderWidth:10,
-                                borderColor:colors.color2
+                                borderRadius:2,
                             }}
                             value={this.state.alias}
                             onChangeText = {(text) => {this.setState({alias: text})}}
@@ -350,7 +351,7 @@ export class Lobby1 extends Component {
                     <View style = {{flex:0.2}}>
                     <Animatable.Text style = {styles.sconcerto} ref = 'nameerror'>
                     {this.state.errormessage}</Animatable.Text></View>
-                    <View style = {{flex:0.4}}/>
+                    <View style = {{flex:0.3}}/>
                 </View>
 
                 <View style = {{flex:0.4}}/>
@@ -528,18 +529,6 @@ export class Lobby2 extends Component {
         />
     }
 
-    _renderOptions() {
-        return <TouchableOpacity
-            style = {{
-            backgroundColor:colors.font, flex:0.6, alignItems:'center',
-            justifyContent:'center', marginLeft:15, marginRight:10, borderRadius:2}}
-            onPress = {()=>{
-                this._startGame(this.state.roomname);
-            }} >
-            <Text style = {styles.mdconcerto}>Start Game</Text>
-        </TouchableOpacity>
-    }
-
     render() {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
@@ -586,7 +575,7 @@ export class Lobby2 extends Component {
                 <View style = {{flex:0.1, flexDirection:'row', 
                 justifyContent:'center', alignItems:'center'}}>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.font,fontSize:15}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle'
                         style={{color:colors.font,fontSize:15, marginLeft:20}}/>
                 </View>
@@ -600,6 +589,12 @@ export class Lobby2 extends Component {
 const styles = StyleSheet.create({
     roomcode: {
         fontSize: 40,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.font,
+    },
+    mconcerto: {
+        fontSize: 30,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
         color: colors.font,

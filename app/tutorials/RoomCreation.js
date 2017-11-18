@@ -164,9 +164,7 @@ export class Creation1 extends Component {
                                 fontSize: 20,
                                 color:colors.background,
                                 textAlign:'center',
-                                borderRadius:10,
-                                borderWidth:10,
-                                borderColor:colors.color2
+                                borderRadius:2,
                             }}
                             value={this.state.alias}
                             onChangeText = {(text) => {this.setState({alias: text})}}
@@ -222,11 +220,18 @@ export class Creation2 extends Component {
 
             this.setState({roomname:result})
 
-            firebase.database().ref('rooms').child(result).once('value',snap=>{
-                this.setState({
-                    playercount: snap.val().playernum?snap.val().playernum:null,
-                    loading: false,
-                })
+            firebase.database().ref('rooms').child(result).child('playernum').once('value',snap=>{
+                if(snap.exists()){
+                    this.setState({
+                        playercount: snap.val().playernum,
+                        loading: false,
+                    })
+                } else {
+                    this.setState({
+                        loading:false,
+                    })
+                }
+                    
             })
         })
     }
