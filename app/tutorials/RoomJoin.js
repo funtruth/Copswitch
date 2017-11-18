@@ -418,6 +418,24 @@ export class Lobby2 extends Component {
                     playernum: snap.val(),
                 })
             })
+
+            this.phaseRef = firebase.database().ref('rooms').child(result).child('phase');
+            this.phaseRef.on('value',snap=>{
+                if(snap.exists()){
+                    if(snap.val()>1){
+                        this.props.navigation.dispatch(
+                            NavigationActions.navigate({
+                                routeName: 'Mafia',
+                                action: NavigationActions.navigate({ 
+                                    routeName: 'MafiaRoom',
+                                    params: {roomname:result}
+                                })
+                            })
+                        )
+                    }
+                }
+            })
+
         })
 
         this.listOfRolesRef.on('value',snap=>{
