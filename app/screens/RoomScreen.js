@@ -41,7 +41,7 @@ export default class Room_Screen extends React.Component {
         super(props);
 
         this.state = {
-            connected: false,
+            connected: true,
             loading: false,
 
             pressFlex:      new Animated.Value(0.69),
@@ -54,7 +54,7 @@ export default class Room_Screen extends React.Component {
 
     componentWillMount() {
         this.connectedRef.on('value',snap=>{
-            if(snap.val()===true){
+            if(snap.val()==true){
                 this.setState({connected:true})
             } else {
                 this.setState({connected:false})
@@ -216,96 +216,6 @@ export default class Room_Screen extends React.Component {
             </Animated.View>
             <View style = {{flex:0.02}}/>
         </View>
-    }
-}
-
-class Join_Screen extends React.Component {
-
-    _valid(name,roomname) {
-        if(name.length > 0 && name.length < 11){
-            if(roomname.length == 4){
-                firebase.database().ref('rooms/' + roomname + '/listofplayers')
-                .orderByChild('name').equalTo(name).once('value',snap=>{
-                    if(snap.exists()){
-                        alert('Name is already taken.')
-                    } else {
-                        firebase.database().ref('rooms/' + roomname).once('value', snap => {
-                            if(snap.exists() && (snap.val().phase == 1)){
-                                this._joinRoom(roomname)
-                            } else if (snap.exists() && (snap.val().phase > 1)) {
-                                alert('Game has already started.')
-                            } else {
-                                alert('Room does not Exist.')
-                            }
-                        })
-                    }
-                })
-            } else {
-                alert('Room name must be 4 characters in length.')
-            }
-        } else {
-            alert('Name is not a valid length (10 characters or less).')
-        }
-    }
-
-    _joinRoom(roomname) {
-        AsyncStorage.setItem('ROOM-KEY', roomname);
-
-        firebase.database().ref('rooms/' + roomname 
-            + '/listofplayers/' + firebase.auth().currentUser.uid).update({
-                name:               this.state.alias,
-                actionbtnvalue:     false,
-                presseduid:         'foo',
-        });   
-
-        firebase.database().ref('rooms/' + roomname + '/playernum').transaction((playernum) => {
-            return playernum + 1;
-        });       
-        
-        this.props.navigation.dispatch(
-            NavigationActions.reset({
-                index: 0,
-                actions: [
-                    NavigationActions.navigate({ routeName: 'Lobby_Screen', params:{roomname:roomname}})
-                ]
-            })
-        )
-    }
-
-    render() {
-        return <TouchableWithoutFeedback 
-        style = {{ flex:1 }}
-        onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.background}}>
-                <View style = {{flex:0.5,backgroundColor:colors.background,
-                    justifyContent:'center', alignItems:'center'}}>
-
-                   
-                    <View style = {{ justifyContent: 'center', flexDirection: 'row' }}>
-                        <TextInput
-                            ref='roomcode'
-                            placeholder="Room Code"
-                            placeholderTextColor={colors.main}
-                            style={{
-                                backgroundColor: colors.background,
-                                flex:0.6,
-                                fontFamily:'ConcertOne-Regular',
-                                fontSize: 20,
-                                color:colors.font,
-                                textAlign:'center',
-                            }}
-                            value={this.state.roomname}
-                            autoCapitalize='characters'
-                            blurOnSubmit={false}
-                            onChangeText = {(text) => {this.setState({roomname: text})}}
-                            onSubmitEditing = {()=>{Keyboard.dismiss()}}
-                        />
-                    </View>
-
-
-                </View>
-            </View>
-        </TouchableWithoutFeedback>
     }
 }
 
