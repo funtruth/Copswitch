@@ -1087,24 +1087,14 @@ return <View style = {{flex:1, backgroundColor:colors.background}}>
         </View>
     </Modal>
 
-    <View style = {{flex:0.13,flexDirection:'row',justifyContent:'center'}}>
-        <View style = {{flex:0.8,backgroundColor:colors.main,justifyContent:'center',
-            borderBottomLeftRadius:15,borderBottomRightRadius:15}}>
+    <Animatable.View animation = 'fadeIn'
+        style = {{flex:0.13,justifyContent:'center', backgroundColor:colors.main,
+            borderRadius:2, margin:10}}>
             {this._renderHeader()}
-        </View>
-    </View>
+    </Animatable.View>
 
-    <View style = {{flex:0.01}}/>
-
-    <View style = {{
-        flex:0.76,
-        flexDirection:'row',
-        justifyContent:'center'
-    }}>
-        <View style = {{flex:0.8}}>
-            {this._renderListComponent()}
-        </View>
-
+    <View style = {{ flex:0.77, flexDirection:'row', justifyContent:'center'}}>
+        {this._renderListComponent()}
     </View>
 
     <View style = {{flex:0.01}}/>
@@ -1137,29 +1127,37 @@ const styles = StyleSheet.create({
     alive: {
         height:40,
         backgroundColor: colors.main,
-        margin: 3,
-        borderRadius:5,
+        marginBottom:5,
+        marginLeft: 10,
+        marginRight: 10,
+        borderRadius:2,
         justifyContent:'center',
     },
     dead: {
         height:40,
         backgroundColor: 'grey',
-        margin: 3,
-        borderRadius:5,
+        marginBottom:5,
+        marginLeft: 10,
+        marginRight: 10,
+        borderRadius:2,
         justifyContent:'center',
     },
     immune: {
         height:40,
         backgroundColor: colors.immune,
-        margin: 3,
-        borderRadius:5,
+        marginBottom:5,
+        marginLeft: 10,
+        marginRight: 10,
+        borderRadius:2,
         justifyContent:'center',
     },
     status: {
         height:40,
         backgroundColor: colors.highlight,
-        margin: 3,
-        borderRadius:5,
+        marginBottom:5,
+        marginLeft: 10,
+        marginRight: 10,
+        borderRadius:2,
         justifyContent:'center',
     },
     headerFont: {
