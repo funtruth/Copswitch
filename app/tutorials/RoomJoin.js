@@ -117,6 +117,8 @@ export class Join1 extends Component {
                     </TouchableOpacity>
                 </View>
 
+                <View style = {{flex:0.08}}/>
+
                 <View style = {{flexDirection:'row', flex:0.1, 
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
@@ -125,8 +127,10 @@ export class Join1 extends Component {
                     </View>
                 </View>
 
-                <View style = {{flex:0.25, justifyContent:'center', alignItems:'center'}}>
-                    <View style = {{flex:0.4,flexDirection:'row'}}>
+                <View style = {{flex:0.03}}/>
+
+                <View style = {{flex:0.12, justifyContent:'center', 
+                    alignItems:'center', flexDirection:'row'}}>
                         <TextInput
                             style={{
                                 backgroundColor: colors.main,
@@ -140,9 +144,9 @@ export class Join1 extends Component {
                             editable={false}
                             value={this.state.roomname}
                         />
-                    </View>
-                    <View style = {{flex:0.4}}/>
                 </View>
+
+                <View style = {{flex:0.03}}/>
 
                 <View style = {{flex:0.42, justifyContent:'center', alignItems:'center',
                 backgroundColor:colors.color2, marginLeft:10, marginRight:10, borderRadius:2,
@@ -196,7 +200,7 @@ export class Join1 extends Component {
                     </View>
                 </View>
 
-                <View style = {{flex:0.13}}/>
+                <View style = {{flex:0.18}}/>
             </View>
         </TouchableWithoutFeedback>
     }
