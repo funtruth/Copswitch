@@ -27,6 +27,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import randomize from 'randomatic';
 import * as Animatable from 'react-native-animatable';
+const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
@@ -811,44 +812,13 @@ _renderListComponent(){
     }
 }
 
-//Rendering the Transition Header
-_renderTransitionHeader() {
-    if(this.state.phase == 2 || this.state.phase == 5){
-        return <Text style = {styles.headerFont}>
-            {this.state.phasename + ' ' + this.state.daycounter}
-        </Text>
-    } else {
-        return <Text style = {styles.headerFont}>
-            {this.state.phasename}
-        </Text>
-    }
-}
-
-//Renders the continue button
-_renderContinueBtn() {
-    if(this.state.phase == 4 && this.state.amipicking){
-        return <TouchableOpacity 
-            style = {{flex:0.7,backgroundColor:colors.main,borderRadius:15,justifyContent:'center'}}
-            onPress = {() => {
-                this.setState({cover:false})
-            }}>
-            <Text style = {styles.continueFont}>Select new</Text>
-        </TouchableOpacity>
-    } else if (this.state.phase == 4 && !this.state.amipicking){
-        return <TouchableOpacity 
-            style = {{flex:0.7,backgroundColor:colors.main,borderRadius:15,justifyContent:'center'}}
-        >
-            <Text style = {styles.continueFont}>Wait bruv</Text>
-        </TouchableOpacity>
-    } else {
-        return <TouchableOpacity 
-            style = {{flex:0.7,backgroundColor:colors.main,borderRadius:15,justifyContent:'center'}}
-            onPress = {() => {
-                this.setState({cover:false})
-            }}>
-            <Text style = {styles.continueFont}>Continue</Text>
-        </TouchableOpacity>
-    }
+_renderLoadingScreen() {
+    return <Animatable.View style ={{flex:1,justifyContent:'center', 
+        alignItems:'center', position:'absolute',top:20,bottom:0,left:0,right:0}} 
+        animation = 'fadeIn' duration = {1000}>
+        <AnimatableIcon animation="slideInDown" iterationCount='infinite' direction="alternate"
+            name='user-secret' style={{ color:colors.main, fontSize: 40 }}/>
+    </Animatable.View>
 }
 
 //true  -> increase player count by 1
@@ -1093,27 +1063,7 @@ _gameOver() {
 
 render() {
 
-if(!this.state.loaded){
-    //Loading Screen
-    return <View style = {{flex:1, backgroundColor:colors.background}}/>
-}
-
-return this.state.cover?<View style = {{flex:1,backgroundColor:colors.background}}>
-
-    <View style = {{flex:1.5,backgroundColor:colors.main,justifyContent:'center'}}>
-        {this._renderTransitionHeader()}
-    </View>
-
-    <View style = {{flex:10.5}}/>
-    
-    <View style = {{flex:1.2,flexDirection:'row',alignContent:'center',justifyContent:'center'}}>
-        {this._renderContinueBtn()}
-    </View>
-    
-    <View style = {{flex:0.5}}/>
-
-</View>:
-<View style = {{flex:1, backgroundColor:colors.background}}>
+return <View style = {{flex:1, backgroundColor:colors.background}}>
 
     <Modal
         animationType = 'slide'
