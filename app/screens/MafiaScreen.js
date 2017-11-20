@@ -724,6 +724,8 @@ _optionOnePress() {
             this._actionBtnValue(true);
             this._changeCount(true);
         })
+    } else if (this.state.phase == 5){
+        this._viewChange(true,false,false,false,true,false)
     }
 }
 
@@ -743,6 +745,10 @@ _optionTwoPress() {
             this._actionBtnValue(true);
             this._changeCount(true)
         })
+    } else if (this.state.phase == 5){
+        this._viewChange(false,false,false,false,false,true)
+        this._actionBtnValue(true);
+        this._changeCount(true);
     }
 }
 
