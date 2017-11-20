@@ -7,9 +7,7 @@ import {
     BackHandler,
     Text,
     StyleSheet,
-    Keyboard,
     FlatList,
-    ListView,
     TouchableOpacity,
     TouchableWithoutFeedback,
     Modal,
@@ -35,17 +33,9 @@ import firebase from '../firebase/FirebaseController.js';
 
 export default class Mafia_Screen extends React.Component {
 
-static navigationOptions = {
-    header: null
-};
-
 constructor(props) {
     super(props);
 
-    const dataSource = new ListView.DataSource({
-        rowHasChanged: (row1, row2) => row1 !== row2,
-    });
-    
     const { params } = this.props.navigation.state;
     const roomname = params.roomname;
 
@@ -53,19 +43,16 @@ constructor(props) {
         roomname: params.roomname,
         phase:              '',
         daycounter:         '',
-        screencolor:        colors.background,
         phasename:          '',
-        bottommessage:      '',
-        locked:             '',
+        topmessage:         '',
 
         myname:             '',
         myrole:             '',
         myroleid:           '',
         targetdead:         '',
         targettown:         '',
-        roledesc:           '',
 
-        namelist:           dataSource,
+        namelist:           [],
 
         triggernum:         1000,
         playernum:          1000,
@@ -83,7 +70,6 @@ constructor(props) {
         nominee:            '',
 
         gameover:           false,
-        cover:              true,
         modalVisible:       false,
 
         backSize:           new Animated.Value(0.005),
@@ -99,9 +85,6 @@ constructor(props) {
         orOpacity:          new Animated.Value(1),
         listOpacity:        new Animated.Value(0),
         waitingOpacity:     new Animated.Value(0),
-
-        //Tagged onto Grabbing the PHASE NAME CURRENTLY because it takes the longest.
-        loaded:             false,
     };
 
     this.roomRef            = firebase.database().ref('rooms/' + roomname);
@@ -136,7 +119,6 @@ componentWillMount() {
                 this.setState({
                     myroleid:       snap.val().roleid,
                     myrole:         Rolesheet[snap.val().roleid].name,
-                    roledesc:       Rolesheet[snap.val().roleid].desc,
                     rolerules:      Rolesheet[snap.val().roleid].rules,
                     amimafia:       Rolesheet[snap.val().roleid].type == 1,
                     targetdead:     Rolesheet[snap.val().roleid].targetdead?true:false,
@@ -146,26 +128,11 @@ componentWillMount() {
 
             //Button press states and Living state
             this.setState({
-                actionbtnvalue: snap.val().actionbtnvalue,
-                presseduid: snap.val().presseduid,
-                amidead:    snap.val().dead,
-                myname:     snap.val().name,
+                actionbtnvalue:     snap.val().actionbtnvalue,
+                presseduid:         snap.val().presseduid,
+                amidead:            snap.val().dead,
+                myname:             snap.val().name,
             })
-            var presseduid = snap.val().presseduid;
-
-            if (presseduid == 'foo' || !presseduid){
-                this.setState({ bottommessage: 'You have not selected anything.'})
-            } else if (presseduid == 'yes'){
-                this.setState({ bottommessage: 'You have voted Innocent.'})
-            } else if (presseduid == 'no'){
-                this.setState({ bottommessage: 'You have voted Guilty.'})
-            } else {
-                firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + presseduid).once('value',uidtoname=>{
-                    this.setState({ bottommessage: 'You have selected ' + uidtoname.val().name + '.'})
-                }) 
-            }
-
         }
     })
 
@@ -217,31 +184,82 @@ componentWillMount() {
     })
 
     this.phaseRef.on('value',snap=>{
-        this.setState({loaded:false})
-
         if(snap.exists()){
 
             this.setState({
-                cover:true, 
-                messagechat:false, 
-                notificationchat:false, 
                 phase:snap.val()
             })
             
-            //Find layout type of Phase
-            firebase.database().ref('phases').child(snap.val()).once('value',layout=>{
+            if(snap.val() == 1){
                 this.setState({
-                    phasename:      layout.val().name,
-                    screencolor:    layout.val().color,
-                    locked:         layout.val().locked,
-                    gameover:       layout.val().gameover,
-                    loaded:         true 
+                    phasename:      'Lobby',
                 })
-            })
+            } else if (snap.val() == 2){
+                this._viewChange(false,true,true,true,false,false)
+                this.setState({
+                    phasename:      'Day',
+                    topmessage:     'Select an option',
+                    btn1:           'VOTE',
+                    subtitle1:      'to lynch another player',
+                    btn2:           'ABSTAIN',
+                    subtitle2:      'and go to sleep',
+                })
+            } else if (snap.val() == 3){
+                this._viewChange(false,true,true,true,false,false)
+                this.setState({
+                    phasename:      'Lynch',
+                    topmessage:     'Select an option',
+                    btn1:           'INNOCENT',
+                    subtitle1:      'do not hang this player',
+                    btn2:           'GUILTY',
+                    subtitle2:      'hang this player',
+                })
+            } else if (snap.val() == 4){
+                this._viewChange(false,false,false,false,false,true)
+                this.setState({
+                    phasename:      '...',
+                })
+            } else if (snap.val() == 5){
+                this._viewChange(false,true,true,true,false,false)
+                this.setState({
+                    phasename:      'Night',
+                    topmessage:     'Select an option',
+                    btn1:           'VISIT',
+                    subtitle1:      'perform your role action',
+                    btn2:           'STAY HOME',
+                    subtitle2:      'do not use your ability',
+                })
+            } else if (snap.val() == 6){
+                this._viewChange(false,true,true,true,false,false)
+                this.setState({
+                    phasename:      'Town Win',
+                    btn1:           'PLAY AGAIN',
+                    subtitle1:      'return to Lobby',
+                    btn2:           'QUIT',
+                    subtitle2:      'leave the game',
+                })
+            } else if (snap.val() == 7){
+                this._viewChange(false,true,true,true,false,false)
+                this.setState({
+                    phasename:      'Mafia Win',
+                    btn1:           'PLAY AGAIN',
+                    subtitle1:      'return to Lobby',
+                    btn2:           'QUIT',
+                    subtitle2:      'leave the game',
+                })
+            }
         }
 
         //this.state.nominate, nominee, amipicking
         this._updateNominate();
+    })
+
+    this.dayCounterRef.on('value',snap=>{
+        if(snap.exists()){
+            this.setState({
+                daycounter: snap.val(),
+            })
+        }
     })
 
     //Count listeners for the room owner
@@ -366,14 +384,6 @@ componentWillMount() {
         }
     })
 
-    //For Transition Screen
-    this.dayCounterRef.on('value',snap=>{
-        if(snap.exists()){
-            this.setState({
-                daycounter: snap.val(),
-            })
-        }
-    })
 
     BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
 
@@ -417,6 +427,7 @@ componentWillUnmount() {
 
 }
 
+//FIX
 _onBackPress = () => {
     if(this.props.route == 2){
         return false
@@ -459,7 +470,6 @@ _changePhase(newphase){
                 .update({votes:0, actionbtnvalue:false, presseduid:'foo'})
         })
     })
-
 
     this.roomRef.update({
         phase:newphase,
@@ -613,50 +623,28 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                 })
                 this.countRef.set(this.state.playernum)
             } else {
-                this.setState({bottommessage: name + ' is not a member of the Mafia.'})
+                this.setState({topmessage: name + ' is not a member of the Mafia.'})
             }
         })
     } else if (phase==5) {
-        if(this.state.presseduid == 'foo'){
 
-            firebase.database().ref('rooms/' + roomname + '/actions/' 
+        this._viewChange(false,false,false,false,false,true)
+
+        firebase.database().ref('rooms/' + roomname + '/actions/' 
             + firebase.auth().currentUser.uid).update({
                 target:uid,
                 targetname:name,
                 roleid:this.state.myroleid,
-            })
-
+        }).then(()=>{
             firebase.database().ref('rooms/' + roomname + '/actions/' + uid + '/' 
-            + this.state.myroleid + '/' + firebase.auth().currentUser.uid).set(this.state.myname);
+                + this.state.myroleid + '/' + firebase.auth().currentUser.uid)
+                .set(this.state.myname).then(()=>{
+                    this._pressedUid(uid);
+                    this._actionBtnValue(true);
+                    this._changeCount(true);
+                })
+        })
 
-            this._pressedUid(uid);
-            
-        } else if (this.state.presseduid == uid){
-            
-            firebase.database().ref('rooms/' + roomname + '/actions/' 
-            + firebase.auth().currentUser.uid).remove();
-
-            firebase.database().ref('rooms/' + roomname + '/actions/' + uid + '/' 
-            + this.state.myroleid + '/' + firebase.auth().currentUser.uid).remove();
-            
-            this._pressedUid('foo');
-        } else {
-            
-            firebase.database().ref('rooms/' + roomname + '/actions/' 
-            + firebase.auth().currentUser.uid).update({
-                target:uid,
-                targetname:name,
-                roleid:this.state.roleid,
-            })
-
-            firebase.database().ref('rooms/' + roomname + '/actions/' + uid + '/' 
-            + this.state.roleid + '/' + firebase.auth().currentUser.uid).set(this.state.myname);
-
-            firebase.database().ref('rooms/' + roomname + '/actions/' + this.state.presseduid + '/' 
-            + this.state.roleid + '/' + firebase.auth().currentUser.uid).remove();
-
-            this._pressedUid(uid);
-        }
     } 
 }
 
@@ -726,6 +714,8 @@ _optionOnePress() {
         })
     } else if (this.state.phase == 5){
         this._viewChange(true,false,false,false,true,false)
+    } else if (this.state.phase == 6 || this.state.phase == 7){
+        alert('feature not available yet')
     }
 }
 
@@ -743,23 +733,27 @@ _optionTwoPress() {
         this._viewChange(false,false,false,false,false,true)
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname).then(()=>{
             this._actionBtnValue(true);
-            this._changeCount(true)
+            this._changeCount(true);
         })
     } else if (this.state.phase == 5){
         this._viewChange(false,false,false,false,false,true)
         this._actionBtnValue(true);
         this._changeCount(true);
+    } else if (this.state.phase == 6 || this.state.phase == 7){
+        this._gameOver();
     }
 }
 
 //Day Phase - WAITING PRESS
 _resetOptionPress() {
-    if(this.state.phase == 2){
-        //Stops the user from clicking multiple times
-        this.setState({disabled:true});
-        setTimeout(() => {this.setState({disabled: false})}, 1000);
 
-        this._viewChange(false,true,true,true,false,false)
+    //Stops the user from clicking multiple times
+    this.setState({disabled:true});
+    setTimeout(() => {this.setState({disabled: false})}, 1000);
+
+    this._viewChange(false,true,true,true,false,false)
+
+    if(this.state.phase == 2){
 
         this._actionBtnValue(false);
         this._changeCount(false);
@@ -770,11 +764,27 @@ _resetOptionPress() {
                 .transaction((votes)=>{ return votes - 1 }) 
         }
     } else if (this.state.phase == 3){
-        this._viewChange(false,true,true,true,false,false)
+
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
             this._actionBtnValue(false);
             this._changeCount(false)
         })
+    } else if (this.state.phase == 5){
+
+        firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
+            + firebase.auth().currentUser.uid).update({
+                roleid:     null,
+                target:     null,
+                targetname: null,
+            });
+
+        firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + this.state.presseduid 
+            + '/' + this.state.myroleid + '/' + firebase.auth().currentUser.uid).set(null)
+            .then(()=>{
+                this._actionBtnValue(false);
+                this._changeCount(false)
+                this._pressedUid('foo');
+            })
     }
 }
 
@@ -788,7 +798,7 @@ _renderHeader() {
         
         <Text style = {{color:colors.background, alignSelf:'center',
             fontFamily: 'ConcertOne-Regular', fontSize:14}}>
-            {this.state.bottommessage}
+            {this.state.topmessage}
         </Text>
     </View>
 }
@@ -1258,8 +1268,8 @@ justifyContent:'center'}}>
                 this._optionOnePress()
             }}
             disabled = {this.state.disabled}>
-            <Text style = {styles.bconcerto}>VOTE</Text>
-            <Text style = {styles.concerto}>to lynch another player</Text>
+            <Text style = {styles.bconcerto}>{this.state.btn1}</Text>
+            <Text style = {styles.concerto}>{this.state.subtitle1}</Text>
         </TouchableOpacity>
     </Animated.View>
 
@@ -1301,8 +1311,8 @@ justifyContent:'center'}}>
                 this._optionTwoPress()
             }}
             disabled = {this.state.disabled}>
-            <Text style = {styles.bconcerto}>ABSTAIN</Text>
-            <Text style = {styles.concerto}>and go to sleep</Text>
+            <Text style = {styles.bconcerto}>{this.state.btn2}</Text>
+            <Text style = {styles.concerto}>{this.state.subtitle2}</Text>
         </TouchableOpacity>
     </Animated.View>
 
