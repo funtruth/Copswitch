@@ -208,7 +208,7 @@ componentWillMount() {
                 this._viewChange(false,true,true,true,false,false)
                 this.setState({
                     phasename:      'Lynch',
-                    topmessage:     'Select an option',
+                    topmessage:     'has been nominated',
                     btn1:           'INNOCENT',
                     subtitle1:      'do not hang this player',
                     btn2:           'GUILTY',
@@ -218,6 +218,7 @@ componentWillMount() {
                 this._viewChange(false,false,false,false,false,true)
                 this.setState({
                     phasename:      '...',
+                    topmessage:     'is giving his last words ...',
                 })
             } else if (snap.val() == 5){
                 this._viewChange(false,true,true,true,false,false)
@@ -384,9 +385,7 @@ componentWillMount() {
         }
     })
 
-
     BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
-
 }
 
 componentWillUnmount() {
@@ -788,19 +787,33 @@ _resetOptionPress() {
     }
 }
 
-//Rendering the Main Game Header
-_renderHeader() {
-    return <View>
-        <Text style = {{color:colors.background, alignSelf:'center', 
-            fontFamily: 'ConcertOne-Regular', fontSize:25}}>
-            {this.state.phasename}
+_renderPhaseName() {
+    if(this.state.phase == 2 || this.state.phase == 5){
+        return <Text style = {{color:colors.background, alignSelf:'center', 
+        fontFamily: 'ConcertOne-Regular', fontSize:25}}>
+        {this.state.phasename + ' ' + this.state.daycounter}
+    </Text>
+    } else {
+        return <Text style = {{color:colors.background, alignSelf:'center', 
+        fontFamily: 'ConcertOne-Regular', fontSize:25}}>
+        {this.state.phasename}
+    </Text>
+    }
+}
+
+_renderTopMessage(){
+    
+    if(this.state.phase == 3 || this.state.phase == 4){
+        return <Text style = {{color:colors.background, alignSelf:'center', 
+            fontFamily: 'ConcertOne-Regular', fontSize:14}}>
+            {this.state.nominee + ' ' + this.state.topmessage}
         </Text>
-        
-        <Text style = {{color:colors.background, alignSelf:'center',
+    } else {
+        return <Text style = {{color:colors.background, alignSelf:'center',
             fontFamily: 'ConcertOne-Regular', fontSize:14}}>
             {this.state.topmessage}
         </Text>
-    </View>
+    }
 }
 
 //Rendering Main Visuals of Game Board
@@ -1248,7 +1261,8 @@ justifyContent:'center'}}>
     <Animatable.View animation = 'fadeIn'
         style = {{flex:0.13,justifyContent:'center', backgroundColor:colors.main,
             borderRadius:2, marginBottom:10}}>
-            {this._renderHeader()}
+            {this._renderPhaseName()}
+            {this._renderTopMessage()}
     </Animatable.View>
 
     <Animated.View style = {{flex:this.state.backSize, opacity:this.state.backOpacity,
