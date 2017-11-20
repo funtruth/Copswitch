@@ -484,7 +484,6 @@ _actionBtnValue(status){
 _pressedUid(uid){
     this.myInfoRef.update({presseduid: uid})
 }
-
 _changeCount(bool){
     if(bool){
         this.countRef.transaction((count)=>{ return count + 1 })
@@ -493,6 +492,7 @@ _changeCount(bool){
     }
 }
 
+//DEPRECATED
 _vote(bool) {
     if(bool){
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname);
@@ -566,7 +566,7 @@ _viewChange(back,vote,or,abstain,list,waiting) {
     )
 }
 
-//Pressing the Action Button at the Bottom of Screen
+//DEPRECATED
 _actionBtnPress(actionbtnvalue){
  
     //Stops the user from clicking multiple times
@@ -590,21 +590,14 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     this.setState({disabled:true});
     setTimeout(() => {this.setState({disabled: false})}, 1000);
 
-    //CHANGETHIS
-    this._viewChange(false,true,true,true,false,false)
+    if(phase == 2){ 
+        this._viewChange(false,false,false,false,false,true)
 
-    if(phase == 2){
-        if(uid==this.state.presseduid){
-            this.listRef.child(uid).child('votes').transaction((votes)=>{ return votes - 1 })
-            this._pressedUid('foo');
-        } else {
-            this._pressedUid(uid);
-            if(this.state.presseduid != 'foo'){
-                this.listRef.child(this.state.presseduid).child('votes')
-                .transaction((votes)=>{ return votes - 1 })
-            }
-            this.listRef.child(uid).child('votes').transaction((votes)=>{ return votes + 1 })                        
-        } 
+        this._pressedUid(uid);
+        this.listRef.child(uid).child('votes').transaction((votes)=>{ return votes + 1 }).then(()=>{
+            this._changeCount(true)
+            this._actionBtnValue(true)
+        })  
 
     }  else if(phase == 4){
         //Check if selected player is a mafia member
@@ -679,7 +672,7 @@ _nameBtnLongPress(uid,name,phase){
     }
 }
 
-//Pressing a Voting BUtton
+//DEPRECATED
 _voteBtnPress(presseduid,votebtn) {
 
     //Stops the user from clicking multiple times
@@ -714,6 +707,68 @@ _voteBtnPress(presseduid,votebtn) {
             this._vote(true);
             this._changeCount(true);
         }
+    }
+}
+
+//Day Phase - VOTE
+_optionOnePress() {
+    //Stops the user from clicking multiple times
+    this.setState({disabled:true});
+    setTimeout(() => {this.setState({disabled: false})}, 1000);
+    
+    if(this.state.phase == 2){
+        this._viewChange(true,false,false,false,true,false)
+    } else if (this.state.phase == 3){
+        this._viewChange(false,false,false,false,false,true)
+        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
+            this._actionBtnValue(true);
+            this._changeCount(true);
+        })
+    }
+}
+
+//Day Phase - ABSTAIN
+_optionTwoPress() {
+    //Stops the user from clicking multiple times
+    this.setState({disabled:true});
+    setTimeout(() => {this.setState({disabled: false})}, 1000);
+
+    if(this.state.phase == 2){
+        this._viewChange(false,false,false,false,false,true)
+        this._actionBtnValue(true);
+        this._changeCount(true);
+    } else if (this.state.phase == 3){
+        this._viewChange(false,false,false,false,false,true)
+        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname).then(()=>{
+            this._actionBtnValue(true);
+            this._changeCount(true)
+        })
+    }
+}
+
+//Day Phase - WAITING PRESS
+_resetOptionPress() {
+    if(this.state.phase == 2){
+        //Stops the user from clicking multiple times
+        this.setState({disabled:true});
+        setTimeout(() => {this.setState({disabled: false})}, 1000);
+
+        this._viewChange(false,true,true,true,false,false)
+
+        this._actionBtnValue(false);
+        this._changeCount(false);
+
+        if(this.state.presseduid != 'foo'){
+            this._pressedUid('foo');
+            this.listRef.child(this.state.presseduid).child('votes')
+                .transaction((votes)=>{ return votes - 1 }) 
+        }
+    } else if (this.state.phase == 3){
+        this._viewChange(false,true,true,true,false,false)
+        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
+            this._actionBtnValue(false);
+            this._changeCount(false)
+        })
     }
 }
 
@@ -905,15 +960,6 @@ _renderWaitingComponent() {
         )}
         keyExtractor={item => item.key}
     />
-}
-
-_renderLoadingScreen() {
-    return <Animatable.View style ={{flex:1,justifyContent:'center', 
-        alignItems:'center', position:'absolute',top:20,bottom:0,left:0,right:0}} 
-        animation = 'fadeIn' duration = {1000}>
-        <AnimatableIcon animation="slideInDown" iterationCount='infinite' direction="alternate"
-            name='user-secret' style={{ color:colors.main, fontSize: 40 }}/>
-    </Animatable.View>
 }
 
 //true  -> increase player count by 1
@@ -1192,7 +1238,8 @@ justifyContent:'center'}}>
     <Animated.View style = {{flex:this.state.backSize, opacity:this.state.backOpacity,
         backgroundColor:colors.color2, borderRadius:2}}>
         <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
-            onPress = {()=>{ this._viewChange(false,true,true,true,false,false) }}>
+            onPress = {()=>{ this._viewChange(false,true,true,true,false,false) }}
+            disabled = {this.state.disabled}>
             <Text style = {styles.bconcerto}>RETURN</Text>
             <Text style = {styles.concerto}>to main screen</Text>
         </TouchableOpacity>
@@ -1201,31 +1248,36 @@ justifyContent:'center'}}>
     <Animated.View style = {{flex:this.state.voteSize, opacity:this.state.voteOpacity,
         backgroundColor:colors.color2, borderRadius:2}}>
         <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
-            onPress = {()=>{ this._viewChange(true,false,false,false,true,false) }}>
+            onPress = {()=>{ 
+                this._optionOnePress()
+            }}
+            disabled = {this.state.disabled}>
             <Text style = {styles.bconcerto}>VOTE</Text>
             <Text style = {styles.concerto}>to lynch another player</Text>
         </TouchableOpacity>
     </Animated.View>
 
-
     <Animated.View style = {{ flex:this.state.waitingSize, opacity:this.state.waitingOpacity,
         backgroundColor:colors.color2, borderRadius:2, justifyContent:'center'}}>
         <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
-            onPress = {()=>{this._viewChange(false,true,true,true,false,false)}}>
+            onPress = {()=>{
+                this._resetOptionPress()
+            }}
+            disabled = {this.state.disabled}>
             <Animatable.Text style = {styles.bconcerto} animation={{
-                    0: {opacity:0},
+                    0: {opacity:1},
                     0.25:{opacity:0.5},
-                    0.5:{opacity:1},
+                    0.5:{opacity:0},
                     0.75:{opacity:0.5},
-                    4:{opacity:0},
+                    1:{opacity:1},
                 }} iterationCount="infinite" duration={2000} >
                 WAITING FOR OTHERS</Animatable.Text>
             <Animatable.Text style = {styles.concerto} animation={{
-                    0: {opacity:0},
+                    0: {opacity:1},
                     0.25:{opacity:0.5},
-                    0.5:{opacity:1},
+                    0.5:{opacity:0},
                     0.75:{opacity:0.5},
-                    4:{opacity:0},
+                    1:{opacity:1},
                 }} iterationCount="infinite" duration={2000} >
                 click here to change your mind</Animatable.Text>
         </TouchableOpacity>
@@ -1239,7 +1291,10 @@ justifyContent:'center'}}>
     <Animated.View style = {{flex:this.state.abstainSize,  opacity:this.state.abstainOpacity,
         backgroundColor:colors.color2, borderRadius:2}}>
         <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
-            onPress = {()=>{this._viewChange(false,false,false,false,false,true)}}>
+            onPress = {()=>{
+                this._optionTwoPress()
+            }}
+            disabled = {this.state.disabled}>
             <Text style = {styles.bconcerto}>ABSTAIN</Text>
             <Text style = {styles.concerto}>and go to sleep</Text>
         </TouchableOpacity>
