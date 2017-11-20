@@ -12,7 +12,8 @@ import {
     ListView,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    Modal
+    Modal,
+    Animated
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -84,6 +85,20 @@ constructor(props) {
         gameover:           false,
         cover:              true,
         modalVisible:       false,
+
+        backSize:           new Animated.Value(0.005),
+        voteSize:           new Animated.Value(0.2),
+        abstainSize:        new Animated.Value(0.2),
+        orSize:             new Animated.Value(0.1),
+        listSize:           new Animated.Value(0.005),
+        waitingSize:        new Animated.Value(0.005),
+        
+        backOpacity:        new Animated.Value(0),
+        voteOpacity:        new Animated.Value(1),
+        abstainOpacity:     new Animated.Value(1),
+        orOpacity:          new Animated.Value(1),
+        listOpacity:        new Animated.Value(0),
+        waitingOpacity:     new Animated.Value(0),
 
         //Tagged onto Grabbing the PHASE NAME CURRENTLY because it takes the longest.
         loaded:             false,
@@ -486,6 +501,71 @@ _vote(bool) {
     }
 }
 
+_viewChange(back,vote,or,abstain,list,waiting) {
+    Animated.sequence(
+        Animated.timing(
+            this.state.backSize, {
+                duration: 600,
+                toValue: back?0.2:0.005
+        }).start(),
+        Animated.timing(
+            this.state.backOpacity, {
+                duration: 600,
+                toValue: back?1:0
+        }).start(),
+        Animated.timing(
+            this.state.voteSize, {
+                duration: 600,
+                toValue: vote?0.2:0.005
+        }).start(),
+        Animated.timing(
+            this.state.voteOpacity, {
+                duration: 600,
+                toValue: vote?1:0
+        }).start(),
+        Animated.timing(
+            this.state.orSize, {
+                duration: 600,
+                toValue: or?0.1:0.005
+        }).start(),
+        Animated.timing(
+            this.state.orOpacity, {
+                duration: 600,
+                toValue: or?1:0
+        }).start(),
+        Animated.timing(
+            this.state.abstainSize, {
+                duration: 600,
+                toValue: abstain?0.2:0.005
+        }).start(),
+        Animated.timing(
+            this.state.abstainOpacity, {
+                duration: 600,
+                toValue: abstain?1:0
+        }).start(),
+        Animated.timing(
+            this.state.listSize, {
+                duration: 600,
+                toValue: list?0.65:0.01
+        }).start(),
+        Animated.timing(
+            this.state.listOpacity, {
+                duration: 600,
+                toValue: list?1:0
+        }).start(),
+        Animated.timing(
+            this.state.waitingSize, {
+                duration: 600,
+                toValue: waiting?0.2:0.01
+        }).start(),
+        Animated.timing(
+            this.state.waitingOpacity, {
+                duration: 600,
+                toValue: waiting?1:0
+        }).start(),
+    )
+}
+
 //Pressing the Action Button at the Bottom of Screen
 _actionBtnPress(actionbtnvalue){
  
@@ -509,6 +589,9 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     //Stops the user from clicking multiple times
     this.setState({disabled:true});
     setTimeout(() => {this.setState({disabled: false})}, 1000);
+
+    //CHANGETHIS
+    this._viewChange(false,true,true,true,false,false)
 
     if(phase == 2){
         if(uid==this.state.presseduid){
@@ -812,6 +895,18 @@ _renderListComponent(){
     }
 }
 
+_renderWaitingComponent() {
+    return <FlatList
+        data={this.state.namelist}
+        renderItem={({item}) => (
+            <Text style = {styles.concerto}>
+                {item.name}
+            </Text>
+        )}
+        keyExtractor={item => item.key}
+    />
+}
+
 _renderLoadingScreen() {
     return <Animatable.View style ={{flex:1,justifyContent:'center', 
         alignItems:'center', position:'absolute',top:20,bottom:0,left:0,right:0}} 
@@ -1063,7 +1158,8 @@ _gameOver() {
 
 render() {
 
-return <View style = {{flex:1, backgroundColor:colors.background}}>
+return <View style = {{flex:1, backgroundColor:colors.background, padding:10,
+justifyContent:'center'}}>
 
     <Modal
         animationType = 'slide'
@@ -1089,35 +1185,70 @@ return <View style = {{flex:1, backgroundColor:colors.background}}>
 
     <Animatable.View animation = 'fadeIn'
         style = {{flex:0.13,justifyContent:'center', backgroundColor:colors.main,
-            borderRadius:2, margin:10}}>
+            borderRadius:2, marginBottom:10}}>
             {this._renderHeader()}
     </Animatable.View>
 
-    <View style = {{ flex:0.77, flexDirection:'row', justifyContent:'center'}}>
-        {this._renderListComponent()}
-    </View>
-
-    <View style = {{flex:0.01}}/>
-
-    <View style = {{flex:0.07,flexDirection:'row',justifyContent:'center'}}>
-        <TouchableOpacity
-            disabled={this.state.gameover?false:
-                (this.state.disabled?true:(this.state.locked?true:this.state.amidead))}
-            onPress={()=> {this.state.gameover?this._gameOver():
-                (this._actionBtnPress(this.state.actionbtnvalue, this.state.presseduid,
-                this.state.triggernum,this.state.phase,this.state.roomname))}}
-            style = {{flex:0.8,justifyContent:'center',
-                backgroundColor:!this.state.locked && this.state.actionbtnvalue?colors.highlight:colors.main,
-                borderRadius:15}}>
-            <Text style = {{color:!this.state.locked && this.state.actionbtnvalue?colors.background:colors.background,
-                fontSize:26,alignSelf:'center', fontFamily:'ConcertOne-Regular'}}>
-                {this.state.gameover?'CONTINUE':
-                    (!this.state.locked && !this.state.amidead?'READY':'LOCKED')}
-            </Text>
+    <Animated.View style = {{flex:this.state.backSize, opacity:this.state.backOpacity,
+        backgroundColor:colors.color2, borderRadius:2}}>
+        <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
+            onPress = {()=>{ this._viewChange(false,true,true,true,false,false) }}>
+            <Text style = {styles.bconcerto}>RETURN</Text>
+            <Text style = {styles.concerto}>to main screen</Text>
         </TouchableOpacity>
-    </View>
+    </Animated.View>
 
-    <View style = {{flex:0.02}}/>
+    <Animated.View style = {{flex:this.state.voteSize, opacity:this.state.voteOpacity,
+        backgroundColor:colors.color2, borderRadius:2}}>
+        <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
+            onPress = {()=>{ this._viewChange(true,false,false,false,true,false) }}>
+            <Text style = {styles.bconcerto}>VOTE</Text>
+            <Text style = {styles.concerto}>to lynch another player</Text>
+        </TouchableOpacity>
+    </Animated.View>
+
+
+    <Animated.View style = {{ flex:this.state.waitingSize, opacity:this.state.waitingOpacity,
+        backgroundColor:colors.color2, borderRadius:2, justifyContent:'center'}}>
+        <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
+            onPress = {()=>{this._viewChange(false,true,true,true,false,false)}}>
+            <Animatable.Text style = {styles.bconcerto} animation={{
+                    0: {opacity:0},
+                    0.25:{opacity:0.5},
+                    0.5:{opacity:1},
+                    0.75:{opacity:0.5},
+                    4:{opacity:0},
+                }} iterationCount="infinite" duration={2000} >
+                WAITING FOR OTHERS</Animatable.Text>
+            <Animatable.Text style = {styles.concerto} animation={{
+                    0: {opacity:0},
+                    0.25:{opacity:0.5},
+                    0.5:{opacity:1},
+                    0.75:{opacity:0.5},
+                    4:{opacity:0},
+                }} iterationCount="infinite" duration={2000} >
+                click here to change your mind</Animatable.Text>
+        </TouchableOpacity>
+    </Animated.View>
+
+    <Animated.View style = {{flex:this.state.orSize, opacity:this.state.orOpacity, 
+        justifyContent:'center'}}>
+        <Text style = {styles.concerto}>----------OR----------</Text>
+    </Animated.View>
+
+    <Animated.View style = {{flex:this.state.abstainSize,  opacity:this.state.abstainOpacity,
+        backgroundColor:colors.color2, borderRadius:2}}>
+        <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
+            onPress = {()=>{this._viewChange(false,false,false,false,false,true)}}>
+            <Text style = {styles.bconcerto}>ABSTAIN</Text>
+            <Text style = {styles.concerto}>and go to sleep</Text>
+        </TouchableOpacity>
+    </Animated.View>
+
+    <Animated.View style = {{ flex:this.state.listSize,  opacity:this.state.listOpacity,
+        justifyContent:'center'}}>
+        {this._renderListComponent()}
+    </Animated.View>
 
 </View>
 }
@@ -1128,8 +1259,6 @@ const styles = StyleSheet.create({
         height:40,
         backgroundColor: colors.main,
         marginBottom:5,
-        marginLeft: 10,
-        marginRight: 10,
         borderRadius:2,
         justifyContent:'center',
     },
@@ -1137,26 +1266,20 @@ const styles = StyleSheet.create({
         height:40,
         backgroundColor: 'grey',
         marginBottom:5,
-        marginLeft: 10,
-        marginRight: 10,
         borderRadius:2,
         justifyContent:'center',
     },
     immune: {
         height:40,
-        backgroundColor: colors.immune,
+        backgroundColor: colors.color2,
         marginBottom:5,
-        marginLeft: 10,
-        marginRight: 10,
         borderRadius:2,
         justifyContent:'center',
     },
     status: {
         height:40,
-        backgroundColor: colors.highlight,
+        backgroundColor: colors.status,
         marginBottom:5,
-        marginLeft: 10,
-        marginRight: 10,
         borderRadius:2,
         justifyContent:'center',
     },
@@ -1174,6 +1297,12 @@ const styles = StyleSheet.create({
     },
     concerto: {
         fontSize:17,
+        fontFamily:'ConcertOne-Regular',
+        color:colors.main,
+        alignSelf: 'center',
+    },
+    bconcerto: {
+        fontSize:30,
         fontFamily:'ConcertOne-Regular',
         color:colors.main,
         alignSelf: 'center',

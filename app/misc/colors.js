@@ -14,6 +14,7 @@ export default colors = {
     
     immune:     '#e3c382',
     disabled:   '#495D7A', //Lobby Colors for Bottom Component
+    status:     '#9695b7',
 
     //Blue Palette
     main:       '#DBE0D6', 
