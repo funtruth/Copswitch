@@ -215,10 +215,20 @@ componentWillMount() {
                     subtitle2:      'hang this player',
                 })
             } else if (snap.val() == 4){
-                this._viewChange(false,false,false,false,false,true)
-                this.setState({
-                    phasename:      '...',
-                    topmessage:     'is giving his last words ...',
+                this.nominationRef.once('value',nomin=>{
+                    if(nomin.val() == firebase.auth().currentUser.uid){
+                        this._viewChange(false,false,false,false,true,false)
+                        this.setState({
+                            phasename:      'You are dead',
+                            topmessage:     'choose the new killer',
+                        })
+                    } else {
+                        this._viewChange(false,false,false,false,false,true)
+                        this.setState({
+                            phasename:      '...',
+                            topmessage:     'is choosing the new killer',
+                        })
+                    }
                 })
             } else if (snap.val() == 5){
                 this._viewChange(false,true,true,true,false,false)
@@ -803,7 +813,7 @@ _renderPhaseName() {
 
 _renderTopMessage(){
     
-    if(this.state.phase == 3 || this.state.phase == 4){
+    if(this.state.phase == 3 || (this.state.phase == 4 && this.state.nominate != firebase.auth().currentUser.uid)){
         return <Text style = {{color:colors.background, alignSelf:'center', 
             fontFamily: 'ConcertOne-Regular', fontSize:14}}>
             {this.state.nominee + ' ' + this.state.topmessage}
