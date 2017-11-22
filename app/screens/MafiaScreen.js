@@ -511,15 +511,6 @@ _changeCount(bool){
     }
 }
 
-//DEPRECATED
-_vote(bool) {
-    if(bool){
-        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname);
-    } else {
-        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null);
-    }
-}
-
 _viewChange(back,vote,or,abstain,list,waiting) {
     Animated.sequence(
         Animated.timing(
@@ -585,23 +576,6 @@ _viewChange(back,vote,or,abstain,list,waiting) {
     )
 }
 
-//DEPRECATED
-_actionBtnPress(actionbtnvalue){
- 
-    //Stops the user from clicking multiple times
-    this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 1000);
-
-    if(actionbtnvalue){
-        this._actionBtnValue(false);
-        this._changeCount(false);
-    } else {
-        this._actionBtnValue(true);
-        this._changeCount(true);
-    }
-
-} 
-
 //Pressing any name button
 _nameBtnPress(uid,name,triggernum,phase,roomname){
 
@@ -665,44 +639,6 @@ _nameBtnLongPress(uid,name,phase){
                     this._noticeMsg(child.key,this.state.myname+' wants to kill '+name+'.')
                 })
             })
-        }
-    }
-}
-
-//DEPRECATED
-_voteBtnPress(presseduid,votebtn) {
-
-    //Stops the user from clicking multiple times
-    this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 1000);
-
-    if(presseduid == 'yes'){
-        if(votebtn){
-            this.myInfoRef.update({actionbtnvalue:false, presseduid:'foo'});
-            this._vote(false);
-            this._changeCount(false);
-        } else {
-            this.myInfoRef.update({actionbtnvalue:true, presseduid:'no'})
-            this._vote(true);
-        }
-    } else if (presseduid == 'no') {
-        if(votebtn){
-            this.myInfoRef.update({actionbtnvalue:true, presseduid:'yes'})
-            this._vote(false);
-        } else {
-            this.myInfoRef.update({actionbtnvalue:false, presseduid:'foo'})
-            this._vote(false);
-            this._changeCount(false);
-        }
-    } else {
-        if(votebtn){
-            this.myInfoRef.update({actionbtnvalue:true, presseduid:'yes'})
-            this._vote(false);
-            this._changeCount(true);
-        } else {
-            this.myInfoRef.update({actionbtnvalue:true, presseduid:'no'})
-            this._vote(true);
-            this._changeCount(true);
         }
     }
 }
@@ -867,42 +803,7 @@ _renderListComponent(){
             keyExtractor={item => item.key}
         />
     } else if(this.state.phase==3){
-        return <View style = {{flex:1}}>
-
-            <TouchableOpacity 
-                style = {{flex:2,justifyContent:'center'}}
-                onPress={()=>{
-                    this._voteBtnPress(this.state.presseduid,true)
-                }}
-                disabled = {this.state.disabled?true:this.state.amidead}
-            >
-                <MaterialCommunityIcons name={'thumb-up'} 
-                    style={{color:colors.main, fontSize:40,alignSelf:'center',
-                        opacity:this.state.amidead?0.25:1}}/>
-                <Text style = {styles.concerto}>Innocent</Text>
-            </TouchableOpacity>
-
-            <View style = {{flexDirection:'row',flex:0.3,}}>
-            <TouchableOpacity style = {{flex:1,borderRadius:10,backgroundColor:colors.main,
-                justifyContent:'center',alignItems:'center'}}>
-                <Text style = {{fontFamily:'ConcertOne-Regular',color:colors.background}}>
-                    {this.state.nominee + ' has been Nominated.'}</Text>
-            </TouchableOpacity>
-            </View>
-
-            <TouchableOpacity 
-                style = {{flex:2,justifyContent:'center'}}
-                onPress={()=>{
-                    this._voteBtnPress(this.state.presseduid,false)
-                }}
-                disabled = {this.state.disabled?true:this.state.amidead}
-            >
-                <MaterialCommunityIcons name={'thumb-down'} 
-                    style={{color:colors.main, fontSize:40,alignSelf:'center',
-                        opacity:this.state.amidead?0.25:1}}/>
-                <Text style = {styles.concerto}>Guilty</Text>
-            </TouchableOpacity>
-        </View>
+        return null
 
     } else if (this.state.phase==4){
         return <FlatList
