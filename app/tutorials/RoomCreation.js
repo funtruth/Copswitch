@@ -853,6 +853,16 @@ export class Creation5 extends Component {
             players:null,       //ListOfPlayers count
             playernum: null,    //Creation2 number
             rolecount:null,     //ListOfRoles count
+
+            warning1:           true,
+            warning1Opacity:    new Animated.Value(1),
+            warning1Size:       new Animated.Value(0.05),
+            warning2:           true,
+            warning2Opacity:    new Animated.Value(1),
+            warning2Size:       new Animated.Value(0.05),
+            start:              false,
+            startOpacity:       new Animated.Value(0),
+            startSize:          new Animated.Value(0.005),
         };
 
         this.listOfRolesRef = firebase.database().ref('listofroles')
@@ -879,6 +889,14 @@ export class Creation5 extends Component {
                     players:snap.numChildren(),
                     loading:false
                 })
+
+                if(snap.numChildren() == this.state.playernum){
+                    this.setState({warning2:false})
+                    this._viewChange(this.state.warning1,false)
+                } else {
+                    this.setState({warning2:true})
+                    this._viewChange(this.state.warning1,true)
+                }
             })
 
             this.playernumRef = firebase.database().ref('rooms').child(result).child('playernum')
@@ -886,6 +904,21 @@ export class Creation5 extends Component {
                 this.setState({
                     playernum: snap.val(),
                 })
+
+                if(snap.val() == this.state.players){
+                    this.setState({warning2:false})
+                    this._viewChange(this.state.warning1,false)
+                } else {
+                    this.setState({warning2:true})
+                    this._viewChange(this.state.warning1,true)
+                }
+                if(snap.val() == this.state.rolecount){
+                    this.setState({warning1:false})
+                    this._viewChange(false,this.state.warning2)
+                } else {
+                    this.setState({warning1:true})
+                    this._viewChange(true,this.state.warning2)
+                }
             })
         })
 
@@ -896,6 +929,14 @@ export class Creation5 extends Component {
                     rolecount = rolecount + child.val();
                 })
                 this.setState({rolecount:rolecount})
+
+                if(rolecount == this.state.playernum){
+                    this.setState({warning1:false})
+                    this._viewChange(false,this.state.warning2)
+                } else {
+                    this.setState({warning1:true})
+                    this._viewChange(true,this.state.warning2)
+                }
             }
         })
     }
@@ -983,6 +1024,72 @@ export class Creation5 extends Component {
         })
     }
 
+    _viewChange(warning1,warning2) {
+        Animated.timing(
+            this.state.warning1Size, {
+                duration: 600,
+                toValue: warning1?0.05:0.005
+        }).start(),
+        Animated.timing(
+            this.state.warning1Opacity, {
+                duration: 600,
+                toValue: warning1?1:0
+        }).start(),
+        Animated.timing(
+            this.state.warning2Size, {
+                duration: 600,
+                toValue: warning2?0.05:0.005
+        }).start(),
+        Animated.timing(
+            this.state.warning2Opacity, {
+                duration: 600,
+                toValue: warning2?1:0
+        }).start(),
+        Animated.timing(
+            this.state.startSize, {
+                duration: 600,
+                toValue: (warning1 || warning2)?0.005:0.075
+        }).start(),
+        Animated.timing(
+            this.state.startOpacity, {
+                duration: 600,
+                toValue: (warning1 || warning2)?0:1
+        }).start()
+    }
+
+    _renderWarning1() {
+        return <Animated.View 
+            style = {{flex:this.state.warning1Size, opacity:this.state.warning1Opacity,
+            backgroundColor:colors.color2, borderRadius:2, justifyContent:'center',
+            marginLeft:10, marginRight:10, marginTop:5, marginBottom:5
+            }}>
+            <TouchableOpacity
+                onPress = {()=>{
+                    this.props.navigation.navigate('Creation4')
+                }}
+                disabled = {!this.state.warning1}
+            >
+                <Text style = {styles.sconcerto}>Role Selection does not match Room Size!</Text>
+            </TouchableOpacity>
+        </Animated.View>
+    }
+    _renderWarning2() {
+        return <Animated.View 
+            style = {{flex:this.state.warning2Size, opacity:this.state.warning2Opacity,
+            backgroundColor:colors.color2, borderRadius:2, justifyContent:'center',
+            marginLeft:10, marginRight:10, marginTop:5, marginBottom:5
+            }}>
+            <TouchableOpacity
+                onPress = {()=>{
+                    this.props.navigation.navigate('Creation2')
+                }}
+                disabled = {!this.state.warning2}
+            >
+                <Text style = {styles.sconcerto}>Not enough players in the Room!</Text>
+            </TouchableOpacity>
+        </Animated.View>
+    }
+
     _renderListComponent(){
         return <FlatList
             data={this.state.namelist}
@@ -999,15 +1106,18 @@ export class Creation5 extends Component {
     }
 
     _renderOptions() {
-        return <TouchableOpacity
-            style = {{
-            backgroundColor:colors.font, flex:0.6, alignItems:'center',
-            justifyContent:'center', marginLeft:15, marginRight:10, borderRadius:2}}
-            onPress = {()=>{
-                this._startGame(this.state.roomname);
-            }} >
-            <Text style = {styles.mdconcerto}>Start Game</Text>
-        </TouchableOpacity>
+        return <Animated.View style = {{flex:this.state.startSize, opacity: this.state.startOpacity}}>
+            <TouchableOpacity
+                style = {{
+                backgroundColor:colors.font, alignItems:'center',
+                justifyContent:'center', marginLeft:10, marginRight:10, borderRadius:2}}
+                onPress = {()=>{
+                    this._startGame(this.state.roomname);
+                }} 
+                disabled = {this.state.warning1 || this.state.warning2}>
+                <Text style = {styles.mdconcerto}>START GAME</Text>
+            </TouchableOpacity>
+        </Animated.View>
     }
 
     render() {
@@ -1055,23 +1165,24 @@ export class Creation5 extends Component {
 
                 <View style = {{flex:0.025}}/>
                         
-                <View style = {{flex:0.075,backgroundColor:colors.background, 
-                    justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.mconcerto}>Players:</Text>
+                {this._renderWarning1()}
+                {this._renderWarning2()}
+                
+                <View style = {{flex:0.075,backgroundColor:colors.main, 
+                    justifyContent:'center', alignItems:'center', borderRadius:2,
+                    marginLeft:10, marginRight:10, marginTop:5, marginBottom:5}}>
+                    <Text style = {styles.mdconcerto}>Players:</Text>
                 </View>
 
-                <View style = {{flex:0.49, flexDirection:'row',justifyContent:'center',
-                    marginTop:10, marginBottom:10}}>
-                    <View style = {{flex:0.9,justifyContent:'center', alignItems:'center'}}>
-                        {this._renderListComponent()}
-                    </View>
+                <View style = {{flex:0.51, justifyContent:'center', alignItems:'center',
+                    backgroundColor:colors.color2, borderRadius:2, 
+                    marginLeft:10, marginRight:10, marginTop:5, marginBottom:10}}>
+                    {this._renderListComponent()}
                 </View>
 
-                <View style = {{flex:0.06, flexDirection:'row', justifyContent:'center'}}>
-                    {this._renderOptions()}
-                </View>
+                {this._renderOptions()}
 
-                <View style = {{flex:0.05}}/>
+                <View style = {{flex:0.03}}/>
 
                 <View style = {{flex:0.1, flexDirection:'row', 
                 justifyContent:'center', alignItems:'center'}}>

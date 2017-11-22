@@ -512,68 +512,66 @@ _changeCount(bool){
 }
 
 _viewChange(back,vote,or,abstain,list,waiting) {
-    Animated.sequence(
-        Animated.timing(
-            this.state.backSize, {
-                duration: 600,
-                toValue: back?0.2:0.005
-        }).start(),
-        Animated.timing(
-            this.state.backOpacity, {
-                duration: 600,
-                toValue: back?1:0
-        }).start(),
-        Animated.timing(
-            this.state.voteSize, {
-                duration: 600,
-                toValue: vote?0.2:0.005
-        }).start(),
-        Animated.timing(
-            this.state.voteOpacity, {
-                duration: 600,
-                toValue: vote?1:0
-        }).start(),
-        Animated.timing(
-            this.state.orSize, {
-                duration: 600,
-                toValue: or?0.1:0.005
-        }).start(),
-        Animated.timing(
-            this.state.orOpacity, {
-                duration: 600,
-                toValue: or?1:0
-        }).start(),
-        Animated.timing(
-            this.state.abstainSize, {
-                duration: 600,
-                toValue: abstain?0.2:0.005
-        }).start(),
-        Animated.timing(
-            this.state.abstainOpacity, {
-                duration: 600,
-                toValue: abstain?1:0
-        }).start(),
-        Animated.timing(
-            this.state.listSize, {
-                duration: 600,
-                toValue: list?0.65:0.01
-        }).start(),
-        Animated.timing(
-            this.state.listOpacity, {
-                duration: 600,
-                toValue: list?1:0
-        }).start(),
-        Animated.timing(
-            this.state.waitingSize, {
-                duration: 600,
-                toValue: waiting?0.2:0.01
-        }).start(),
-        Animated.timing(
-            this.state.waitingOpacity, {
-                duration: 600,
-                toValue: waiting?1:0
-        }).start(),
-    )
+    Animated.timing(
+        this.state.backSize, {
+            duration: 600,
+            toValue: back?0.2:0.005
+    }).start(),
+    Animated.timing(
+        this.state.backOpacity, {
+            duration: 600,
+            toValue: back?1:0
+    }).start(),
+    Animated.timing(
+        this.state.voteSize, {
+            duration: 600,
+            toValue: vote?0.2:0.005
+    }).start(),
+    Animated.timing(
+        this.state.voteOpacity, {
+            duration: 600,
+            toValue: vote?1:0
+    }).start(),
+    Animated.timing(
+        this.state.orSize, {
+            duration: 600,
+            toValue: or?0.1:0.005
+    }).start(),
+    Animated.timing(
+        this.state.orOpacity, {
+            duration: 600,
+            toValue: or?1:0
+    }).start(),
+    Animated.timing(
+        this.state.abstainSize, {
+            duration: 600,
+            toValue: abstain?0.2:0.005
+    }).start(),
+    Animated.timing(
+        this.state.abstainOpacity, {
+            duration: 600,
+            toValue: abstain?1:0
+    }).start(),
+    Animated.timing(
+        this.state.listSize, {
+            duration: 600,
+            toValue: list?0.65:0.01
+    }).start(),
+    Animated.timing(
+        this.state.listOpacity, {
+            duration: 600,
+            toValue: list?1:0
+    }).start(),
+    Animated.timing(
+        this.state.waitingSize, {
+            duration: 600,
+            toValue: waiting?0.2:0.01
+    }).start(),
+    Animated.timing(
+        this.state.waitingOpacity, {
+            duration: 600,
+            toValue: waiting?1:0
+    }).start()
 }
 
 //Pressing any name button
