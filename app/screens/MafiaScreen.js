@@ -706,8 +706,10 @@ _resetOptionPress() {
     this.setState({disabled:true});
     setTimeout(() => {this.setState({disabled: false})}, 600);
 
-    this._viewChange(false,true,true,true,false,false)
-    this.setState({topmessage:'Select an option.'})
+    if(this.state.phase != 4){
+        this._viewChange(false,true,true,true,false,false)
+        this.setState({topmessage:'Select an option.'})
+    }
 
     if(this.state.phase == 2){
 
