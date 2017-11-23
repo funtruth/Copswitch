@@ -10,7 +10,6 @@ import {
     FlatList,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    Modal,
     Animated
 }   from 'react-native';
 
@@ -70,14 +69,13 @@ constructor(props) {
         nominee:            '',
 
         gameover:           false,
-        modalVisible:       false,
 
-        backSize:           new Animated.Value(0.005),
+        backSize:           new Animated.Value(0.001),
         voteSize:           new Animated.Value(0.2),
         abstainSize:        new Animated.Value(0.2),
         orSize:             new Animated.Value(0.06),
-        listSize:           new Animated.Value(0.005),
-        waitingSize:        new Animated.Value(0.005),
+        listSize:           new Animated.Value(0.001),
+        waitingSize:        new Animated.Value(0.001),
         
         backOpacity:        new Animated.Value(0),
         voteOpacity:        new Animated.Value(1),
@@ -523,7 +521,7 @@ _viewChange(back,vote,or,abstain,list,waiting) {
     Animated.timing(
         this.state.backSize, {
             duration: 600,
-            toValue: back?0.2:0.005
+            toValue: back?0.2:0.001
     }).start(),
     Animated.timing(
         this.state.backOpacity, {
@@ -533,7 +531,7 @@ _viewChange(back,vote,or,abstain,list,waiting) {
     Animated.timing(
         this.state.voteSize, {
             duration: 600,
-            toValue: vote?0.2:0.005
+            toValue: vote?0.2:0.001
     }).start(),
     Animated.timing(
         this.state.voteOpacity, {
@@ -543,7 +541,7 @@ _viewChange(back,vote,or,abstain,list,waiting) {
     Animated.timing(
         this.state.orSize, {
             duration: 600,
-            toValue: or?0.06:0.005
+            toValue: or?0.06:0.02
     }).start(),
     Animated.timing(
         this.state.orOpacity, {
@@ -553,7 +551,7 @@ _viewChange(back,vote,or,abstain,list,waiting) {
     Animated.timing(
         this.state.abstainSize, {
             duration: 600,
-            toValue: abstain?0.2:0.005
+            toValue: abstain?0.2:0.001
     }).start(),
     Animated.timing(
         this.state.abstainOpacity, {
@@ -573,7 +571,7 @@ _viewChange(back,vote,or,abstain,list,waiting) {
     Animated.timing(
         this.state.waitingSize, {
             duration: 600,
-            toValue: waiting?0.2:0.01
+            toValue: waiting?0.2:0.001
     }).start(),
     Animated.timing(
         this.state.waitingOpacity, {

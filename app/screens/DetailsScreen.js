@@ -70,7 +70,7 @@ export class Messages extends Component {
                             key:        child.key,
                         })
                     })
-                    this.setState({globallist:msg})
+                    this.setState({globallist:msg.reverse()})
                 } else {
                     this.setState({globallist:[]})
                 }
@@ -87,7 +87,7 @@ export class Messages extends Component {
                         key:        child.key,
                     })
                 })
-                this.setState({msglist:msg})
+                this.setState({msglist:msg.reverse()})
             } else {
                 this.setState({msglist:[]})
             }
