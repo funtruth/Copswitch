@@ -82,7 +82,7 @@ export class Join1 extends Component {
 
         firebase.database().ref('rooms/' + roomname 
             + '/listofplayers/' + firebase.auth().currentUser.uid).update({
-                actionbtnvalue:     false,
+                readyvalue:         false,
                 presseduid:         'foo',
         }).then(()=>{
             this.props.navigation.dispatch(
@@ -277,7 +277,7 @@ export class Lobby1 extends Component {
                 firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
                 .child(firebase.auth().currentUser.uid).update({
                     name:               name,
-                    actionbtnvalue:     false,
+                    readyvalue:         false,
                     presseduid:         'foo',
                 }).then(()=>{
                     this.setState({errormessage:null})
@@ -590,11 +590,9 @@ export class Lobby2 extends Component {
                     <Text style = {styles.mconcerto}>Players:</Text>
                 </View>
 
-                <View style = {{flex:0.55, flexDirection:'row',justifyContent:'center',
-                    marginTop:10, marginBottom:10}}>
-                    <View style = {{flex:0.9,justifyContent:'center', alignItems:'center'}}>
-                        {this._renderListComponent()}
-                    </View>
+                <View style = {{flex:0.55, justifyContent:'center', margin:10,
+                    backgroundColor:colors.color2, borderRadius:2}}>
+                    {this._renderListComponent()}
                 </View>
 
                 <View style = {{flex:0.05}}/>

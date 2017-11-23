@@ -99,7 +99,7 @@ export class Creation1 extends Component {
                 firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
                 .child(firebase.auth().currentUser.uid).update({
                     name:               name,
-                    actionbtnvalue:     false,
+                    readyvalue:         false,
                     presseduid:         'foo',
                 }).then(()=>{
                     this.setState({errormessage:null})
@@ -111,7 +111,6 @@ export class Creation1 extends Component {
             } else {
                 this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
                 this.refs.nameerror.shake(800)
-                this.textInput.focus()
             }
         }
     }
@@ -154,7 +153,6 @@ export class Creation1 extends Component {
                 <View style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}>
                     <View style = {{flex:0.4,flexDirection:'row'}}>
                         <TextInput
-                            ref={(input) => { this.textInput = input; }}
                             placeholder="What is your name?"
                             placeholderTextColor={colors.color2}
                             style={{
@@ -169,7 +167,7 @@ export class Creation1 extends Component {
                             value={this.state.alias}
                             onChangeText = {(text) => {this.setState({alias: text})}}
                             onSubmitEditing = {()=>{ 
-                                this._continue(this.state.alias);
+                                this._continue(this.state.alias.trim());
                             }}
                         />
                     </View>
@@ -1085,7 +1083,7 @@ export class Creation5 extends Component {
                 }}
                 disabled = {!this.state.warning2}
             >
-                <Text style = {styles.sconcerto}>Not enough players in the Room!</Text>
+                <Text style = {styles.sconcerto}>No. of Players does not match Room Size!</Text>
             </TouchableOpacity>
         </Animated.View>
     }
@@ -1094,11 +1092,7 @@ export class Creation5 extends Component {
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
-                <TouchableOpacity 
-                    onPress={() => { }}
-                    style = {{ justifyContent:'center', marginTop:5, marginBottom:5 }} > 
-                    <Text style = {styles.concerto}>{item.name}</Text>
-                </TouchableOpacity>
+                <Text style = {styles.concerto}>{item.name}</Text>
             )}
             numColumns={1}
             keyExtractor={item => item.key}

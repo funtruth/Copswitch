@@ -40,7 +40,7 @@ constructor(props) {
     const roomname = params.roomname;
 
     this.state = {
-        roomname: params.roomname,
+        roomname:           params.roomname,
         phase:              '',
         daycounter:         '',
         phasename:          '',
@@ -57,7 +57,7 @@ constructor(props) {
         triggernum:         1000,
         playernum:          1000,
 
-        actionbtnvalue:     false,
+        readyvalue:         false,
         presseduid:         '',
         disabled:           false,
 
@@ -128,11 +128,12 @@ componentWillMount() {
 
             //Button press states and Living state
             this.setState({
-                actionbtnvalue:     snap.val().actionbtnvalue,
+                readyvalue:         snap.val().readyvalue,
                 presseduid:         snap.val().presseduid,
                 amidead:            snap.val().dead,
                 myname:             snap.val().name,
             })
+
         }
     })
 
@@ -150,7 +151,7 @@ componentWillMount() {
             var list = [];
             snap.forEach((child)=> {
                 list.push({
-                    actionbtnvalue: child.val().actionbtnvalue,
+                    readyvalue:     child.val().readyvalue,
                     name:           child.val().name,
                     dead:           child.val().dead?true:false,
                     immune:         child.val().immune?true:false,
@@ -190,75 +191,90 @@ componentWillMount() {
                 phase:snap.val()
             })
             
-            if(snap.val() == 1){
-                this.setState({
-                    phasename:      'Lobby',
-                })
-            } else if (snap.val() == 2){
-                this._viewChange(false,true,true,true,false,false)
-                this.setState({
-                    phasename:      'Day',
-                    topmessage:     'Select an option',
-                    btn1:           'VOTE',
-                    subtitle1:      'to lynch another player',
-                    btn2:           'ABSTAIN',
-                    subtitle2:      'and go to sleep',
-                })
-            } else if (snap.val() == 3){
-                this._viewChange(false,true,true,true,false,false)
-                this.setState({
-                    phasename:      'Lynch',
-                    topmessage:     'has been nominated',
-                    btn1:           'INNOCENT',
-                    subtitle1:      'do not hang this player',
-                    btn2:           'GUILTY',
-                    subtitle2:      'hang this player',
-                })
-            } else if (snap.val() == 4){
-                this.nominationRef.once('value',nomin=>{
-                    if(nomin.val() == firebase.auth().currentUser.uid){
-                        this._viewChange(false,false,false,false,true,false)
-                        this.setState({
-                            phasename:      'You are dead',
-                            topmessage:     'choose the new killer',
-                        })
-                    } else {
+            this.myInfoRef.once('value',actionbtn=>{
+                if(snap.val() == 1){
+                    this.setState({
+                        phasename:      'Lobby',
+                    })
+                } else if (snap.val() == 2){
+                    if(actionbtn.val().readyvalue == true){
                         this._viewChange(false,false,false,false,false,true)
-                        this.setState({
-                            phasename:      '...',
-                            topmessage:     'is choosing the new killer',
-                        })
+                    } else {
+                        this._viewChange(false,true,true,true,false,false)
                     }
-                })
-            } else if (snap.val() == 5){
-                this._viewChange(false,true,true,true,false,false)
-                this.setState({
-                    phasename:      'Night',
-                    topmessage:     'Select an option',
-                    btn1:           'VISIT',
-                    subtitle1:      'perform your role action',
-                    btn2:           'STAY HOME',
-                    subtitle2:      'do not use your ability',
-                })
-            } else if (snap.val() == 6){
-                this._viewChange(false,true,true,true,false,false)
-                this.setState({
-                    phasename:      'Town Win',
-                    btn1:           'PLAY AGAIN',
-                    subtitle1:      'return to Lobby',
-                    btn2:           'QUIT',
-                    subtitle2:      'leave the game',
-                })
-            } else if (snap.val() == 7){
-                this._viewChange(false,true,true,true,false,false)
-                this.setState({
-                    phasename:      'Mafia Win',
-                    btn1:           'PLAY AGAIN',
-                    subtitle1:      'return to Lobby',
-                    btn2:           'QUIT',
-                    subtitle2:      'leave the game',
-                })
-            }
+                    this.setState({
+                        phasename:      'Day',
+                        topmessage:     'Select an option',
+                        btn1:           'VOTE',
+                        subtitle1:      'to lynch another player',
+                        btn2:           'ABSTAIN',
+                        subtitle2:      'and go to sleep',
+                    })
+                } else if (snap.val() == 3){
+                    if(actionbtn.val().readyvalue == true){
+                        this._viewChange(false,false,false,false,false,true)
+                    } else {
+                        this._viewChange(false,true,true,true,false,false)
+                    }
+                    this.setState({
+                        phasename:      'Lynch',
+                        topmessage:     'has been nominated',
+                        btn1:           'INNOCENT',
+                        subtitle1:      'do not hang this player',
+                        btn2:           'GUILTY',
+                        subtitle2:      'hang this player',
+                    })
+                } else if (snap.val() == 4){
+                    this.nominationRef.once('value',nomin=>{
+                        if(nomin.val() == firebase.auth().currentUser.uid){
+                            this._viewChange(false,false,false,false,true,false)
+                            this.setState({
+                                phasename:      'You are dead',
+                                topmessage:     'choose the new killer',
+                            })
+                        } else {
+                            this._viewChange(false,false,false,false,false,true)
+                            this.setState({
+                                phasename:      '...',
+                                topmessage:     'is choosing the new killer',
+                            })
+                        }
+                    })
+                } else if (snap.val() == 5){
+                    if(actionbtn.val().readyvalue == true){
+                        this._viewChange(false,false,false,false,false,true)
+                    } else {
+                        this._viewChange(false,true,true,true,false,false)
+                    }
+                    this.setState({
+                        phasename:      'Night',
+                        topmessage:     'Select an option',
+                        btn1:           'VISIT',
+                        subtitle1:      'perform your role action',
+                        btn2:           'STAY HOME',
+                        subtitle2:      'do not use your ability',
+                    })
+                } else if (snap.val() == 6){
+                    this._viewChange(false,true,true,true,false,false)
+                    this.setState({
+                        phasename:      'Town Win',
+                        btn1:           'PLAY AGAIN',
+                        subtitle1:      'return to Lobby',
+                        btn2:           'QUIT',
+                        subtitle2:      'leave the game',
+                    })
+                } else if (snap.val() == 7){
+                    this._viewChange(false,true,true,true,false,false)
+                    this.setState({
+                        phasename:      'Mafia Win',
+                        btn1:           'PLAY AGAIN',
+                        subtitle1:      'return to Lobby',
+                        btn2:           'QUIT',
+                        subtitle2:      'leave the game',
+                    })
+                }
+            })
+                
         }
 
         //this.state.nominate, nominee, amipicking
@@ -476,14 +492,14 @@ _changePhase(newphase){
         snap.forEach((child)=>{
             //Set all votes to 0 and RESET Buttons
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.key)
-                .update({votes:0, actionbtnvalue:false, presseduid:'foo'})
+                .update({votes:0, readyvalue:false, presseduid:'foo'})
         })
-    })
-
-    this.roomRef.update({
-        phase:newphase,
-        count:0,
-    })
+    }).then(()=>{
+        this.roomRef.update({
+            phase:newphase,
+            count:0,
+        })
+    })    
 }
 
 _resetDayStatuses() {
@@ -497,8 +513,8 @@ _resetDayStatuses() {
     })
 }
 
-_actionBtnValue(status){
-    this.myInfoRef.update({actionbtnvalue: status})
+_readyStatus(status){
+    this.myInfoRef.update({readyvalue: status})
 }
 _pressedUid(uid){
     this.myInfoRef.update({presseduid: uid})
@@ -579,15 +595,16 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
 
     //Stops the user from clicking multiple times
     this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 1000);
+    setTimeout(() => {this.setState({disabled: false})}, 600);
 
     if(phase == 2){ 
         this._viewChange(false,false,false,false,false,true)
+        this.setState({topmessage:'You have selected ' + name + '.'})
 
         this._pressedUid(uid);
         this.listRef.child(uid).child('votes').transaction((votes)=>{ return votes + 1 }).then(()=>{
             this._changeCount(true)
-            this._actionBtnValue(true)
+            this._readyStatus(true)
         })  
 
     }  else if(phase == 4){
@@ -610,6 +627,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     } else if (phase==5) {
 
         this._viewChange(false,false,false,false,false,true)
+        this.setState({topmessage:'You have selected ' + name + '.'})
 
         firebase.database().ref('rooms/' + roomname + '/actions/' 
             + firebase.auth().currentUser.uid).update({
@@ -621,7 +639,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                 + this.state.myroleid + '/' + firebase.auth().currentUser.uid)
                 .set(this.state.myname).then(()=>{
                     this._pressedUid(uid);
-                    this._actionBtnValue(true);
+                    this._readyStatus(true);
                     this._changeCount(true);
                 })
         })
@@ -645,14 +663,15 @@ _nameBtnLongPress(uid,name,phase){
 _optionOnePress() {
     //Stops the user from clicking multiple times
     this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 1000);
+    setTimeout(() => {this.setState({disabled: false})}, 600);
     
     if(this.state.phase == 2){
         this._viewChange(true,false,false,false,true,false)
     } else if (this.state.phase == 3){
         this._viewChange(false,false,false,false,false,true)
+        this.setState({topmessage:'You voted INNOCENT.'})
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
-            this._actionBtnValue(true);
+            this._readyStatus(true);
             this._changeCount(true);
         })
     } else if (this.state.phase == 5){
@@ -666,22 +685,25 @@ _optionOnePress() {
 _optionTwoPress() {
     //Stops the user from clicking multiple times
     this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 1000);
+    setTimeout(() => {this.setState({disabled: false})}, 600);
 
     if(this.state.phase == 2){
         this._viewChange(false,false,false,false,false,true)
-        this._actionBtnValue(true);
+        this._readyStatus(true);
         this._changeCount(true);
+        this.setState({topmessage:'You abstained.'})
     } else if (this.state.phase == 3){
         this._viewChange(false,false,false,false,false,true)
+        this.setState({topmessage:'You voted GUILTY.'})
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname).then(()=>{
-            this._actionBtnValue(true);
+            this._readyStatus(true);
             this._changeCount(true);
         })
     } else if (this.state.phase == 5){
         this._viewChange(false,false,false,false,false,true)
-        this._actionBtnValue(true);
+        this._readyStatus(true);
         this._changeCount(true);
+        this.setState({topmessage:'You stayed home.'})
     } else if (this.state.phase == 6 || this.state.phase == 7){
         this._gameOver();
     }
@@ -692,13 +714,14 @@ _resetOptionPress() {
 
     //Stops the user from clicking multiple times
     this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 1000);
+    setTimeout(() => {this.setState({disabled: false})}, 600);
 
     this._viewChange(false,true,true,true,false,false)
+    this.setState({topmessage:'Select an option.'})
 
     if(this.state.phase == 2){
 
-        this._actionBtnValue(false);
+        this._readyStatus(false);
         this._changeCount(false);
 
         if(this.state.presseduid != 'foo'){
@@ -706,12 +729,14 @@ _resetOptionPress() {
             this.listRef.child(this.state.presseduid).child('votes')
                 .transaction((votes)=>{ return votes - 1 }) 
         }
+
     } else if (this.state.phase == 3){
 
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
-            this._actionBtnValue(false);
+            this._readyStatus(false);
             this._changeCount(false)
         })
+
     } else if (this.state.phase == 5){
 
         firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
@@ -724,7 +749,7 @@ _resetOptionPress() {
         firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + this.state.presseduid 
             + '/' + this.state.myroleid + '/' + firebase.auth().currentUser.uid).set(null)
             .then(()=>{
-                this._actionBtnValue(false);
+                this._readyStatus(false);
                 this._changeCount(false)
                 this._pressedUid('foo');
             })
@@ -779,7 +804,7 @@ _renderListComponent(){
                     disabled = {this.state.amidead?true:(item.immune?true:item.dead)}>
                     <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
                         <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                        <MaterialCommunityIcons name={item.dead?'skull':item.actionbtnvalue?
+                        <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
                             'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
                             style={{color:colors.background, fontSize:26}}/>
                         </View>
@@ -841,7 +866,7 @@ _renderListComponent(){
                             
                     <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
                         <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                        <MaterialCommunityIcons name={item.dead?'skull':item.actionbtnvalue?
+                        <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
                             'check-circle':(item.immune?'needle':null)}
                             style={{color:'white', fontSize:26}}/>
                         </View>
