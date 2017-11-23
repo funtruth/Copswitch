@@ -75,7 +75,7 @@ constructor(props) {
         backSize:           new Animated.Value(0.005),
         voteSize:           new Animated.Value(0.2),
         abstainSize:        new Animated.Value(0.2),
-        orSize:             new Animated.Value(0.1),
+        orSize:             new Animated.Value(0.06),
         listSize:           new Animated.Value(0.005),
         waitingSize:        new Animated.Value(0.005),
         
@@ -513,7 +513,7 @@ _resetDayStatuses() {
     })
 }
 
-_readyStatus(status){
+_readyValue(status){
     this.myInfoRef.update({readyvalue: status})
 }
 _pressedUid(uid){
@@ -551,7 +551,7 @@ _viewChange(back,vote,or,abstain,list,waiting) {
     Animated.timing(
         this.state.orSize, {
             duration: 600,
-            toValue: or?0.1:0.005
+            toValue: or?0.06:0.005
     }).start(),
     Animated.timing(
         this.state.orOpacity, {
@@ -604,7 +604,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
         this._pressedUid(uid);
         this.listRef.child(uid).child('votes').transaction((votes)=>{ return votes + 1 }).then(()=>{
             this._changeCount(true)
-            this._readyStatus(true)
+            this._readyValue(true)
         })  
 
     }  else if(phase == 4){
@@ -639,7 +639,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                 + this.state.myroleid + '/' + firebase.auth().currentUser.uid)
                 .set(this.state.myname).then(()=>{
                     this._pressedUid(uid);
-                    this._readyStatus(true);
+                    this._readyValue(true);
                     this._changeCount(true);
                 })
         })
@@ -671,7 +671,7 @@ _optionOnePress() {
         this._viewChange(false,false,false,false,false,true)
         this.setState({topmessage:'You voted INNOCENT.'})
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
-            this._readyStatus(true);
+            this._readyValue(true);
             this._changeCount(true);
         })
     } else if (this.state.phase == 5){
@@ -689,19 +689,19 @@ _optionTwoPress() {
 
     if(this.state.phase == 2){
         this._viewChange(false,false,false,false,false,true)
-        this._readyStatus(true);
+        this._readyValue(true);
         this._changeCount(true);
         this.setState({topmessage:'You abstained.'})
     } else if (this.state.phase == 3){
         this._viewChange(false,false,false,false,false,true)
         this.setState({topmessage:'You voted GUILTY.'})
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname).then(()=>{
-            this._readyStatus(true);
+            this._readyValue(true);
             this._changeCount(true);
         })
     } else if (this.state.phase == 5){
         this._viewChange(false,false,false,false,false,true)
-        this._readyStatus(true);
+        this._readyValue(true);
         this._changeCount(true);
         this.setState({topmessage:'You stayed home.'})
     } else if (this.state.phase == 6 || this.state.phase == 7){
@@ -721,7 +721,7 @@ _resetOptionPress() {
 
     if(this.state.phase == 2){
 
-        this._readyStatus(false);
+        this._readyValue(false);
         this._changeCount(false);
 
         if(this.state.presseduid != 'foo'){
@@ -733,7 +733,7 @@ _resetOptionPress() {
     } else if (this.state.phase == 3){
 
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
-            this._readyStatus(false);
+            this._readyValue(false);
             this._changeCount(false)
         })
 
@@ -749,7 +749,7 @@ _resetOptionPress() {
         firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + this.state.presseduid 
             + '/' + this.state.myroleid + '/' + firebase.auth().currentUser.uid).set(null)
             .then(()=>{
-                this._readyStatus(false);
+                this._readyValue(false);
                 this._changeCount(false)
                 this._pressedUid('foo');
             })
@@ -1170,28 +1170,6 @@ render() {
 return <View style = {{flex:1, backgroundColor:colors.background, padding:10,
 justifyContent:'center'}}>
 
-    <Modal
-        animationType = 'slide'
-        transparent
-        visible = {this.state.modalVisible}
-        onRequestClose = {()=>{
-            this.setState({ modalVisible:false })
-        }}>   
-        <View style = {{flex:1}}>
-            <TouchableWithoutFeedback
-                onPress = {()=>{ this.setState({ modalVisible:false }) }} style = {{flex:1}}>
-                <View style = {{flex:1}}>
-                    <View style = {{flex:0.82}}/>
-                    <View style = {{flex:0.1,flexDirection:'row',backgroundColor:colors.main }}>
-
-                    </View>
-                    <View style = {{flex:0.08}}/>
-                </View>
-            </TouchableWithoutFeedback>
-            
-        </View>
-    </Modal>
-
     <Animatable.View animation = 'fadeIn'
         style = {{flex:0.13,justifyContent:'center', backgroundColor:colors.main,
             borderRadius:2, marginBottom:10}}>
@@ -1212,9 +1190,7 @@ justifyContent:'center'}}>
     <Animated.View style = {{flex:this.state.voteSize, opacity:this.state.voteOpacity,
         backgroundColor:colors.color2, borderRadius:2}}>
         <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
-            onPress = {()=>{ 
-                this._optionOnePress()
-            }}
+            onPress = {()=>{ this._optionOnePress() }}
             disabled = {this.state.disabled}>
             <Text style = {styles.bconcerto}>{this.state.btn1}</Text>
             <Text style = {styles.concerto}>{this.state.subtitle1}</Text>
@@ -1224,9 +1200,7 @@ justifyContent:'center'}}>
     <Animated.View style = {{ flex:this.state.waitingSize, opacity:this.state.waitingOpacity,
         backgroundColor:colors.color2, borderRadius:2, justifyContent:'center'}}>
         <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
-            onPress = {()=>{
-                this._resetOptionPress()
-            }}
+            onPress = {()=>{ this._resetOptionPress() }}
             disabled = {this.state.disabled}>
             <Animatable.Text style = {styles.bconcerto} animation={{
                     0: {opacity:1},
@@ -1255,9 +1229,7 @@ justifyContent:'center'}}>
     <Animated.View style = {{flex:this.state.abstainSize,  opacity:this.state.abstainOpacity,
         backgroundColor:colors.color2, borderRadius:2}}>
         <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
-            onPress = {()=>{
-                this._optionTwoPress()
-            }}
+            onPress = {()=>{ this._optionTwoPress() }}
             disabled = {this.state.disabled}>
             <Text style = {styles.bconcerto}>{this.state.btn2}</Text>
             <Text style = {styles.concerto}>{this.state.subtitle2}</Text>
