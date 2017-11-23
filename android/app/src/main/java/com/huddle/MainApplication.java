@@ -25,12 +25,6 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MainApplication extends Application implements ReactApplication {
-/*
-  private static CallbackManager mCallbackManager = CallbackManager.Factory.create();
-
-  protected static CallbackManager getCallbackManager() {
-    return mCallbackManager;
-  }*/
 
   private final ReactNativeHost mReactNativeHost = new ReactNativeHost(this) {
     @Override
