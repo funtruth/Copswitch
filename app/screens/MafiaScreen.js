@@ -170,8 +170,12 @@ componentWillMount() {
 
     this.playernumRef.on('value',snap=>{
         if(snap.exists()){
-            //this.state.triggernum, playernum
-            this._updateNumbers(snap.val());
+
+            const mod = snap.val()%2;
+            this.setState({ 
+                triggernum:     (((snap.val() - mod)/2)+1),
+                playernum:      snap.val(),
+            })
 
             this.mafiaRef.orderByChild('alive').equalTo(true).once('value',mafia=>{
                 if(mafia.numChildren() == 0){
@@ -181,6 +185,20 @@ componentWillMount() {
                     this.phaseRef.set(7)
                 }
             })
+        }
+    })
+
+    this.nominationRef.on('value',snap=>{
+        if(snap.exists()){
+            this.listRef.child(snap.val()).once('value',sp=>{
+                this.setState({nominate: snap.val(), nominee: sp.val().name})
+            })
+
+            if(snap.val() == firebase.auth().currentUser.uid){
+                this.setState({amipicking:true})
+            } else { 
+                this.setState({amipicking:false}) 
+            }
         }
     })
 
@@ -276,9 +294,6 @@ componentWillMount() {
             })
                 
         }
-
-        //this.state.nominate, nominee, amipicking
-        this._updateNominate();
     })
 
     this.dayCounterRef.on('value',snap=>{
@@ -428,6 +443,9 @@ componentWillUnmount() {
     if(this.playernumRef){
         this.playernumRef.off();
     }
+    if(this.nominationRef){
+        this.nominationRef.off();
+    }
     if(this.phaseRef){
         this.phaseRef.off();
     }
@@ -458,32 +476,6 @@ _onBackPress = () => {
         return false
     }
     return true
-}
-
-_updateNumbers(playernum) {
-    const mod = playernum%2;
-    this.setState({ 
-        triggernum: (((playernum - mod)/2)+1),
-        playernum:playernum,
-    })
-}
-
-_updateNominate(){
-    //Checks the nominated player and updates state for his uid/name
-    //Then checks if you are the nominated player.
-    this.nominationRef.once('value',snap=>{
-        if(snap.exists()){
-            this.listRef.child(snap.val()).once('value',sp=>{
-                this.setState({nominate: snap.val(), nominee: sp.val().name})
-            })
-
-            if(snap.val() == firebase.auth().currentUser.uid){
-                this.setState({amipicking:true})
-            } else { 
-                this.setState({amipicking:false}) 
-            }
-        }
-    })
 }
 
 _changePhase(newphase){
