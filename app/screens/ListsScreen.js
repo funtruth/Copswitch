@@ -95,42 +95,31 @@ class General extends Component {
         })
     }
 
-    componentWillMount(){
-        var keys = Object.keys(Rules['about']).sort()
-        var string = ''
-        keys.forEach(function(key){
-            string = string + (Rules['about'])[key].name 
-        })
-        alert(string)
-    }
-
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
-            <Text style = {styles.titleFont}>General</Text>
             <MenuButton
-                viewFlex = {0.12}
+                viewFlex = {0.13}
                 flex = {0.9}
                 fontSize = {25}
                 title = 'Roles'
                 onPress = {()=>{ this.props.navigation.navigate('Roles') }}
             />
             <MenuButton
-                viewFlex = {0.12}
+                viewFlex = {0.13}
                 flex = {0.9}
                 fontSize = {25}
-                title = 'How to Play'
+                title = 'Rulebook'
                 onPress = {()=>{ this.props.navigation.navigate('Rulebook') }}
             />
             <MenuButton
-                viewFlex = {0.12}
+                viewFlex = {0.13}
                 flex = {0.9}
                 fontSize = {25}
                 title = 'About'
-                onPress = {()=>{ this.props.navigation.navigate('About') }}
+                onPress = {()=>{ this.props.navigation.navigate('InfoPage',{section:'about'}) }}
             />
             <View style = {{flex:0.1}}/>
-            <Text style = {styles.titleFont}>Game</Text>
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
@@ -629,59 +618,6 @@ class Rulebook extends Component {
     }
 }
 
-class About extends Component {
-    
-    static navigationOptions = {
-        header: null
-    };
-
-    constructor(props) {
-        super(props);
-    }
-
-    render(){
-        return <View style = {{flex:1,backgroundColor:colors.background,
-            justifyContent:'center', alignItems:'center'}}>
-            <Text style = {styles.titleFont}>About</Text>
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'General'
-                onPress = {()=>{  }}
-            />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Setting Up'
-                onPress = {()=>{ }}
-            />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'My Role'
-                onPress = {()=>{ }}
-            />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Messages'
-                onPress = {()=>{ }}
-            />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Phases'
-                onPress = {()=>{ }}
-            />
-        </View>
-    }
-}
-
 class Setup extends Component {
     
     static navigationOptions = {
@@ -722,6 +658,63 @@ class Setup extends Component {
     }
 }
 
+class InfoPage extends Component {
+    
+    static navigationOptions = {
+        header: null
+    };
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            itemlist: [],
+        }
+    }
+
+
+    componentWillMount(){
+
+        const { params } = this.props.navigation.state;
+        const section = params.section;
+
+        var keys = Object.keys(Rules[section]).sort()
+        var string = ''
+        keys.forEach(function(key){
+            string = string + (Rules[section])[key].name 
+        })
+        alert(string)
+    }
+
+    render(){
+        return <View style = {{flex:1,backgroundColor:colors.background,
+            justifyContent:'center', alignItems:'center'}}>
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Making a Room'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Joining a Room'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Role Selection'
+                onPress = {()=>{ }}
+            />
+            <View style = {{flex:0.1}}/>
+        </View>
+    }
+}
+
 
 export default RuleBook = StackNavigator(
     {
@@ -734,11 +727,11 @@ export default RuleBook = StackNavigator(
       Rulebook: {
         screen: Rulebook,
       },
-      About: {
-        screen: About,
-      },
       Setup: {
         screen: Setup,
+      },
+      InfoPage: {
+        screen: InfoPage,
       },
     },
     {
