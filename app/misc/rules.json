@@ -6,29 +6,29 @@
         "type" : 1
       },
       "b" : {
-        "desc" : "Mafia is a social game which combines Strategy, Logic, and Deception, to deliver a unique experience between you and your friends! If you have not played Mafia before, make sure to review instructions on [How to play].",
+        "desc" : "MafiaStory is a social game which combines Strategy, Logic, and Deception, to deliver a unique experience between you and your friends! If you have not played Mafia before, make sure to review instructions on [How to play].",
         "route" : "lol",
         "type" : 1
       },
       "c" : {
         "desc" : "Best played in groups of 6+",
         "route" : "lol",
-        "type" : 1
+        "type" : 2
       },
       "d" : {
-        "desc" : "Every player must have the app installed.",
+        "desc" : "Everyone must have the app installed.",
         "route" : "lol",
-        "type" : 1
+        "type" : 2
       },
       "f" : {
         "desc" : "Internet connection required.",
         "route" : "lol",
-        "type" : 1
+        "type" : 2
       },
       "g" : {
         "desc" : "Narrator not required.",
         "route" : "lol",
-        "type" : 1
+        "type" : 2
       }
     },
     "making" : {

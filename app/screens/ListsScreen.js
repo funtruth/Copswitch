@@ -693,7 +693,13 @@ class InfoPage extends Component {
 
     _renderListItem(item) {
         if(item.type == 1){
-            return <Text style = {styles.details}>{item.desc}</Text>
+            return <View style = {styles.detailContainer}>
+                <Text style = {styles.details}>{item.desc}</Text>
+            </View>
+        } else if (item.type == 2){
+            return <View style = {styles.commentContainer}>
+                <Text style = {styles.comment}>{item.desc}</Text>
+            </View>
         }
     }
 
@@ -751,7 +757,37 @@ export default RuleBook = StackNavigator(
         fontFamily: 'ConcertOne-Regular',
         fontSize:17,
         lineHeight: 25,
-        alignSelf: 'center',
-        margin:10,
+        alignSelf:'center',
+        marginBottom:5,
+        marginLeft:10,
+        marginRight:10,
+    },
+    detailContainer: {
+        backgroundColor:colors.color2,
+        borderRadius:2,
+        justifyContent:'center',
+        alignItems:'center',
+        marginTop:10,
+        marginLeft:10,
+        marginRight:10,
+    },
+    comment: {
+        color:colors.background,
+        fontFamily: 'ConcertOne-Regular',
+        fontSize:17,
+        lineHeight: 25,
+        alignSelf:'center',
+        marginBottom:5,
+        marginLeft:10,
+        marginRight:10,
+    },
+    commentContainer: {
+        backgroundColor:colors.main,
+        borderRadius:10,
+        justifyContent:'center',
+        alignItems:'center',
+        marginTop:10,
+        marginLeft:10,
+        marginRight:10,
     }
 });
