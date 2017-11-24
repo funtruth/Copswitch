@@ -10,8 +10,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Splash } from "./app/screens/LogIn";
 import colors from './app/misc/colors.js';
 
-import Room from "./app/screens/RoomScreen";
-import { Expired_Screen } from "./app/screens/RoomScreen";
+import { Home, Expired } from "./app/screens/RoomScreen";
 import Lists from "./app/screens/ListsScreen";
 
 import MafiaRoom from "./app/screens/MafiaScreen";
@@ -34,8 +33,8 @@ export const SignedOut = StackNavigator(
   
 export const SignedIn = TabNavigator(
     {
-      Room: {
-        screen: Room,
+      Home: {
+        screen: Home,
         navigationOptions : {
           tabBarIcon: ({ tintColor }) => (
             <MaterialIcons name="home" style={styles.icon}/>
@@ -64,7 +63,7 @@ export const SignedIn = TabNavigator(
           height:5,
         }
       },
-      initialRouteName: 'Room',
+      initialRouteName: 'Home',
     }
 );
 
@@ -236,7 +235,7 @@ export const createRootNavigator = (signedIn, inGame) => {
           }
         },
         Expired: {
-          screen: Expired_Screen,
+          screen: Expired,
           navigationOptions: {
             gesturesEnabled: false,
           }

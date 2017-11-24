@@ -21,13 +21,14 @@ import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
 import Rolesheet from '../misc/roles.json';
+import Rules from '../misc/rules.json';
 import firebase from '../firebase/FirebaseController.js';
 
 import colors from '../misc/colors.js';
 import { onSignOut } from "../auth";
 import * as Animatable from 'react-native-animatable';
 
-class General_Screen extends Component {
+class General extends Component {
     
     static navigationOptions = {
         header: null
@@ -35,6 +36,11 @@ class General_Screen extends Component {
 
     constructor(props) {
         super(props);
+
+        this.messageRef         = firebase.database().ref('messages')
+                                .child(firebase.auth().currentUser.uid);
+        this.listOfRolesRef     = firebase.database().ref('listofroles')
+                                .child(firebase.auth().currentUser.uid);
     }
 
     _logOut() {
@@ -74,10 +80,8 @@ class General_Screen extends Component {
         AsyncStorage.removeItem('ROOM-KEY');
         AsyncStorage.removeItem('GAME-KEY');
     
-        firebase.database().ref('messages').child(firebase.auth().currentUser.uid)
-        .remove().then(()=>{
-            firebase.database().ref('listofroles').child(firebase.auth().currentUser.uid)
-            .remove().then(()=>{
+        this.messageRef.remove().then(()=>{
+            this.listOfRolesRef.remove().then(()=>{
                 this.props.navigation.dispatch(
                     NavigationActions.reset({
                         index: 0,
@@ -90,76 +94,55 @@ class General_Screen extends Component {
             })
         })
     }
-    
-    _exitRoom() {
-        AsyncStorage.removeItem('ROOM-KEY');
 
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
-        
-        this.props.navigation.dispatch(
-            NavigationActions.reset({
-                index: 0,
-                key: null,
-                actions: [
-                    NavigationActions.navigate({ routeName: 'SignedIn'})
-                ]
-            })
-        )
+    componentWillMount(){
+        var keys = Object.keys(Rules['about']).sort()
+        var string = ''
+        keys.forEach(function(key){
+            string = string + (Rules['about'])[key].name 
+        })
+        alert(string)
     }
 
     render(){
-        return <Animatable.View animation='fadeIn' style = {{flex:1,backgroundColor:colors.background,
+        return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
-            <Text style = {styles.titleFont}>Rules</Text>
+            <Text style = {styles.titleFont}>General</Text>
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
-                title = 'Characters'
-                onPress = {()=>{ this.props.navigation.navigate('Roles_Screen') }}
+                title = 'Roles'
+                onPress = {()=>{ this.props.navigation.navigate('Roles') }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
                 title = 'How to Play'
-                onPress = {()=>{ }}
+                onPress = {()=>{ this.props.navigation.navigate('Rulebook') }}
             />
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
-                title = 'Setup'
-                onPress = {()=>{ }}
-            />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Tutorial'
-                onPress = {()=>{  }}
+                title = 'About'
+                onPress = {()=>{ this.props.navigation.navigate('About') }}
             />
             <View style = {{flex:0.1}}/>
-            <Text style = {styles.titleFont}>Personal</Text>
+            <Text style = {styles.titleFont}>Game</Text>
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
-                title = 'Quit Game'
+                title = 'Leave Room'
                 onPress = {()=>{ this._deleteRoom()}}
             />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Log Out'
-                onPress = {()=>{ this._logOut() }}
-            />
-        </Animatable.View>
+        </View>
     }
 }
 
-class Roles_Screen extends Component {
+class Roles extends Component {
 
     static navigationOptions = {
         headerTitle: <Text style = {{fontSize:20,
@@ -536,18 +519,230 @@ class Roles_Screen extends Component {
     }
 }
 
+class Rulebook extends Component {
+    
+    static navigationOptions = {
+        header: null
+    };
+
+    constructor(props) {
+        super(props);
+
+        this.messageRef         = firebase.database().ref('messages')
+                                .child(firebase.auth().currentUser.uid);
+        this.listOfRolesRef     = firebase.database().ref('lsitofroles')
+                                .child(firebase.auth().currentUser.uid);
+    }
+
+    _logOut() {
+        if(firebase.auth().currentUser.isAnonymous){
+            onSignOut().then(() => { 
+                firebase.auth().currentUser.delete().then(()=>{
+                    this.props.navigation.dispatch(
+                        NavigationActions.reset({
+                            index: 0,
+                            key: null,
+                            actions: [
+                                NavigationActions.navigate({ routeName: 'SignedOut'})
+                            ]
+                        })
+                    )
+                })
+            })
+            
+        } else {
+            onSignOut().then(() => { 
+                firebase.auth().signOut()
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        key: null,
+                        actions: [
+                            NavigationActions.navigate({ routeName: 'SignedOut'})
+                        ]
+                    })
+                )
+            }) 
+            
+        }
+    }
+
+    _deleteRoom() {
+        AsyncStorage.removeItem('ROOM-KEY');
+        AsyncStorage.removeItem('GAME-KEY');
+    
+        this.messageRef.remove().then(()=>{
+            this.listOfRolesRef.remove().then(()=>{
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        key: null,
+                        actions: [
+                            NavigationActions.navigate({ routeName: 'SignedIn'})
+                        ]
+                    })
+                )
+            })
+        })
+    }
+
+    render(){
+        return <View style = {{flex:1,backgroundColor:colors.background,
+            justifyContent:'center', alignItems:'center'}}>
+            <Text style = {styles.titleFont}>How to Play</Text>
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'General'
+                onPress = {()=>{  }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Set Up'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'My Role'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Phases'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Messages'
+                onPress = {()=>{ }}
+            />
+        </View>
+    }
+}
+
+class About extends Component {
+    
+    static navigationOptions = {
+        header: null
+    };
+
+    constructor(props) {
+        super(props);
+    }
+
+    render(){
+        return <View style = {{flex:1,backgroundColor:colors.background,
+            justifyContent:'center', alignItems:'center'}}>
+            <Text style = {styles.titleFont}>About</Text>
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'General'
+                onPress = {()=>{  }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Setting Up'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'My Role'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Messages'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Phases'
+                onPress = {()=>{ }}
+            />
+        </View>
+    }
+}
+
+class Setup extends Component {
+    
+    static navigationOptions = {
+        header: null
+    };
+
+    constructor(props) {
+        super(props);
+    }
+
+    render(){
+        return <View style = {{flex:1,backgroundColor:colors.background,
+            justifyContent:'center', alignItems:'center'}}>
+            <Text style = {styles.titleFont}>Setup</Text>
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Making a Room'
+                onPress = {()=>{ this.props.navigation.navigate('Roles') }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Joining a Room'
+                onPress = {()=>{ }}
+            />
+            <MenuButton
+                viewFlex = {0.12}
+                flex = {0.9}
+                fontSize = {25}
+                title = 'Role Selection'
+                onPress = {()=>{ }}
+            />
+            <View style = {{flex:0.1}}/>
+        </View>
+    }
+}
+
 
 export default RuleBook = StackNavigator(
     {
-      General_Screen: {
-        screen: General_Screen,
+      General: {
+        screen: General,
       },
-      Roles_Screen: {
-        screen: Roles_Screen,
+      Roles: {
+        screen: Roles,
+      },
+      Rulebook: {
+        screen: Rulebook,
+      },
+      About: {
+        screen: About,
+      },
+      Setup: {
+        screen: Setup,
       },
     },
     {
-      initialRouteName: 'General_Screen',
+      initialRouteName: 'General',
       headerMode: 'screen',
     }
   );

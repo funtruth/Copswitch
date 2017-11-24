@@ -37,7 +37,7 @@ import Rolesheet from '../misc/roles.json';
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
-export default class Room_Screen extends React.Component {
+export class Home extends React.Component {
 
     constructor(props) {
         super(props);
@@ -221,39 +221,7 @@ export default class Room_Screen extends React.Component {
     }
 }
 
-class Lobby_Screen extends React.Component {
-
-    _leaveRoom() {
-
-        AsyncStorage.removeItem('ROOM-KEY');
-
-        firebase.database().ref('rooms/'+this.state.roomname+'/playernum').transaction((playernum) => {
-            return (playernum - 1);
-        });
-        this.listRef.child(firebase.auth().currentUser.uid).remove();
-        
-        this.props.navigation.dispatch(
-            NavigationActions.reset({
-                index: 0,
-                actions: [
-                NavigationActions.navigate({ routeName: 'Room_Screen'})
-                ]
-            })
-        )
-    }
-
-    _recommendedBtnPress(mode,playercount){
-        this.roleCount.remove();
-
-        firebase.database().ref('recommended/' + playercount + '/' + mode).once('value',snap=>{
-            snap.forEach((child)=>{
-                this.roleCount.child(child.key).update(child.val())
-            })
-        })
-    }
-}
-
-export class Expired_Screen extends React.Component {
+export class Expired extends React.Component {
     
     constructor(props) {
         super(props);
@@ -330,12 +298,13 @@ export class Expired_Screen extends React.Component {
                 <AnimatableIcon ref='duh' animation="swing" iterationCount='infinite' direction="alternate"
                     name='user-secret' style={{ color:colors.main, fontSize: 40 }}/>
                 <Animatable.Text ref='continue' animation={{
-                    0: {opacity:0},
-                    0.25:{opacity:0.5},
-                    0.5:{opacity:1},
-                    0.75:{opacity:0.5},
-                    4:{opacity:0},
-                }} iterationCount="infinite" duration={2000}
+                        0: {opacity:0},
+                        0.25:{opacity:0.5},
+                        0.5:{opacity:1},
+                        0.75:{opacity:0.5},
+                        4:{opacity:0},
+                    }}
+                    iterationCount="infinite" duration={2000}
                     style={styles.continue}>{this.state.message}</Animatable.Text>
             </Animatable.View>
         </View>
