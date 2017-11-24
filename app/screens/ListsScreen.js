@@ -591,7 +591,7 @@ class Rulebook extends Component {
                 flex = {0.9}
                 fontSize = {25}
                 title = 'Set Up'
-                onPress = {()=>{ }}
+                onPress = {()=>{ this.props.navigation.navigate('InfoPage',{section:'making'}) }}
             />
             <MenuButton
                 viewFlex = {0.12}
@@ -668,7 +668,7 @@ class InfoPage extends Component {
         super(props);
 
         this.state = {
-            itemlist: [],
+            infolist: [],
         }
     }
 
@@ -679,38 +679,33 @@ class InfoPage extends Component {
         const section = params.section;
 
         var keys = Object.keys(Rules[section]).sort()
-        var string = ''
+        var infolist = [];
         keys.forEach(function(key){
-            string = string + (Rules[section])[key].name 
+            infolist.push({
+                type:           (Rules[section])[key].type,
+                desc:           (Rules[section])[key].desc,
+                onpressroute:   (Rules[section])[key].route,
+                key:            key,
+            })
         })
-        alert(string)
+        this.setState({infolist:infolist})
+    }
+
+    _renderListItem(item) {
+        if(item.type == 1){
+            return <Text style = {styles.details}>{item.desc}</Text>
+        }
     }
 
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Making a Room'
-                onPress = {()=>{ }}
+            <FlatList
+                data={this.state.infolist}
+                renderItem={({item}) => this._renderListItem(item) }
+                numColumns = {1}
+                keyExtractor={item => item.key}
             />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Joining a Room'
-                onPress = {()=>{ }}
-            />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Role Selection'
-                onPress = {()=>{ }}
-            />
-            <View style = {{flex:0.1}}/>
         </View>
     }
 }
@@ -751,4 +746,12 @@ export default RuleBook = StackNavigator(
         fontSize: 25,
         color: colors.main,
     },
+    details: {
+        color:colors.font,
+        fontFamily: 'ConcertOne-Regular',
+        fontSize:17,
+        lineHeight: 25,
+        alignSelf: 'center',
+        margin:10,
+    }
 });

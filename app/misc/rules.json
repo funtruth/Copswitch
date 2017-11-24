@@ -1,11 +1,55 @@
 {
     "about" : {
       "a" : {
-        "name" : "hello",
+        "desc" : "MafiaStory is intended as an expansion to the classic game of Mafia. The app itself functions as a standalone game, and does not require a physical copy of the game or any other purchases.",
+        "route" : "lol",
         "type" : 1
       },
       "b" : {
-        "name" : "dude",
+        "desc" : "Mafia is a social game which combines Strategy, Logic, and Deception, to deliver a unique experience between you and your friends! If you have not played Mafia before, make sure to review instructions on [How to play].",
+        "route" : "lol",
+        "type" : 1
+      },
+      "c" : {
+        "desc" : "Best played in groups of 6+",
+        "route" : "lol",
+        "type" : 1
+      },
+      "d" : {
+        "desc" : "Every player must have the app installed.",
+        "route" : "lol",
+        "type" : 1
+      },
+      "f" : {
+        "desc" : "Internet connection required.",
+        "route" : "lol",
+        "type" : 1
+      },
+      "g" : {
+        "desc" : "Narrator not required.",
+        "route" : "lol",
+        "type" : 1
+      }
+    },
+    "making" : {
+      "a" : {
+        "desc" : "line 1",
+        "route" : "lol",
+        "type" : 1
+      },
+      "b" : {
+        "desc" : "line 2",
+        "route" : "lol",
+        "type" : 1
+      },
+      "c" : {
+        "desc" : "line 3",
+        "route" : "lol",
+        "type" : 1
+      },
+      "d" : {
+        "desc" : "line 4",
+        "route" : "lol",
         "type" : 1
       }
     }
