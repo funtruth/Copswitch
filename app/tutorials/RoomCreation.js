@@ -545,9 +545,7 @@ export class Creation4 extends Component {
             showtown:    true,
             showmafia:   false,
             showneutral: false,
-        }
-
-        this.listOfRoles = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);   
+        }  
     }
 
     componentWillMount() {
@@ -556,6 +554,32 @@ export class Creation4 extends Component {
             this.setState({
                 roomname: result,
                 loading: false,
+            })
+
+            this.listOfRoles = firebase.database().ref('listofroles').child(result)
+            this.listOfRoles.on('value',snap=>{
+                if(snap.exists()){
+                    var mafialist = this.state.mafialist;
+                    var townlist = this.state.townlist;
+                    var neutrallist = this.state.neutrallist;
+                    snap.forEach((child)=>{
+                        if(Rolesheet[child.key].type == 1){
+                            mafialist[Rolesheet[child.key].index]['count'] = child.val()
+                        } else if (Rolesheet[child.key].type == 2) {
+                            townlist[Rolesheet[child.key].index]['count'] = child.val()
+                        } else {
+                            neutrallist[Rolesheet[child.key].index]['count'] = child.val()
+                        }
+                    })
+                    this.setState({
+                        ownermode:true,
+                        mafialist:mafialist,
+                        townlist:townlist,
+                        neutrallist:neutrallist
+                    })
+                } else {
+                    this.setState({ownermode:false})
+                }
             })
         })
 
@@ -604,32 +628,6 @@ export class Creation4 extends Component {
             townlist:townlist,
             neutrallist:neutrallist,
         })
-
-        this.listOfRoles.on('value',snap=>{
-            if(snap.exists()){
-                var mafialist = this.state.mafialist;
-                var townlist = this.state.townlist;
-                var neutrallist = this.state.neutrallist;
-                snap.forEach((child)=>{
-                    if(Rolesheet[child.key].type == 1){
-                        mafialist[Rolesheet[child.key].index]['count'] = child.val()
-                    } else if (Rolesheet[child.key].type == 2) {
-                        townlist[Rolesheet[child.key].index]['count'] = child.val()
-                    } else {
-                        neutrallist[Rolesheet[child.key].index]['count'] = child.val()
-                    }
-                })
-                this.setState({
-                    ownermode:true,
-                    mafialist:mafialist,
-                    townlist:townlist,
-                    neutrallist:neutrallist
-                })
-            } else {
-                this.setState({ownermode:false})
-            }
-        })
-
     }
 
     componentWillUnmount(){
@@ -640,13 +638,11 @@ export class Creation4 extends Component {
 
     _roleBtnPress(key,index,count) {
         if(count>0){
-            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-            + '/' + key).transaction((count)=>{
+            this.listOfRoles.child(key).transaction((count)=>{
                 return count - 1;
             })
         } else {
-            firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid 
-            + '/' + key).transaction((count)=>{
+            this.listOfRoles.child(key).transaction((count)=>{
                 return count + 1;
             })
         }
@@ -862,9 +858,6 @@ export class Creation5 extends Component {
             startOpacity:       new Animated.Value(0),
             startSize:          new Animated.Value(0.005),
         };
-
-        this.listOfRolesRef = firebase.database().ref('listofroles')
-            .child(firebase.auth().currentUser.uid);
         
     }
 
@@ -918,25 +911,28 @@ export class Creation5 extends Component {
                     this._viewChange(true,this.state.warning2)
                 }
             })
-        })
 
-        this.listOfRolesRef.on('value',snap=>{
-            if(snap.exists()){
-                var rolecount = 0;
-                snap.forEach((child)=>{
-                    rolecount = rolecount + child.val();
-                })
-                this.setState({rolecount:rolecount})
-
-                if(rolecount == this.state.playernum){
-                    this.setState({warning1:false})
-                    this._viewChange(false,this.state.warning2)
-                } else {
-                    this.setState({warning1:true})
-                    this._viewChange(true,this.state.warning2)
+            this.listOfRolesRef = firebase.database().ref('listofroles').child(result)
+            this.listOfRolesRef.on('value',snap=>{
+                if(snap.exists()){
+                    var rolecount = 0;
+                    snap.forEach((child)=>{
+                        rolecount = rolecount + child.val();
+                    })
+                    this.setState({rolecount:rolecount})
+    
+                    if(rolecount == this.state.playernum){
+                        this.setState({warning1:false})
+                        this._viewChange(false,this.state.warning2)
+                    } else {
+                        this.setState({warning1:true})
+                        this._viewChange(true,this.state.warning2)
+                    }
                 }
-            }
+            })
         })
+
+        
     }
 
     componentWillUnmount() {
@@ -955,8 +951,6 @@ export class Creation5 extends Component {
         AsyncStorage.setItem('GAME-KEY',roomname);
         
         this._handOutRoles(roomname);
-
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
 
         this.setState({starting:true})
 

@@ -106,20 +106,17 @@ export class Home extends React.Component {
                     owner: firebase.auth().currentUser.uid,
                     daycounter:1,
                 }).then(()=>{
-                    firebase.database().ref('listofroles/'+firebase.auth().currentUser.uid)
-                    .update({b:0}).then(()=>{
-                        this.props.navigation.dispatch(
-                            NavigationActions.navigate({
-                                routeName: 'CreationTutorial',
-                                action: NavigationActions.navigate({ 
-                                    routeName: 'Creation1',
-                                    params: {roomname:roomname}
-                                })
+                    this.props.navigation.dispatch(
+                        NavigationActions.navigate({
+                            routeName: 'CreationTutorial',
+                            action: NavigationActions.navigate({ 
+                                routeName: 'Creation1',
+                                params: {roomname:roomname}
                             })
-                        )
-    
-                        this._returnView()
-                    })
+                        })
+                    )
+
+                    this._returnView()
                 })
 
             }, MED_ANIM);

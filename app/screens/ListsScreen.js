@@ -37,6 +37,11 @@ class General extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            active:false,
+            roomname: null,
+        }
+
         this.messageRef         = firebase.database().ref('messages')
                                 .child(firebase.auth().currentUser.uid);
         this.listOfRolesRef     = firebase.database().ref('listofroles')
@@ -95,6 +100,22 @@ class General extends Component {
         })
     }
 
+    componentWillMount() {
+        AsyncStorage.getItem('GAME-KEY',(error,result)=>{
+            if(result!=null){
+                this.setState({
+                    active:true,
+                    roomname:result,
+                })
+            } else {
+                this.setState({
+                    active:false,
+                    roomname:null,
+                })
+            }
+        })
+    }
+
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
@@ -103,8 +124,11 @@ class General extends Component {
                 flex = {0.9}
                 fontSize = {25}
                 title = 'Roles'
-                onPress = {()=>{ this.props.navigation.navigate('Roles') }}
-            />
+                onPress = {()=>{ this.state.active?
+                    this.props.navigation.navigate('ActiveRoles', {roomname:this.state.roomname})
+                    :
+                    this.props.navigation.navigate('Roles')
+                }}/>
             <MenuButton
                 viewFlex = {0.13}
                 flex = {0.9}
@@ -119,14 +143,14 @@ class General extends Component {
                 title = 'About'
                 onPress = {()=>{ this.props.navigation.navigate('InfoPage',{section:'about'}) }}
             />
-            <View style = {{flex:0.1}}/>
+            {this.state.active?<View><View style = {{flex:0.1}}/>
             <MenuButton
                 viewFlex = {0.12}
                 flex = {0.9}
                 fontSize = {25}
                 title = 'Leave Room'
                 onPress = {()=>{ this._deleteRoom()}}
-            />
+            /></View>:null}
         </View>
     }
 }
@@ -151,7 +175,6 @@ class Roles extends Component {
             neutrallist: [],
             roleid:   'a',
             modalVisible: false,
-            ownermode:  false,
 
             showfilter:  false,
             showtown:    true,
@@ -159,8 +182,6 @@ class Roles extends Component {
             showneutral: false,
         }
 
-        this.listOfRoles = firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid);
-        
     }
 
 
@@ -177,7 +198,6 @@ class Roles extends Component {
                     name:           Rolesheet[key].name,
                     index:          Rolesheet[key].index,
                     category:       Rolesheet[key].category,
-                    count:          0,
                     image:          Rolesheet[key].image,
                     color:          Rolesheet[key].color,
                     key:            key,
@@ -187,7 +207,6 @@ class Roles extends Component {
                     name:           Rolesheet[key].name,
                     index:          Rolesheet[key].index,
                     category:       Rolesheet[key].category,
-                    count:          0,
                     image:          Rolesheet[key].image,
                     color:          Rolesheet[key].color,
                     key:            key,
@@ -197,7 +216,6 @@ class Roles extends Component {
                     name:           Rolesheet[key].name,
                     index:          Rolesheet[key].index,
                     category:       Rolesheet[key].category,
-                    count:          0,
                     image:          Rolesheet[key].image,
                     color:          Rolesheet[key].color,
                     key:            key,
@@ -209,44 +227,11 @@ class Roles extends Component {
             townlist:townlist,
             neutrallist:neutrallist,
         })
-
-        this.listOfRoles.on('value',snap=>{
-            if(snap.exists()){
-                var mafialist = this.state.mafialist;
-                var townlist = this.state.townlist;
-                var neutrallist = this.state.neutrallist;
-                snap.forEach((child)=>{
-                    if(Rolesheet[child.key].type == 1){
-                        mafialist[Rolesheet[child.key].index]['count'] = child.val()
-                    } else if (Rolesheet[child.key].type == 2) {
-                        townlist[Rolesheet[child.key].index]['count'] = child.val()
-                    } else {
-                        neutrallist[Rolesheet[child.key].index]['count'] = child.val()
-                    }
-                })
-                this.setState({
-                    ownermode:true,
-                    mafialist:mafialist,
-                    townlist:townlist,
-                    neutrallist:neutrallist
-                })
-            } else {
-                this.setState({ownermode:false})
-            }
-        })
-
-    }
-
-    componentWillUnmount(){
-        if(this.listOfRoles){
-            this.listOfRoles.off();
-        }
     }
 
     _roleBtnPress(key) {
         this.setState({roleid:key, modalVisible:true})
     }
-
 
     _renderTitle() {
         return <View style = {{flex:0.7, flexDirection:'row',
@@ -337,7 +322,7 @@ class Roles extends Component {
                         onPress = {()=>{
                             this._roleBtnPress(item.key,item.index)  
                         }}
-                        style = {{backgroundColor:item.count?colors.immune:colors.background,flex:0.33,
+                        style = {{backgroundColor:colors.background,flex:0.33,
                             borderRadius:10, margin:3}}>
                         <View style = {{justifyContent:'center',alignItems:'center'}}>
                             <Text style = {{
@@ -380,9 +365,9 @@ class Roles extends Component {
                 renderItem={({item}) => (
                     <TouchableOpacity
                         onPress = {()=>{
-                            this._roleBtnPress(item.key,item.index,item.count)  
+                            this._roleBtnPress(item.key,item.index)  
                         }}
-                        style = {{backgroundColor:item.count?colors.immune:colors.background,flex:0.33,
+                        style = {{backgroundColor:colors.background,flex:0.33,
                             borderRadius:10, margin:3}}>
                         <View style = {{justifyContent:'center',alignItems:'center'}}>
                             <Image 
@@ -429,9 +414,9 @@ class Roles extends Component {
                 renderItem={({item}) => (
                     <TouchableOpacity
                         onPress = {()=>{
-                            this._roleBtnPress(item.key,item.index,item.count)  
+                            this._roleBtnPress(item.key,item.index)  
                         }}
-                        style = {{backgroundColor:item.count?colors.immune:colors.background,flex:0.33,
+                        style = {{backgroundColor:colors.background,flex:0.33,
                             borderRadius:10, margin:3}}>
                         <View style = {{justifyContent:'center',alignItems:'center'}}>
                             <Image 
@@ -478,9 +463,317 @@ class Roles extends Component {
                 renderItem={({item}) => (
                     <TouchableOpacity
                         onPress = {()=>{
-                            this._roleBtnPress(item.key,item.index,item.count)  
+                            this._roleBtnPress(item.key,item.index)  
                         }}
-                        style = {{backgroundColor:item.count?colors.immune:colors.background,flex:0.33,
+                        style = {{backgroundColor:colors.background,flex:0.33,
+                            borderRadius:10, margin:3}}>
+                        <View style = {{justifyContent:'center',alignItems:'center'}}>
+                            <Image 
+                                style={{width:70,height:70}}
+                                source={{uri: Rolesheet[item.key].image}}
+                            />
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:18}}>{item.name}</Text>
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:14,
+                                marginBottom:5}}>{item.category}</Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
+                style={{margin:3}}
+                numColumns = {3}
+                keyExtractor={item => item.key}
+            />
+            </View>}
+        </View>
+    }
+}
+
+class ActiveRoles extends Component {
+    
+    static navigationOptions = {
+        header:null
+    };
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            townlist: [],
+            mafialist: [],
+            neutrallist: [],
+            roleid:   'a',
+            modalVisible: false,
+
+            showfilter:  false,
+            showtown:    true,
+            showmafia:   false,
+            showneutral: false,
+        }
+    }
+
+
+    componentWillMount() {
+
+        const { params } = this.props.navigation.state;
+        const roomname = params.roomname;
+
+        this.listOfRoles = firebase.database().ref('listofroles/' + roomname);
+
+        this.listOfRoles.on('value',snap=>{
+            if(snap.exists()){
+                var mafialist = [];
+                var townlist = [];
+                var neutrallist = [];
+                snap.forEach((child)=>{
+                    if(Rolesheet[child.key].type == 1){
+                        mafialist.push({
+                            name:           Rolesheet[child.key].name,
+                            index:          Rolesheet[child.key].index,
+                            category:       Rolesheet[child.key].category,
+                            count:          child.val(),
+                            image:          Rolesheet[child.key].image,
+                            color:          Rolesheet[child.key].color,
+                            key:            child.key,    
+                        })
+                        mafialist[Rolesheet[child.key].index]['count'] = child.val()
+                    } else if (Rolesheet[child.key].type == 2) {
+                        townlist.push({
+                            name:           Rolesheet[child.key].name,
+                            index:          Rolesheet[child.key].index,
+                            category:       Rolesheet[child.key].category,
+                            count:          child.val(),
+                            image:          Rolesheet[child.key].image,
+                            color:          Rolesheet[child.key].color,
+                            key:            child.key,    
+                        })
+                    } else {
+                        neutrallist.push({
+                            name:           Rolesheet[child.key].name,
+                            index:          Rolesheet[child.key].index,
+                            category:       Rolesheet[child.key].category,
+                            count:          child.val(),
+                            image:          Rolesheet[child.key].image,
+                            color:          Rolesheet[child.key].color,
+                            key:            child.key,    
+                        })
+                    }
+                })
+                this.setState({
+                    mafialist:mafialist,
+                    townlist:townlist,
+                    neutrallist:neutrallist
+                })
+            }
+        })
+
+    }
+
+    componentWillUnmount(){
+        if(this.listOfRoles){
+            this.listOfRoles.off();
+        }
+    }
+
+    _roleBtnPress(key) {
+        this.setState({roleid:key, modalVisible:true})
+    }
+
+
+    _renderTitle() {
+        return <View style = {{flex:0.7, flexDirection:'row',
+            justifyContent:'center',alignItems:'center'}}>
+            <Text style = {styles.titleFont}>
+                {Rolesheet[this.state.roleid].name}</Text>
+        </View>
+    }
+    _renderDesc() {
+        return <View style = {{flex:0.3,justifyContent:'center',alignItems:'center'}}>
+            <Text style = {styles.normalFont}>
+                {Rolesheet[this.state.roleid].desc}</Text>
+        </View>
+    }
+    _renderImage(){
+        return <View style = {{flex:4,justifyContent:'center',alignItems:'center'}}>
+            <Image 
+                style={{width:200,height:200}}
+                source={{uri: Rolesheet[this.state.roleid].image}}
+            />
+        </View>
+    }
+    _renderInfoBox() {
+        return <View style = {{flex:3,marginLeft:10,marginRight:10}}>
+            <Text style = {styles.normalFont}>{'Team: ' + Rolesheet[this.state.roleid].type}</Text>
+            <Text style = {styles.normalFont}>{'Suspicious: ' + Rolesheet[this.state.roleid].suspicious}</Text>
+            <Text style = {styles.normalFont}>{'Visits: ' + Rolesheet[this.state.roleid].visits}</Text>
+            <Text style = {styles.normalFont}>{'Rules: ' + Rolesheet[this.state.roleid].rules}</Text>
+        </View>
+    }
+    _renderCloseBtn() {
+        return <MenuButton
+            viewFlex = {1}
+            flex = {0.6}
+            fontSize = {20}
+            title = 'CLOSE'
+            onPress = {()=>{this.setState({modalVisible:false})}}
+        />
+    }
+
+    render(){
+        return <View style = {{flex:1, backgroundColor:colors.background}}>
+
+            <Modal
+                animationType = 'fade'
+                transparent
+                visible = {this.state.modalVisible}
+                onRequestClose = {()=>{this.setState({modalVisible:false})}} >
+                <TouchableWithoutFeedback 
+                    style = {{flex:1}}
+                    onPress = {()=>{this.setState({modalVisible:false})}}>
+                    <View style = {{flex:1, backgroundColor:'rgba(109, 132, 156, 0.73)',
+                        justifyContent:'center',alignItems:'center'}}>
+                        <TouchableWithoutFeedback>
+                            <View style = {{flex:0.7,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
+                                <View style = {{backgroundColor:colors.main,flex:0.9,borderRadius:10}}>
+                                    {this._renderTitle()}
+                                    {this._renderDesc()}
+                                    {this._renderImage()}
+                                    {this._renderInfoBox()}
+                                    {this._renderCloseBtn()}
+                                </View>
+                            </View>
+                        </TouchableWithoutFeedback>
+                    </View>
+                </TouchableWithoutFeedback>
+            </Modal>
+
+            <TouchableOpacity
+                style = {{backgroundColor:colors.font, borderRadius:2,
+                    justifyContent:'center', alignItems:'center',
+                    marginTop:3, marginBottom:3, flex:0.075}}
+                onPress = {()=>{
+                    this.setState({
+                        showtown:!this.state.showtown,
+                        showmafia:false,
+                        showneutral:false,
+                    })
+                }} >
+                <Text style = {{
+                    fontFamily:'ConcertOne-Regular',
+                    fontSize: 25, color: colors.background,
+                    marginTop:5, marginBottom:3}}>Town</Text>
+            </TouchableOpacity>
+
+            {!this.state.showtown? null: <View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+                data={this.state.townlist}
+                renderItem={({item}) => (
+                    <TouchableOpacity
+                        onPress = {()=>{
+                            this._roleBtnPress(item.key,item.index)  
+                        }}
+                        style = {{backgroundColor:colors.background,flex:0.33,
+                            borderRadius:10, margin:3}}>
+                        <View style = {{justifyContent:'center',alignItems:'center'}}>
+                            <Image 
+                                style={{width:70,height:70}}
+                                source={{uri: Rolesheet[item.key].image}}
+                            />
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:18}}>{item.name}</Text>
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:14,
+                                marginBottom:5}}>{item.category}</Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
+                style={{margin:3}}
+                numColumns = {3}
+                keyExtractor={item => item.key}
+            />
+            </View>}
+
+            <TouchableOpacity
+                style = {{backgroundColor:colors.font, borderRadius:2,
+                    justifyContent:'center', alignItems:'center',
+                    marginTop:3, marginBottom:3, flex:0.075}}
+                onPress = {()=>{
+                    this.setState({
+                        showmafia:!this.state.showmafia,
+                        showtown:false,
+                        showneutral:false,
+                    }) 
+                }} >
+                <Text style = {{
+                    fontFamily:'ConcertOne-Regular',
+                    fontSize: 25, color: colors.background,
+                    marginTop:5, marginBottom:5}}>Mafia</Text>
+            </TouchableOpacity>
+
+            {!this.state.showmafia?null:<View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+                data={this.state.mafialist}
+                renderItem={({item}) => (
+                    <TouchableOpacity
+                        onPress = {()=>{
+                            this._roleBtnPress(item.key,item.index)  
+                        }}
+                        style = {{backgroundColor:colors.background,flex:0.33,
+                            borderRadius:10, margin:3}}>
+                        <View style = {{justifyContent:'center',alignItems:'center'}}>
+                            <Image 
+                                style={{width:70,height:70}}
+                                source={{uri: Rolesheet[item.key].image}}
+                            />
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:18}}>{item.name}</Text>
+                            <Text style = {{
+                                color:colors.font,
+                                fontFamily: 'ConcertOne-Regular',
+                                fontSize:14,
+                                marginBottom:5}}>{item.category}</Text>
+                        </View>
+                    </TouchableOpacity>
+                )}
+                style={{margin:3}}
+                numColumns = {3}
+                keyExtractor={item => item.key}
+            />
+            </View>}
+
+            <TouchableOpacity
+                style = {{backgroundColor:colors.font, borderRadius:2,
+                    justifyContent:'center', alignItems:'center',
+                    marginTop:3, marginBottom:3, flex:0.075}}
+                onPress = {()=>{
+                    this.setState({
+                        showneutral:!this.state.showneutral,
+                        showtown:false,
+                        showmafia:false,
+                    })
+                }} >
+                <Text style = {{
+                    fontFamily:'ConcertOne-Regular',
+                    fontSize: 25, color: colors.background,
+                    marginTop:5, marginBottom:5}}>Neutral</Text>
+            </TouchableOpacity>
+
+            {!this.state.showneutral?null:<View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+                data={this.state.neutrallist}
+                renderItem={({item}) => (
+                    <TouchableOpacity
+                        onPress = {()=>{
+                            this._roleBtnPress(item.key,item.index)  
+                        }}
+                        style = {{backgroundColor:colors.background,flex:0.33,
                             borderRadius:10, margin:3}}>
                         <View style = {{justifyContent:'center',alignItems:'center'}}>
                             <Image 
@@ -724,6 +1017,9 @@ export default RuleBook = StackNavigator(
       },
       Roles: {
         screen: Roles,
+      },
+      ActiveRoles: {
+        screen: ActiveRoles,
       },
       Rulebook: {
         screen: Rulebook,
