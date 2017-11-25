@@ -694,7 +694,7 @@ class InfoPage extends Component {
     _renderListItem(item) {
         if(item.type == 1){
             return <View style = {styles.detailContainer}>
-                <Text style = {styles.details}>{item.desc}</Text>
+                <Text style = {styles.detail}>{item.desc}</Text>
             </View>
         } else if (item.type == 2){
             return <View style = {styles.commentContainer}>
@@ -752,7 +752,7 @@ export default RuleBook = StackNavigator(
         fontSize: 25,
         color: colors.main,
     },
-    details: {
+    detail: {
         color:colors.font,
         fontFamily: 'ConcertOne-Regular',
         fontSize:17,

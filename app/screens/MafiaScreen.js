@@ -945,7 +945,9 @@ _adjustmentPhase() {
 
             if (child.val().E) {
                 firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target 
-                + '/' + child.val().roleid + '/' + child.key).remove()
+                    + '/' + child.val().roleid + '/' + child.key).remove()
+                firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.key) 
+                    .update({ targetname: 'Nobody' })
             }
 
         })
@@ -1069,7 +1071,7 @@ _actionPhase() {
                                 })
                             }
                         })
-                        this._noticeMsg(child.key,'#34cd0e',string + ' visited ' + child.val().targetname 
+                        this._noticeMsg(child.key,string + ' visited ' + child.val().targetname 
                             + "'s house last night.")
                     })
                 }
@@ -1086,10 +1088,10 @@ _actionPhase() {
                     + child.val().target).once('value',wheredhego=>{
                         if(wheredhego.val().targetname){
                             this._noticeMsg(child.key, child.val().targetname + ' visited ' 
-                            + wheredhego.val().targetname +"'s house last night.");
+                            + wheredhego.val().targetname +"s house last night.");
                         } else {
                             this._noticeMsg(child.key, child.val().targetname 
-                            + ' did not leave their house last night.');
+                            + ' visited Nobodys house last night.');
                         }
                     })
                 }
