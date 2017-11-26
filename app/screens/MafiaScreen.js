@@ -19,6 +19,7 @@ import { NavigationActions } from 'react-navigation';
 import colors from '../misc/colors.js';
 import Rolesheet from '../misc/roles.json';
 import { PushButton } from '../components/PushButton.js';
+import { NameButton } from '../components/NameButton.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -45,6 +46,7 @@ constructor(props) {
         daycounter:         '',
         phasename:          '',
         topmessage:         '',
+        phasecolor:         colors.background,
 
         myname:             '',
         myrole:             '',
@@ -71,17 +73,16 @@ constructor(props) {
 
         gameover:           false,
 
-        backSize:           new Animated.Value(0.001),
+        titleSize:          new Animated.Value(0.63),
+        backSize:           new Animated.Value(0.01),
         voteSize:           new Animated.Value(0.15),
         abstainSize:        new Animated.Value(0.15),
-        orSize:             new Animated.Value(0.02),
-        listSize:           new Animated.Value(0.001),
-        waitingSize:        new Animated.Value(0.001),
+        listSize:           new Animated.Value(0.01),
+        waitingSize:        new Animated.Value(0.01),
         
         backOpacity:        new Animated.Value(0),
         voteOpacity:        new Animated.Value(1),
         abstainOpacity:     new Animated.Value(1),
-        orOpacity:          new Animated.Value(1),
         listOpacity:        new Animated.Value(0),
         waitingOpacity:     new Animated.Value(0),
     };
@@ -215,69 +216,76 @@ componentWillMount() {
                     })
                 } else if (snap.val() == 2){
                     if(actionbtn.val().readyvalue == true){
-                        this._viewChange(false,false,false,false,false,true)
+                        this._viewChange(false,false,false,false,false,false,true)
                     } else {
-                        this._viewChange(false,true,true,true,false,false)
+                        this._viewChange(true,false,true,true,true,false,false)
                     }
                     this.setState({
                         phasename:      'DAY',
                         topmessage:     null,
                         btn1:           'VOTE',
                         btn2:           'ABSTAIN',
+                        phasecolor:     colors.gamecolor,
                     })
                 } else if (snap.val() == 3){
                     if(actionbtn.val().readyvalue == true){
-                        this._viewChange(false,false,false,false,false,true)
+                        this._viewChange(false,false,false,false,false,false,true)
                     } else {
-                        this._viewChange(false,true,true,true,false,false)
+                        this._viewChange(true,false,true,true,true,false,false)
                     }
                     this.setState({
                         phasename:      'Lynch',
                         topmessage:     'has been nominated',
                         btn1:           'INNOCENT',
                         btn2:           'GUILTY',
+                        phasecolor:     colors.gamecolor,
                     })
                 } else if (snap.val() == 4){
                     this.nominationRef.once('value',nomin=>{
                         if(nomin.val() == firebase.auth().currentUser.uid){
-                            this._viewChange(false,false,false,false,true,false)
+                            this._viewChange(false,false,false,false,false,true,false)
                             this.setState({
                                 phasename:      'You are dead',
                                 topmessage:     'choose the new killer',
+                                phasecolor:     colors.gamecolor,
                             })
                         } else {
-                            this._viewChange(false,false,false,false,false,true)
+                            this._viewChange(false,false,false,false,false,false,true)
                             this.setState({
                                 phasename:      '...',
                                 topmessage:     'is choosing the new killer',
+                                phasecolor:     colors.gamecolor,
                             })
                         }
                     })
                 } else if (snap.val() == 5){
                     if(actionbtn.val().readyvalue == true){
-                        this._viewChange(false,false,false,false,false,true)
+                        this._viewChange(false,false,false,false,false,false,true)
                     } else {
-                        this._viewChange(false,true,true,true,false,false)
+                        this._viewChange(true,false,true,true,true,false,false)
                     }
                     this.setState({
                         phasename:      'Night',
-                        topmessage:     'Select an option',
+                        topmessage:     null,
                         btn1:           'VISIT',
                         btn2:           'STAY HOME',
+                        phasecolor:     colors.gamecolor,
                     })
                 } else if (snap.val() == 6){
-                    this._viewChange(false,true,true,true,false,false)
+                    this._viewChange(true,false,true,true,true,false,false)
                     this.setState({
                         phasename:      'Town Win',
                         btn1:           'PLAY AGAIN',
                         btn2:           'QUIT',
+                        phasecolor:     colors.gamecolor,
                     })
                 } else if (snap.val() == 7){
-                    this._viewChange(false,true,true,true,false,false)
+                    this._viewChange(true,false,true,true,true,false,false)
                     this.setState({
                         phasename:      'Mafia Win',
                         btn1:           'PLAY AGAIN',
                         btn2:           'QUIT',
+                        phasecolor:     colors.gamecolor,
                     })
                 }
             })
@@ -508,67 +516,64 @@ _changeCount(bool){
     }
 }
 
-_viewChange(back,vote,or,abstain,list,waiting) {
-    Animated.timing(
-        this.state.backSize, {
-            duration: 600,
-            toValue: back?0.2:0.001
-    }).start(),
-    Animated.timing(
-        this.state.backOpacity, {
-            duration: 600,
-            toValue: back?1:0
-    }).start(),
-    Animated.timing(
-        this.state.voteSize, {
-            duration: 600,
-            toValue: vote?0.15:0.001
-    }).start(),
-    Animated.timing(
-        this.state.voteOpacity, {
-            duration: 600,
-            toValue: vote?1:0
-    }).start(),
-    Animated.timing(
-        this.state.orSize, {
-            duration: 600,
-            toValue: or?0.02:0.02
-    }).start(),
-    Animated.timing(
-        this.state.orOpacity, {
-            duration: 600,
-            toValue: or?1:0
-    }).start(),
-    Animated.timing(
-        this.state.abstainSize, {
-            duration: 600,
-            toValue: abstain?0.15:0.001
-    }).start(),
-    Animated.timing(
-        this.state.abstainOpacity, {
-            duration: 600,
-            toValue: abstain?1:0
-    }).start(),
-    Animated.timing(
-        this.state.listSize, {
-            duration: 600,
-            toValue: list?0.65:0.01
-    }).start(),
-    Animated.timing(
-        this.state.listOpacity, {
-            duration: 600,
-            toValue: list?1:0
-    }).start(),
-    Animated.timing(
-        this.state.waitingSize, {
-            duration: 600,
-            toValue: waiting?0.2:0.001
-    }).start(),
-    Animated.timing(
-        this.state.waitingOpacity, {
-            duration: 600,
-            toValue: waiting?1:0
-    }).start()
+_viewChange(title,back,vote,or,abstain,list,waiting) {
+    Animated.parallel([
+        Animated.timing(
+            this.state.titleSize, {
+                duration: 600,
+                toValue: title?0.63:0.13
+        }),
+        Animated.timing(
+            this.state.backSize, {
+                duration: 600,
+                toValue: back?0.15:0.01
+        }),
+        Animated.timing(
+            this.state.backOpacity, {
+                duration: 600,
+                toValue: back?1:0
+        }),
+        Animated.timing(
+            this.state.voteSize, {
+                duration: 600,
+                toValue: vote?0.15:0.01
+        }),
+        Animated.timing(
+            this.state.voteOpacity, {
+                duration: 600,
+                toValue: vote?1:0
+        }),
+        Animated.timing(
+            this.state.abstainSize, {
+                duration: 600,
+                toValue: abstain?0.15:0.01
+        }),
+        Animated.timing(
+            this.state.abstainOpacity, {
+                duration: 600,
+                toValue: abstain?1:0
+        }),
+        Animated.timing(
+            this.state.listSize, {
+                duration: 600,
+                toValue: list?0.65:0.01
+        }),
+        Animated.timing(
+            this.state.listOpacity, {
+                duration: 600,
+                toValue: list?1:0
+        }),
+        Animated.timing(
+            this.state.waitingSize, {
+                duration: 600,
+                toValue: waiting?0.2:0.01
+        }),
+        Animated.timing(
+            this.state.waitingOpacity, {
+                duration: 600,
+                toValue: waiting?1:0
+        })
+    ]).start();
 }
 
 //Pressing any name button
@@ -579,7 +584,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     setTimeout(() => {this.setState({disabled: false})}, 600);
 
     if(phase == 2){ 
-        this._viewChange(false,false,false,false,false,true)
+        this._viewChange(false,false,false,false,false,false,true)
         this.setState({topmessage:'You have selected ' + name + '.'})
 
         this._pressedUid(uid);
@@ -607,7 +612,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
         })
     } else if (phase==5) {
 
-        this._viewChange(false,false,false,false,false,true)
+        this._viewChange(false,false,false,false,false,false,true)
         this.setState({topmessage:'You have selected ' + name + '.'})
 
         firebase.database().ref('rooms/' + roomname + '/actions/' 
@@ -647,16 +652,16 @@ _optionOnePress() {
     setTimeout(() => {this.setState({disabled: false})}, 600);
     
     if(this.state.phase == 2){
-        this._viewChange(true,false,false,false,true,false)
+        this._viewChange(false,true,false,false,false,true,false)
     } else if (this.state.phase == 3){
-        this._viewChange(false,false,false,false,false,true)
+        this._viewChange(false,false,false,false,false,false,true)
         this.setState({topmessage:'You voted INNOCENT.'})
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
             this._readyValue(true);
             this._changeCount(true);
         })
     } else if (this.state.phase == 5){
-        this._viewChange(true,false,false,false,true,false)
+        this._viewChange(false,true,false,false,false,true,false)
     } else if (this.state.phase == 6 || this.state.phase == 7){
         alert('feature not available yet')
     }
@@ -669,19 +674,19 @@ _optionTwoPress() {
     setTimeout(() => {this.setState({disabled: false})}, 600);
 
     if(this.state.phase == 2){
-        this._viewChange(false,false,false,false,false,true)
+        this._viewChange(false,false,false,false,false,false,true)
         this._readyValue(true);
         this._changeCount(true);
         this.setState({topmessage:'You abstained.'})
     } else if (this.state.phase == 3){
-        this._viewChange(false,false,false,false,false,true)
+        this._viewChange(false,false,false,false,false,false,true)
         this.setState({topmessage:'You voted GUILTY.'})
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname).then(()=>{
             this._readyValue(true);
             this._changeCount(true);
         })
     } else if (this.state.phase == 5){
-        this._viewChange(false,false,false,false,false,true)
+        this._viewChange(false,false,false,false,false,false,true)
         this._readyValue(true);
         this._changeCount(true);
         this.setState({topmessage:'You stayed home.'})
@@ -698,8 +703,8 @@ _resetOptionPress() {
     setTimeout(() => {this.setState({disabled: false})}, 600);
 
     if(this.state.phase != 4){
-        this._viewChange(false,true,true,true,false,false)
-        this.setState({topmessage:'Select an option.'})
+        this._viewChange(true,false,true,true,true,false,false)
+        this.setState({topmessage:null})
     }
 
     if(this.state.phase == 2){
@@ -775,36 +780,39 @@ _renderListComponent(){
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
-                <TouchableOpacity 
+                <NameButton
                     onPress={() => {this.state.disabled?{}:
-                        this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                        this.state.phase,this.state.roomname)}}
+                    this._nameBtnPress(item.key,item.name,this.state.triggernum,
+                    this.state.phase,this.state.roomname)}}
                     onLongPress={()=>{
-                        this._nameBtnLongPress(item.key,item.name,this.state.phase)
+                    this._nameBtnLongPress(item.key,item.name,this.state.phase)
                     }}
-                    style = {item.dead ? styles.dead : (item.immune? styles.immune : 
-                        (item.status?styles.status:styles.alive))}
-                    disabled = {this.state.amidead?true:(item.immune?true:item.dead)}>
-                    <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                    color = {item.dead ? colors.dead : (item.immune? colors.immune : 
+                        (item.status?colors.status:colors.namebtn))}
+                    depth = {5}
+                    radius = {5}
+                    disabled = {this.state.amidead?true:(item.immune?true:item.dead)}
+                    component = {<View style = {{flexDirection:'row',alignItems:'center',
+                        justifyContent:'center', height:35}}>
                         <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
                         <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
                             'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
-                            style={{color:colors.background, fontSize:26}}/>
+                            style={{color:colors.font, fontSize:26}}/>
                         </View>
-                        <View style = {{flex:5}}>
+                        <View style = {{flex:5, justifyContent:'center'}}>
                             {item.dead?
-                                <Text style = {styles.dconcerto}>
+                                <Text style = {styles.concerto}>
                                     {item.name + ' ' + (item.type==2?'(Town)':
                                     item.type==1?'(Mafia)':'(Neutral)')}</Text>
                                 :
-                                <Text style = {styles.dconcerto}>{item.name}</Text>
+                                <Text style = {styles.concerto}>{item.name}</Text>
                             }
                         </View>
                         <View style = {{flex:1}}>
-                            <Text style = {styles.dconcerto}>{item.votes>0?item.votes:null}</Text>
+                            <Text style = {styles.concerto}>{item.votes>0?item.votes:null}</Text>
                         </View>
-                    </View>
-                </TouchableOpacity>
+                    </View>}
+                />
             )}
             keyExtractor={item => item.key}
         />
@@ -815,17 +823,18 @@ _renderListComponent(){
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
-                <TouchableOpacity 
+                <NameButton
                     onPress={() => {
                         this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? styles.dead : styles.alive}
+                    style = {item.dead ? colors.dead : colors.alive}
+                    depth = {5}
+                    radius = {5}
                     disabled = {this.state.amipicking?item.dead:false}
-                    > 
-                    {item.dead?<MaterialCommunityIcons name={item.dead?'skull':null}
+                    component = {item.dead?<MaterialCommunityIcons name={item.dead?'skull':null}
                         style={{color:colors.main, fontSize:26,alignSelf:'center'}}/>:
                         <Text style = {styles.dconcerto}>{item.name}</Text>}
-                </TouchableOpacity>
+                />
             )}
             keyExtractor={item => item.key}
         />
@@ -834,39 +843,41 @@ _renderListComponent(){
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
-                <TouchableOpacity 
+                <NameButton
                     onPress={() => {this.state.disabled?{}:
-                        this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                            this.state.phase,this.state.roomname)
+                    this._nameBtnPress(item.key,item.name,this.state.triggernum,
+                        this.state.phase,this.state.roomname)
                     }}
                     onLongPress={()=>{
                         this._nameBtnLongPress(item.key,item.name,this.state.phase)
                     }}
-                    style = {item.dead ? styles.dead : styles.alive}
+                    color = {item.dead ? colors.dead : colors.alive}
+                    depth = {5}
+                    radius = {5}
                     disabled = {this.state.amidead?true:this.state.targettown?
                         (this.state.targetdead? (item.type==1 || !item.dead) : item.type == 1 ) 
-                        : (this.state.targetdead? !item.dead : false )}>
-                            
-                    <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                        : (this.state.targetdead? !item.dead : false )}
+                    component={<View style = {{flexDirection:'row',alignItems:'center',
+                        justifyContent:'center'}}>
                         <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
                         <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
                             'check-circle':(item.immune?'needle':null)}
-                            style={{color:'white', fontSize:26}}/>
+                            style={{color:colors.font, fontSize:26}}/>
                         </View>
                         <View style = {{flex:5}}>
                             {item.dead?
-                                <Text style = {styles.dconcerto}>
+                                <Text style = {styles.concerto}>
                                     {item.name + ' ' + (item.type==2?'(Town)':
                                     item.type==1?'(Mafia)':'(Neutral)')}</Text>
                                 :
-                                <Text style = {styles.dconcerto}>{item.name}</Text>
+                                <Text style = {styles.concerto}>{item.name}</Text>
                             }
                         </View>
                         <View style = {{flex:1}}>
-                            <Text style = {styles.dconcerto}>{item.votes>0?item.votes:null}</Text>
+                            <Text style = {styles.concerto}>{item.votes>0?item.votes:null}</Text>
                         </View>
-                    </View>
-                </TouchableOpacity>
+                    </View>}
+                />
             )}
             keyExtractor={item => item.key}
         />
@@ -874,22 +885,25 @@ _renderListComponent(){
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
-                <TouchableOpacity
-                    style = {item.dead ? styles.dead : (item.immune? styles.immune : styles.alive)}
-                    disabled>
-                    <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                        <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                        <MaterialCommunityIcons name={item.dead?'skull':null}
-                            style={{color:'white', fontSize:26}}/>
+                <NameButton
+                    color = {item.dead ? colors.dead : (item.immune? colors.immune : colors.alive)}
+                    depth = {5}
+                    radius = {5}
+                    component = {
+                        <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
+                            <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
+                            <MaterialCommunityIcons name={item.dead?'skull':null}
+                                style={{color:'white', fontSize:26}}/>
+                            </View>
+                            <View style = {{flex:5}}>
+                                <Text style = {styles.dconcerto}>
+                                    {item.name + ' ' + (item.type==2?'(Town)':
+                                    item.type==1?'(Mafia)':'(Neutral)')}</Text>
+                            </View>
+                            <View style = {{flex:1}}/>
                         </View>
-                        <View style = {{flex:5}}>
-                            <Text style = {styles.dconcerto}>
-                                {item.name + ' ' + (item.type==2?'(Town)':
-                                item.type==1?'(Mafia)':'(Neutral)')}</Text>
-                        </View>
-                        <View style = {{flex:1}}/>
-                    </View>
-                </TouchableOpacity>
+                    }
+                />
             )}
             keyExtractor={item => item.key}
         />
@@ -1156,32 +1170,33 @@ return <View style = {{flex:1, backgroundColor:colors.gamecolor, padding:10,
 justifyContent:'center'}}>
 
 
-    <Animatable.View animation = 'fadeIn'
-        style = {{flex:0.13,justifyContent:'center', backgroundColor:colors.gamecolor,
+    <Animated.View style = {{flex:this.state.titleSize,justifyContent:'center',
+        backgroundColor:colors.gamecolor,
             borderRadius:2, marginBottom:10}}>
             {this._renderPhaseName()}
             {this._renderTopMessage()}
-    </Animatable.View>
+    </Animated.View>
 
 
     <PushButton
         size = {this.state.backSize}
         opacity = {this.state.backOpacity}
+        depth = {10}
         color = {colors.pushbutton}
         radius = {50}
         disabled = {this.state.disabled}
         onPress = {()=>{ 
-            this._viewChange(false,true,true,true,false,false) 
+            this._viewChange(true,false,true,true,true,false,false) 
         }}
-        component = {<View>
+        component = {
             <Text style = {styles.bconcerto}>RETURN</Text>
-            <Text style = {styles.concerto}>to main screen</Text></View>
         }
     />
 
     <PushButton
         size = {this.state.voteSize}
         opacity = {this.state.voteOpacity}
+        depth = {10}
         color = {colors.pushbutton}
         radius = {50}
         disabled = {this.state.disabled}
@@ -1196,6 +1211,7 @@ justifyContent:'center'}}>
     <PushButton
         size = {this.state.waitingSize}
         opacity = {this.state.waitingOpacity}
+        depth = {10}
         color = {colors.pushbutton}
         radius = {50}
         disabled = {this.state.disabled}
@@ -1210,7 +1226,7 @@ justifyContent:'center'}}>
                 0.75:{opacity:0.5},
                 1:{opacity:1},
             }} iterationCount="infinite" duration={2000} >
-            WAITING FOR OTHERS</Animatable.Text>
+            WAITING</Animatable.Text>
             <Animatable.Text style = {styles.concerto} animation={{
                 0: {opacity:1},
                 0.25:{opacity:0.5},
@@ -1218,18 +1234,14 @@ justifyContent:'center'}}>
                 0.75:{opacity:0.5},
                 1:{opacity:1},
             }} iterationCount="infinite" duration={2000} >
-            click here to change your mind</Animatable.Text></View>
+            click here to cancel</Animatable.Text></View>
         }
     />
-
-    <Animated.View style = {{flex:this.state.orSize, opacity:this.state.orOpacity, 
-        justifyContent:'center'}}>
-        <Text style = {styles.concerto}> </Text>
-    </Animated.View>
 
     <PushButton
         size = {this.state.voteSize}
         opacity = {this.state.voteOpacity}
+        depth = {10}
         color = {colors.pushbutton}
         radius = {50}
         disabled = {this.state.disabled}
@@ -1251,34 +1263,6 @@ justifyContent:'center'}}>
 }
 
 const styles = StyleSheet.create({
-    alive: {
-        height:40,
-        backgroundColor: colors.main,
-        marginBottom:5,
-        borderRadius:2,
-        justifyContent:'center',
-    },
-    dead: {
-        height:40,
-        backgroundColor: 'grey',
-        marginBottom:5,
-        borderRadius:2,
-        justifyContent:'center',
-    },
-    immune: {
-        height:40,
-        backgroundColor: colors.color2,
-        marginBottom:5,
-        borderRadius:2,
-        justifyContent:'center',
-    },
-    status: {
-        height:40,
-        backgroundColor: colors.status,
-        marginBottom:5,
-        borderRadius:2,
-        justifyContent:'center',
-    },
     headerFont: {
         fontFamily:'ConcertOne-Regular',
         fontSize: 30,
@@ -1294,7 +1278,7 @@ const styles = StyleSheet.create({
     concerto: {
         fontSize:17,
         fontFamily:'ConcertOne-Regular',
-        color:colors.main,
+        color:colors.font,
         alignSelf: 'center',
     },
     bconcerto: {

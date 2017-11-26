@@ -1,10 +1,4 @@
 export default colors = {
-    
-    //Purple Palette
-    main:       '#54537A',
-    highlight:  '#e3c382',
-    background: '#9793A6',
-    title:      '#231715', 
 
     //Other colors
     color1:     '#54537A',
@@ -15,13 +9,15 @@ export default colors = {
     immune:     '#e3c382',
     disabled:   '#495D7A', //Lobby Colors for Bottom Component
     status:     '#9695b7',
+    dead:       '#919191',
+    alive:      '#3FD0A9',
 
     //Blue Palette
     main:       '#DBE0D6', 
     highlight:  '#e3c382',
     background: '#1F476E',
     title:      '#231715',
-    font:       '#DBE0D6',
+    font:       'white',
     icon:       'white',  
 
     //Colors
@@ -35,16 +31,19 @@ export default colors = {
     titlefont:  'white',
     shadow:     'rgba(0, 0, 0, 0.34)',
     gamecolor:  '#5DB5AC',
-    gamecolor:  '#1D7F81',
+    gamecolor:  '#9ce2db',
+    gamecolor:  '#776971',
     pushbutton: '#f1556f',
+    namebtn:    '#3FD0A9',
 
 //COMPONENTS
 
     //Tab Navigator
-    tabbackground:          '#54537A', //purple
     tabbackground:          '#1F476E', //blue
-    indicatorcolor:         '#DBE0D6',
-    iconcolor:              '#DBE0D6',
+    tabbackground:          '#9ce2db', //light blue
+    tabbackground:          '#776971', //purplegrey
+    indicatorcolor:         'white',
+    iconcolor:              'white',
     
     //Header Style
     headerbackground:       '#54537A', //purple

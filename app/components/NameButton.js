@@ -4,7 +4,7 @@ import { View, Animated, TouchableOpacity } from 'react-native';
 
 import colors from '../misc/colors.js';
 
-export class PushButton extends React.Component {
+export class NameButton extends React.Component {
 
 constructor(props) {
     super(props);
@@ -31,6 +31,7 @@ render() {
             justifyContent:'center',
             opacity:this.props.opacity,
             borderRadius:this.props.radius,
+            marginBottom:10
         }}>
             <View style = {{
                 flex:0.8,
