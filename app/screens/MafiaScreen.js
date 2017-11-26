@@ -32,6 +32,10 @@ const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
 
+const FADEOUT_ANIM = 300;
+const SIZE_ANIM = 600;
+const FADEIN_ANIM = 300;
+
 export default class Mafia_Screen extends React.Component {
 
 constructor(props) {
@@ -517,63 +521,95 @@ _changeCount(bool){
 }
 
 _viewChange(title,back,vote,or,abstain,list,waiting) {
-    Animated.parallel([
-        Animated.timing(
-            this.state.titleSize, {
-                duration: 600,
-                toValue: title?0.63:0.13
-        }),
-        Animated.timing(
-            this.state.backSize, {
-                duration: 600,
-                toValue: back?0.15:0.01
-        }),
-        Animated.timing(
-            this.state.backOpacity, {
-                duration: 600,
-                toValue: back?1:0
-        }),
-        Animated.timing(
-            this.state.voteSize, {
-                duration: 600,
-                toValue: vote?0.15:0.01
-        }),
-        Animated.timing(
-            this.state.voteOpacity, {
-                duration: 600,
-                toValue: vote?1:0
-        }),
-        Animated.timing(
-            this.state.abstainSize, {
-                duration: 600,
-                toValue: abstain?0.15:0.01
-        }),
-        Animated.timing(
-            this.state.abstainOpacity, {
-                duration: 600,
-                toValue: abstain?1:0
-        }),
-        Animated.timing(
-            this.state.listSize, {
-                duration: 600,
-                toValue: list?0.65:0.01
-        }),
-        Animated.timing(
-            this.state.listOpacity, {
-                duration: 600,
-                toValue: list?1:0
-        }),
-        Animated.timing(
-            this.state.waitingSize, {
-                duration: 600,
-                toValue: waiting?0.2:0.01
-        }),
-        Animated.timing(
-            this.state.waitingOpacity, {
-                duration: 600,
-                toValue: waiting?1:0
-        })
-    ]).start();
+
+    Animated.sequence([
+        Animated.parallel([
+            Animated.timing(
+                this.state.backOpacity, {
+                    duration: FADEOUT_ANIM,
+                    toValue: 0
+            }),
+            Animated.timing(
+                this.state.voteOpacity, {
+                    duration: FADEOUT_ANIM,
+                    toValue: 0
+            }),
+            Animated.timing(
+                this.state.abstainOpacity, {
+                    duration: FADEOUT_ANIM,
+                    toValue: 0
+            }),
+            Animated.timing(
+                this.state.listOpacity, {
+                    duration: FADEOUT_ANIM,
+                    toValue: 0
+            }),
+            Animated.timing(
+                this.state.waitingOpacity, {
+                    duration: FADEOUT_ANIM,
+                    toValue: 0
+            })
+        ]),
+        Animated.parallel([
+            Animated.timing(
+                this.state.titleSize, {
+                    duration: SIZE_ANIM,
+                    toValue: title?0.63:0.13
+            }),
+            Animated.timing(
+                this.state.backSize, {
+                    duration: SIZE_ANIM,
+                    toValue: back?0.15:0.01
+            }),
+            Animated.timing(
+                this.state.voteSize, {
+                    duration: SIZE_ANIM,
+                    toValue: vote?0.15:0.01
+            }),
+            Animated.timing(
+                this.state.abstainSize, {
+                    duration: SIZE_ANIM,
+                    toValue: abstain?0.15:0.01
+            }),
+            Animated.timing(
+                this.state.listSize, {
+                    duration: SIZE_ANIM,
+                    toValue: list?0.65:0.01
+            }),
+            Animated.timing(
+                this.state.waitingSize, {
+                    duration: SIZE_ANIM,
+                    toValue: waiting?0.2:0.01
+            }),
+        ]),
+        Animated.parallel([
+            Animated.timing(
+                this.state.backOpacity, {
+                    duration: FADEIN_ANIM,
+                    toValue: back?1:0
+            }),
+            Animated.timing(
+                this.state.voteOpacity, {
+                    duration: FADEIN_ANIM,
+                    toValue: vote?1:0
+            }),
+            Animated.timing(
+                this.state.abstainOpacity, {
+                    duration: FADEIN_ANIM,
+                    toValue: abstain?1:0
+            }),
+            Animated.timing(
+                this.state.listOpacity, {
+                    duration: FADEIN_ANIM,
+                    toValue: list?1:0
+            }),
+            Animated.timing(
+                this.state.waitingOpacity, {
+                    duration: FADEIN_ANIM,
+                    toValue: waiting?1:0
+            })
+        ])
+    ]).start()
 }
 
 //Pressing any name button
