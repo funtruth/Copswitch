@@ -23,11 +23,19 @@ export default colors = {
     title:      '#231715',
     font:       '#DBE0D6',
     icon:       'white',  
-    
+
     //Colors
     color1:     '#1F476E',
     color2:     '#6D849C',
     color3:     '#99A4BA',
+
+    //Testing Palette
+    background: '#a9e0ef',
+    color2:     '#f1556f',
+    font:       'white',
+    main:       'white',
+    titlefont:  'white',
+    shadow:     'rgba(0, 0, 0, 0.34)',
 
 //COMPONENTS
 

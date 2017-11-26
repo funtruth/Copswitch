@@ -73,7 +73,7 @@ constructor(props) {
         backSize:           new Animated.Value(0.001),
         voteSize:           new Animated.Value(0.2),
         abstainSize:        new Animated.Value(0.2),
-        orSize:             new Animated.Value(0.06),
+        orSize:             new Animated.Value(0.02),
         listSize:           new Animated.Value(0.001),
         waitingSize:        new Animated.Value(0.001),
         
@@ -219,8 +219,8 @@ componentWillMount() {
                         this._viewChange(false,true,true,true,false,false)
                     }
                     this.setState({
-                        phasename:      'Day',
-                        topmessage:     'Select an option',
+                        phasename:      'DAY',
+                        topmessage:     null,
                         btn1:           'VOTE',
                         subtitle1:      'to lynch another player',
                         btn2:           'ABSTAIN',
@@ -541,7 +541,7 @@ _viewChange(back,vote,or,abstain,list,waiting) {
     Animated.timing(
         this.state.orSize, {
             duration: 600,
-            toValue: or?0.06:0.02
+            toValue: or?0.02:0.02
     }).start(),
     Animated.timing(
         this.state.orOpacity, {
@@ -750,13 +750,13 @@ _resetOptionPress() {
 
 _renderPhaseName() {
     if(this.state.phase == 2 || this.state.phase == 5){
-        return <Text style = {{color:colors.background, alignSelf:'center', 
-        fontFamily: 'ConcertOne-Regular', fontSize:25}}>
+        return <Text style = {{color:colors.titlefont, alignSelf:'center', 
+        fontFamily: 'ConcertOne-Regular', fontSize:35}}>
         {this.state.phasename + ' ' + this.state.daycounter}
     </Text>
     } else {
-        return <Text style = {{color:colors.background, alignSelf:'center', 
-        fontFamily: 'ConcertOne-Regular', fontSize:25}}>
+        return <Text style = {{color:colors.titlefont, alignSelf:'center', 
+        fontFamily: 'ConcertOne-Regular', fontSize:35}}>
         {this.state.phasename}
     </Text>
     }
@@ -765,12 +765,12 @@ _renderPhaseName() {
 _renderTopMessage(){
     
     if(this.state.phase == 3 || (this.state.phase == 4 && this.state.nominate != firebase.auth().currentUser.uid)){
-        return <Text style = {{color:colors.background, alignSelf:'center', 
+        return <Text style = {{color:colors.titlefont, alignSelf:'center', 
             fontFamily: 'ConcertOne-Regular', fontSize:14}}>
             {this.state.nominee + ' ' + this.state.topmessage}
         </Text>
     } else {
-        return <Text style = {{color:colors.background, alignSelf:'center',
+        return <Text style = {{color:colors.titlefont, alignSelf:'center',
             fontFamily: 'ConcertOne-Regular', fontSize:14}}>
             {this.state.topmessage}
         </Text>
@@ -1164,8 +1164,9 @@ render() {
 return <View style = {{flex:1, backgroundColor:colors.background, padding:10,
 justifyContent:'center'}}>
 
+
     <Animatable.View animation = 'fadeIn'
-        style = {{flex:0.13,justifyContent:'center', backgroundColor:colors.main,
+        style = {{flex:0.43,justifyContent:'center', backgroundColor:colors.background,
             borderRadius:2, marginBottom:10}}>
             {this._renderPhaseName()}
             {this._renderTopMessage()}
@@ -1182,13 +1183,17 @@ justifyContent:'center'}}>
     </Animated.View>
 
     <Animated.View style = {{flex:this.state.voteSize, opacity:this.state.voteOpacity,
-        backgroundColor:colors.color2, borderRadius:2}}>
-        <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
-            onPress = {()=>{ this._optionOnePress() }}
-            disabled = {this.state.disabled}>
-            <Text style = {styles.bconcerto}>{this.state.btn1}</Text>
-            <Text style = {styles.concerto}>{this.state.subtitle1}</Text>
-        </TouchableOpacity>
+        backgroundColor:colors.color2, borderRadius:50}}>
+        <View style = {{flex:1, justifyContent:'center',backgroundColor:colors.shadow
+            , borderRadius:50}}>
+            <TouchableOpacity style = {{flex:1, justifyContent:'center',
+                backgroundColor:colors.color2, marginBottom:10, borderRadius:50}}
+                onPress = {()=>{ this._optionOnePress() }}
+                disabled = {this.state.disabled}>
+                <Text style = {styles.bconcerto}>{this.state.btn1}</Text>
+                <Text style = {styles.concerto}>{this.state.subtitle1}</Text>
+            </TouchableOpacity>
+        </View>
     </Animated.View>
 
     <Animated.View style = {{ flex:this.state.waitingSize, opacity:this.state.waitingOpacity,
@@ -1217,17 +1222,21 @@ justifyContent:'center'}}>
 
     <Animated.View style = {{flex:this.state.orSize, opacity:this.state.orOpacity, 
         justifyContent:'center'}}>
-        <Text style = {styles.concerto}>----------OR----------</Text>
+        <Text style = {styles.concerto}> </Text>
     </Animated.View>
 
-    <Animated.View style = {{flex:this.state.abstainSize,  opacity:this.state.abstainOpacity,
-        backgroundColor:colors.color2, borderRadius:2}}>
-        <TouchableOpacity style = {{flex:1, justifyContent:'center'}}
-            onPress = {()=>{ this._optionTwoPress() }}
-            disabled = {this.state.disabled}>
-            <Text style = {styles.bconcerto}>{this.state.btn2}</Text>
-            <Text style = {styles.concerto}>{this.state.subtitle2}</Text>
-        </TouchableOpacity>
+    <Animated.View style = {{flex:this.state.voteSize, opacity:this.state.voteOpacity,
+        backgroundColor:colors.color2, borderRadius:50}}>
+        <View style = {{flex:1, justifyContent:'center',backgroundColor:colors.shadow
+            , borderRadius:50}}>
+            <TouchableOpacity style = {{flex:1, justifyContent:'center',
+                backgroundColor:colors.color2, marginBottom:10, borderRadius:50}}
+                onPress = {()=>{ this._optionTwoPress() }}
+                disabled = {this.state.disabled}>
+                <Text style = {styles.bconcerto}>{this.state.btn2}</Text>
+                <Text style = {styles.concerto}>{this.state.subtitle2}</Text>
+            </TouchableOpacity>
+        </View>
     </Animated.View>
 
     <Animated.View style = {{ flex:this.state.listSize,  opacity:this.state.listOpacity,

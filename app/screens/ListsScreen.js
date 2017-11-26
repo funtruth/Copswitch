@@ -496,9 +496,14 @@ class Roles extends Component {
 class ActiveRoles extends Component {
     
     static navigationOptions = {
-        header:null
+        headerTitle: <Text style = {{fontSize:20,
+            fontFamily: 'ConcertOne-Regular',
+            color:colors.font,
+            marginLeft:15}}>Roles</Text>,
+        headerStyle: { backgroundColor: colors.headerbackground},
+        headerTintColor: colors.headerfont,
     };
-
+    
     constructor(props) {
         super(props);
 

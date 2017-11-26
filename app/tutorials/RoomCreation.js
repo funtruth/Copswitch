@@ -42,8 +42,6 @@ export class Creation1 extends Component {
             alias:'',
             loading:true,
             errormessage:null,
-            
-            firsttime: true,
         };
 
         this.nameRef = firebase.database().ref('rooms').child(params.roomname)
@@ -103,10 +101,7 @@ export class Creation1 extends Component {
                     presseduid:         'foo',
                 }).then(()=>{
                     this.setState({errormessage:null})
-                    if(this.state.firsttime){
-                        this.props.navigation.navigate('Creation2')
-                        this.setState({firsttime:false})
-                    }
+                    this.props.navigation.navigate('Creation2')
                 })
             } else {
                 this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
@@ -208,8 +203,6 @@ export class Creation2 extends Component {
             playercount: null,
             playernum: 1,
             loading:true,
-            
-            firsttime: true,
         };
     }
 
@@ -262,10 +255,7 @@ export class Creation2 extends Component {
             firebase.database().ref('rooms').child(this.state.roomname).update({
                 playernum: Number(this.state.playercount)
             }).then(()=>{
-                if(this.state.firsttime){
-                    this.props.navigation.navigate('Creation3')
-                    this.setState({firsttime:false})
-                }
+                this.props.navigation.navigate('Creation3')
             })
         }
     }
@@ -387,8 +377,6 @@ export class Creation3 extends Component {
             roomname: '',
             difficulty: null,
             loading:true,
-            
-            firsttime: true,
         };
         
     }
@@ -413,10 +401,7 @@ export class Creation3 extends Component {
             difficulty: difficulty
         }).then(()=>{
             this.setState({difficulty:difficulty})
-            if(this.state.firsttime){
-                this.props.navigation.navigate('Creation4')
-                this.setState({firsttime:false})
-            }
+            this.props.navigation.navigate('Creation4')
         })
     }
 
@@ -974,7 +959,7 @@ export class Creation5 extends Component {
         var randomstring = '';
         var charcount = 0;
 
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).once('value',snap=>{
+        firebase.database().ref('listofroles/' + roomname).once('value',snap=>{
 
             snap.forEach((child)=>{
                 for(i=0;i<child.val();i++){
