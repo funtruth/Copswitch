@@ -33,7 +33,7 @@ render() {
             borderRadius:this.props.radius,
         }}>
             <View style = {{
-                flex:0.8,
+                flex:0.85,
                 justifyContent:'center',
                 backgroundColor:colors.shadow, 
                 borderRadius:this.props.radius,

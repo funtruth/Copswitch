@@ -1,10 +1,4 @@
 export default colors = {
-
-    //Other colors
-    color1:     '#54537A',
-    color2:     '#6D849C',
-    color3:     '#9793A6',
-    color4:     '#613945',
     
     immune:     '#e3c382',
     disabled:   '#495D7A', //Lobby Colors for Bottom Component
@@ -16,6 +10,7 @@ export default colors = {
     main:       '#DBE0D6', 
     highlight:  '#e3c382',
     background: '#1F476E',
+    background: '#776971',
     title:      '#231715',
     font:       'white',
     icon:       'white',  

@@ -33,7 +33,7 @@ const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 import firebase from '../firebase/FirebaseController.js';
 
 const FADEOUT_ANIM = 300;
-const SIZE_ANIM = 600;
+const SIZE_ANIM = 500;
 const FADEIN_ANIM = 300;
 
 export default class Mafia_Screen extends React.Component {
@@ -79,8 +79,8 @@ constructor(props) {
 
         titleSize:          new Animated.Value(0.63),
         backSize:           new Animated.Value(0.01),
-        voteSize:           new Animated.Value(0.15),
-        abstainSize:        new Animated.Value(0.15),
+        voteSize:           new Animated.Value(0.12),
+        abstainSize:        new Animated.Value(0.12),
         listSize:           new Animated.Value(0.01),
         waitingSize:        new Animated.Value(0.01),
         
@@ -559,22 +559,22 @@ _viewChange(title,back,vote,or,abstain,list,waiting) {
             Animated.timing(
                 this.state.backSize, {
                     duration: SIZE_ANIM,
-                    toValue: back?0.15:0.01
+                    toValue: back?0.12:0.01
             }),
             Animated.timing(
                 this.state.voteSize, {
                     duration: SIZE_ANIM,
-                    toValue: vote?0.15:0.01
+                    toValue: vote?0.12:0.01
             }),
             Animated.timing(
                 this.state.abstainSize, {
                     duration: SIZE_ANIM,
-                    toValue: abstain?0.15:0.01
+                    toValue: abstain?0.12:0.01
             }),
             Animated.timing(
                 this.state.listSize, {
                     duration: SIZE_ANIM,
-                    toValue: list?0.65:0.01
+                    toValue: list?0.75:0.01
             }),
             Animated.timing(
                 this.state.waitingSize, {
@@ -1217,9 +1217,9 @@ justifyContent:'center'}}>
     <PushButton
         size = {this.state.backSize}
         opacity = {this.state.backOpacity}
-        depth = {10}
+        depth = {8}
         color = {colors.pushbutton}
-        radius = {50}
+        radius = {30}
         disabled = {this.state.disabled}
         onPress = {()=>{ 
             this._viewChange(true,false,true,true,true,false,false) 
@@ -1232,9 +1232,9 @@ justifyContent:'center'}}>
     <PushButton
         size = {this.state.voteSize}
         opacity = {this.state.voteOpacity}
-        depth = {10}
+        depth = {8}
         color = {colors.pushbutton}
-        radius = {50}
+        radius = {30}
         disabled = {this.state.disabled}
         onPress = {()=>{ 
             this._optionOnePress()
@@ -1254,32 +1254,25 @@ justifyContent:'center'}}>
         onPress = {()=>{ 
             this._resetOptionPress()
         }}
-        component = {<View>
-            <Animatable.Text style = {styles.bconcerto} animation={{
+        component = {<Animatable.View animation={{
                 0: {opacity:1},
                 0.25:{opacity:0.5},
                 0.5:{opacity:0},
                 0.75:{opacity:0.5},
                 1:{opacity:1},
-            }} iterationCount="infinite" duration={2000} >
-            WAITING</Animatable.Text>
-            <Animatable.Text style = {styles.concerto} animation={{
-                0: {opacity:1},
-                0.25:{opacity:0.5},
-                0.5:{opacity:0},
-                0.75:{opacity:0.5},
-                1:{opacity:1},
-            }} iterationCount="infinite" duration={2000} >
-            click here to cancel</Animatable.Text></View>
+            }} iterationCount="infinite" duration={2000}>
+            <Text style = {styles.bconcerto}> WAITING</Text>
+            <Text style = {styles.concerto} >click here to cancel</Text>
+            </Animatable.View>
         }
     />
 
     <PushButton
         size = {this.state.voteSize}
         opacity = {this.state.voteOpacity}
-        depth = {10}
+        depth = {8}
         color = {colors.pushbutton}
-        radius = {50}
+        radius = {30}
         disabled = {this.state.disabled}
         onPress = {()=>{ 
             this._optionTwoPress()
