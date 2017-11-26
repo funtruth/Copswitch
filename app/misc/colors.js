@@ -30,12 +30,13 @@ export default colors = {
     color3:     '#99A4BA',
 
     //Testing Palette
-    background: '#a9e0ef',
-    color2:     '#f1556f',
     font:       'white',
     main:       'white',
     titlefont:  'white',
     shadow:     'rgba(0, 0, 0, 0.34)',
+    gamecolor:  '#5DB5AC',
+    gamecolor:  '#1D7F81',
+    pushbutton: '#f1556f',
 
 //COMPONENTS
 
