@@ -6,6 +6,14 @@ import colors from '../misc/colors.js';
 
 export class PushButton extends React.Component {
 
+/*
+This button is for broad use to make general buttons.
+
+USED IN:
+MENU BUTTONS
+OPTION BUTTONS (in game)
+*/
+
 constructor(props) {
     super(props);
 

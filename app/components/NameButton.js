@@ -6,6 +6,11 @@ import colors from '../misc/colors.js';
 
 export class NameButton extends React.Component {
 
+/*
+This button is specifically designed to contain ICONS for each players
+Name button. 
+*/
+
 constructor(props) {
     super(props);
 

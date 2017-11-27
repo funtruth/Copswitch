@@ -10,13 +10,15 @@ import {
     FlatList,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    Modal
+    Modal,
+    Animated,
 }   from 'react-native';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { MenuButton } from '../components/MenuButton.js';
 import { PushButton } from '../components/PushButton.js';
+import { CustomButton } from '../components/CustomButton.js';
 import { Header } from '../components/Header.js';
 
 import { StackNavigator } from 'react-navigation';
@@ -196,7 +198,6 @@ class Roles extends Component {
             roleid:   'a',
             modalVisible: false,
 
-            showfilter:  false,
             showtown:    true,
             showmafia:   false,
             showneutral: false,
@@ -207,10 +208,11 @@ class Roles extends Component {
     componentWillMount() {
 
         var keys = Object.keys(Rolesheet).sort()
-        var filterlist = [];
+        
         var townlist = [];
         var mafialist = [];
         var neutrallist = [];
+
         keys.forEach(function(key){
             if(Rolesheet[key].type == 1){
                 mafialist.push({
@@ -325,67 +327,51 @@ class Roles extends Component {
 
             <View style = {{flex:0.1}}/>
 
-            <TouchableOpacity
-                style = {{backgroundColor:colors.font, borderRadius:2,
-                    justifyContent:'center', alignItems:'center', 
-                    marginTop:5, marginBottom:3, flex:0.075}}
-                onPress = {()=>{
-                    this.setState({
-                        showfilter:!this.state.showfilter,
-                    })
-                }} >
-                <Text style = {{
-                    fontFamily:'ConcertOne-Regular',
-                    fontSize: 25, color: colors.background,
-                    marginTop:5, marginBottom:3}}>Filters</Text>
-            </TouchableOpacity>
+            <View style = {{flex:0.07, flexDirection:'row', justifyContent:'center'}}>
+                <CustomButton
+                    size = {0.25}
+                    flex = {1}
+                    opacity = {1}
+                    depth = {4}
+                    color = {this.state.showtown?colors.menubtn:colors.background}
+                    leftradius = {15}
+                    onPress = {()=>{
+                        this.setState({ showmafia:false, showtown:true, showneutral:false }) 
+                    }}
+                    component = {<Text style = {this.state.showtown?
+                        styles.centeredBtn:styles.centeredBtnPressed}>Town</Text>}
+                />
+                <View style = {{width:2, backgroundColor:colors.shadow}}/>
+                <CustomButton
+                    size = {0.25}
+                    flex = {1}
+                    opacity = {1}
+                    depth = {4}
+                    color = {this.state.showmafia?colors.menubtn:colors.background}
+                    radius = {0}
+                    onPress = {()=>{
+                        this.setState({ showmafia:true, showtown:false, showneutral:false }) 
+                    }}
+                    component = {<Text style = {this.state.showmafia?
+                        styles.centeredBtn:styles.centeredBtnPressed}>Mafia</Text>}
+                />
+                <View style = {{width:2, backgroundColor:colors.shadow}}/>
+                <CustomButton
+                    size = {0.25}
+                    flex = {1}
+                    opacity = {1}
+                    depth = {4}
+                    color = {this.state.showneutral?colors.menubtn:colors.background}
+                    rightradius = {15}
+                    onPress = {()=>{
+                        this.setState({ showmafia:false, showtown:false, showneutral:true }) 
+                    }}
+                    component = {<Text style = {this.state.showneutral?
+                        styles.centeredBtn:styles.centeredBtnPressed}>Neutral</Text>}
+                />
+            </View>
 
-            {!this.state.showfilter? null: <View style = {{flex:0.2}}><FlatList
-                data={this.state.townlist}
-                renderItem={({item}) => (
-                    <TouchableOpacity
-                        onPress = {()=>{
-                            this._roleBtnPress(item.key,item.index)  
-                        }}
-                        style = {{backgroundColor:colors.background,flex:0.33,
-                            borderRadius:10, margin:3}}>
-                        <View style = {{justifyContent:'center',alignItems:'center'}}>
-                            <Text style = {{
-                                color:colors.font,
-                                fontFamily: 'ConcertOne-Regular',
-                                fontSize:18}}>{item.name}</Text>
-                            <Text style = {{
-                                color:colors.font,
-                                fontFamily: 'ConcertOne-Regular',
-                                fontSize:14,
-                                marginBottom:5}}>{item.category}</Text>
-                        </View>
-                    </TouchableOpacity>
-                )}
-                style={{margin:3}}
-                numColumns = {3}
-                keyExtractor={item => item.key}
-            />
-            </View>}
-
-            <TouchableOpacity
-                style = {{backgroundColor:colors.font, borderRadius:2,
-                    justifyContent:'center', alignItems:'center',
-                    marginTop:3, marginBottom:3, flex:0.075}}
-                onPress = {()=>{
-                    this.setState({
-                        showtown:!this.state.showtown,
-                        showmafia:false,
-                        showneutral:false,
-                    })
-                }} >
-                <Text style = {{
-                    fontFamily:'ConcertOne-Regular',
-                    fontSize: 25, color: colors.background,
-                    marginTop:5, marginBottom:3}}>Town</Text>
-            </TouchableOpacity>
-
-            {!this.state.showtown? null: <View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+            {!this.state.showtown? null: <View style = {{flex:0.83}}><FlatList
                 data={this.state.townlist}
                 renderItem={({item}) => (
                     <TouchableOpacity
@@ -417,24 +403,7 @@ class Roles extends Component {
             />
             </View>}
 
-            <TouchableOpacity
-                style = {{backgroundColor:colors.font, borderRadius:2,
-                    justifyContent:'center', alignItems:'center',
-                    marginTop:3, marginBottom:3, flex:0.075}}
-                onPress = {()=>{
-                    this.setState({
-                        showmafia:!this.state.showmafia,
-                        showtown:false,
-                        showneutral:false,
-                    }) 
-                }} >
-                <Text style = {{
-                    fontFamily:'ConcertOne-Regular',
-                    fontSize: 25, color: colors.background,
-                    marginTop:5, marginBottom:5}}>Mafia</Text>
-            </TouchableOpacity>
-
-            {!this.state.showmafia?null:<View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+            {!this.state.showmafia?null:<View style = {{flex:0.83}}><FlatList
                 data={this.state.mafialist}
                 renderItem={({item}) => (
                     <TouchableOpacity
@@ -466,24 +435,7 @@ class Roles extends Component {
             />
             </View>}
 
-            <TouchableOpacity
-                style = {{backgroundColor:colors.font, borderRadius:2,
-                    justifyContent:'center', alignItems:'center',
-                    marginTop:3, marginBottom:3, flex:0.075}}
-                onPress = {()=>{
-                    this.setState({
-                        showneutral:!this.state.showneutral,
-                        showtown:false,
-                        showmafia:false,
-                    })
-                }} >
-                <Text style = {{
-                    fontFamily:'ConcertOne-Regular',
-                    fontSize: 25, color: colors.background,
-                    marginTop:5, marginBottom:5}}>Neutral</Text>
-            </TouchableOpacity>
-
-            {!this.state.showneutral?null:<View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+            {!this.state.showneutral?null:<View style = {{flex:0.83}}><FlatList
                 data={this.state.neutrallist}
                 renderItem={({item}) => (
                     <TouchableOpacity
@@ -677,24 +629,41 @@ class ActiveRoles extends Component {
 
             <View style = {{flex:0.1}}/>
 
-            <TouchableOpacity
-                style = {{backgroundColor:colors.font, borderRadius:2,
-                    justifyContent:'center', alignItems:'center',
-                    marginTop:3, marginBottom:3, flex:0.075}}
-                onPress = {()=>{
-                    this.setState({
-                        showtown:!this.state.showtown,
-                        showmafia:false,
-                        showneutral:false,
-                    })
-                }} >
-                <Text style = {{
-                    fontFamily:'ConcertOne-Regular',
-                    fontSize: 25, color: colors.background,
-                    marginTop:5, marginBottom:3}}>Town</Text>
-            </TouchableOpacity>
+            <View style = {{flex:0.07, flexDirection:'row', justifyContent:'center'}}>
+                <CustomButton
+                    size = {0.25}
+                    flex = {1}
+                    opacity = {1}
+                    depth = {4}
+                    color = {colors.menubtn}
+                    radius = {5}
+                    onPress = {()=>{
+                        this.setState({ showmafia:false, showtown:true, showneutral:false }) 
+                    }}
+                    component = {<Text style = {styles.centeredBtn}>Town</Text>}
+                />
+                <TouchableOpacity
+                    style = {{flex:0.25, justifyContent:'center',
+                        backgroundColor:colors.font,}}
+                    onPress = {()=>{
+                        this.setState({ showmafia:true, showtown:false, showneutral:false }) 
+                    }}
+                >
+                    <Text style = {styles.centeredBtn}>Mafia</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style = {{flex:0.25, justifyContent:'center',
+                        backgroundColor:colors.font, marginLeft:2,
+                        borderBottomRightRadius:15, borderTopRightRadius:15}}
+                    onPress = {()=>{
+                        this.setState({ showmafia:false, showtown:false, showneutral:true }) 
+                    }}
+                >
+                    <Text style = {styles.centeredBtn}>Neutral</Text>
+                </TouchableOpacity>
+            </View>
 
-            {!this.state.showtown? null: <View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+            {!this.state.showtown? null: <View style = {{flex:0.83}}><FlatList
                 data={this.state.townlist}
                 renderItem={({item}) => (
                     <TouchableOpacity
@@ -726,24 +695,7 @@ class ActiveRoles extends Component {
             />
             </View>}
 
-            <TouchableOpacity
-                style = {{backgroundColor:colors.font, borderRadius:2,
-                    justifyContent:'center', alignItems:'center',
-                    marginTop:3, marginBottom:3, flex:0.075}}
-                onPress = {()=>{
-                    this.setState({
-                        showmafia:!this.state.showmafia,
-                        showtown:false,
-                        showneutral:false,
-                    }) 
-                }} >
-                <Text style = {{
-                    fontFamily:'ConcertOne-Regular',
-                    fontSize: 25, color: colors.background,
-                    marginTop:5, marginBottom:5}}>Mafia</Text>
-            </TouchableOpacity>
-
-            {!this.state.showmafia?null:<View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+            {!this.state.showmafia?null:<View style = {{flex:0.83}}><FlatList
                 data={this.state.mafialist}
                 renderItem={({item}) => (
                     <TouchableOpacity
@@ -775,24 +727,7 @@ class ActiveRoles extends Component {
             />
             </View>}
 
-            <TouchableOpacity
-                style = {{backgroundColor:colors.font, borderRadius:2,
-                    justifyContent:'center', alignItems:'center',
-                    marginTop:3, marginBottom:3, flex:0.075}}
-                onPress = {()=>{
-                    this.setState({
-                        showneutral:!this.state.showneutral,
-                        showtown:false,
-                        showmafia:false,
-                    })
-                }} >
-                <Text style = {{
-                    fontFamily:'ConcertOne-Regular',
-                    fontSize: 25, color: colors.background,
-                    marginTop:5, marginBottom:5}}>Neutral</Text>
-            </TouchableOpacity>
-
-            {!this.state.showneutral?null:<View style = {{flex:this.state.showfilter?0.5:0.7}}><FlatList
+            {!this.state.showneutral?null:<View style = {{flex:0.83}}><FlatList
                 data={this.state.neutrallist}
                 renderItem={({item}) => (
                     <TouchableOpacity
@@ -1083,6 +1018,18 @@ export default RuleBook = StackNavigator(
         fontFamily:'ConcertOne-Regular',
         fontSize: 18,
         color: colors.background,
+    },
+    centeredBtn: {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 18,
+        color: colors.background,
+        alignSelf:'center',
+    },
+    centeredBtnPressed: {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 18,
+        color: colors.font,
+        alignSelf:'center',
     },
     menuBtn : {
         fontFamily:'ConcertOne-Regular',

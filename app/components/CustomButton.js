@@ -6,6 +6,13 @@ import colors from '../misc/colors.js';
 
 export class CustomButton extends React.Component {
 
+/*
+This button is specifically designed for more customization
+
+USED IN:
+HOME SCREEN wifi button
+*/
+
 constructor(props) {
     super(props);
 
@@ -30,13 +37,19 @@ render() {
             flexDirection:'row',
             justifyContent:'center',
             opacity:this.props.opacity,
-            borderRadius:this.props.radius,
+            borderTopLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
+            borderBottomLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
+            borderTopRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
+            borderTopRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
         }}>
             <View style = {{
                 flex:this.props.flex,
                 justifyContent:'center',
                 backgroundColor:colors.shadow, 
-                borderRadius:this.props.radius,
+                borderTopLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
+                borderBottomLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
+                borderTopRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
+                borderBottomRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
                 marginTop:this.state.margin==this.props.depth?0:this.props.depth/2
             }}>
                 <TouchableOpacity style = {{
@@ -44,7 +57,11 @@ render() {
                     justifyContent:'center',
                     backgroundColor:this.props.color,
                     marginBottom:this.state.margin, 
-                    borderRadius:this.props.radius}}
+                    borderTopLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
+                    borderBottomLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
+                    borderTopRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
+                    borderBottomRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
+                }}
                     onPress = {this.props.onPress}
                     onLongPress = {this.props.onLongPress}
                     onPressIn = {()=>{

@@ -38,7 +38,7 @@ export default colors = {
     //Tab Navigator
     tabbackground:          '#1F476E', //blue
     tabbackground:          '#9ce2db', //light blue
-    tabbackground:          '#358A96', //purplegrey
+    tabbackground:          '#358A96', 
     indicatorcolor:         'white',
     iconcolor:              'white',
     
