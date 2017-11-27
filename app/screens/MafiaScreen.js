@@ -479,6 +479,11 @@ _onBackPress = () => {
     return true
 }
 
+_buttonPress() {
+    this.setState({disabled:true});
+    setTimeout(() => {this.setState({disabled: false})}, 200);
+}
+
 _changePhase(newphase){
     
     this.listRef.once('value',snap=>{
@@ -615,9 +620,7 @@ _viewChange(title,back,vote,or,abstain,list,waiting) {
 //Pressing any name button
 _nameBtnPress(uid,name,triggernum,phase,roomname){
 
-    //Stops the user from clicking multiple times
-    this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 600);
+    this._buttonPress();
 
     if(phase == 2){ 
         this._viewChange(false,false,false,false,false,false,true)
@@ -683,9 +686,8 @@ _nameBtnLongPress(uid,name,phase){
 
 //Day Phase - VOTE
 _optionOnePress() {
-    //Stops the user from clicking multiple times
-    this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 600);
+
+    this._buttonPress();
     
     if(this.state.phase == 2){
         this._viewChange(false,true,false,false,false,true,false)
@@ -705,9 +707,8 @@ _optionOnePress() {
 
 //Day Phase - ABSTAIN
 _optionTwoPress() {
-    //Stops the user from clicking multiple times
-    this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 600);
+    
+    this._buttonPress();
 
     if(this.state.phase == 2){
         this._viewChange(false,false,false,false,false,false,true)
@@ -734,9 +735,7 @@ _optionTwoPress() {
 //Day Phase - WAITING PRESS
 _resetOptionPress() {
 
-    //Stops the user from clicking multiple times
-    this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 600);
+    this._buttonPress();
 
     if(this.state.phase != 4){
         this._viewChange(true,false,true,true,true,false,false)

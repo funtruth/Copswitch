@@ -44,8 +44,9 @@ export class Home extends React.Component {
         super(props);
 
         this.state = {
-            connected: true,
-            loading: false,
+            connected:  true,
+            disabled:   false,
+            loading:    false,
         }
 
         this.connectedRef = firebase.database().ref(".info/connected");
@@ -68,6 +69,11 @@ export class Home extends React.Component {
         }
     }
 
+    _buttonPress() {
+        this.setState({disabled:true});
+        setTimeout(() => {this.setState({disabled: false})}, 600);
+    }
+
     _connection() {
         this.connectedRef.once('value',snap=>{
             if(snap.val()==true){
@@ -80,6 +86,8 @@ export class Home extends React.Component {
 
     _createRoom() {
         if(this.state.connected){
+
+            this._buttonPress();
 
             const roomname = randomize('0',6);
             //TODO: Check if room already exists
@@ -107,7 +115,11 @@ export class Home extends React.Component {
     }
 
     _joinRoom() {
+
         if(this.state.connected){
+            
+            this._buttonPress();
+
             this.props.navigation.dispatch(
                 NavigationActions.navigate({
                     routeName: 'JoinTutorial',
@@ -148,6 +160,7 @@ export class Home extends React.Component {
                 color = {colors.menubtn}
                 radius = {10}
                 onPress = {()=>{ this._createRoom() }}
+                disabled = {this.state.disabled}
                 component = {
                     <Text style = {styles.bconcerto}>Create Room</Text>
                 }
@@ -160,6 +173,7 @@ export class Home extends React.Component {
                 color = {colors.menubtn}
                 radius = {10}
                 onPress = {()=>{ this._joinRoom() }}
+                disabled = {this.state.disabled}
                 component = {
                     <Text style = {styles.bconcerto}>Join Room</Text>
                 }

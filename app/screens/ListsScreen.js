@@ -17,6 +17,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { MenuButton } from '../components/MenuButton.js';
 import { PushButton } from '../components/PushButton.js';
+import { Header } from '../components/Header.js';
 
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
@@ -30,16 +31,13 @@ import { onSignOut } from "../auth";
 import * as Animatable from 'react-native-animatable';
 
 class General extends Component {
-    
-    static navigationOptions = {
-        header: null
-    };
 
     constructor(props) {
         super(props);
 
         this.state = {
             active:false,
+            disabled:false,
             roomname: null,
         }
 
@@ -47,6 +45,11 @@ class General extends Component {
                                 .child(firebase.auth().currentUser.uid);
         this.listOfRolesRef     = firebase.database().ref('listofroles')
                                 .child(firebase.auth().currentUser.uid);
+    }
+
+    _buttonPress() {
+        this.setState({disabled:true});
+        setTimeout(() => {this.setState({disabled: false})}, 600);
     }
 
     _logOut() {
@@ -121,46 +124,60 @@ class General extends Component {
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
             <PushButton
-                size = {0.13}
+                size = {0.1}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
                 radius = {10}
-                onPress = {()=>{ this.state.active?
+                onPress = {()=>{ 
+                    this._buttonPress();
+                    this.state.active?
                     this.props.navigation.navigate('ActiveRoles', {roomname:this.state.roomname})
-                    :
-                    this.props.navigation.navigate('Roles')
+                    :this.props.navigation.navigate('Roles')
                 }}
+                disabled = {this.state.disabled}
                 component = {<Text style = {styles.menuBtn}>Roles</Text>}
             />
             <View style = {{flex:0.02}}/>
             <PushButton
-                size = {0.13}
+                size = {0.1}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
                 radius = {10}
-                onPress = {()=>{ this.props.navigation.navigate('Rulebook') }}
+                onPress = {()=>{
+                    this._buttonPress();
+                    this.props.navigation.navigate('Rulebook') 
+                }}
+                disabled = {this.state.disabled}
                 component = {<Text style = {styles.menuBtn}>Rulebook</Text>}
             />
             <View style = {{flex:0.02}}/>
             <PushButton
-                size = {0.13}
+                size = {0.1}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
                 radius = {10}
-                onPress = {()=>{ this.props.navigation.navigate('InfoPage',{section:'about'}) }}
+                onPress = {()=>{ 
+                    this._buttonPress();
+                    this.props.navigation.navigate('InfoPage',{section:'about'})
+                }}
+                disabled = {this.state.disabled}
                 component = {<Text style = {styles.menuBtn}>About</Text>}
             />
             <View style = {{flex:0.02}}/>
             <PushButton
-                size = {0.13}
+                size = {0.1}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
                 radius = {10}
-                onPress = {()=>{ this._deleteRoom()}}
+                onPress = {()=>{ 
+                    this._buttonPress();
+                    this._deleteRoom()
+                }}
+                disabled = {this.state.disabled}
                 component = {<Text style = {styles.menuBtn}>Quit</Text>}
             />
         </View>
@@ -168,15 +185,6 @@ class General extends Component {
 }
 
 class Roles extends Component {
-
-    static navigationOptions = {
-        headerTitle: <Text style = {{fontSize:20,
-            fontFamily: 'ConcertOne-Regular',
-            color:colors.font,
-            marginLeft:15}}>Roles</Text>,
-        headerStyle: { backgroundColor: colors.headerbackground},
-        headerTintColor: colors.headerfont,
-    };
 
     constructor(props) {
         super(props);
@@ -195,7 +203,6 @@ class Roles extends Component {
         }
 
     }
-
 
     componentWillMount() {
 
@@ -311,6 +318,12 @@ class Roles extends Component {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
+
+            <Header title = 'Roles' onPress = {()=>{
+                this.props.navigation.dispatch(NavigationActions.back())
+            }}/>
+
+            <View style = {{flex:0.1}}/>
 
             <TouchableOpacity
                 style = {{backgroundColor:colors.font, borderRadius:2,
@@ -507,15 +520,6 @@ class Roles extends Component {
 
 class ActiveRoles extends Component {
     
-    static navigationOptions = {
-        headerTitle: <Text style = {{fontSize:20,
-            fontFamily: 'ConcertOne-Regular',
-            color:colors.font,
-            marginLeft:15}}>Roles</Text>,
-        headerStyle: { backgroundColor: colors.headerbackground},
-        headerTintColor: colors.headerfont,
-    };
-    
     constructor(props) {
         super(props);
 
@@ -557,7 +561,6 @@ class ActiveRoles extends Component {
                             color:          Rolesheet[child.key].color,
                             key:            child.key,    
                         })
-                        mafialist[Rolesheet[child.key].index]['count'] = child.val()
                     } else if (Rolesheet[child.key].type == 2) {
                         townlist.push({
                             name:           Rolesheet[child.key].name,
@@ -667,6 +670,12 @@ class ActiveRoles extends Component {
                     </View>
                 </TouchableWithoutFeedback>
             </Modal>
+
+            <Header title = 'Roles' onPress = {()=>{
+                this.props.navigation.dispatch(NavigationActions.back())
+            }}/>
+
+            <View style = {{flex:0.1}}/>
 
             <TouchableOpacity
                 style = {{backgroundColor:colors.font, borderRadius:2,
@@ -819,149 +828,161 @@ class ActiveRoles extends Component {
 }
 
 class Rulebook extends Component {
-    
-    static navigationOptions = {
-        header: null
-    };
 
     constructor(props) {
         super(props);
 
-        this.messageRef         = firebase.database().ref('messages')
-                                .child(firebase.auth().currentUser.uid);
-        this.listOfRolesRef     = firebase.database().ref('lsitofroles')
-                                .child(firebase.auth().currentUser.uid);
-    }
-
-    _logOut() {
-        if(firebase.auth().currentUser.isAnonymous){
-            onSignOut().then(() => { 
-                firebase.auth().currentUser.delete().then(()=>{
-                    this.props.navigation.dispatch(
-                        NavigationActions.reset({
-                            index: 0,
-                            key: null,
-                            actions: [
-                                NavigationActions.navigate({ routeName: 'SignedOut'})
-                            ]
-                        })
-                    )
-                })
-            })
-            
-        } else {
-            onSignOut().then(() => { 
-                firebase.auth().signOut()
-                this.props.navigation.dispatch(
-                    NavigationActions.reset({
-                        index: 0,
-                        key: null,
-                        actions: [
-                            NavigationActions.navigate({ routeName: 'SignedOut'})
-                        ]
-                    })
-                )
-            }) 
-            
+        this.state = {
+            disabled:false,
         }
     }
 
-    _deleteRoom() {
-        AsyncStorage.removeItem('ROOM-KEY');
-        AsyncStorage.removeItem('GAME-KEY');
-    
-        this.messageRef.remove().then(()=>{
-            this.listOfRolesRef.remove().then(()=>{
-                this.props.navigation.dispatch(
-                    NavigationActions.reset({
-                        index: 0,
-                        key: null,
-                        actions: [
-                            NavigationActions.navigate({ routeName: 'SignedIn'})
-                        ]
-                    })
-                )
-            })
-        })
+    _buttonPress() {
+        this.setState({disabled:true});
+        setTimeout(() => {this.setState({disabled: false})}, 200);
     }
 
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
-            <Text style = {styles.titleFont}>How to Play</Text>
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'General'
-                onPress = {()=>{  }}
+            
+            <Header title = 'How to Play' onPress = {()=>{
+                this.props.navigation.dispatch(NavigationActions.back())
+            }}/>
+
+            <PushButton
+                size = {0.1}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
+                onPress = {()=>{
+                    this._buttonPress();
+                    this.props.navigation.navigate('InfoPage',{section:'general'}) 
+                }}
+                disabled = {this.state.disabled}
+                component = {<Text style = {styles.menuBtn}>General</Text>}
             />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Set Up'
-                onPress = {()=>{ this.props.navigation.navigate('InfoPage',{section:'making'}) }}
+            <View style = {{flex:0.02}}/>
+            <PushButton
+                size = {0.1}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
+                onPress = {()=>{
+                    this._buttonPress();
+                    this.props.navigation.navigate('Setup') 
+                }}
+                disabled = {this.state.disabled}
+                component = {<Text style = {styles.menuBtn}>Set Up</Text>}
             />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'My Role'
-                onPress = {()=>{ }}
+            <View style = {{flex:0.02}}/>
+            <PushButton
+                size = {0.1}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
+                onPress = {()=>{
+                    this._buttonPress();
+                }}
+                disabled = {this.state.disabled}
+                component = {<Text style = {styles.menuBtn}>My Role</Text>}
             />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Phases'
-                onPress = {()=>{ }}
+            <View style = {{flex:0.02}}/>
+            <PushButton
+                size = {0.1}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
+                onPress = {()=>{
+                    this._buttonPress();
+                }}
+                disabled = {this.state.disabled}
+                component = {<Text style = {styles.menuBtn}>Phases</Text>}
             />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Messages'
-                onPress = {()=>{ }}
+            <View style = {{flex:0.02}}/>
+            <PushButton
+                size = {0.1}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
+                onPress = {()=>{
+                    this._buttonPress();
+                }}
+                disabled = {this.state.disabled}
+                component = {<Text style = {styles.menuBtn}>Messages</Text>}
             />
         </View>
     }
 }
 
 class Setup extends Component {
-    
-    static navigationOptions = {
-        header: null
-    };
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            disabled:false,
+        }
+    }
+    
+    _buttonPress() {
+        this.setState({disabled:true});
+        setTimeout(() => {this.setState({disabled: false})}, 600);
     }
 
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
-            <Text style = {styles.titleFont}>Setup</Text>
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Making a Room'
-                onPress = {()=>{ this.props.navigation.navigate('Roles') }}
+
+            <Header title = 'Setting Up' onPress = {()=>{
+                this.props.navigation.dispatch(NavigationActions.back())
+            }}/>
+
+            <PushButton
+                size = {0.1}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
+                onPress = {()=>{
+                    this._buttonPress();
+                    this.props.navigation.navigate('InfoPage',{section:'making'}) 
+                }}
+                disabled = {this.state.disabled}
+                component = {<Text style = {styles.menuBtn}>Making a Room</Text>}
             />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Joining a Room'
-                onPress = {()=>{ }}
+            <View style = {{flex:0.02}}/>
+            <PushButton
+                size = {0.1}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
+                onPress = {()=>{
+                    this._buttonPress();
+                    this.props.navigation.navigate('InfoPage',{section:'joining'}) 
+                }}
+                disabled = {this.state.disabled}
+                component = {<Text style = {styles.menuBtn}>Joining a Room</Text>}
             />
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Role Selection'
-                onPress = {()=>{ }}
+            <View style = {{flex:0.02}}/>
+            <PushButton
+                size = {0.1}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
+                onPress = {()=>{
+                    this._buttonPress();
+                    this.props.navigation.navigate('InfoPage',{section:'selection'}) 
+                }}
+                disabled = {this.state.disabled}
+                component = {<Text style = {styles.menuBtn}>Role Selection</Text>}
             />
             <View style = {{flex:0.1}}/>
         </View>
@@ -970,10 +991,6 @@ class Setup extends Component {
 
 class InfoPage extends Component {
     
-    static navigationOptions = {
-        header: null
-    };
-
     constructor(props) {
         super(props);
 
@@ -1016,6 +1033,13 @@ class InfoPage extends Component {
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
+
+            <Header title = 'TEMPTITLE' onPress = {()=>{
+                this.props.navigation.dispatch(NavigationActions.back());
+            }}/>
+
+            <View style = {{flex:0.1}}/>
+
             <FlatList
                 data={this.state.infolist}
                 renderItem={({item}) => this._renderListItem(item) }
@@ -1050,7 +1074,7 @@ export default RuleBook = StackNavigator(
     },
     {
       initialRouteName: 'General',
-      headerMode: 'screen',
+      headerMode: 'none',
     }
   );
 
@@ -1062,7 +1086,7 @@ export default RuleBook = StackNavigator(
     },
     menuBtn : {
         fontFamily:'ConcertOne-Regular',
-        fontSize: 30,
+        fontSize: 25,
         color: colors.background,
         alignSelf:'center'
     },
@@ -1082,7 +1106,6 @@ export default RuleBook = StackNavigator(
         marginRight:10,
     },
     detailContainer: {
-        backgroundColor:colors.color2,
         borderRadius:2,
         justifyContent:'center',
         alignItems:'center',
@@ -1091,7 +1114,7 @@ export default RuleBook = StackNavigator(
         marginRight:10,
     },
     comment: {
-        color:colors.background,
+        color:colors.font,
         fontFamily: 'ConcertOne-Regular',
         fontSize:17,
         lineHeight: 25,
@@ -1101,8 +1124,6 @@ export default RuleBook = StackNavigator(
         marginRight:10,
     },
     commentContainer: {
-        backgroundColor:colors.main,
-        borderRadius:10,
         justifyContent:'center',
         alignItems:'center',
         marginTop:10,

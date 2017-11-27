@@ -31,24 +31,140 @@
         "type" : 2
       }
     },
-    "making" : {
+    "general" : {
       "a" : {
-        "desc" : "line 1",
+        "desc" : "This game takes place in a small town, with a hidden gang of Mafia members that threaten its peaceful nature.",
+        "route" : "lol",
+        "type" : 1
+      },
+      "ab" : {
+        "desc" : "However, the townsfolk are not completely powerless. They outnumber the Mafia, forcing the Mafia to remain hidden until enough of the townsfolk have been disposed of.",
+        "route" : "lol",
+        "type" : 1
+      },
+      "ac" : {
+        "desc" : "Every day, the Townsfolk will try to hang a member of the mafia, and every night, the Mafia will decide who to kill next.",
         "route" : "lol",
         "type" : 1
       },
       "b" : {
-        "desc" : "line 2",
+        "desc" : "It is only a matter of time before one side prevails! Which will it be?",
         "route" : "lol",
-        "type" : 1
+        "type" : 2
       },
       "c" : {
-        "desc" : "line 3",
+        "desc" : "In order to start a game, one person needs to create a room so all the other players can join. The room owner will be given a 6-digit room code that will allow other players to join the same room, where they will be prompted for their names. We recommend the room owner to be the person with the most reliable internet connection.",
         "route" : "lol",
         "type" : 1
       },
       "d" : {
-        "desc" : "line 4",
+        "desc" : "If you are unfamiliar with Rooms, you can find information on [Making a Room] and [Joining a Room] under [Setup].",
+        "route" : "lol",
+        "type" : 2
+      },
+      "e" : {
+        "desc" : "Set Up",
+        "route" : "lol",
+        "type" : 2
+      },
+      "f" : {
+        "desc" : "Each game can be setup differently, so you should take into account the number of players and the overall level of experience. Before starting a game, read our guide on how to balance [Character Selection] under [Setup].",
+        "route" : "lol",
+        "type" : 1
+      },
+      "g" : {
+        "desc" : "Character Selection",
+        "route" : "lol",
+        "type" : 2
+      },
+      "h" : {
+        "desc" : "The game structure is characterized by three main phases, and all events that occur will follow this cycle until the game ends.",
+        "route" : "lol",
+        "type" : 1
+      },
+      "i" : {
+        "desc" : "If you are unfamiliar with the game structure, take a look the [Game Info] section.",
+        "route" : "lol",
+        "type" : 2
+      },
+      "j" : {
+        "desc" : "Game Info",
+        "route" : "lol",
+        "type" : 2
+      }
+    },
+    "making" : {
+      "a" : {
+        "desc" : "Pressing ‘Make a Room’ on the home screen will walk you through the entire process. There are 4 steps before your room is ready to go!",
+        "route" : "lol",
+        "type" : 1
+      },
+      "b" : {
+        "desc" : "1. Enter your name.",
+        "route" : "lol",
+        "type" : 1
+      },
+      "c" : {
+        "desc" : "Use a name that people can easily identify you with. Must be 5 - 10 characters in length.",
+        "route" : "lol",
+        "type" : 2
+      },
+      "e" : {
+        "desc" : "2. Specify the total number of players.",
+        "route" : "lol",
+        "type" : 1
+      },
+      "f" : {
+        "desc" : "3. Select your level of experience. ",
+        "route" : "lol",
+        "type" : 1
+      },
+      "g" : {
+        "desc" : "Selecting your level of experience will not have any effect once the game starts. ",
+        "route" : "lol",
+        "type" : 2
+      },
+      "h" : {
+        "desc" : "We will give you recommendations for Role Selection based on your level of experience.",
+        "route" : "lol",
+        "type" : 2
+      },
+      "i" : {
+        "desc" : "4. Choose Roles.",
+        "route" : "lol",
+        "type" : 1
+      },
+      "j" : {
+        "desc" : "Once you have completed these steps, you are ready to start! Wait for everyone to join the room. If all the numbers match up, you will be able to start the game.",
+        "route" : "lol",
+        "type" : 1
+      }
+    },
+    "joining" : {
+      "a" : {
+        "desc" : "Pressing ‘Join a Room’ on the home screen will prompt you to enter the room code. Get the code from either the room owner or other players that have joined the room.",
+        "route" : "lol",
+        "type" : 1
+      },
+      "b" : {
+        "desc" : "Once you have joined, enter your name! Use a name that people can easily identify you with, 5 - 10 characters in length. ",
+        "route" : "lol",
+        "type" : 1
+      },
+      "c" : {
+        "desc" : "After choosing your name, wait for the owner to start the game.",
+        "route" : "lol",
+        "type" : 1
+      }
+    },
+    "selection" : {
+      "a" : {
+        "desc" : "Recommended",
+        "route" : "lol",
+        "type" : 1
+      },
+      "b" : {
+        "desc" : "Balancing",
         "route" : "lol",
         "type" : 1
       }
