@@ -20,6 +20,9 @@ export default colors = {
     color2:     '#6D849C',
     color3:     '#99A4BA',
 
+    beige:      '#F9F2DE',
+    lightbutton:'#63B5AC',
+
     //Testing Palette
     font:       'white',
     main:       'white',
