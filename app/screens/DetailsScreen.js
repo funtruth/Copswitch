@@ -18,7 +18,6 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { MenuButton } from '../components/MenuButton.js';
 
 import { StackNavigator, TabNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';

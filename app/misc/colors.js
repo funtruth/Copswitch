@@ -9,8 +9,8 @@ export default colors = {
     //Blue Palette
     main:       '#DBE0D6', 
     highlight:  '#e3c382',
-    background: '#1F476E',
-    background: '#776971',
+    background: '#1F476E', //darkblue
+    background: '#358A96',
     title:      '#231715',
     font:       'white',
     icon:       'white',  
@@ -25,18 +25,20 @@ export default colors = {
     main:       'white',
     titlefont:  'white',
     shadow:     'rgba(0, 0, 0, 0.34)',
-    gamecolor:  '#5DB5AC',
-    gamecolor:  '#9ce2db',
-    gamecolor:  '#776971',
-    pushbutton: '#f1556f',
+    gamecolor:  '#9ce2db', //lightblue
+    gamecolor:  '#776971', //purplegrey
+    gamecolor:  '#358A96', //mediumblue
+    pushbutton: '#f1556f', //Wynns pink
+    pushbutton: '#D86059', 
     namebtn:    '#3FD0A9',
+    menubtn:    'white',
 
 //COMPONENTS
 
     //Tab Navigator
     tabbackground:          '#1F476E', //blue
     tabbackground:          '#9ce2db', //light blue
-    tabbackground:          '#776971', //purplegrey
+    tabbackground:          '#358A96', //purplegrey
     indicatorcolor:         'white',
     iconcolor:              'white',
     

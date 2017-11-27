@@ -160,19 +160,19 @@ export const Mafia = TabNavigator(
         ),
       }
     },
-    Lists: {
-      screen: Lists,
-      navigationOptions: {
-        tabBarIcon: ({ tintColor }) => (
-          <MaterialCommunityIcons name="menu" style={styles.icon}/>
-        ),
-      }
-    },
     Profile: {
       screen: Profile,
       navigationOptions: {
         tabBarIcon: ({ tintColor }) => (
           <MaterialIcons name="person" style={styles.icon}/>
+        ),
+      }
+    },
+    Lists: {
+      screen: Lists,
+      navigationOptions: {
+        tabBarIcon: ({ tintColor }) => (
+          <MaterialCommunityIcons name="menu" style={styles.icon}/>
         ),
       }
     },

@@ -85,8 +85,8 @@ constructor(props) {
         waitingSize:        new Animated.Value(0.01),
         
         backOpacity:        new Animated.Value(0),
-        voteOpacity:        new Animated.Value(1),
-        abstainOpacity:     new Animated.Value(1),
+        voteOpacity:        new Animated.Value(0),
+        abstainOpacity:     new Animated.Value(0),
         listOpacity:        new Animated.Value(0),
         waitingOpacity:     new Animated.Value(0),
     };
@@ -579,7 +579,7 @@ _viewChange(title,back,vote,or,abstain,list,waiting) {
             Animated.timing(
                 this.state.waitingSize, {
                     duration: SIZE_ANIM,
-                    toValue: waiting?0.2:0.01
+                    toValue: waiting?0.18:0.01
             }),
         ]),
         Animated.parallel([
@@ -1261,8 +1261,8 @@ justifyContent:'center'}}>
                 0.75:{opacity:0.5},
                 1:{opacity:1},
             }} iterationCount="infinite" duration={2000}>
-            <Text style = {styles.bconcerto}> WAITING</Text>
-            <Text style = {styles.concerto} >click here to cancel</Text>
+            <Text style = {styles.bconcerto}>WAITING</Text>
+            <Text style = {styles.concerto} >press to cancel</Text>
             </Animatable.View>
         }
     />

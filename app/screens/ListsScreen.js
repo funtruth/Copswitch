@@ -16,6 +16,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { MenuButton } from '../components/MenuButton.js';
+import { PushButton } from '../components/PushButton.js';
 
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
@@ -119,38 +120,49 @@ class General extends Component {
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center'}}>
-            <MenuButton
-                viewFlex = {0.13}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Roles'
+            <PushButton
+                size = {0.13}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
                 onPress = {()=>{ this.state.active?
                     this.props.navigation.navigate('ActiveRoles', {roomname:this.state.roomname})
                     :
                     this.props.navigation.navigate('Roles')
-                }}/>
-            <MenuButton
-                viewFlex = {0.13}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Rulebook'
+                }}
+                component = {<Text style = {styles.menuBtn}>Roles</Text>}
+            />
+            <View style = {{flex:0.02}}/>
+            <PushButton
+                size = {0.13}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
                 onPress = {()=>{ this.props.navigation.navigate('Rulebook') }}
+                component = {<Text style = {styles.menuBtn}>Rulebook</Text>}
             />
-            <MenuButton
-                viewFlex = {0.13}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'About'
+            <View style = {{flex:0.02}}/>
+            <PushButton
+                size = {0.13}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
                 onPress = {()=>{ this.props.navigation.navigate('InfoPage',{section:'about'}) }}
+                component = {<Text style = {styles.menuBtn}>About</Text>}
             />
-            {this.state.active?<View><View style = {{flex:0.1}}/>
-            <MenuButton
-                viewFlex = {0.12}
-                flex = {0.9}
-                fontSize = {25}
-                title = 'Leave Room'
+            <View style = {{flex:0.02}}/>
+            <PushButton
+                size = {0.13}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {10}
                 onPress = {()=>{ this._deleteRoom()}}
-            /></View>:null}
+                component = {<Text style = {styles.menuBtn}>Quit</Text>}
+            />
         </View>
     }
 }
@@ -1047,6 +1059,12 @@ export default RuleBook = StackNavigator(
         fontFamily:'ConcertOne-Regular',
         fontSize: 18,
         color: colors.background,
+    },
+    menuBtn : {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 30,
+        color: colors.background,
+        alignSelf:'center'
     },
     titleFont: {
         fontFamily:'ConcertOne-Regular',

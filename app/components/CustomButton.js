@@ -4,7 +4,7 @@ import { View, Animated, TouchableOpacity } from 'react-native';
 
 import colors from '../misc/colors.js';
 
-export class PushButton extends React.Component {
+export class CustomButton extends React.Component {
 
 constructor(props) {
     super(props);
@@ -33,7 +33,7 @@ render() {
             borderRadius:this.props.radius,
         }}>
             <View style = {{
-                flex:0.85,
+                flex:this.props.flex,
                 justifyContent:'center',
                 backgroundColor:colors.shadow, 
                 borderRadius:this.props.radius,
