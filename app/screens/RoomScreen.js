@@ -24,6 +24,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import randomize from 'randomatic';
 import * as Animatable from 'react-native-animatable';
+
+import Background from '../../assets/images/background.png';
+
 const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 const QUICK_ANIM    = 400;
 const MED_ANIM      = 600;
@@ -135,7 +138,10 @@ export class Home extends React.Component {
     }
 
     render() {
-        return <View style = {{ flex:1, backgroundColor:colors.background }}>
+        return <Image source = {require('../../assets/images/background.png')} 
+        style = {{flex:1, alignSelf:'stretch', width:null}}>
+        
+        <View style = {{ flex:1 }}>
 
             <View style = {{flex:0.64}}/>
             <Animatable.View ref = 'wifi' style = {{flex:0.06}}>
@@ -158,7 +164,7 @@ export class Home extends React.Component {
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
-                radius = {10}
+                radius = {50}
                 onPress = {()=>{ this._createRoom() }}
                 disabled = {this.state.disabled}
                 component = {
@@ -171,7 +177,7 @@ export class Home extends React.Component {
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
-                radius = {10}
+                radius = {50}
                 onPress = {()=>{ this._joinRoom() }}
                 disabled = {this.state.disabled}
                 component = {
@@ -180,6 +186,7 @@ export class Home extends React.Component {
             />
             <View style = {{flex:0.02}}/>
         </View>
+        </Image>
     }
 }
 
@@ -305,7 +312,7 @@ const styles = StyleSheet.create({
     dconcerto: {
         fontSize:17,
         fontFamily:'ConcertOne-Regular',
-        color:colors.background,
+        color:colors.font,
         alignSelf: 'center',
     },
     continue: {
@@ -323,7 +330,7 @@ const styles = StyleSheet.create({
     bconcerto: {
         fontSize:30,
         fontFamily:'ConcertOne-Regular',
-        color:colors.background,
+        color:colors.font,
         alignSelf: 'center',
     },
 

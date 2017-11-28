@@ -16,7 +16,8 @@ import {
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { MenuButton } from '../components/MenuButton.js';
+
+import { CustomButton } from '../components/CustomButton.js';
 
 import { NavigationActions } from 'react-navigation';
 
@@ -117,7 +118,7 @@ export class Join1 extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <View style = {{flex:0.08}}/>
+                <View style = {{flex:0.02}}/>
 
                 <View style = {{flexDirection:'row', flex:0.1, 
                     justifyContent:'center',alignItems:'center'}}>
@@ -148,59 +149,93 @@ export class Join1 extends Component {
 
                 <View style = {{flex:0.03}}/>
 
-                <View style = {{flex:0.42, justifyContent:'center', alignItems:'center',
-                backgroundColor:colors.color2, marginLeft:10, marginRight:10, borderRadius:2,
-                paddingTop:5, paddingBottom:5}}>
-                    <Animatable.Text style = {styles.sconcerto}
-                        ref='error'>
+                <View style = {{flex:0.5, justifyContent:'center', alignItems:'center',
+                 marginLeft:10, marginRight:10, borderRadius:2, paddingTop:5, paddingBottom:5}}>
+                    <Animatable.Text style = {styles.sconcerto}ref='error'>
                         {this.state.errormessage}</Animatable.Text>
-                    <View style = {{flex:0.25, flexDirection:'row'}}>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(1)}}><Text style={styles.dconcerto}>
-                            1</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(2)}}><Text style={styles.dconcerto}>
-                            2</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(3)}}><Text style={styles.dconcerto}>
-                            3</Text></TouchableOpacity>
+                    <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
+                            color = {colors.main} radius = {5}
+                            onPress = {()=>{
+                                this._digit(1) 
+                            }}
+                            component = {<Text style={styles.dconcerto}>1</Text>}/>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
+                            color = {colors.main} radius = {5}
+                            onPress = {()=>{
+                                this._digit(2) 
+                            }}
+                            component = {<Text style={styles.dconcerto}>2</Text>}/>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
+                            color = {colors.main} radius = {5}
+                            onPress = {()=>{
+                                this._digit(3) 
+                            }}
+                            component = {<Text style={styles.dconcerto}>3</Text>}/>
                     </View>
-                    <View style = {{flex:0.25, flexDirection:'row'}}>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(4)}}><Text style={styles.dconcerto}>
-                            4</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(5)}}><Text style={styles.dconcerto}>
-                            5</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(6)}}><Text style={styles.dconcerto}>
-                            6</Text></TouchableOpacity>
+                    <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
+                            color = {colors.main} radius = {5}
+                            onPress = {()=>{
+                                this._digit(4) 
+                            }}
+                            component = {<Text style={styles.dconcerto}>4</Text>}/>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
+                            color = {colors.main} radius = {5}
+                            onPress = {()=>{
+                                this._digit(5) 
+                            }}
+                            component = {<Text style={styles.dconcerto}>5</Text>}/>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
+                            color = {colors.main} radius = {5}
+                            onPress = {()=>{
+                                this._digit(6) 
+                            }}
+                            component = {<Text style={styles.dconcerto}>6</Text>}/>
                     </View>
-                    <View style = {{flex:0.25, flexDirection:'row'}}>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(7)}}><Text style={styles.dconcerto}>
-                            7</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(8)}}><Text style={styles.dconcerto}>
-                            8</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(9)}}><Text style={styles.dconcerto}>
-                            9</Text></TouchableOpacity>
+                    <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
+                            color = {colors.main} radius = {5}
+                            onPress = {()=>{
+                                this._digit(7) 
+                            }}
+                            component = {<Text style={styles.dconcerto}>7</Text>}/>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
+                            color = {colors.main} radius = {5}
+                            onPress = {()=>{
+                                this._digit(8) 
+                            }}
+                            component = {<Text style={styles.dconcerto}>8</Text>}/>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
+                            color = {colors.main} radius = {5}
+                            onPress = {()=>{
+                                this._digit(9) 
+                            }}
+                            component = {<Text style={styles.dconcerto}>9</Text>}/>
                     </View>
-                    <View style = {{flex:0.25, flexDirection:'row'}}>
-                        <TouchableOpacity style = {styles.symbol}
-                            onPress = {()=>{this._backspace()}}>
-                            <Text style = {styles.concerto}>CLEAR</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.digit}
-                            onPress = {()=>{this._digit(0)}}><Text style={styles.dconcerto}>
-                            0</Text></TouchableOpacity>
-                        <TouchableOpacity style = {styles.symbol}
-                            onPress = {()=>{this._continue(this.state.roomname)}}>
-                            <Text style = {styles.concerto}>DONE</Text></TouchableOpacity>
+                    <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                            color = {colors.lightbutton} radius = {25}
+                            onPress = {()=>{
+                                this._backspace()
+                            }}
+                            component = {<Text style={styles.concerto}>CLEAR</Text>}/>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
+                            color = {colors.main} radius = {5}
+                            onPress = {()=>{
+                                this._digit(0) 
+                            }}
+                            component = {<Text style={styles.dconcerto}>2</Text>}/>
+                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                            color = {colors.lightbutton} radius = {25}
+                            onPress = {()=>{
+                                this._continue(this.state.roomname)
+                            }}
+                            component = {<Text style={styles.concerto}>DONE</Text>}/>
                     </View>
                 </View>
 
-                <View style = {{flex:0.18}}/>
+                <View style = {{flex:0.1}}/>
             </View>
         </TouchableWithoutFeedback>
     }
@@ -643,7 +678,7 @@ const styles = StyleSheet.create({
         color: colors.background,
     },
     dconcerto: {
-        fontSize: 20,
+        fontSize: 30,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
         color: colors.background,

@@ -106,13 +106,13 @@ export class Messages extends Component {
         return <View style = {{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
 
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
-                borderRadius:2, backgroundColor:this.state.publicchat?colors.main:colors.background}}
+                borderRadius:2, backgroundColor:this.state.publicchat?colors.dfont:colors.background}}
                 onPress = {()=>{this.setState({publicchat:true})}}>
                 <Text style = {this.state.publicchat?styles.dchat:styles.chat}>Public</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
-                borderRadius:2, backgroundColor:this.state.publicchat?colors.background:colors.main}}
+                borderRadius:2, backgroundColor:this.state.publicchat?colors.background:colors.dfont}}
                 onPress = {()=>{this.setState({publicchat:false})}}>
                 <Text style = {this.state.publicchat?styles.chat:styles.dchat}>Private</Text>
             </TouchableOpacity>
@@ -353,7 +353,7 @@ const styles = StyleSheet.create({
     chat:{
         fontSize:20,
         fontFamily:'ConcertOne-Regular',
-        color:colors.main,
+        color:colors.dfont,
         alignSelf: 'center',
         marginTop:5,
         marginBottom:5,
