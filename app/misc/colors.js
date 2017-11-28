@@ -21,6 +21,9 @@ export default colors = {
     lightbutton:'#F0B483',
     lightshadow:'#b77138',
 
+    link:       '#3ec7ea',
+    linkshadow: '#2595b1',
+
     //Testing Palette
     font:       'white',
     dfont:      '#454a4a',

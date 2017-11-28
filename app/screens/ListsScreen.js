@@ -432,7 +432,7 @@ class Roles extends Component {
                 this.props.navigation.dispatch(NavigationActions.back())
             }}/>
 
-            <View style = {{position:'absolute', top:90, left:0, right:0, height:42,
+            <View style = {{position:'absolute', top:60, left:0, right:0, height:42,
                 flexDirection:'row', justifyContent:'center'}}>
                 <CustomButton
                     size = {0.25}
@@ -608,6 +608,21 @@ class Rulebook extends Component {
                 this.props.navigation.dispatch(NavigationActions.back())
             }}/>
 
+            <View style = {{flex:0.02}}/>
+            <PushButton
+                size = {0.12}
+                opacity = {1}
+                depth = {8}
+                color = {colors.menubtn}
+                radius = {50}
+                onPress = {()=>{
+                    this._buttonPress();
+                    this.props.navigation.navigate('InfoPage',{section:'intro'}) 
+                }}
+                disabled = {this.state.disabled}
+                component = {<Text style = {styles.menuBtn}>Intro</Text>}
+            />
+            <View style = {{flex:0.02}}/>
             <PushButton
                 size = {0.12}
                 opacity = {1}
@@ -700,6 +715,8 @@ class Setup extends Component {
                 this.props.navigation.dispatch(NavigationActions.back())
             }}/>
 
+            <View style = {{flex:0.2}}/>
+
             <PushButton
                 size = {0.12}
                 opacity = {1}
@@ -753,26 +770,15 @@ class InfoPage extends Component {
 
         this.state = {
             infolist: [],
+
+            page: 1,
+            last: 10,
         }
     }
 
 
     componentWillMount(){
-
-        const { params } = this.props.navigation.state;
-        const section = params.section;
-
-        var keys = Object.keys(Rules[section]).sort()
-        var infolist = [];
-        keys.forEach(function(key){
-            infolist.push({
-                type:           (Rules[section])[key].type,
-                desc:           (Rules[section])[key].desc,
-                onpressroute:   (Rules[section])[key].route,
-                key:            key,
-            })
-        })
-        this.setState({infolist:infolist})
+        this._newPage(this.state.page)
     }
 
     _renderListItem(item) {
@@ -784,27 +790,55 @@ class InfoPage extends Component {
             return <View style = {styles.commentContainer}>
                 <Text style = {styles.comment}>{item.desc}</Text>
             </View>
+        } else if (item.type == 3){
+            return <View style = {styles.linkContainer}><CustomButton size = {0.05} 
+                depth = {6} radius = {15}
+                color = {colors.link} shadow = {colors.linkshadow}
+                component = {<Text style = {styles.link}>{item.desc}</Text>}
+                onPress = {()=>{this.props.navigation.navigate('InfoPage',{section:item.route})}}
+            /></View>
         }
     }
 
     _pageBack() {
-
+        this._newPage(this.state.page>1?this.state.page-1:1)
     }
     _pageForward() {
+        this._newPage(this.state.page<this.state.last?this.state.page+1:this.state.page)
+    }
 
+    _newPage(page){
+        const { params } = this.props.navigation.state;
+        const section = params.section;
+
+        var keys = Object.keys((Rules[section])[page]).sort()
+        var infolist = [];
+        keys.forEach(function(key){
+            infolist.push({
+                type:           ((Rules[section])[page])[key].type,
+                desc:           ((Rules[section])[page])[key].desc,
+                route:          ((Rules[section])[page])[key].route,
+                key:            key,
+            })
+        })
+        this.setState({
+            infolist:   infolist,
+            section:    section,
+            page:       page,
+            last:       Object.keys(Rules[section]).length,
+        })
     }
 
     render(){
         return <View style = {{ flex:1,backgroundColor:colors.background }}>
 
-            <Header title = 'TEMPTITLE' onPress = {()=>{
+            <Header title = {this.state.section} onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back());
             }}/>
             
             <View style = {{flex:0.9, backgroundColor:colors.dshadow, borderRadius:15,
                 marginLeft:15, marginRight:15}}>
-                <View style = {{flex:1, backgroundColor:colors.font, borderRadius:15, marginBottom:6}}>
-
+                <View style = {{flex:1, backgroundColor:colors.font,borderRadius:15, marginBottom:6}}>
                     <FlatList
                         data={this.state.infolist}
                         renderItem={({item}) => this._renderListItem(item) }
@@ -824,7 +858,7 @@ class InfoPage extends Component {
                         color = {colors.lightbutton}
                         shadow = {colors.lightshadow}
                         radius = {15}
-                        onPress = {this._pageBack()}
+                        onPress = {()=>{this._pageBack()}}
                         component = {
                             <MaterialCommunityIcons name='page-first' 
                                 style={{ color:colors.main, fontSize: 30, alignSelf:'center' 
@@ -832,10 +866,9 @@ class InfoPage extends Component {
                         }
                     />
                 </View>
-                <View style = {{flex:0.25, justifyContent:'center'}}>
-                    <View style = {{flex:0.7, borderRadius:15, backgroundColor:colors.menubtn}}>
-                    
-                    </View>
+                <View style = {{flex:0.25, justifyContent:'center',
+                    borderRadius:15, backgroundColor:colors.menubtn}}>
+                    <Text style = {styles.menuBtn}>{this.state.page + '/' + this.state.last}</Text>
                 </View>
                 <View style = {{flex:0.25, justifyContent:'center'}}>
                     <CustomButton
@@ -845,7 +878,7 @@ class InfoPage extends Component {
                         color = {colors.lightbutton}
                         shadow = {colors.lightshadow}
                         radius = {15}
-                        onPress = {this._pageForward()}
+                        onPress = {()=>{this._pageForward()}}
                         component = {
                             <MaterialCommunityIcons name='page-last' 
                                 style={{ color:colors.main, fontSize: 30, alignSelf:'center' 
@@ -855,7 +888,7 @@ class InfoPage extends Component {
                 </View>
             </View>
 
-            <View style = {{height:60}}/>
+            <View style = {{height:50}}/>
         </View>
     }
 }
@@ -915,7 +948,7 @@ export default RuleBook = StackNavigator(
         color: colors.main,
     },
     detail: {
-        color:colors.dfont,
+        color:colors.dshadow,
         fontFamily: 'ConcertOne-Regular',
         fontSize:17,
         lineHeight: 25,
@@ -933,7 +966,7 @@ export default RuleBook = StackNavigator(
         marginRight:10,
     },
     comment: {
-        color:colors.dfont,
+        color:colors.dshadow,
         fontFamily: 'ConcertOne-Regular',
         fontSize:17,
         lineHeight: 25,
@@ -943,6 +976,23 @@ export default RuleBook = StackNavigator(
         marginRight:10,
     },
     commentContainer: {
+        justifyContent:'center',
+        alignItems:'center',
+        marginTop:10,
+        marginLeft:10,
+        marginRight:10,
+    },
+    link: {
+        color:colors.font,
+        fontFamily: 'ConcertOne-Regular',
+        fontSize:17,
+        lineHeight: 25,
+        alignSelf:'center',
+        marginBottom:5,
+        marginLeft:10,
+        marginRight:10,
+    },
+    linkContainer: {
         justifyContent:'center',
         alignItems:'center',
         marginTop:10,

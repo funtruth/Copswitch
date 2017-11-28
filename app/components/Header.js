@@ -17,36 +17,26 @@ render() {
 
     return ( 
         <View>
-            <View style = {{height:60, flexDirection:'row', 
+            <View style = {{height:50, flexDirection:'row', 
                 position:'absolute',top:10,left:0,right:0}}>
-                    <View style = {{flex:0.25, justifyContent:'center'}}><View style = {{flex:0.7}}>
-                        <CustomButton
-                            size = {1}
-                            flex = {0.7}
-                            depth = {6}
-                            color = {colors.menubtn}
-                            radius = {15}
-                            onPress = {this.props.onPress}
-                            component = {
-                                <MaterialCommunityIcons name='keyboard-backspace' 
-                                    style={{ color:colors.main, fontSize: 30, alignSelf:'center' 
-                                }}/>
-                            }
-                        />
-                    </View></View>
-                <View style = {{flex:0.5, justifyContent:'center', alignItems:'center', 
-                    backgroundColor:colors.menubtn, borderRadius: 30}}>
+                    <View style = {{flex:0.25, justifyContent:'center'}}>
+                        <TouchableOpacity onPress = {this.props.onPress}>
+                            <MaterialCommunityIcons name='chevron-left' 
+                            style={{ color:colors.dshadow, fontSize: 30, alignSelf:'center'}}/>
+                        </TouchableOpacity>
+                    </View>
+                <View style = {{flex:0.5, justifyContent:'center', alignItems:'center'}}>
                     <Text style = {{
                         fontFamily:'ConcertOne-Regular',
                         fontSize: 25,
-                        color: colors.main,
+                        color: colors.dshadow,
                     }}>{this.props.title}</Text>
                 </View>
                 <View style = {{flex:0.25}}/>
 
             </View>
 
-            <View style = {{height:80}}/>
+            <View style = {{height:70}}/>
         </View>
     )
 }
