@@ -18,6 +18,8 @@ import { NavigationActions } from 'react-navigation';
 
 import colors from '../misc/colors.js';
 import Rolesheet from '../misc/roles.json';
+import Images from '../../assets/images/index.js';
+
 import { PushButton } from '../components/PushButton.js';
 import { NameButton } from '../components/NameButton.js';
 
@@ -50,7 +52,7 @@ constructor(props) {
         daycounter:         '',
         phasename:          '',
         topmessage:         '',
-        phasecolor:         colors.background,
+        phasebackground:    'night',
 
         myname:             '',
         myrole:             '',
@@ -77,7 +79,7 @@ constructor(props) {
 
         gameover:           false,
 
-        titleSize:          new Animated.Value(0.63),
+        titleSize:          new Animated.Value(0.4),
         backSize:           new Animated.Value(0.01),
         voteSize:           new Animated.Value(0.12),
         abstainSize:        new Animated.Value(0.12),
@@ -559,7 +561,7 @@ _viewChange(title,back,vote,or,abstain,list,waiting) {
             Animated.timing(
                 this.state.titleSize, {
                     duration: SIZE_ANIM,
-                    toValue: title?0.63:0.13
+                    toValue: title?0.4:0.13
             }),
             Animated.timing(
                 this.state.backSize, {
@@ -1201,16 +1203,14 @@ _gameOver() {
 
 render() {
 
-return <Image source = {require('../../assets/images/background.png')} 
+return <Image source = {require(Images[this.state.phasebackground])} 
 style = {{flex:1, alignSelf:'stretch', width:null}}>
 
-<View style = {{flex:1, backgroundColor:colors.gamecolor, padding:10,
-justifyContent:'center'}}>
+<View style = {{flex:1, padding:10, justifyContent:'center'}}>
 
 
     <Animated.View style = {{flex:this.state.titleSize,justifyContent:'center',
-        backgroundColor:colors.gamecolor,
-            borderRadius:2, marginBottom:10}}>
+        borderRadius:2, marginBottom:10}}>
             {this._renderPhaseName()}
             {this._renderTopMessage()}
     </Animated.View>

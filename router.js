@@ -151,7 +151,7 @@ export const Mafia = TabNavigator(
       screen: MafiaRoom,
       navigationOptions : {
         tabBarIcon: ({ tintColor }) => (
-          <MaterialIcons name="home" style={styles.icon}/>
+          <MaterialIcons name="home" style={styles.lighticon}/>
         ),
       }
     },
@@ -159,7 +159,7 @@ export const Mafia = TabNavigator(
       screen: Messages,
       navigationOptions: {
         tabBarIcon: ({ tintColor }) => (
-          <MaterialCommunityIcons name="comment" style={styles.icon}/>
+          <MaterialCommunityIcons name="comment" style={styles.lighticon}/>
         ),
       }
     },
@@ -167,7 +167,7 @@ export const Mafia = TabNavigator(
       screen: Profile,
       navigationOptions: {
         tabBarIcon: ({ tintColor }) => (
-          <MaterialIcons name="person" style={styles.icon}/>
+          <MaterialIcons name="person" style={styles.lighticon}/>
         ),
       }
     },
@@ -175,7 +175,7 @@ export const Mafia = TabNavigator(
       screen: Lists,
       navigationOptions: {
         tabBarIcon: ({ tintColor }) => (
-          <MaterialCommunityIcons name="menu" style={styles.icon}/>
+          <MaterialCommunityIcons name="menu" style={styles.lighticon}/>
         ),
       }
     },
@@ -186,10 +186,14 @@ export const Mafia = TabNavigator(
       showIcon: true,
       showLabel: false,
       style: {
-        backgroundColor: colors.tabbackground,
+        backgroundColor: 'transparent',
+        position:'absolute',
+        bottom:0,
+        left:0,
+        right:0,
       },
       indicatorStyle: {
-        backgroundColor: colors.indicatorcolor,
+        backgroundColor: colors.font,
         height:5,
       }
     },
@@ -257,6 +261,11 @@ const styles = StyleSheet.create({
   icon: {
     height: 26,
     color: colors.iconcolor,
+    fontSize: 20
+  },
+  lighticon: {
+    height: 26,
+    color: colors.font,
     fontSize: 20
   },
 });
