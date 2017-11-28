@@ -354,7 +354,7 @@ export class Creation2 extends Component {
                         }}
                         component = {<Text style={styles.dconcerto}>8</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {5}
+                        color = {colors.digit} radius = {20}
                         onPress = {()=>{
                             this._digit(9) 
                         }}
@@ -362,19 +362,19 @@ export class Creation2 extends Component {
                 </View>
                 <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                        color = {colors.lightbutton} radius = {25}
+                        color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {25}
                         onPress = {()=>{
                             this._backspace()
                         }}
                         component = {<Text style={styles.concerto}>CLEAR</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {5}
+                        color = {colors.digit} radius = {20}
                         onPress = {()=>{
                             this._digit(0) 
                         }}
                         component = {<Text style={styles.dconcerto}>2</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                        color = {colors.lightbutton} radius = {25}
+                        color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {25}
                         onPress = {()=>{
                             this._done()
                         }}

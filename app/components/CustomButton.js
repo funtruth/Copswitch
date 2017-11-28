@@ -45,7 +45,7 @@ render() {
             <View style = {{
                 flex:this.props.flex,
                 justifyContent:'center',
-                backgroundColor:colors.shadow, 
+                backgroundColor:this.props.shadow?this.props.shadow:colors.shadow, 
                 borderTopLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
                 borderBottomLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
                 borderTopRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,

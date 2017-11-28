@@ -19,6 +19,7 @@ export default colors = {
 
     beige:      '#F9F2DE',
     lightbutton:'#F0B483',
+    lightshadow:'#b77138',
 
     //Testing Palette
     font:       'white',
@@ -26,6 +27,7 @@ export default colors = {
     main:       'white',
     titlefont:  'white',
     shadow:     '#873c3d',
+    dshadow:    '#876657',
 
     gamecolor:  '#a9e0ef',
     day:        '#a9e0ef',

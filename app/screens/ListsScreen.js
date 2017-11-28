@@ -801,8 +801,8 @@ class InfoPage extends Component {
                 this.props.navigation.dispatch(NavigationActions.back());
             }}/>
             
-            <View style = {{flex:0.85, backgroundColor:colors.menubtn, borderRadius:15,
-                marginLeft:15, marginRight:15, borderWidth:1}}>
+            <View style = {{flex:0.9, backgroundColor:colors.dshadow, borderRadius:15,
+                marginLeft:15, marginRight:15}}>
                 <View style = {{flex:1, backgroundColor:colors.font, borderRadius:15, marginBottom:6}}>
 
                     <FlatList
@@ -814,13 +814,15 @@ class InfoPage extends Component {
                 </View>
             </View>
 
-            <View style = {{flex:0.15, flexDirection:'row', borderWidth:1, justifyContent:'center'}}>
-                <View style = {{flex:0.25, justifyContent:'center'}}><View style = {{flex:0.7}}>
+            <View style = {{flex:0.1, flexDirection:'row', 
+                justifyContent:'center', marginTop:10}}>
+                <View style = {{flex:0.25, justifyContent:'center'}}>
                     <CustomButton
                         size = {1}
                         flex = {0.8}
                         depth = {6}
                         color = {colors.lightbutton}
+                        shadow = {colors.lightshadow}
                         radius = {15}
                         onPress = {this._pageBack()}
                         component = {
@@ -829,18 +831,19 @@ class InfoPage extends Component {
                             }}/>
                         }
                     />
-                </View></View>
+                </View>
                 <View style = {{flex:0.25, justifyContent:'center'}}>
                     <View style = {{flex:0.7, borderRadius:15, backgroundColor:colors.menubtn}}>
                     
                     </View>
                 </View>
-                <View style = {{flex:0.25, justifyContent:'center'}}><View style = {{flex:0.7}}>
+                <View style = {{flex:0.25, justifyContent:'center'}}>
                     <CustomButton
                         size = {1}
                         flex = {0.8}
                         depth = {6}
                         color = {colors.lightbutton}
+                        shadow = {colors.lightshadow}
                         radius = {15}
                         onPress = {this._pageForward()}
                         component = {
@@ -849,7 +852,7 @@ class InfoPage extends Component {
                             }}/>
                         }
                     />
-                </View></View>
+                </View>
             </View>
 
             <View style = {{height:60}}/>
