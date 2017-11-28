@@ -113,8 +113,8 @@ export class Join1 extends Component {
                         onPress = {()=>{
                             this.props.navigation.dispatch(NavigationActions.back());
                         }} >
-                        <MaterialCommunityIcons name='close'
-                            style={{color:colors.font,fontSize:30}}/>
+                        <MaterialCommunityIcons name='close-circle'
+                            style={{color:colors.shadow,fontSize:30}}/>
                     </TouchableOpacity>
                 </View>
 
@@ -123,51 +123,50 @@ export class Join1 extends Component {
                 <View style = {{flexDirection:'row', flex:0.1, 
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.7}}> 
-                        <Text style = {styles.concerto}>Enter the</Text>
-                        <Text style = {styles.roomcode}>ROOM CODE</Text>
+                        <Text style = {[styles.concerto,{color:colors.shadow}]}>Enter the</Text>
+                        <Text style = {[styles.roomcode,{color:colors.shadow}]}>ROOM CODE</Text>
                     </View>
                 </View>
 
                 <View style = {{flex:0.03}}/>
 
                 <View style = {{flex:0.12, justifyContent:'center', 
-                    alignItems:'center', flexDirection:'row'}}>
-                        <TextInput
-                            style={{
-                                backgroundColor: colors.main,
-                                flex:0.7,
-                                fontFamily:'ConcertOne-Regular',
-                                fontSize: 40,
-                                color:colors.background,
-                                textAlign:'center',
-                                borderRadius:2,
-                            }}
-                            editable={false}
-                            value={this.state.roomname}
-                        />
+                alignItems:'center', flexDirection:'row'}}>
+                    <TextInput
+                        style={{
+                            backgroundColor: colors.main,
+                            flex:0.7,
+                            fontFamily:'ConcertOne-Regular',
+                            fontSize: 40,
+                            color:colors.menubtn,
+                            textAlign:'center',
+                            borderRadius:2,
+                        }}
+                        editable={false}
+                        value={this.state.roomname}/>
                 </View>
 
                 <View style = {{flex:0.03}}/>
 
                 <View style = {{flex:0.5, justifyContent:'center', alignItems:'center',
                  marginLeft:10, marginRight:10, borderRadius:2, paddingTop:5, paddingBottom:5}}>
-                    <Animatable.Text style = {styles.sconcerto}ref='error'>
+                    <Animatable.Text style = {[styles.sconcerto,{color:colors.shadow}]}ref='error'>
                         {this.state.errormessage}</Animatable.Text>
                     <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                            color = {colors.main} radius = {5}
+                            color = {colors.digit} radius = {5}
                             onPress = {()=>{
                                 this._digit(1) 
                             }}
                             component = {<Text style={styles.dconcerto}>1</Text>}/>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                            color = {colors.main} radius = {5}
+                            color = {colors.digit} radius = {5}
                             onPress = {()=>{
                                 this._digit(2) 
                             }}
                             component = {<Text style={styles.dconcerto}>2</Text>}/>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                            color = {colors.main} radius = {5}
+                            color = {colors.digit} radius = {5}
                             onPress = {()=>{
                                 this._digit(3) 
                             }}
@@ -175,19 +174,19 @@ export class Join1 extends Component {
                     </View>
                     <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                            color = {colors.main} radius = {5}
+                            color = {colors.digit} radius = {5}
                             onPress = {()=>{
                                 this._digit(4) 
                             }}
                             component = {<Text style={styles.dconcerto}>4</Text>}/>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                            color = {colors.main} radius = {5}
+                            color = {colors.digit} radius = {5}
                             onPress = {()=>{
                                 this._digit(5) 
                             }}
                             component = {<Text style={styles.dconcerto}>5</Text>}/>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                            color = {colors.main} radius = {5}
+                            color = {colors.digit} radius = {5}
                             onPress = {()=>{
                                 this._digit(6) 
                             }}
@@ -195,19 +194,19 @@ export class Join1 extends Component {
                     </View>
                     <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                            color = {colors.main} radius = {5}
+                            color = {colors.digit} radius = {5}
                             onPress = {()=>{
                                 this._digit(7) 
                             }}
                             component = {<Text style={styles.dconcerto}>7</Text>}/>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                            color = {colors.main} radius = {5}
+                            color = {colors.digit} radius = {5}
                             onPress = {()=>{
                                 this._digit(8) 
                             }}
                             component = {<Text style={styles.dconcerto}>8</Text>}/>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                            color = {colors.main} radius = {5}
+                            color = {colors.digit} radius = {5}
                             onPress = {()=>{
                                 this._digit(9) 
                             }}
@@ -221,7 +220,7 @@ export class Join1 extends Component {
                             }}
                             component = {<Text style={styles.concerto}>CLEAR</Text>}/>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                            color = {colors.main} radius = {5}
+                            color = {colors.digit} radius = {5}
                             onPress = {()=>{
                                 this._digit(0) 
                             }}
@@ -398,9 +397,9 @@ export class Lobby1 extends Component {
                 <View style = {{flex:0.1, flexDirection:'row', 
                     justifyContent:'center', alignItems:'center'}}>
                     <MaterialCommunityIcons name='checkbox-blank-circle'
-                        style={{color:colors.font,fontSize:15}}/>
+                        style={{color:colors.dots,fontSize:15}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -635,9 +634,9 @@ export class Lobby2 extends Component {
                 <View style = {{flex:0.1, flexDirection:'row', 
                 justifyContent:'center', alignItems:'center'}}>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15}}/>
+                        style={{color:colors.dots,fontSize:15}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                 </View>
 
             </View>
@@ -681,7 +680,7 @@ const styles = StyleSheet.create({
         fontSize: 30,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.background,
+        color: colors.font,
     },
     digit: {
         flex:0.3,

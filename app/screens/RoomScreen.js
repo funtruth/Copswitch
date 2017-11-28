@@ -72,6 +72,23 @@ export class Home extends React.Component {
         }
     }
 
+    _renderConnection() {
+        return <Animatable.View ref = 'wifi' style = {{flex:0.06}}>
+            <CustomButton
+                size = {1}
+                flex = {0.5}
+                opacity = {1}
+                depth = {4}
+                color = {colors.menubtn}
+                radius = {5}
+                onPress = {()=>{ this._connection() }}
+                component = {
+                    <Text style = {styles.dconcerto}>
+                        {this.state.connected?'connected':'disconnected'}</Text>}
+            />
+        </Animatable.View>
+    }
+
     _buttonPress() {
         this.setState({disabled:true});
         setTimeout(() => {this.setState({disabled: false})}, 600);
@@ -112,7 +129,7 @@ export class Home extends React.Component {
             })
 
         } else {
-            this.refs.wifi.shake(800)
+            //this.refs.wifi.shake(800)
         }
             
     }
@@ -133,31 +150,15 @@ export class Home extends React.Component {
             );
             
         } else {
-            this.refs.wifi.shake(800)
+            //this.refs.wifi.shake(800)
         }
     }
 
     render() {
-        return <Image source = {require('../../assets/images/background.png')} 
-        style = {{flex:1, alignSelf:'stretch', width:null}}>
-        
-        <View style = {{ flex:1 }}>
+        return <View style = {{ flex:1, backgroundColor:colors.background }}>
 
-            <View style = {{flex:0.64}}/>
-            <Animatable.View ref = 'wifi' style = {{flex:0.06}}>
-                <CustomButton
-                    size = {1}
-                    flex = {0.5}
-                    opacity = {1}
-                    depth = {4}
-                    color = {colors.menubtn}
-                    radius = {5}
-                    onPress = {()=>{ this._connection() }}
-                    component = {
-                        <Text style = {styles.dconcerto}>
-                            {this.state.connected?'connected':'disconnected'}</Text>}
-                />
-            </Animatable.View>
+            <View style = {{flex:0.7}}/>
+            
             <View style = {{flex:0.02}}/>
             <PushButton
                 size = {0.12}
@@ -184,9 +185,8 @@ export class Home extends React.Component {
                     <Text style = {styles.bconcerto}>Join Room</Text>
                 }
             />
-            <View style = {{flex:0.02}}/>
+            <View style = {{flex:0.12}}/>
         </View>
-        </Image>
     }
 }
 

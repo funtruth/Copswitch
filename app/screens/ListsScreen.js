@@ -185,7 +185,7 @@ class Roles extends Component {
             showmafia:   false,
             showneutral: false,
 
-            townSize:       new Animated.Value(0.98),
+            townSize:       new Animated.Value(0.88),
             mafiaSize:      new Animated.Value(0.01),
             neutralSize:    new Animated.Value(0.01),
             
@@ -328,17 +328,17 @@ class Roles extends Component {
                 Animated.timing(
                     this.state.townSize, {
                         duration: SIZE_ANIM,
-                        toValue: town?0.98:0.01
+                        toValue: town?0.88:0.01
                 }),
                 Animated.timing(
                     this.state.mafiaSize, {
                         duration: SIZE_ANIM,
-                        toValue: mafia?0.98:0.01
+                        toValue: mafia?0.88:0.01
                 }),
                 Animated.timing(
                     this.state.neutralSize, {
                         duration: SIZE_ANIM,
-                        toValue: neutral?0.98:0.01
+                        toValue: neutral?0.88:0.01
                 })
             ]),
             Animated.parallel([
@@ -441,27 +441,28 @@ class Roles extends Component {
                     depth = {4}
                     color = {this.state.showtown?colors.menubtn:colors.lightbutton}
                     leftradius = {15}
+                    rightradius = {5}
                     onPress = {()=>{
                         this._viewChange(true,false,false)
                     }}
                     component = {<Text style = {this.state.showtown?
                         styles.centeredBtn:styles.centeredBtnPressed}>Town</Text>}
                 />
-                <View style = {{width:2, backgroundColor:colors.shadow}}/>
+                <View style = {{width:4, backgroundColor:colors.background}}/>
                 <CustomButton
                     size = {0.25}
                     flex = {1}
                     opacity = {1}
                     depth = {4}
                     color = {this.state.showmafia?colors.menubtn:colors.lightbutton}
-                    radius = {0}
+                    radius = {5}
                     onPress = {()=>{
                         this._viewChange(false,true,false)
                     }}
                     component = {<Text style = {this.state.showmafia?
                         styles.centeredBtn:styles.centeredBtnPressed}>Mafia</Text>}
                 />
-                <View style = {{width:2, backgroundColor:colors.shadow}}/>
+                <View style = {{width:4, backgroundColor:colors.background}}/>
                 <CustomButton
                     size = {0.25}
                     flex = {1}
@@ -469,6 +470,7 @@ class Roles extends Component {
                     depth = {4}
                     color = {this.state.showneutral?colors.menubtn:colors.lightbutton}
                     rightradius = {15}
+                    leftradius = {5}
                     onPress = {()=>{
                         this._viewChange(false,false,true)
                     }}
@@ -488,9 +490,9 @@ class Roles extends Component {
                             size = {1}
                             flex = {0.75}
                             opacity = {1}
-                            depth = {4}
+                            depth = {5}
                             color = {colors.lightbutton}
-                            radius = {5}
+                            radius = {50}
                             onPress = {()=>{
                                 this._roleBtnPress(item.key,item.index) 
                             }}
@@ -498,7 +500,8 @@ class Roles extends Component {
                                 <Text style = {{
                                     color:colors.font,
                                     fontFamily: 'ConcertOne-Regular',
-                                    fontSize:18}}>{item.name}</Text>
+                                    fontSize:18,
+                                    marginTop:5}}>{item.name}</Text>
                                 <Text style = {{
                                     color:colors.font,
                                     fontFamily: 'ConcertOne-Regular',
@@ -523,7 +526,7 @@ class Roles extends Component {
                                 opacity = {1}
                                 depth = {4}
                                 color = {colors.lightbutton}
-                                radius = {5}
+                                radius = {50}
                                 onPress = {()=>{
                                     this._roleBtnPress(item.key,item.index) 
                                 }}
@@ -577,6 +580,8 @@ class Roles extends Component {
                     numColumns = {3}
                     keyExtractor={item => item.key}/>
             </Animated.View>
+
+            <View style = {{flex:0.1}}/>
         </View>
     }
 }
@@ -792,14 +797,16 @@ class InfoPage extends Component {
                 this.props.navigation.dispatch(NavigationActions.back());
             }}/>
 
-            <View style = {{flex:0.1}}/>
+            <View style = {{flex:0.8}}>
 
-            <FlatList
-                data={this.state.infolist}
-                renderItem={({item}) => this._renderListItem(item) }
-                numColumns = {1}
-                keyExtractor={item => item.key}
-            />
+                <FlatList
+                    data={this.state.infolist}
+                    renderItem={({item}) => this._renderListItem(item) }
+                    numColumns = {1}
+                    keyExtractor={item => item.key}
+                />
+
+            </View>
         </View>
     }
 }
@@ -838,7 +845,7 @@ export default RuleBook = StackNavigator(
     centeredBtn: {
         fontFamily:'ConcertOne-Regular',
         fontSize: 18,
-        color: colors.background,
+        color: colors.font,
         alignSelf:'center',
     },
     centeredBtnPressed: {

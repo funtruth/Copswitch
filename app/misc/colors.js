@@ -18,7 +18,7 @@ export default colors = {
     color3:     '#99A4BA',
 
     beige:      '#F9F2DE',
-    lightbutton:'#63B5AC',
+    lightbutton:'#F0B483',
 
     //Testing Palette
     font:       'white',
@@ -31,15 +31,16 @@ export default colors = {
     day:        '#a9e0ef',
     night:      '#375469',
 
-    pushbutton: '#f3594d', //Wynns pink
-    pushbutton: '#D86059', 
+    pushbutton: '#D86059',
     namebtn:    '#3FD0A9',
     menubtn:    '#d65e5e',
+    digit:      '#d65e5e',
+    dots:       '#873c3d',
 
 //COMPONENTS
 
     //Tab Navigator
-    tabbackground:          '#e9e2ca', 
+    tabbackground:          '#e9e2ca',
     indicatorcolor:         '#454a4a',
     iconcolor:              '#454a4a',
     

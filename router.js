@@ -51,12 +51,15 @@ export const SignedIn = TabNavigator(
       },
     },
     {
-      tabBarPosition: 'bottom',
       tabBarOptions: {
         showIcon: true,
         showLabel: false,
         style: {
-          backgroundColor: colors.tabbackground,
+          backgroundColor: 'transparent',
+          position:'absolute',
+          bottom:0,
+          left:0,
+          right:0,
         },
         indicatorStyle: {
           backgroundColor: colors.indicatorcolor,

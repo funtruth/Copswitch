@@ -178,15 +178,15 @@ export class Creation1 extends Component {
                 <View style = {{flex:0.1, flexDirection:'row', 
                     justifyContent:'center', alignItems:'center'}}>
                     <MaterialCommunityIcons name='checkbox-blank-circle'
-                        style={{color:colors.font,fontSize:15}}/>
+                        style={{color:colors.dots,fontSize:15}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                 </View>
             </View>
         </TouchableWithoutFeedback>
@@ -285,8 +285,7 @@ export class Creation2 extends Component {
                 </View>
             </View>
 
-            <View style = {{flex:0.25,backgroundColor:colors.background,
-                justifyContent:'center', alignItems:'center'}}>
+            <View style = {{flex:0.25, justifyContent:'center', alignItems:'center'}}>
                 <Text style = {styles.concerto}>How many people</Text>
                 <Text style = {styles.concerto}>are Playing?</Text>
                 <View style = {{flex:0.7, flexDirection:'row'}}>
@@ -303,19 +302,19 @@ export class Creation2 extends Component {
                     {this.state.errormessage}</Animatable.Text>
                 <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.main} radius = {5}
+                        color = {colors.digit} radius = {5}
                         onPress = {()=>{
                             this._digit(1) 
                         }}
                         component = {<Text style={styles.dconcerto}>1</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.main} radius = {5}
+                        color = {colors.digit} radius = {5}
                         onPress = {()=>{
                             this._digit(2) 
                         }}
                         component = {<Text style={styles.dconcerto}>2</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.main} radius = {5}
+                        color = {colors.digit} radius = {5}
                         onPress = {()=>{
                             this._digit(3) 
                         }}
@@ -323,19 +322,19 @@ export class Creation2 extends Component {
                 </View>
                 <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.main} radius = {5}
+                        color = {colors.digit} radius = {5}
                         onPress = {()=>{
                             this._digit(4) 
                         }}
                         component = {<Text style={styles.dconcerto}>4</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.main} radius = {5}
+                        color = {colors.digit} radius = {5}
                         onPress = {()=>{
                             this._digit(5) 
                         }}
                         component = {<Text style={styles.dconcerto}>5</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.main} radius = {5}
+                        color = {colors.digit} radius = {5}
                         onPress = {()=>{
                             this._digit(6) 
                         }}
@@ -343,19 +342,19 @@ export class Creation2 extends Component {
                 </View>
                 <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.main} radius = {5}
+                        color = {colors.digit} radius = {5}
                         onPress = {()=>{
                             this._digit(7) 
                         }}
                         component = {<Text style={styles.dconcerto}>7</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.main} radius = {5}
+                        color = {colors.digit} radius = {5}
                         onPress = {()=>{
                             this._digit(8) 
                         }}
                         component = {<Text style={styles.dconcerto}>8</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.main} radius = {5}
+                        color = {colors.digit} radius = {5}
                         onPress = {()=>{
                             this._digit(9) 
                         }}
@@ -369,7 +368,7 @@ export class Creation2 extends Component {
                         }}
                         component = {<Text style={styles.concerto}>CLEAR</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.main} radius = {5}
+                        color = {colors.digit} radius = {5}
                         onPress = {()=>{
                             this._digit(0) 
                         }}
@@ -388,15 +387,15 @@ export class Creation2 extends Component {
             <View style = {{flex:0.1, flexDirection:'row', 
             justifyContent:'center', alignItems:'center'}}>
                 <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.font,fontSize:15}}/>
+                    style={{color:colors.dots,fontSize:15}}/>
                 <MaterialCommunityIcons name='checkbox-blank-circle'
-                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                 <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                 <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                 <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
             </View>
 
         </View>
@@ -531,15 +530,15 @@ export class Creation3 extends Component {
                 <View style = {{flex:0.1, flexDirection:'row', 
                 justifyContent:'center', alignItems:'center'}}>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15}}/>
+                        style={{color:colors.dots,fontSize:15}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                 </View>
 
             </View>
@@ -837,15 +836,15 @@ export class Creation4 extends Component {
             <View style = {{flex:0.1, flexDirection:'row', 
             justifyContent:'center', alignItems:'center'}}>
                 <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.font,fontSize:15}}/>
+                    style={{color:colors.dots,fontSize:15}}/>
                 <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                 <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                 <MaterialCommunityIcons name='checkbox-blank-circle'
-                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                 <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
             </View>
         </View>
     }
@@ -1195,15 +1194,15 @@ export class Creation5 extends Component {
                 <View style = {{flex:0.1, flexDirection:'row', 
                 justifyContent:'center', alignItems:'center'}}>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15}}/>
+                        style={{color:colors.dots,fontSize:15}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                     <MaterialCommunityIcons name='checkbox-blank-circle'
-                        style={{color:colors.font,fontSize:15, marginLeft:20}}/>
+                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
                 </View>
 
             </View>
@@ -1251,7 +1250,7 @@ const styles = StyleSheet.create({
         fontSize: 25,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.background,
+        color: colors.font,
     },
     dsconcerto: {
         fontSize: 15,

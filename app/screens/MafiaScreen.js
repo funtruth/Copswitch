@@ -1201,7 +1201,10 @@ _gameOver() {
 
 render() {
 
-return <View style = {{flex:1, backgroundColor:colors.gamecolor, padding:10,
+return <Image source = {require('../../assets/images/background.png')} 
+style = {{flex:1, alignSelf:'stretch', width:null}}>
+
+<View style = {{flex:1, backgroundColor:colors.gamecolor, padding:10,
 justifyContent:'center'}}>
 
 
@@ -1286,7 +1289,7 @@ justifyContent:'center'}}>
         {this._renderListComponent()}
     </Animated.View>
 
-</View>
+</View></Image>
 }
 }
 
