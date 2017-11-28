@@ -432,7 +432,7 @@ class Roles extends Component {
                 this.props.navigation.dispatch(NavigationActions.back())
             }}/>
 
-            <View style = {{position:'absolute', top:60, left:0, right:0, height:42,
+            <View style = {{position:'absolute', top:90, left:0, right:0, height:42,
                 flexDirection:'row', justifyContent:'center'}}>
                 <CustomButton
                     size = {0.25}
@@ -479,7 +479,7 @@ class Roles extends Component {
                 />
             </View>
 
-            <View style = {{height:110}}/>
+            <View style = {{height:40}}/>
 
             <Animated.View style = {{flex:this.state.townSize, opacity:this.state.townOpacity}}>
                 <FlatList
@@ -602,15 +602,14 @@ class Rulebook extends Component {
     }
 
     render(){
-        return <View style = {{flex:1,backgroundColor:colors.background,
-            justifyContent:'center', alignItems:'center'}}>
+        return <View style = {{flex:1,backgroundColor:colors.background}}>
             
             <Header title = 'How to Play' onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back())
             }}/>
 
             <PushButton
-                size = {0.1}
+                size = {0.12}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
@@ -624,7 +623,7 @@ class Rulebook extends Component {
             />
             <View style = {{flex:0.02}}/>
             <PushButton
-                size = {0.1}
+                size = {0.12}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
@@ -638,7 +637,7 @@ class Rulebook extends Component {
             />
             <View style = {{flex:0.02}}/>
             <PushButton
-                size = {0.1}
+                size = {0.12}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
@@ -651,7 +650,7 @@ class Rulebook extends Component {
             />
             <View style = {{flex:0.02}}/>
             <PushButton
-                size = {0.1}
+                size = {0.12}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
@@ -664,7 +663,7 @@ class Rulebook extends Component {
             />
             <View style = {{flex:0.02}}/>
             <PushButton
-                size = {0.1}
+                size = {0.12}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
@@ -695,15 +694,14 @@ class Setup extends Component {
     }
 
     render(){
-        return <View style = {{flex:1,backgroundColor:colors.background,
-            justifyContent:'center', alignItems:'center'}}>
+        return <View style = {{flex:1,backgroundColor:colors.background }}>
 
             <Header title = 'Setting Up' onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back())
             }}/>
 
             <PushButton
-                size = {0.1}
+                size = {0.12}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
@@ -717,7 +715,7 @@ class Setup extends Component {
             />
             <View style = {{flex:0.02}}/>
             <PushButton
-                size = {0.1}
+                size = {0.12}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
@@ -731,7 +729,7 @@ class Setup extends Component {
             />
             <View style = {{flex:0.02}}/>
             <PushButton
-                size = {0.1}
+                size = {0.12}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
@@ -789,24 +787,72 @@ class InfoPage extends Component {
         }
     }
 
+    _pageBack() {
+
+    }
+    _pageForward() {
+
+    }
+
     render(){
-        return <View style = {{flex:1,backgroundColor:colors.background,
-            justifyContent:'center', alignItems:'center'}}>
+        return <View style = {{ flex:1,backgroundColor:colors.background }}>
 
             <Header title = 'TEMPTITLE' onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back());
             }}/>
+            
+            <View style = {{flex:0.85, backgroundColor:colors.menubtn, borderRadius:15,
+                marginLeft:15, marginRight:15, borderWidth:1}}>
+                <View style = {{flex:1, backgroundColor:colors.font, borderRadius:15, marginBottom:6}}>
 
-            <View style = {{flex:0.8}}>
-
-                <FlatList
-                    data={this.state.infolist}
-                    renderItem={({item}) => this._renderListItem(item) }
-                    numColumns = {1}
-                    keyExtractor={item => item.key}
-                />
-
+                    <FlatList
+                        data={this.state.infolist}
+                        renderItem={({item}) => this._renderListItem(item) }
+                        numColumns = {1}
+                        keyExtractor={item => item.key}
+                    />
+                </View>
             </View>
+
+            <View style = {{flex:0.15, flexDirection:'row', borderWidth:1, justifyContent:'center'}}>
+                <View style = {{flex:0.25, justifyContent:'center'}}><View style = {{flex:0.7}}>
+                    <CustomButton
+                        size = {1}
+                        flex = {0.8}
+                        depth = {6}
+                        color = {colors.lightbutton}
+                        radius = {15}
+                        onPress = {this._pageBack()}
+                        component = {
+                            <MaterialCommunityIcons name='page-first' 
+                                style={{ color:colors.main, fontSize: 30, alignSelf:'center' 
+                            }}/>
+                        }
+                    />
+                </View></View>
+                <View style = {{flex:0.25, justifyContent:'center'}}>
+                    <View style = {{flex:0.7, borderRadius:15, backgroundColor:colors.menubtn}}>
+                    
+                    </View>
+                </View>
+                <View style = {{flex:0.25, justifyContent:'center'}}><View style = {{flex:0.7}}>
+                    <CustomButton
+                        size = {1}
+                        flex = {0.8}
+                        depth = {6}
+                        color = {colors.lightbutton}
+                        radius = {15}
+                        onPress = {this._pageForward()}
+                        component = {
+                            <MaterialCommunityIcons name='page-last' 
+                                style={{ color:colors.main, fontSize: 30, alignSelf:'center' 
+                            }}/>
+                        }
+                    />
+                </View></View>
+            </View>
+
+            <View style = {{height:60}}/>
         </View>
     }
 }
@@ -866,7 +912,7 @@ export default RuleBook = StackNavigator(
         color: colors.main,
     },
     detail: {
-        color:colors.font,
+        color:colors.dfont,
         fontFamily: 'ConcertOne-Regular',
         fontSize:17,
         lineHeight: 25,
@@ -884,7 +930,7 @@ export default RuleBook = StackNavigator(
         marginRight:10,
     },
     comment: {
-        color:colors.font,
+        color:colors.dfont,
         fontFamily: 'ConcertOne-Regular',
         fontSize:17,
         lineHeight: 25,

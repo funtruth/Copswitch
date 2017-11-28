@@ -25,8 +25,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import randomize from 'randomatic';
 import * as Animatable from 'react-native-animatable';
 
-import Background from '../../assets/images/background.png';
-
 const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 const QUICK_ANIM    = 400;
 const MED_ANIM      = 600;
