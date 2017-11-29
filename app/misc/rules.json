@@ -17,7 +17,7 @@
         },
         "b" : {
           "desc" : "How to Play",
-          "route" : "about",
+          "route" : "general",
           "type" : 3
         }
       },

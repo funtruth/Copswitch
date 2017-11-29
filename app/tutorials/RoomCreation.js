@@ -301,60 +301,60 @@ export class Creation2 extends Component {
                 <Animatable.Text style = {styles.sconcerto}ref='error'>
                     {this.state.errormessage}</Animatable.Text>
                 <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {5}
+                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                        color = {colors.digit} radius = {25}
                         onPress = {()=>{
                             this._digit(1) 
                         }}
                         component = {<Text style={styles.dconcerto}>1</Text>}/>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {5}
+                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                        color = {colors.digit} radius = {25}
                         onPress = {()=>{
                             this._digit(2) 
                         }}
                         component = {<Text style={styles.dconcerto}>2</Text>}/>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {5}
+                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                        color = {colors.digit} radius = {25}
                         onPress = {()=>{
                             this._digit(3) 
                         }}
                         component = {<Text style={styles.dconcerto}>3</Text>}/>
                 </View>
                 <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {5}
+                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                        color = {colors.digit} radius = {25}
                         onPress = {()=>{
                             this._digit(4) 
                         }}
                         component = {<Text style={styles.dconcerto}>4</Text>}/>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {5}
+                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                        color = {colors.digit} radius = {25}
                         onPress = {()=>{
                             this._digit(5) 
                         }}
                         component = {<Text style={styles.dconcerto}>5</Text>}/>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {5}
+                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                        color = {colors.digit} radius = {25}
                         onPress = {()=>{
                             this._digit(6) 
                         }}
                         component = {<Text style={styles.dconcerto}>6</Text>}/>
                 </View>
                 <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {5}
+                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                        color = {colors.digit} radius = {25}
                         onPress = {()=>{
                             this._digit(7) 
                         }}
                         component = {<Text style={styles.dconcerto}>7</Text>}/>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {5}
+                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                        color = {colors.digit} radius = {25}
                         onPress = {()=>{
                             this._digit(8) 
                         }}
                         component = {<Text style={styles.dconcerto}>8</Text>}/>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {20}
+                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                        color = {colors.digit} radius = {25}
                         onPress = {()=>{
                             this._digit(9) 
                         }}
@@ -367,12 +367,12 @@ export class Creation2 extends Component {
                             this._backspace()
                         }}
                         component = {<Text style={styles.concerto}>CLEAR</Text>}/>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {6}
-                        color = {colors.digit} radius = {20}
+                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
+                        color = {colors.digit} radius = {25}
                         onPress = {()=>{
                             this._digit(0) 
                         }}
-                        component = {<Text style={styles.dconcerto}>2</Text>}/>
+                        component = {<Text style={styles.dconcerto}>0</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
                         color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {25}
                         onPress = {()=>{

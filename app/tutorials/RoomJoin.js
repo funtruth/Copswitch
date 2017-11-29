@@ -224,7 +224,7 @@ export class Join1 extends Component {
                             onPress = {()=>{
                                 this._digit(0) 
                             }}
-                            component = {<Text style={styles.dconcerto}>2</Text>}/>
+                            component = {<Text style={styles.dconcerto}>0</Text>}/>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
                             color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {25}
                             onPress = {()=>{
