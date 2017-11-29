@@ -59,7 +59,7 @@ export class Home extends React.Component {
             if(snap.val()==true){
                 this.setState({connected:true})
             } else {
-                this.setState({connected:false})
+                this.setState({connected:true})
             }
         })   
     }
@@ -119,15 +119,13 @@ export class Home extends React.Component {
                     NavigationActions.navigate({
                         routeName: 'CreationTutorial',
                         action: NavigationActions.navigate({ 
-                            routeName: 'Creation1',
+                            routeName: 'CreationPager',
                             params: {roomname:roomname}
                         })
                     })
                 )
             })
 
-        } else {
-            //this.refs.wifi.shake(800)
         }
             
     }
@@ -147,9 +145,7 @@ export class Home extends React.Component {
                 })
             );
             
-        } else {
-            //this.refs.wifi.shake(800)
-        }
+        } 
     }
 
     render() {

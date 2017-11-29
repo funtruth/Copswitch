@@ -40,14 +40,14 @@ export default colors = {
     namebtn:    '#3FD0A9',
     menubtn:    '#d65e5e',
     digit:      '#d65e5e',
-    dots:       '#873c3d',
+    dots:       '#d65e5e',
 
 //COMPONENTS
 
     //Tab Navigator
     tabbackground:          '#e9e2ca',
-    indicatorcolor:         '#454a4a',
-    iconcolor:              '#454a4a',
+    indicatorcolor:         '#873c3d',
+    iconcolor:              '#873c3d',
     
     //Header Style
     headerbackground:       '#54537A', //purple

@@ -16,7 +16,7 @@ import Lists from "./app/screens/ListsScreen";
 import MafiaRoom from "./app/screens/MafiaScreen";
 import { Messages, Profile } from "./app/screens/DetailsScreen";
 
-import { Creation1, Creation2, Creation3, Creation4, Creation5 } from './app/tutorials/RoomCreation.js';
+import { CreationPager, Creation1, Creation2, Creation3, Creation4, Creation5 } from './app/tutorials/RoomCreation.js';
 import { Join1 } from './app/tutorials/RoomJoin.js';
 import { Lobby1, Lobby2 } from './app/tutorials/RoomJoin.js';
 
@@ -70,56 +70,28 @@ export const SignedIn = TabNavigator(
     }
 );
 
-export const CreationTutorial = TabNavigator(
+export const CreationTutorial = StackNavigator(
   {
-    Creation1: {
-      screen: Creation1,
-      navigationOptions : {
-        tabBarVisible: false,
-      }
-    },
-    Creation2: {
-      screen: Creation2,
-      navigationOptions: {
-        tabBarVisible: false,
-      }
-    },
-    Creation3: {
-      screen: Creation3,
-      navigationOptions: {
-        tabBarVisible: false,
-      }
-    },
-    Creation4: {
-      screen: Creation4,
-      navigationOptions: {
-        tabBarVisible: false,
-      }
-    },
-    Creation5: {
-      screen: Creation5,
-      navigationOptions: {
-        tabBarVisible: false,
-      }
-    },
+    CreationPager: {
+      screen: CreationPager,
+    }
   },
   {
     backBehavior: 'none',
-    initialRouteName: 'Creation1',
+    headerMode: 'none',
+    initialRouteName: 'CreationPager',
   }
 );
 
-export const JoinTutorial = TabNavigator(
+export const JoinTutorial = StackNavigator(
   {
     Join1: {
       screen: Join1,
-      navigationOptions : {
-        tabBarVisible: false,
-      }
     },
   },
   {
     backBehavior: 'none',
+    headerMode: 'none',
     initialRouteName: 'Join1',
   }
 );
