@@ -34,6 +34,7 @@ const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons)
 import randomize from 'randomatic';
 
 export class CreationPager extends Component {
+
     constructor(props) {
         super(props);
 
@@ -118,20 +119,12 @@ export class CreationPager extends Component {
     }
 
     _handleScroll(position) {
-        const width  = Dimensions.get('window').width;
-        const half   = width/2;
-        const clip   = position%width;
-        const rev    = width - clip;
-        if(clip>half){
-            this.setState({
-                page: ((position+rev)/Dimensions.get('window').width)+1
-            })
-        } else {
-            this.setState({
-                page: ((position-clip)/Dimensions.get('window').width)+1
-            })
-        }
-        this.setState({page:3})
+        Animated.timing(
+            this.state.dot4, {
+                toValue:1,
+                duration:1000,
+            }
+        ).start()
     }
 
     _continue(name) {
@@ -157,6 +150,9 @@ export class CreationPager extends Component {
     }
 
     render() {
+
+        let position = Animated.divide(this.scrollX, 360);
+
         return <View style = {{flex:1, backgroundColor:colors.background}}>
             <View style = {{flexDirection:'row', flex:0.15, justifyContent:'center',alignItems:'center'}}>
                 <View style = {{flex:0.15}}/>
@@ -177,14 +173,9 @@ export class CreationPager extends Component {
             </View>
 
             <ScrollView style = {{flex:0.75,backgroundColor:colors.background}}
-                horizontal showsHorizontalScrollIndicator={false} ref='scrollView'
-                pagingEnabled
-                /*onMomentumScrollEnd = {(event)=>{
-                    this._pagingEnabled(event.nativeEvent.contentOffset.x)
-                }}*/
-                onScroll = {(event) => {
-                    this._handleScroll(event.nativeEvent.contentOffset.x)
-                }}>
+                horizontal showsHorizontalScrollIndicator={false} ref='scrollView' pagingEnabled
+                scrollEventThrottle = {16}
+                onScroll = {(event) => { this._handleScroll(event.nativeEvent.contentOffset.x) }}>
                 
                 <Creation1
                     roomname = {this.state.roomname}
