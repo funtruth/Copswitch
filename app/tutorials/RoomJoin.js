@@ -4,6 +4,7 @@ import {
     Text,
     TextInput,
     View,
+    ScrollView,
     Image,
     FlatList,
     StyleSheet,
@@ -12,6 +13,8 @@ import {
     BackHandler,
     TouchableOpacity,
     TouchableWithoutFeedback,
+    Animated,
+    Dimensions,
 }   from 'react-native';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -26,6 +29,7 @@ import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
 
 import * as Animatable from 'react-native-animatable';
+const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons)
 
 export class Join1 extends Component {
 
@@ -90,7 +94,7 @@ export class Join1 extends Component {
                 NavigationActions.navigate({
                     routeName: 'LobbyTutorial',
                     action: NavigationActions.navigate({ 
-                        routeName: 'Lobby1',
+                        routeName: 'LobbyPager',
                         params: {roomname:roomname}
                     })
                 })
@@ -240,7 +244,8 @@ export class Join1 extends Component {
     }
 }
 
-export class Lobby1 extends Component {
+
+export class LobbyPager extends Component {
     
     constructor(props) {
         super(props);
@@ -249,18 +254,22 @@ export class Lobby1 extends Component {
         const roomname = params.roomname;
 
         this.state = {
+            page: 1,
+
             roomname: params.roomname,
             alias:'',
             loading:true,
-            errormessage:null,
-            
-            firsttime: true,
         };
 
-        this.nameRef = firebase.database().ref('rooms').child(params.roomname)
-            .child('listofplayers').child(firebase.auth().currentUser.uid).child('name');
+        this.dot1 = new Animated.Value(1);
+        this.dot2 = new Animated.Value(0.3);
+        this.width = Dimensions.get('window').width
+
+        this.roomRef        = firebase.database().ref('rooms').child(roomname);
+        this.nameRef        = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid)
+                            .child('name');
+        this.listPlayerRef  = this.roomRef.child('listofplayers')
         
-        this.connectedRef = firebase.database().ref(".info/connected");
     }
 
     
@@ -272,21 +281,10 @@ export class Lobby1 extends Component {
             })
         })
 
-        this.connectedRef.on('value',snap=>{
-            if(snap.val()===true){
-                this.setState({loading:false})
-            } else {
-                this.setState({loading:true})
-            }
-        })
-
         BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
     }
 
     componentWillUnmount() {
-        if(this.connectedRef){
-            this.connectedRef.off();
-        }
         if(this.nameRef){
             this.nameRef.off();
         }
@@ -294,13 +292,40 @@ export class Lobby1 extends Component {
     }
 
     _onBackPress = () => {
-        firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
-        .child(firebase.auth().currentUser.uid).remove().then(()=>{
-            this.props.navigation.dispatch(NavigationActions.back({key:'Join1'}));
+        firebase.database().ref('rooms').child(this.state.roomname).remove().then(()=>{
+            this.props.navigation.dispatch(NavigationActions.back({key:'Room'}));
             return true
         })  
     }
 
+    _pagingEnabled(position){
+        const width  = this.width;
+        const half   = width/2;
+        const clip   = position%width;
+        const rev    = width - clip;
+        if(clip>half){
+            this.refs.scrollView.scrollTo({x:position+rev, animated:true})
+        } else {
+            this.refs.scrollView.scrollTo({x:position-clip, animated:true})
+        }
+    }
+
+    _handleScroll(position) {
+        Animated.parallel([
+            Animated.timing(
+                this.dot1, {
+                    toValue:position<359?1:0.3,
+                    duration:50,
+                } 
+            ),
+            Animated.timing(
+                this.dot2, {
+                    toValue:position>359 && position<719?1:0.3,
+                    duration:50,
+                } 
+            )
+        ]).start()
+    }
 
     _continue(name) {
         if(this.state.loading){
@@ -315,94 +340,144 @@ export class Lobby1 extends Component {
                     presseduid:         'foo',
                 }).then(()=>{
                     this.setState({errormessage:null})
-                    if(this.state.firsttime){
-                        this.props.navigation.navigate('Lobby2')
-                        this.setState({firsttime:false})
-                    }
+                    this.refs.scrollView.scrollTo({x:this.width*1,y:0,animation:true})
                 })
             } else {
                 this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
                 this.refs.nameerror.shake(800)
-                this.textInput.focus()
             }
         }
     }
 
     render() {
-        return <TouchableWithoutFeedback 
-        style = {{ flex:1 }}
-        onPress={()=>{ 
-            Keyboard.dismiss()
-            this._continue    
-        }}>
-            <View style = {{flex:1,backgroundColor:colors.background}}>
-
-                <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.85}}/>
-                    <TouchableOpacity
-                        style = {{flex:0.15}}
-                        onPress = {()=>{
-                            firebase.database().ref('rooms').child(this.state.roomname).remove()
-                            .child(firebase.auth().currentUser.uid).then(()=>{
-                                this.props.navigation.dispatch(NavigationActions.back());
-                            })
-                        }} >
-                        <MaterialCommunityIcons name='close'
-                            style={{color:colors.font,fontSize:30}}/>
-                    </TouchableOpacity>
+        return <View style = {{flex:1, backgroundColor:colors.background}}>
+            <View style = {{flexDirection:'row', flex:0.15, justifyContent:'center',alignItems:'center'}}>
+                <View style = {{flex:0.15}}/>
+                <View style = {{flex:0.7, justifyContent:'center'}}> 
+                    <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                 </View>
-
-                <View animation='fadeIn' style = {{flexDirection:'row', flex:0.1, 
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.7}}> 
-                        <Text style = {styles.concerto}>You joined Room</Text>
-                        <Text style = {styles.roomcode}>{this.state.roomname}</Text>
-                    </View>
-                </View>
-
-                <View style = {{flex:0.1}}/>
-
-                <View style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.concerto}>What is your name?</Text>
-                    <View style = {{flex:0.4,flexDirection:'row', marginTop:3}}>
-                        <TextInput
-                            ref={(input) => { this.textInput = input; }}
-                            placeholder="... or make one up"
-                            placeholderTextColor={colors.color2}
-                            style={{
-                                backgroundColor: colors.main,
-                                flex:0.7,
-                                fontFamily:'ConcertOne-Regular',
-                                fontSize: 20,
-                                color:colors.background,
-                                textAlign:'center',
-                                borderRadius:2,
-                            }}
-                            value={this.state.alias}
-                            onChangeText = {(text) => {this.setState({alias: text})}}
-                            onSubmitEditing = {()=>{ 
-                                this._continue(this.state.alias);
-                            }}
-                        />
-                    </View>
-                    <View style = {{flex:0.2}}>
-                    <Animatable.Text style = {styles.sconcerto} ref = 'nameerror'>
-                    {this.state.errormessage}</Animatable.Text></View>
-                    <View style = {{flex:0.3}}/>
-                </View>
-
-                <View style = {{flex:0.4}}/>
-                    
-                <View style = {{flex:0.1, flexDirection:'row', 
-                    justifyContent:'center', alignItems:'center'}}>
-                    <MaterialCommunityIcons name='checkbox-blank-circle'
-                        style={{color:colors.dots,fontSize:15}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
-                </View>
+                <TouchableOpacity
+                    style = {{flex:0.15}}
+                    onPress = {()=>{
+                        firebase.database().ref('rooms').child(this.state.roomname).remove()
+                        .then(()=>{
+                            this.props.navigation.dispatch(NavigationActions.back());
+                        })
+                    }} >
+                    <MaterialCommunityIcons name='close-circle'
+                        style={{color:colors.menubtn,fontSize:30}}/>
+                </TouchableOpacity>
             </View>
-        </TouchableWithoutFeedback>
+
+            <ScrollView style = {{flex:0.75,backgroundColor:colors.background}}
+                horizontal showsHorizontalScrollIndicator={false} ref='scrollView' pagingEnabled
+                scrollEventThrottle = {16}
+                onScroll = {(event) => { this._handleScroll(event.nativeEvent.contentOffset.x) }}>
+                
+                <Lobby1
+                    roomname = {this.state.roomname}
+                    width = {this.width}
+                    refs = {this.refs}
+                />
+                <Lobby2 
+                    roomname = {this.state.roomname}
+                    width = {this.width}
+                    refs = {this.refs}
+                />
+            </ScrollView>
+
+            <View style = {{flex:0.1, flexDirection:'row',
+                justifyContent:'center', alignItems:'center'}}>
+                <AnimatedDot name='checkbox-blank-circle'
+                    style={{color:colors.dots,fontSize:15, opacity:this.dot1}}/>
+                <AnimatedDot name='checkbox-blank-circle'
+                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot2}}/>
+            </View>
+        </View>
+    }
+}
+
+export class Lobby1 extends Component {
+    
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            alias:'',
+            errormessage:null,
+        };
+    }
+
+
+    _onBackPress = () => {
+        firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
+        .child(firebase.auth().currentUser.uid).remove().then(()=>{
+            this.props.navigation.dispatch(NavigationActions.back({key:'Join1'}));
+            return true
+        })  
+    }
+
+
+    _continue(name) {
+        if(name && name.length>0 && name.length < 11){
+            firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
+            .child(firebase.auth().currentUser.uid).update({
+                name:               name,
+                readyvalue:         false,
+                presseduid:         'foo',
+            }).then(()=>{
+                this.setState({errormessage:null})
+                this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animated:true})
+            })
+        } else {
+            this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
+            this.refs.nameerror.shake(800)
+        }
+        
+    }
+
+    render() {
+        return <View style = {{flex:0.7, justifyContent:'center', alignItems:'center',
+            width:this.props.width}}>
+
+            <Text style = {styles.subtitle}>What is your name?</Text>
+            <View style = {{flex:0.12,flexDirection:'row'}}>
+                <TextInput
+                    style={{
+                        backgroundColor: colors.main,
+                        flex:0.6,
+                        fontFamily:'ConcertOne-Regular',
+                        fontSize: 20,
+                        color:colors.dshadow,
+                        textAlign:'center',
+                        borderTopLeftRadius:25,
+                        borderBottomLeftRadius:25,
+                    }}
+                    //autoFocus = {true}
+                    value={this.state.alias}
+                    onChangeText = {(text) => {this.setState({alias: text})}}
+                    onSubmitEditing = {()=>{ 
+                        this._continue(this.state.alias.trim());
+                    }}
+                />
+                <CustomButton
+                    size = {0.2}
+                    flex = {1}
+                    depth = {6}
+                    leftradius = {0}
+                    rightradius = {25}
+                    color = {colors.menubtn}
+                    onPress = {()=>{
+                        this._continue(this.state.alias.trim());
+                    }}
+                    component = {<Text style = {styles.concerto}>GO</Text>}
+                />
+            </View>
+            <Animatable.Text style = {styles.sconcerto} ref = 'nameerror'>
+                {this.state.errormessage}</Animatable.Text>
+            
+            <View style = {{ flex:0.4 }}/>
+        </View>
     }
 }
 
@@ -412,168 +487,55 @@ export class Lobby2 extends Component {
 
         this.state = {
             alias:'',
-            roomname: '',
-            difficulty: null,
-            loading: true,
-            starting:false,
 
             namelist:[],
-
-            players:null,       //ListOfPlayers count
-            playernum: null,    //Creation2 number
-            rolecount:null,     //ListOfRoles count
         };
-
-        this.listOfRolesRef = firebase.database().ref('listofroles')
-            .child(firebase.auth().currentUser.uid);
-        
     }
 
     componentWillMount() {
-        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
-
-            this.setState({roomname:result})
-           
-            this.listofplayersRef = firebase.database().ref('rooms').child(result).child('listofplayers')
-            this.listofplayersRef.on('value',snap=>{
-                var list = [];
-                snap.forEach((child)=> {
-                    list.push({
-                        name: child.val().name,
-                        key: child.key,
-                    })
-                })
-                this.setState({
-                    namelist:list,
-                    players:snap.numChildren(),
-                    loading:false
+        this.listofplayersRef = firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
+        this.listofplayersRef.on('value',snap=>{
+            var list = [];
+            snap.forEach((child)=> {
+                list.push({
+                    name: child.val().name,
+                    key: child.key,
                 })
             })
-
-            this.playernumRef = firebase.database().ref('rooms').child(result).child('playernum')
-            this.playernumRef.on('value',snap=>{
-                this.setState({
-                    playernum: snap.val(),
-                })
+            this.setState({
+                namelist:list
             })
-
-            this.phaseRef = firebase.database().ref('rooms').child(result).child('phase');
-            this.phaseRef.on('value',snap=>{
-                if(snap.exists()){
-                    if(snap.val()>1){
-                        AsyncStorage.setItem('GAME-KEY',result);
-
-                        this.props.navigation.dispatch(
-                            NavigationActions.navigate({
-                                routeName: 'Mafia',
-                                action: NavigationActions.navigate({ 
-                                    routeName: 'MafiaRoom',
-                                    params: {roomname:result}
-                                })
-                            })
-                        )
-                    }
-                }
-            })
-
         })
 
-        this.listOfRolesRef.on('value',snap=>{
+        this.phaseRef = firebase.database().ref('rooms').child(this.props.roomname).child('phase');
+        this.phaseRef.on('value',snap=>{
             if(snap.exists()){
-                var rolecount = 0;
-                snap.forEach((child)=>{
-                    rolecount = rolecount + child.val();
-                })
-                this.setState({rolecount:rolecount})
+                if(snap.val()>1){
+                    AsyncStorage.setItem('GAME-KEY',this.props.roomname);
+
+                    this.props.navigation.dispatch(
+                        NavigationActions.navigate({
+                            routeName: 'Mafia',
+                            action: NavigationActions.navigate({ 
+                                routeName: 'MafiaRoom',
+                                params: {roomname:this.props.roomname}
+                            })
+                        })
+                    )
+                }
             }
         })
     }
 
     componentWillUnmount() {
-        if(this.listOfRolesRef){
-            this.listOfRolesRef.off();
-        }
         if(this.listofplayersRef){
             this.listofplayersRef.off();
-        }
-        if(this.playernumRef){
-            this.playernumRef.off();
         }
         if(this.phaseRef){
             this.phaseRef.off();
         }
     }
 
-    _startGame(roomname) {
-        AsyncStorage.setItem('GAME-KEY',roomname);
-        
-        this._handOutRoles(roomname);
-
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).remove();
-
-        this.setState({starting:true})
-
-        setTimeout(()=>{
-            firebase.database().ref('rooms').child(roomname).child('phase').set(2).then(()=>{
-                this.props.navigation.dispatch(
-                    NavigationActions.navigate({
-                        routeName: 'Mafia',
-                        action: NavigationActions.navigate({ 
-                            routeName: 'MafiaRoom',
-                            params: {roomname:roomname}
-                        })
-                    })
-                )
-            })
-        },2000)
-    }
-
-    _handOutRoles(roomname){
-        
-        var randomstring = '';
-        var charcount = 0;
-
-        firebase.database().ref('listofroles/' + firebase.auth().currentUser.uid).once('value',snap=>{
-
-            snap.forEach((child)=>{
-                for(i=0;i<child.val();i++){
-                    randomstring = randomstring + randomize('?', 1, {chars: child.key})
-                    charcount++
-                }
-            })
-
-            var min = Math.ceil(1);
-            var max = Math.ceil(charcount);
-
-            this.listofplayersRef.once('value',insidesnap=>{
-                insidesnap.forEach((child)=>{
-
-                    var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
-                    var randomrole = randomstring.charAt(randomnumber-1);
-
-                    this.listofplayersRef.child(child.key).update({
-                        roleid:         randomrole,
-                        charges:        Rolesheet[randomrole].charges,
-                        suspicious:     Rolesheet[randomrole].suspicious,
-                        type:           Rolesheet[randomrole].type,
-                    })
-
-                    if(randomrole == randomrole.toLowerCase()){
-                        firebase.database().ref('rooms/' + roomname + '/mafia/' 
-                        + child.key).update({
-                            roleid:randomrole,
-                            name: child.val().name,
-                            alive: true,
-                        })
-                    }
-                    
-                    max = max - 1;
-                    randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);
-                })
-            })
-
-        })
-    }
 
     _renderListComponent(){
         return <FlatList
@@ -585,62 +547,27 @@ export class Lobby2 extends Component {
                     <Text style = {styles.concerto}>{item.name}</Text>
                 </TouchableOpacity>
             )}
+            contentContainerStyle = {{marginTop:20, marginBottom:20}}
             numColumns={1}
             keyExtractor={item => item.key}
         />
     }
 
     render() {
-        return <TouchableWithoutFeedback 
-        style = {{ flex:1 }}
-        onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.background}}>
-
-                <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.85}}/>
-                    <TouchableOpacity
-                        style = {{flex:0.15}}
-                        onPress = {()=>{
-                            this.props.navigation.dispatch(NavigationActions.back());
-                        }} >
-                        <MaterialCommunityIcons name='close'
-                            style={{color:colors.font,fontSize:30}}/>
-                    </TouchableOpacity>
-                </View>
-
-                <View style = {{flexDirection:'row', flex:0.1, 
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.7}}> 
-                        <Text style = {styles.concerto}>Room Code</Text>
-                        <Text style = {styles.roomcode}>{this.state.roomname}</Text>
-                    </View>
-                </View>
-
-                <View style = {{flex:0.025}}/>
-                        
-                <View style = {{flex:0.075,backgroundColor:colors.background, 
-                    justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.mconcerto}>Players:</Text>
-                </View>
-
-                <View style = {{flex:0.55, justifyContent:'center', margin:10,
-                    backgroundColor:colors.color2, borderRadius:2}}>
+        return <View style = {{flex:0.7,backgroundColor:colors.background,
+            width:this.props.width}}>
+            <View style = {{flex:0.1, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.mconcerto}>Players:</Text>
+            </View>
+            
+            <View style = {{flex:0.87, flexDirection:'row', justifyContent:'center'}}>
+                <View style = {{flex:0.7, backgroundColor:colors.menubtn, borderRadius:30}}>
                     {this._renderListComponent()}
                 </View>
-
-                <View style = {{flex:0.05}}/>
-
-                <View style = {{flex:0.1, flexDirection:'row', 
-                justifyContent:'center', alignItems:'center'}}>
-                    <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                        style={{color:colors.dots,fontSize:15}}/>
-                    <MaterialCommunityIcons name='checkbox-blank-circle'
-                        style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
-                </View>
-
             </View>
-        </TouchableWithoutFeedback>
+
+            <View style = {{flex:0.03}}/>
+        </View>
     }
 }
 
@@ -650,13 +577,19 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.font,
+        color: colors.menubtn,
+    },
+    subtitle : {
+        fontSize: 20,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.shadow,
     },
     mconcerto: {
         fontSize: 30,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.font,
+        color: colors.shadow,
     },
     sconcerto: {
         fontSize: 15,

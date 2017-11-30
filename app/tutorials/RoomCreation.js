@@ -50,13 +50,14 @@ export class CreationPager extends Component {
             errormessage:null,
 
             difficulty: null,
-
-            dot1: new Animated.Value(1),
-            dot2: new Animated.Value(0.3),
-            dot3: new Animated.Value(0.3),
-            dot4: new Animated.Value(0.3),
-            dot5: new Animated.Value(0.3),
         };
+
+        this.dot1 = new Animated.Value(1);
+        this.dot2 = new Animated.Value(0.3);
+        this.dot3 = new Animated.Value(0.3);
+        this.dot4 = new Animated.Value(0.3);
+        this.dot5 = new Animated.Value(0.3);
+        this.width = Dimensions.get('window').width
 
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
         this.nameRef        = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid)
@@ -106,7 +107,7 @@ export class CreationPager extends Component {
     }
 
     _pagingEnabled(position){
-        const width  = Dimensions.get('window').width;
+        const width  = this.width;
         const half   = width/2;
         const clip   = position%width;
         const rev    = width - clip;
@@ -115,16 +116,41 @@ export class CreationPager extends Component {
         } else {
             this.refs.scrollView.scrollTo({x:position-clip, animated:true})
         }
-        
     }
 
     _handleScroll(position) {
-        Animated.timing(
-            this.state.dot4, {
-                toValue:1,
-                duration:1000,
-            }
-        ).start()
+        Animated.parallel([
+            Animated.timing(
+                this.dot1, {
+                    toValue:position<359?1:0.3,
+                    duration:50,
+                } 
+            ),
+            Animated.timing(
+                this.dot2, {
+                    toValue:position>359 && position<719?1:0.3,
+                    duration:50,
+                } 
+            ),
+            Animated.timing(
+                this.dot3, {
+                    toValue:position>719 && position<1079?1:0.3,
+                    duration:50,
+                } 
+            ),
+            Animated.timing(
+                this.dot4, {
+                    toValue:position>1079 && position<1439?1:0.3,
+                    duration:50,
+                } 
+            ),
+            Animated.timing(
+                this.dot5, {
+                    toValue:position>1439?1:0.3,
+                    duration:50,
+                } 
+            )
+        ]).start()
     }
 
     _continue(name) {
@@ -140,7 +166,7 @@ export class CreationPager extends Component {
                     presseduid:         'foo',
                 }).then(()=>{
                     this.setState({errormessage:null})
-                    this.props.refs.scrollView.scrollTo({x:this.props.width*1,y:0,animation:true})
+                    this.refs.scrollView.scrollTo({x:this.width*1,y:0,animation:true})
                 })
             } else {
                 this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
@@ -150,9 +176,6 @@ export class CreationPager extends Component {
     }
 
     render() {
-
-        let position = Animated.divide(this.scrollX, 360);
-
         return <View style = {{flex:1, backgroundColor:colors.background}}>
             <View style = {{flexDirection:'row', flex:0.15, justifyContent:'center',alignItems:'center'}}>
                 <View style = {{flex:0.15}}/>
@@ -179,27 +202,27 @@ export class CreationPager extends Component {
                 
                 <Creation1
                     roomname = {this.state.roomname}
-                    width = {Dimensions.get('window').width}
+                    width = {this.width}
                     refs = {this.refs}
                 />
                 <Creation2 
                     roomname = {this.state.roomname}
-                    width = {Dimensions.get('window').width}
+                    width = {this.width}
                     refs = {this.refs}
                 />
                 <Creation3
                     roomname = {this.state.roomname}
-                    width = {Dimensions.get('window').width}
+                    width = {this.width}
                     refs = {this.refs}
                 />
                 <Creation4
                     roomname = {this.state.roomname}
-                    width = {Dimensions.get('window').width}
+                    width = {this.width}
                     refs = {this.refs}
                 />
                 <Creation5
                     roomname = {this.state.roomname}
-                    width = {Dimensions.get('window').width}
+                    width = {this.width}
                     refs = {this.refs}
                 />
             </ScrollView>
@@ -207,15 +230,15 @@ export class CreationPager extends Component {
             <View style = {{flex:0.1, flexDirection:'row',
                 justifyContent:'center', alignItems:'center'}}>
                 <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, opacity:this.state.dot1}}/>
+                    style={{color:colors.dots,fontSize:15, opacity:this.dot1}}/>
                 <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.state.dot2}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot2}}/>
                 <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.state.dot3}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot3}}/>
                 <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.state.dot4}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot4}}/>
                 <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.state.dot5}}/>
+                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot5}}/>
             </View>
         </View>
     }
@@ -269,7 +292,7 @@ export class Creation1 extends Component {
                         borderTopLeftRadius:25,
                         borderBottomLeftRadius:25,
                     }}
-                    autoFocus = {true}
+                    //autoFocus = {true}
                     value={this.state.alias}
                     onChangeText = {(text) => {this.setState({alias: text})}}
                     onSubmitEditing = {()=>{ 

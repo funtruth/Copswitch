@@ -18,7 +18,7 @@ import { Messages, Profile } from "./app/screens/DetailsScreen";
 
 import { CreationPager, Creation1, Creation2, Creation3, Creation4, Creation5 } from './app/tutorials/RoomCreation.js';
 import { Join1 } from './app/tutorials/RoomJoin.js';
-import { Lobby1, Lobby2 } from './app/tutorials/RoomJoin.js';
+import { LobbyPager, Lobby1, Lobby2 } from './app/tutorials/RoomJoin.js';
 
 export const SignedOut = StackNavigator(
   {
@@ -98,22 +98,16 @@ export const JoinTutorial = StackNavigator(
 
 export const LobbyTutorial = TabNavigator(
   {
-    Lobby1: {
-      screen: Lobby1,
+    LobbyPager: {
+      screen: LobbyPager,
       navigationOptions : {
-        tabBarVisible: false,
-      }
-    },
-    Lobby2: {
-      screen: Lobby2,
-      navigationOptions: {
         tabBarVisible: false,
       }
     },
   },
   {
     backBehavior: 'none',
-    initialRouteName: 'Lobby1',
+    initialRouteName: 'LobbyPager',
   }
 );
 
