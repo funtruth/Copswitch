@@ -30,6 +30,7 @@ import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
 
 import * as Animatable from 'react-native-animatable';
+const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons)
 import randomize from 'randomatic';
 
 export class CreationPager extends Component {
@@ -40,12 +41,20 @@ export class CreationPager extends Component {
         const roomname = params.roomname;
 
         this.state = {
+            page: 1,
+
             roomname: params.roomname,
             alias:'',
             loading:true,
             errormessage:null,
 
             difficulty: null,
+
+            dot1: new Animated.Value(1),
+            dot2: new Animated.Value(0.3),
+            dot3: new Animated.Value(0.3),
+            dot4: new Animated.Value(0.3),
+            dot5: new Animated.Value(0.3),
         };
 
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
@@ -95,6 +104,35 @@ export class CreationPager extends Component {
         })  
     }
 
+    _pagingEnabled(position){
+        const width  = Dimensions.get('window').width;
+        const half   = width/2;
+        const clip   = position%width;
+        const rev    = width - clip;
+        if(clip>half){
+            this.refs.scrollView.scrollTo({x:position+rev, animated:true})
+        } else {
+            this.refs.scrollView.scrollTo({x:position-clip, animated:true})
+        }
+        
+    }
+
+    _handleScroll(position) {
+        const width  = Dimensions.get('window').width;
+        const half   = width/2;
+        const clip   = position%width;
+        const rev    = width - clip;
+        if(clip>half){
+            this.setState({
+                page: ((position+rev)/Dimensions.get('window').width)+1
+            })
+        } else {
+            this.setState({
+                page: ((position-clip)/Dimensions.get('window').width)+1
+            })
+        }
+        this.setState({page:3})
+    }
 
     _continue(name) {
         if(this.state.loading){
@@ -139,7 +177,14 @@ export class CreationPager extends Component {
             </View>
 
             <ScrollView style = {{flex:0.75,backgroundColor:colors.background}}
-                horizontal pagingEnabled showsHorizontalScrollIndicator={false} ref='scrollView'> 
+                horizontal showsHorizontalScrollIndicator={false} ref='scrollView'
+                pagingEnabled
+                /*onMomentumScrollEnd = {(event)=>{
+                    this._pagingEnabled(event.nativeEvent.contentOffset.x)
+                }}*/
+                onScroll = {(event) => {
+                    this._handleScroll(event.nativeEvent.contentOffset.x)
+                }}>
                 
                 <Creation1
                     roomname = {this.state.roomname}
@@ -170,16 +215,16 @@ export class CreationPager extends Component {
 
             <View style = {{flex:0.1, flexDirection:'row',
                 justifyContent:'center', alignItems:'center'}}>
-                <MaterialCommunityIcons name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15}}/>
-                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
-                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
-                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
-                <MaterialCommunityIcons name='checkbox-blank-circle-outline'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20}}/>
+                <AnimatedDot name='checkbox-blank-circle'
+                    style={{color:colors.dots,fontSize:15, opacity:this.state.dot1}}/>
+                <AnimatedDot name='checkbox-blank-circle'
+                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.state.dot2}}/>
+                <AnimatedDot name='checkbox-blank-circle'
+                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.state.dot3}}/>
+                <AnimatedDot name='checkbox-blank-circle'
+                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.state.dot4}}/>
+                <AnimatedDot name='checkbox-blank-circle'
+                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.state.dot5}}/>
             </View>
         </View>
     }
@@ -455,7 +500,7 @@ export class Creation3 extends Component {
                         {'How experienced' + '\n' + 'is your Group?'}</Text>
                 </View>
                 <View style = {{flex:0.09}}/>
-                <CustomButton size = {0.25} flex = {0.8} depth = {6} radius = {20}
+                <CustomButton size = {0.25} flex = {0.8} depth = {10} radius = {20}
                     color = {this.state.difficulty==1?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==1?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(1) }}
@@ -468,7 +513,7 @@ export class Creation3 extends Component {
                     </View>}
                 />
                 <View style = {{flex:0.04}}/>
-                <CustomButton size = {0.25} flex = {0.8} depth = {6} radius = {20}
+                <CustomButton size = {0.25} flex = {0.8} depth = {10} radius = {20}
                     color = {this.state.difficulty==2?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==2?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(2) }}
@@ -484,7 +529,7 @@ export class Creation3 extends Component {
                     </View>}
                 />
                 <View style = {{flex:0.04}}/>
-                <CustomButton size = {0.25} flex = {0.8} depth = {6} radius = {20}
+                <CustomButton size = {0.25} flex = {0.8} depth = {10} radius = {20}
                     color = {this.state.difficulty==3?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==3?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(3) }}
