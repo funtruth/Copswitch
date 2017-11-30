@@ -49,6 +49,8 @@ export class CreationPager extends Component {
             loading:true,
             errormessage:null,
 
+            playernum: null,
+            playercount: null,
             difficulty: null,
         };
 
@@ -77,11 +79,28 @@ export class CreationPager extends Component {
                 loading:false,
             })
         })
-
         this.difficultyRef.on('value',snap=>{
             if(snap.exists()){
                 this.setState({
                     difficulty:snap.val()
+                })
+            }
+        })
+        this.playerRef.on('value',snap=>{
+            if(snap.exists()){
+                this.setState({
+                    playernum:snap.val()
+                })
+            }
+        })
+        this.listOfRolesRef.on('value',snap=>{
+            if(snap.exists()){
+                var playercount = 0;
+                snap.forEach((child)=>{
+                    playercount = playercount + child.val()
+                })
+                this.setState({
+                    playercount:playercount
                 })
             }
         })
@@ -95,6 +114,12 @@ export class CreationPager extends Component {
         }
         if(this.difficultyRef){
             this.difficultyRef.off();
+        }
+        if(this.listOfRolesRef){
+            this.listOfRolesRef.off();
+        }
+        if(this.playerRef){
+            this.playerRef.off();
         }
         BackHandler.removeEventListener("hardwareBackPress", this._onBackPress);
     }
@@ -122,31 +147,31 @@ export class CreationPager extends Component {
         Animated.parallel([
             Animated.timing(
                 this.dot1, {
-                    toValue:position<359?1:0.3,
+                    toValue:position<180?1:0.3,
                     duration:50,
                 } 
             ),
             Animated.timing(
                 this.dot2, {
-                    toValue:position>359 && position<719?1:0.3,
+                    toValue:position>179 && position<540?1:0.3,
                     duration:50,
                 } 
             ),
             Animated.timing(
                 this.dot3, {
-                    toValue:position>719 && position<1079?1:0.3,
+                    toValue:position>539 && position<900?1:0.3,
                     duration:50,
                 } 
             ),
             Animated.timing(
                 this.dot4, {
-                    toValue:position>1079 && position<1439?1:0.3,
+                    toValue:position>899 && position<1260?1:0.3,
                     duration:50,
                 } 
             ),
             Animated.timing(
                 this.dot5, {
-                    toValue:position>1439?1:0.3,
+                    toValue:position>1259?1:0.3,
                     duration:50,
                 } 
             )
@@ -166,7 +191,7 @@ export class CreationPager extends Component {
                     presseduid:         'foo',
                 }).then(()=>{
                     this.setState({errormessage:null})
-                    this.refs.scrollView.scrollTo({x:this.width*1,y:0,animation:true})
+                    this.refs.scrollView.scrollTo({x:this.width,y:0,animation:true})
                 })
             } else {
                 this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
@@ -219,11 +244,14 @@ export class CreationPager extends Component {
                     roomname = {this.state.roomname}
                     width = {this.width}
                     refs = {this.refs}
+                    playernum = {this.state.playernum}
+                    playercount = {this.state.playercount}
                 />
                 <Creation5
                     roomname = {this.state.roomname}
                     width = {this.width}
                     refs = {this.refs}
+                    navigation = {this.props.navigation}
                 />
             </ScrollView>
 
@@ -263,7 +291,7 @@ export class Creation1 extends Component {
                 presseduid:         'foo',
             }).then(()=>{
                 this.setState({errormessage:null})
-                this.props.refs.scrollView.scrollTo({x:this.props.width*1,y:0,animated:true})
+                this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animated:true})
             })
         } else {
             this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
@@ -275,11 +303,10 @@ export class Creation1 extends Component {
         return <View style = {{flex:1, backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center', width:this.props.width}}>
                     
-            <Text style = {styles.subtitle}>What is your name?</Text>
+            <Text style = {[styles.subtitle,{flex:0.1}]}>
+                What is your name?</Text>
 
-            <Animatable.Text style = {styles.sconcerto} ref = 'nameerror'>
-                {this.state.errormessage}</Animatable.Text>
-
+            <View style = {{flex:0.25}}/>
             <View style = {{flex:0.12,flexDirection:'row'}}>
                 <TextInput
                     style={{
@@ -292,7 +319,6 @@ export class Creation1 extends Component {
                         borderTopLeftRadius:25,
                         borderBottomLeftRadius:25,
                     }}
-                    //autoFocus = {true}
                     value={this.state.alias}
                     onChangeText = {(text) => {this.setState({alias: text})}}
                     onSubmitEditing = {()=>{ 
@@ -312,8 +338,9 @@ export class Creation1 extends Component {
                     component = {<Text style = {styles.concerto}>GO</Text>}
                 />
             </View>
-            
-            <View style = {{ flex:0.4 }}/>
+            <Animatable.Text style = {[styles.sconcerto,{flex:0.05}]} ref = 'nameerror'>
+                {this.state.errormessage}</Animatable.Text>
+            <View style = {{ flex:0.48 }}/>
         </View>
     }
 }
@@ -327,6 +354,7 @@ export class Creation2 extends Component {
             alias:'',
             playercount: null,
             playernum: 1,
+            errormessage:'Must be between 6 - 15',
             loading:true,
         };
     }
@@ -366,6 +394,14 @@ export class Creation2 extends Component {
         }
     }
     _backspace() {
+        if(this.state.playercount.length == 1){
+            this.setState({ playercount: null })
+        } else if (this.state.playercount.length == 2){
+            this.setState({ playercount: this.state.playercount.slice(0,1)})
+        }
+        
+    }
+    _clear() {
         this.setState({ playercount: null })
     }
     _done() {
@@ -385,19 +421,31 @@ export class Creation2 extends Component {
         return <View style = {{flex:0.7,backgroundColor:colors.background, 
             width:this.props.width}}>
 
-            <View style = {{flex:0.35, justifyContent:'center', alignItems:'center'}}>
-                <View style = {{flex:0.5, flexDirection:'row'}}>
-                    <TouchableOpacity style = {styles.digit} >
-                        <Text style = {[styles.bigconcerto,{color:colors.menubtn}]}>
+            <Text style = {[styles.subtitle,{flex:0.1}]}>
+                {'How many people' + '\n' +  'are playing?'}</Text>
+
+            <View style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}>
+                <View style = {{flex:0.7, flexDirection:'row'}}>
+                    <View style = {{flex:0.8, justifyContent:'center', alignItems:'center',
+                        backgroundColor:colors.font, borderRadius:5, flexDirection:'row'}}>
+                        <View style = {{flex:0.3}}/>
+                        <Text style = {[styles.bigconcerto,
+                            {color:colors.menubtn, flex:0.4}]}>
                             {this.state.playercount?this.state.playercount:'?'}</Text>
-                    </TouchableOpacity>
+                        <TouchableOpacity style = {{flex:0.3}} onPress = {()=>{this._backspace()}}>
+                            <MaterialCommunityIcons name = 'backspace'
+                                style={{ color:colors.menubtn, fontSize: 40, alignSelf:'center'}}
+                            />
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                <Text style = {[styles.subtitle,{marginTop:5}]}>How many Players?</Text>
             </View>
+
+            <View style = {{flex:0.05}}/>
 
             <View style = {{flex:0.6, justifyContent:'center', alignItems:'center',
                 marginLeft:10, marginRight:10, borderRadius:2, paddingTop:5, paddingBottom:5}}>
-                <Animatable.Text style = {styles.sconcerto}ref='error'>
+                <Animatable.Text style = {styles.error}ref='error'>
                     {this.state.errormessage}</Animatable.Text>
                 <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
@@ -463,7 +511,7 @@ export class Creation2 extends Component {
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
                         color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {25}
                         onPress = {()=>{
-                            this._backspace()
+                            this._clear()
                         }}
                         component = {<Text style={styles.concerto}>CLEAR</Text>}/>
                     <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
@@ -513,8 +561,8 @@ export class Creation3 extends Component {
                     <Text style = {styles.subtitle}>
                         {'How experienced' + '\n' + 'is your Group?'}</Text>
                 </View>
-                <View style = {{flex:0.09}}/>
-                <CustomButton size = {0.25} flex = {0.8} depth = {10} radius = {20}
+                <View style = {{flex:0.06}}/>
+                <CustomButton size = {0.27} flex = {0.8} depth = {10} radius = {80}
                     color = {this.state.difficulty==1?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==1?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(1) }}
@@ -527,7 +575,7 @@ export class Creation3 extends Component {
                     </View>}
                 />
                 <View style = {{flex:0.04}}/>
-                <CustomButton size = {0.25} flex = {0.8} depth = {10} radius = {20}
+                <CustomButton size = {0.27} flex = {0.8} depth = {10} radius = {80}
                     color = {this.state.difficulty==2?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==2?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(2) }}
@@ -543,7 +591,7 @@ export class Creation3 extends Component {
                     </View>}
                 />
                 <View style = {{flex:0.04}}/>
-                <CustomButton size = {0.25} flex = {0.8} depth = {10} radius = {20}
+                <CustomButton size = {0.27} flex = {0.8} depth = {10} radius = {80}
                     color = {this.state.difficulty==3?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==3?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(3) }}
@@ -560,7 +608,7 @@ export class Creation3 extends Component {
                             {'We play very frequently' + '\n' + 'and enjoy complicated gameplay.'}</Text>
                     </View>}
                 />
-                <View style = {{flex:0.03}}/>
+                <View style = {{flex:0.1}}/>
 
 
         </View>
@@ -581,6 +629,8 @@ export class Creation4 extends Component {
             showtown:    true,
             showmafia:   false,
             showneutral: false,
+
+            listOpacity: new Animated.Value(1),
         }  
     }
 
@@ -611,7 +661,6 @@ export class Creation4 extends Component {
                 this.setState({ownermode:false})
             }
         })
-        
 
         var keys = Object.keys(Rolesheet).sort()
         var townlist = [];
@@ -667,166 +716,157 @@ export class Creation4 extends Component {
     }
 
     _roleBtnPress(key,index,count) {
-        if(count>0){
-            this.listOfRoles.child(key).transaction((count)=>{
-                return count - 1;
+        this.listOfRoles.child(key).transaction((count)=>{
+            return count + 1;
+        })
+    }
+
+    _removeRole(key, index) {
+        this.listOfRoles.child(key).transaction((count)=>{
+            return count - 1;
+        })
+    }
+
+    _viewChange(town,mafia,neutral){
+        this.setState({
+            showtown:town,
+            showmafia:mafia,
+            showneutral:neutral,
+        })
+
+        Animated.sequence([
+            Animated.timing(
+                this.state.listOpacity, {
+                    duration: 300,
+                    toValue: 0
+            }),
+            Animated.timing(
+                this.state.listOpacity, {
+                    duration: 600,
+                    toValue: 1
             })
-        } else {
-            this.listOfRoles.child(key).transaction((count)=>{
-                return count + 1;
-            })
-        }
+        ]).start()
     }
 
     render() {
 
         return <View style = {{flex:0.7,backgroundColor:colors.background,
-            width:Dimensions.get('window').width}}>
+            width:this.props.width,justifyContent:'center'}}>
 
-            <View style = {{flex:1, justifyContent:'center', marginLeft:4, marginRight:4}}>
+            <Text style = {[styles.subtitle,{flex:0.1}]}>
+                {'Select ' + (this.props.playernum - this.props.playercount) + ' more roles'}</Text>
 
-                <TouchableOpacity
-                    style = {{backgroundColor:colors.font, borderRadius:2,
-                        justifyContent:'center', alignItems:'center',
-                        marginBottom:3, marginTop:3, marginLeft:6, marginRight:6, 
-                        flex:0.075}}
+            <View style = {{flex:0.1, flexDirection:'row', justifyContent:'center'}}>
+                <CustomButton
+                    size = {0.25}
+                    flex = {1}
+                    opacity = {1}
+                    depth = {6}
+                    color = {this.state.showtown?colors.menubtn:colors.lightbutton}
+                    leftradius = {30}
+                    rightradius = {2}
                     onPress = {()=>{
-                        this.setState({
-                            showtown:true,
-                            showmafia:false,
-                            showneutral:false,
-                        })
-                    }} >
-                    <Text style = {styles.mdconcerto}>Town</Text>
-                </TouchableOpacity>
-    
-                {!this.state.showtown? null: <View style = {{flex:0.7}}><FlatList
-                    data={this.state.townlist}
-                    renderItem={({item}) => (
-                        <TouchableOpacity
-                            onPress = {()=>{
-                                this._roleBtnPress(item.key,item.index,item.count)  
-                            }}
-                            style = {{backgroundColor:item.count?colors.main:(
-                                item.difficulty==this.state.difficulty?colors.color2:colors.disabled),
-                                flex:0.5, borderRadius:2, margin:3}}>
-                            <View style = {{justifyContent:'center',alignItems:'center'}}>
-                                <Image 
-                                    style={{width:70,height:70}}
-                                    source={{uri: Rolesheet[item.key].image}}
-                                />
-                                <Text style = {{
-                                    color:item.count?colors.background:colors.font,
-                                    fontFamily: 'ConcertOne-Regular',
-                                    fontSize:18}}>{item.name}</Text>
-                                <Text style = {{
-                                    color:item.count?colors.background:colors.font,
-                                    fontFamily: 'ConcertOne-Regular',
-                                    fontSize:14,
-                                    marginBottom:5}}>{item.category}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    )}
-                    style={{margin:3}}
-                    numColumns = {2}
-                    keyExtractor={item => item.key}
+                        this._viewChange(true,false,false)
+                    }}
+                    component = {<Text style = {this.state.showtown?
+                        styles.centeredBtn:styles.centeredBtnPressed}>Town</Text>}
                 />
-                </View>}
-    
-                <TouchableOpacity
-                    style = {{backgroundColor:colors.font, borderRadius:2,
-                        justifyContent:'center', alignItems:'center',
-                        marginBottom:3, marginTop:3, marginLeft:6, marginRight:6, 
-                        flex:0.075}}
+                <View style = {{width:4, backgroundColor:colors.background}}/>
+                <CustomButton
+                    size = {0.25}
+                    flex = {1}
+                    opacity = {1}
+                    depth = {6}
+                    color = {this.state.showmafia?colors.menubtn:colors.lightbutton}
+                    radius = {2}
                     onPress = {()=>{
-                        this.setState({
-                            showmafia:true,
-                            showtown:false,
-                            showneutral:false,
-                        }) 
-                    }} >
-                    <Text style = {styles.mdconcerto}>Mafia</Text>
-                </TouchableOpacity>
-    
-                {!this.state.showmafia?null:<View style = {{flex:0.7}}><FlatList
-                    data={this.state.mafialist}
-                    renderItem={({item}) => (
-                        <TouchableOpacity
-                            onPress = {()=>{
-                                this._roleBtnPress(item.key,item.index,item.count)  
-                            }}
-                            style = {{backgroundColor:item.count?colors.main:colors.color2,flex:0.5,
-                                borderRadius:2, margin:3}}>
-                            <View style = {{justifyContent:'center',alignItems:'center'}}>
-                                <Image 
-                                    style={{width:70,height:70}}
-                                    source={{uri: Rolesheet[item.key].image}}
-                                />
-                                <Text style = {{
-                                    color:item.count?colors.background:colors.font,
-                                    fontFamily: 'ConcertOne-Regular',
-                                    fontSize:18}}>{item.name}</Text>
-                                <Text style = {{
-                                    color:item.count?colors.background:colors.font,
-                                    fontFamily: 'ConcertOne-Regular',
-                                    fontSize:14,
-                                    marginBottom:5}}>{item.category}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    )}
-                    style={{margin:3}}
-                    numColumns = {2}
-                    keyExtractor={item => item.key}
+                        this._viewChange(false,true,false)
+                    }}
+                    component = {<Text style = {this.state.showmafia?
+                        styles.centeredBtn:styles.centeredBtnPressed}>Mafia</Text>}
                 />
-                </View>}
-    
-                <TouchableOpacity
-                    style = {{backgroundColor:colors.font, borderRadius:2,
-                        justifyContent:'center', alignItems:'center',
-                        marginBottom:3, marginTop:3, marginLeft:6, marginRight:6,  
-                        flex:0.075}}
+                <View style = {{width:4, backgroundColor:colors.background}}/>
+                <CustomButton
+                    size = {0.25}
+                    flex = {1}
+                    opacity = {1}
+                    depth = {6}
+                    color = {this.state.showneutral?colors.menubtn:colors.lightbutton}
+                    rightradius = {30}
+                    leftradius = {2}
                     onPress = {()=>{
-                        this.setState({
-                            showneutral:true,
-                            showtown:false,
-                            showmafia:false,
-                        })
-                    }} >
-                    <Text style = {styles.mdconcerto}>Neutral</Text>
-                </TouchableOpacity>
-    
-                {!this.state.showneutral?null:<View style = {{flex:0.7}}><FlatList
-                    data={this.state.neutrallist}
-                    renderItem={({item}) => (
-                        <TouchableOpacity
-                            onPress = {()=>{
-                                this._roleBtnPress(item.key,item.index,item.count)  
-                            }}
-                            style = {{backgroundColor:item.count?colors.main:colors.color2,flex:0.5,
-                                borderRadius:2, margin:3}}>
-                            <View style = {{justifyContent:'center',alignItems:'center'}}>
-                                <Image 
-                                    style={{width:70,height:70}}
-                                    source={{uri: Rolesheet[item.key].image}}
-                                />
-                                <Text style = {{
-                                    color:item.count?colors.background:colors.font,
-                                    fontFamily: 'ConcertOne-Regular',
-                                    fontSize:18}}>{item.name}</Text>
-                                <Text style = {{
-                                    color:item.count?colors.background:colors.font,
-                                    fontFamily: 'ConcertOne-Regular',
-                                    fontSize:14,
-                                    marginBottom:5}}>{item.category}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    )}
-                    style={{margin:3}}
-                    numColumns = {2}
-                    keyExtractor={item => item.key}
+                        this._viewChange(false,false,true)
+                    }}
+                    component = {<Text style = {this.state.showneutral?
+                        styles.centeredBtn:styles.centeredBtnPressed}>Neutral</Text>}
                 />
-                </View>}
             </View>
+
+            <Animated.View style = {{flex:0.75, opacity:this.state.listOpacity}}>
+                <FlatList
+                    data={this.state.showtown?this.state.townlist:
+                        (this.state.showmafia?this.state.mafialist:this.state.neutrallist)}
+                    renderItem={({item}) => (
+                        <View style = {{marginBottom:3, flexDirection:'row'}}>
+                            <CustomButton
+                                size = {0.2}
+                                flex = {0.8}
+                                opacity = {1}
+                                depth = {6}
+                                color = {colors.lightbutton}
+                                leftradius = {40}
+                                rightradius = {40}
+                                onPress = {()=>{
+                                    this._removeRole(item.key,item.index) 
+                                }}
+                                component = {<View style = {{justifyContent:'center',alignItems:'center'}}>
+                                    <Text style = {{
+                                        color:colors.font,
+                                        fontFamily: 'ConcertOne-Regular',
+                                        fontSize:18}}>{item.count?item.count:null}</Text>
+                                </View>}
+                            />
+                            <CustomButton
+                                size = {0.7}
+                                flex = {1}
+                                opacity = {1}
+                                depth = {5}
+                                color = {colors.lightbutton}
+                                radius = {5}
+                                onPress = {()=>{
+                                    this._roleBtnPress(item.key,item.index) 
+                                }}
+                                component = {<View style = {{justifyContent:'center',alignItems:'center'}}>
+                                    <Text style = {{
+                                        color:colors.font,
+                                        fontFamily: 'ConcertOne-Regular',
+                                        fontSize:18,
+                                        marginTop:5}}>{item.name}</Text>
+                                    <Text style = {{
+                                        color:colors.font,
+                                        fontFamily: 'ConcertOne-Regular',
+                                        fontSize:14,
+                                        marginBottom:5}}>{item.category}</Text>
+                                </View>}
+                            />
+                            <View style = {{flex:0.2,flexDirection:'row', justifyContent:'center'}}>
+                                <View style = {{flex:0.7, backgroundColor:colors.font, borderRadius:5,
+                                    marginBottom:3, marginTop:3, justifyContent:'center'}}>
+                                    <Text style = {{
+                                        color:colors.shadow,
+                                        fontFamily: 'ConcertOne-Regular',
+                                        fontSize:18,
+                                        alignSelf:'center'}}>{item.count?item.count:null}
+                                    </Text>
+                                </View>
+                            </View>
+                        </View>
+                    )}
+                    style={{margin:3}}
+                    numColumns = {1}
+                    keyExtractor={item => item.key}/>
+            </Animated.View>
+            <View style = {{flex:0.05}}/>
         </View>
     }
 }
@@ -845,20 +885,11 @@ export class Creation5 extends Component {
             rolecount:null,     //ListOfRoles count
 
             warning1:           true,
-            warning1Opacity:    new Animated.Value(1),
-            warning1Size:       new Animated.Value(0.05),
             warning2:           true,
-            warning2Opacity:    new Animated.Value(1),
-            warning2Size:       new Animated.Value(0.05),
-            start:              false,
-            startOpacity:       new Animated.Value(0),
-            startSize:          new Animated.Value(0.005),
         };
-        
     }
 
     componentWillMount() {
-           
         this.listofplayersRef = firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
         this.listofplayersRef.on('value',snap=>{
             var list = [];
@@ -876,10 +907,8 @@ export class Creation5 extends Component {
 
             if(snap.numChildren() == this.state.playernum){
                 this.setState({warning2:false})
-                this._viewChange(this.state.warning1,false)
             } else {
                 this.setState({warning2:true})
-                this._viewChange(this.state.warning1,true)
             }
         })
 
@@ -891,17 +920,13 @@ export class Creation5 extends Component {
 
             if(snap.val() == this.state.players){
                 this.setState({warning2:false})
-                this._viewChange(this.state.warning1,false)
             } else {
                 this.setState({warning2:true})
-                this._viewChange(this.state.warning1,true)
             }
             if(snap.val() == this.state.rolecount){
                 this.setState({warning1:false})
-                this._viewChange(false,this.state.warning2)
             } else {
                 this.setState({warning1:true})
-                this._viewChange(true,this.state.warning2)
             }
         })
 
@@ -913,19 +938,14 @@ export class Creation5 extends Component {
                     rolecount = rolecount + child.val();
                 })
                 this.setState({rolecount:rolecount})
-
+                
                 if(rolecount == this.state.playernum){
                     this.setState({warning1:false})
-                    this._viewChange(false,this.state.warning2)
                 } else {
                     this.setState({warning1:true})
-                    this._viewChange(true,this.state.warning2)
                 }
             }
         })
-        
-
-        
     }
 
     componentWillUnmount() {
@@ -1002,76 +1022,38 @@ export class Creation5 extends Component {
                     }
                     
                     max = max - 1;
-                    randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);
+                    randomstring = randomstring.slice(0,randomnumber-1) 
+                        + randomstring.slice(randomnumber);
                 })
             })
 
         })
     }
 
-    _viewChange(warning1,warning2) {
-        Animated.timing(
-            this.state.warning1Size, {
-                duration: 600,
-                toValue: warning1?0.05:0.005
-        }).start(),
-        Animated.timing(
-            this.state.warning1Opacity, {
-                duration: 600,
-                toValue: warning1?1:0
-        }).start(),
-        Animated.timing(
-            this.state.warning2Size, {
-                duration: 600,
-                toValue: warning2?0.05:0.005
-        }).start(),
-        Animated.timing(
-            this.state.warning2Opacity, {
-                duration: 600,
-                toValue: warning2?1:0
-        }).start(),
-        Animated.timing(
-            this.state.startSize, {
-                duration: 600,
-                toValue: (warning1 || warning2)?0.005:0.075
-        }).start(),
-        Animated.timing(
-            this.state.startOpacity, {
-                duration: 600,
-                toValue: (warning1 || warning2)?0:1
-        }).start()
-    }
-
     _renderWarning1() {
         return <Animated.View 
-            style = {{flex:this.state.warning1Size, opacity:this.state.warning1Opacity,
-            backgroundColor:colors.color2, borderRadius:2, justifyContent:'center',
-            marginLeft:10, marginRight:10, marginTop:5, marginBottom:5
-            }}>
-            <TouchableOpacity
+            style = {{ height:80, justifyContent:'center', position:'absolute', 
+                left:0, right:0, bottom:0 }}>
+            <CustomButton size = {1} flex = {0.9} opacity = {1} depth = {8}
+                color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {50}
                 onPress = {()=>{
                     this.props.refs.scrollView.scrollTo({x:this.props.width*3,y:0,animation:true})
                 }}
-                disabled = {!this.state.warning1}
-            >
-                <Text style = {styles.sconcerto}>Role Selection does not match Room Size!</Text>
-            </TouchableOpacity>
+                component = {<Text style = {styles.concerto}>
+                {'Role Selection' + '\n' + 'does not match Room Size!'}</Text>}/>
         </Animated.View>
     }
     _renderWarning2() {
         return <Animated.View 
-            style = {{flex:this.state.warning2Size, opacity:this.state.warning2Opacity,
-            backgroundColor:colors.color2, borderRadius:2, justifyContent:'center',
-            marginLeft:10, marginRight:10, marginTop:5, marginBottom:5
-            }}>
-            <TouchableOpacity
+            style = {{ height:80, justifyContent:'center', position:'absolute', 
+                left:0, right:0, bottom:90 }}>
+            <CustomButton size = {1} flex = {0.9} opacity = {1} depth = {8}
+                color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {50}
                 onPress = {()=>{
                     this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animation:true})
                 }}
-                disabled = {!this.state.warning2}
-            >
-                <Text style = {styles.sconcerto}>No. of Players does not match Room Size!</Text>
-            </TouchableOpacity>
+                component = {<Text style = {styles.concerto}>
+                {'No. of Players' + '\n' + 'does not match Room Size!'}</Text>}/>
         </Animated.View>
     }
 
@@ -1082,32 +1064,23 @@ export class Creation5 extends Component {
                 <Text style = {styles.concerto}>{item.name}</Text>
             )}
             numColumns={1}
-            keyExtractor={item => item.key}
-        />
+            keyExtractor={item => item.key}/>
     }
 
     _renderOptions() {
-        return <Animated.View style = {{flex:this.state.startSize, opacity: this.state.startOpacity}}>
-            <TouchableOpacity
-                style = {{
-                backgroundColor:colors.font, alignItems:'center',
-                justifyContent:'center', marginLeft:10, marginRight:10, borderRadius:2}}
-                onPress = {()=>{
-                    this._startGame(this.props.roomname);
-                }} 
-                disabled = {this.state.warning1 || this.state.warning2}>
-                <Text style = {styles.mdconcerto}>START GAME</Text>
-            </TouchableOpacity>
-        </Animated.View>
+        return <CustomButton size = {0.1} flex = {0.7} opacity = {1} depth = {6}
+            color = {colors.menubtn} radius = {40}
+            onPress = {()=>{ 
+                !this.state.warning1 && !this.state.warning2 ? 
+                this._startGame(this.props.roomname) : alert('Unable to Start game.')
+            }}
+            component = {<Text style={styles.mconcerto}>START GAME</Text>}/>
     }
 
     render() {
-
         if(this.state.starting){
-            return <View style = {{
-                backgroundColor: colors.background,
-                flex: 1,
-                justifyContent:'center'}}>
+            return <View style = {{ backgroundColor: colors.background, flex: 1, 
+                justifyContent:'center', alignItems:'center'}}>
                     <ActivityIndicator size='large' color={colors.font}/>
                     <Text style = {{fontSize:23,
                     fontFamily:'ConcertOne-Regular',
@@ -1118,28 +1091,25 @@ export class Creation5 extends Component {
                 </View>
         }
 
-        return <View style = {{flex:0.7,backgroundColor:colors.background,
-            width:Dimensions.get('window').width}}>
-                        
-                {this._renderWarning1()}
-                {this._renderWarning2()}
-                
-                <View style = {{flex:0.075,backgroundColor:colors.main, 
-                    justifyContent:'center', alignItems:'center', borderRadius:2,
-                    marginLeft:10, marginRight:10, marginTop:5, marginBottom:5}}>
+        return <View style = {{flex:0.7,backgroundColor:colors.background,width:this.props.width}}>
+
+                <View style = {{flex:0.1, justifyContent:'center', alignItems:'center'}}>
                     <Text style = {styles.mdconcerto}>Players:</Text>
                 </View>
 
-                <View style = {{flex:0.51, justifyContent:'center', alignItems:'center',
-                    backgroundColor:colors.color2, borderRadius:2, 
-                    marginLeft:10, marginRight:10, marginTop:5, marginBottom:10}}>
-                    {this._renderListComponent()}
+                <View style = {{flex:0.7, justifyContent:'center', alignItems:'center',
+                    flexDirection:'row'}}>
+                    <View style = {{flex:0.7,backgroundColor:colors.menubtn,borderRadius:30}}>
+                        {this._renderListComponent()}
+                    </View>
                 </View>
 
+                <View style = {{flex:0.05}}/>
                 {this._renderOptions()}
-
-                <View style = {{flex:0.03}}/>
-
+                <View style = {{flex:0.05}}/>
+                
+                {this.state.warning1?this._renderWarning1():null}
+                {this.state.warning2?this._renderWarning2():null}
         </View>
     }
 }
@@ -1164,15 +1134,22 @@ const styles = StyleSheet.create({
         color: colors.font,
     },
     mdconcerto: {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 25, color: colors.background,
-        marginTop:5, marginBottom:5
+        fontSize: 30,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.shadow,
     },
     sconcerto: {
         fontSize: 15,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
         color: colors.font,
+    },
+    error: {
+        fontSize: 15,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.shadow,
     },
     concerto: {
         fontSize: 20,
@@ -1214,6 +1191,17 @@ const styles = StyleSheet.create({
         borderRadius:10,
         margin:5
     },
-    
+    centeredBtn: {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 18,
+        color: colors.font,
+        alignSelf:'center',
+    },
+    centeredBtnPressed: {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 18,
+        color: colors.font,
+        alignSelf:'center',
+    },
 
 });

@@ -268,7 +268,8 @@ export class LobbyPager extends Component {
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
         this.nameRef        = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid)
                             .child('name');
-        this.listPlayerRef  = this.roomRef.child('listofplayers')
+        this.listPlayerRef  = this.roomRef.child('listofplayers');
+        this.phaseRef       = this.roomRef.child('phase');
         
     }
 
@@ -281,12 +282,33 @@ export class LobbyPager extends Component {
             })
         })
 
+        this.phaseRef.on('value',snap=>{
+            if(snap.exists()){
+                if(snap.val()>1){
+                    AsyncStorage.setItem('GAME-KEY',this.state.roomname);
+
+                    this.props.navigation.dispatch(
+                        NavigationActions.navigate({
+                            routeName: 'Mafia',
+                            action: NavigationActions.navigate({ 
+                                routeName: 'MafiaRoom',
+                                params: {roomname:this.state.roomname}
+                            })
+                        })
+                    )
+                }
+            }
+        })
+
         BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
     }
 
     componentWillUnmount() {
         if(this.nameRef){
             this.nameRef.off();
+        }
+        if(this.phaseRef){
+            this.phaseRef.off();
         }
         BackHandler.removeEventListener("hardwareBackPress", this._onBackPress);
     }
@@ -314,13 +336,13 @@ export class LobbyPager extends Component {
         Animated.parallel([
             Animated.timing(
                 this.dot1, {
-                    toValue:position<359?1:0.3,
+                    toValue:position<181?1:0.3,
                     duration:50,
                 } 
             ),
             Animated.timing(
                 this.dot2, {
-                    toValue:position>359 && position<719?1:0.3,
+                    toValue:position>180 && position<500?1:0.3,
                     duration:50,
                 } 
             )
@@ -493,7 +515,8 @@ export class Lobby2 extends Component {
     }
 
     componentWillMount() {
-        this.listofplayersRef = firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
+        this.listofplayersRef = firebase.database().ref('rooms')
+            .child(this.props.roomname).child('listofplayers')
         this.listofplayersRef.on('value',snap=>{
             var list = [];
             snap.forEach((child)=> {
@@ -506,33 +529,11 @@ export class Lobby2 extends Component {
                 namelist:list
             })
         })
-
-        this.phaseRef = firebase.database().ref('rooms').child(this.props.roomname).child('phase');
-        this.phaseRef.on('value',snap=>{
-            if(snap.exists()){
-                if(snap.val()>1){
-                    AsyncStorage.setItem('GAME-KEY',this.props.roomname);
-
-                    this.props.navigation.dispatch(
-                        NavigationActions.navigate({
-                            routeName: 'Mafia',
-                            action: NavigationActions.navigate({ 
-                                routeName: 'MafiaRoom',
-                                params: {roomname:this.props.roomname}
-                            })
-                        })
-                    )
-                }
-            }
-        })
     }
 
     componentWillUnmount() {
         if(this.listofplayersRef){
             this.listofplayersRef.off();
-        }
-        if(this.phaseRef){
-            this.phaseRef.off();
         }
     }
 

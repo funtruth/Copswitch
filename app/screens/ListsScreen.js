@@ -483,7 +483,8 @@ class Roles extends Component {
 
             <Animated.View style = {{flex:this.state.townSize, opacity:this.state.townOpacity}}>
                 <FlatList
-                    data={this.state.townlist}
+                    data={this.state.showtown?this.state.townlist:
+                        (this.state.showmafia?this.state.mafialist:this.state.showneutral)}
                     renderItem={({item}) => (
                         <View style = {{marginBottom:10}}>
                         <CustomButton
@@ -861,8 +862,7 @@ class InfoPage extends Component {
                         onPress = {()=>{this._pageBack()}}
                         component = {
                             <MaterialCommunityIcons name='page-first' 
-                                style={{ color:colors.main, fontSize: 30, alignSelf:'center' 
-                            }}/>
+                                style={{ color:colors.main, fontSize: 30, alignSelf:'center'}}/>
                         }
                     />
                 </View>

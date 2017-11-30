@@ -1203,7 +1203,7 @@ _gameOver() {
 
 render() {
 
-return <Image source = {require(Images[this.state.phasebackground])} 
+return <Image source = {require('../../assets/images/night.png')} 
 style = {{flex:1, alignSelf:'stretch', width:null}}>
 
 <View style = {{flex:1, padding:10, justifyContent:'center'}}>
