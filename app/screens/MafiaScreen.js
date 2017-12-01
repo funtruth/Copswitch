@@ -105,6 +105,7 @@ constructor(props) {
 
     //Owner Listening
     this.countRef           = this.roomRef.child('count');
+    this.readyRef           = this.roomRef.child('listofplayers').orderByChild('readyvalue').equalTo(true);
     this.guiltyVotesRef     = this.roomRef.child('guiltyvotes');
     this.popularVoteRef     = this.roomRef.child('listofplayers').orderByChild('votes').limitToLast(1);
 
@@ -306,7 +307,8 @@ componentWillMount() {
             })
         }
     })
-
+    
+    /*
     //Count listeners for the room owner
     this.countRef.on('value',snap=>{
         if(snap.exists && this.state.amiowner && ((snap.val()+1)>this.state.playernum)
@@ -336,6 +338,104 @@ componentWillMount() {
                         this._noticeMsgGlobal(this.state.roomname,'#d31d1d', names + ' voted against ' 
                             + this.state.nominee + '.') 
     
+                        if((guiltyvotes.numChildren()+1)>this.state.triggernum){
+
+                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                                + this.state.nominate).update({dead:true});
+                            this._changePlayerCount(false);
+
+                            firebase.database().ref('rooms/'+ this.state.roomname +'/listofplayers/'
+                            +this.state.nominate).once('value',dead=>{
+
+                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d', dead.val().name + ' was hung.')
+                                
+                                if(dead.val().type == 1){
+                                    this.roomRef.child('mafia').child(this.state.nominate).update({alive:false});
+
+                                    if(dead.val().roleid == 'a' || dead.val().roleid == 'b'){
+                                        this._changePhase(4);
+                                    } else {
+                                        this._changePhase(phase.val().trigger)
+                                    }
+                                } else if (dead.val().roleid == 'W'){
+                                    guiltyvotes.forEach((jester)=>{ 
+                                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
+                                        + jester.key).update({bloody:true,suspicious:true})
+                                    })
+
+                                    this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                                        names + ' have blood on their hands and look suspicious.')
+                                    this._changePhase(phase.val().trigger)
+
+                                } else {
+                                    this._changePhase(phase.val().trigger)
+                                }
+                            })
+                                
+                            
+                        } else {
+                            this._noticeMsgGlobal(this.state.roomname,'#34cd0e',this.state.nominee 
+                                + ' was not hung.',1)
+
+                            this.listRef.child(this.state.nominate)
+                                .update({immune:true})
+
+                            this._changePhase(phase.val().continue)
+                        }
+
+                    })
+                };
+                //Phase 5 Handling CONTINUE
+                if(phase.val().action){
+                    
+                    new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
+                        new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
+                            
+                            this.guiltyVotesRef.remove();
+                            this._resetDayStatuses();
+                            
+                            this._changePhase(phase.val().continue);
+
+                            //After Night, the day count increases
+                            this.dayCounterRef.once('value',daycount=>{
+                                this.dayCounterRef.set(daycount.val()+1);
+                            })
+                        });
+                    });
+                };
+
+            })
+        }
+    })*/
+
+    this.readyRef.on('value',snap=>{
+        if(snap.exists && this.state.amiowner && ((snap.numChildren()+1)>this.state.playernum)
+            && this.state.playernum>0){            
+            firebase.database().ref('phases').child(this.state.phase).once('value',phase=>{
+                
+                //Phase 2 + 4 Handling CONTINUE
+                if(phase.val().actionreset){
+                    this.roomRef.child('actions').remove();
+                    this._resetDayStatuses();
+                    this._changePhase(phase.val().continue);
+                };
+                //Phase 3 Handling both CONTINUE and TRIGGER
+                if(phase.val().lynch){
+
+                    this.guiltyVotesRef.once('value',guiltyvotes=>{
+
+                        var counter = 0;
+                        var names = 'Nobody';
+
+                        guiltyvotes.forEach((votechild)=>{ 
+                            counter++;
+                            if(counter==1){names=votechild.val()}
+                            else if(counter>1){names=names+', '+votechild.val()}
+                        })
+                        
+                        this._noticeMsgGlobal(this.state.roomname,'#d31d1d', names + ' voted against ' 
+                            + this.state.nominee + '.') 
+
                         if((guiltyvotes.numChildren()+1)>this.state.triggernum){
 
                             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
@@ -459,6 +559,9 @@ componentWillUnmount() {
     //Owner Listeners
     if(this.countRef){
         this.countRef.off();
+    }
+    if(this.readyRef){
+        this.readyRef.off();
     }
     if(this.popularVoteRef){
         this.popularVoteRef.off();
