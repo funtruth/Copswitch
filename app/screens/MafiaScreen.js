@@ -104,7 +104,6 @@ constructor(props) {
     this.phaseRef           = this.roomRef.child('phase');
 
     //Owner Listening
-    this.countRef           = this.roomRef.child('count');
     this.readyRef           = this.roomRef.child('listofplayers').orderByChild('readyvalue').equalTo(true);
     this.guiltyVotesRef     = this.roomRef.child('guiltyvotes');
     this.popularVoteRef     = this.roomRef.child('listofplayers').orderByChild('votes').limitToLast(1);
@@ -258,6 +257,7 @@ componentWillMount() {
                             })
                         } else {
                             this._viewChange(false,false,false,false,false,false,true)
+                            this._readyValue(true)
                             this.setState({
                                 phasename:      '...',
                                 topmessage:     'is choosing the new killer',
@@ -308,106 +308,8 @@ componentWillMount() {
         }
     })
     
-    /*
+    
     //Count listeners for the room owner
-    this.countRef.on('value',snap=>{
-        if(snap.exists && this.state.amiowner && ((snap.val()+1)>this.state.playernum)
-            && this.state.playernum>0){            
-            firebase.database().ref('phases').child(this.state.phase).once('value',phase=>{
-                
-                //Phase 2 + 4 Handling CONTINUE
-                if(phase.val().actionreset){
-                    this.roomRef.child('actions').remove();
-                    this._resetDayStatuses();
-                    this._changePhase(phase.val().continue);
-                };
-                //Phase 3 Handling both CONTINUE and TRIGGER
-                if(phase.val().lynch){
-
-                    this.guiltyVotesRef.once('value',guiltyvotes=>{
-    
-                        var counter = 0;
-                        var names = 'Nobody';
-    
-                        guiltyvotes.forEach((votechild)=>{ 
-                            counter++;
-                            if(counter==1){names=votechild.val()}
-                            else if(counter>1){names=names+', '+votechild.val()}
-                        })
-                        
-                        this._noticeMsgGlobal(this.state.roomname,'#d31d1d', names + ' voted against ' 
-                            + this.state.nominee + '.') 
-    
-                        if((guiltyvotes.numChildren()+1)>this.state.triggernum){
-
-                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                                + this.state.nominate).update({dead:true});
-                            this._changePlayerCount(false);
-
-                            firebase.database().ref('rooms/'+ this.state.roomname +'/listofplayers/'
-                            +this.state.nominate).once('value',dead=>{
-
-                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d', dead.val().name + ' was hung.')
-                                
-                                if(dead.val().type == 1){
-                                    this.roomRef.child('mafia').child(this.state.nominate).update({alive:false});
-
-                                    if(dead.val().roleid == 'a' || dead.val().roleid == 'b'){
-                                        this._changePhase(4);
-                                    } else {
-                                        this._changePhase(phase.val().trigger)
-                                    }
-                                } else if (dead.val().roleid == 'W'){
-                                    guiltyvotes.forEach((jester)=>{ 
-                                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                                        + jester.key).update({bloody:true,suspicious:true})
-                                    })
-
-                                    this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                                        names + ' have blood on their hands and look suspicious.')
-                                    this._changePhase(phase.val().trigger)
-
-                                } else {
-                                    this._changePhase(phase.val().trigger)
-                                }
-                            })
-                                
-                            
-                        } else {
-                            this._noticeMsgGlobal(this.state.roomname,'#34cd0e',this.state.nominee 
-                                + ' was not hung.',1)
-
-                            this.listRef.child(this.state.nominate)
-                                .update({immune:true})
-
-                            this._changePhase(phase.val().continue)
-                        }
-
-                    })
-                };
-                //Phase 5 Handling CONTINUE
-                if(phase.val().action){
-                    
-                    new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
-                        new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
-                            
-                            this.guiltyVotesRef.remove();
-                            this._resetDayStatuses();
-                            
-                            this._changePhase(phase.val().continue);
-
-                            //After Night, the day count increases
-                            this.dayCounterRef.once('value',daycount=>{
-                                this.dayCounterRef.set(daycount.val()+1);
-                            })
-                        });
-                    });
-                };
-
-            })
-        }
-    })*/
-
     this.readyRef.on('value',snap=>{
         if(snap.exists && this.state.amiowner && ((snap.numChildren()+1)>this.state.playernum)
             && this.state.playernum>0){            
@@ -557,9 +459,6 @@ componentWillUnmount() {
     }
 
     //Owner Listeners
-    if(this.countRef){
-        this.countRef.off();
-    }
     if(this.readyRef){
         this.readyRef.off();
     }
@@ -621,13 +520,6 @@ _readyValue(status){
 }
 _pressedUid(uid){
     this.myInfoRef.update({presseduid: uid})
-}
-_changeCount(bool){
-    if(bool){
-        this.countRef.transaction((count)=>{ return count + 1 })
-    } else {
-        this.countRef.transaction((count)=>{ return count - 1 })
-    }
 }
 
 _viewChange(title,back,vote,or,abstain,list,waiting) {
@@ -733,7 +625,6 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
 
         this._pressedUid(uid);
         this.listRef.child(uid).child('votes').transaction((votes)=>{ return votes + 1 }).then(()=>{
-            this._changeCount(true)
             this._readyValue(true)
         })  
 
@@ -749,7 +640,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                     firebase.database().ref('rooms/'+roomname+'/listofplayers/'
                         + uid).update({roleid:snap.val()})
                 })
-                this.countRef.set(this.state.playernum)
+                this._readyValue(true)
             } else {
                 this.setState({topmessage: name + ' is not a member of the Mafia.'})
             }
@@ -770,7 +661,6 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                 .set(this.state.myname).then(()=>{
                     this._pressedUid(uid);
                     this._readyValue(true);
-                    this._changeCount(true);
                 })
         })
 
@@ -801,7 +691,6 @@ _optionOnePress() {
         this.setState({topmessage:'You voted INNOCENT.'})
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
             this._readyValue(true);
-            this._changeCount(true);
         })
     } else if (this.state.phase == 5){
         this._viewChange(false,true,false,false,false,true,false)
@@ -818,19 +707,16 @@ _optionTwoPress() {
     if(this.state.phase == 2){
         this._viewChange(false,false,false,false,false,false,true)
         this._readyValue(true);
-        this._changeCount(true);
         this.setState({topmessage:'You abstained.'})
     } else if (this.state.phase == 3){
         this._viewChange(false,false,false,false,false,false,true)
         this.setState({topmessage:'You voted GUILTY.'})
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname).then(()=>{
             this._readyValue(true);
-            this._changeCount(true);
         })
     } else if (this.state.phase == 5){
         this._viewChange(false,false,false,false,false,false,true)
         this._readyValue(true);
-        this._changeCount(true);
         this.setState({topmessage:'You stayed home.'})
     } else if (this.state.phase == 6 || this.state.phase == 7){
         this._gameOver();
@@ -850,7 +736,6 @@ _resetOptionPress() {
     if(this.state.phase == 2){
 
         this._readyValue(false);
-        this._changeCount(false);
 
         if(this.state.presseduid != 'foo'){
             this._pressedUid('foo');
@@ -862,7 +747,6 @@ _resetOptionPress() {
 
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
             this._readyValue(false);
-            this._changeCount(false)
         })
 
     } else if (this.state.phase == 5){
@@ -878,7 +762,6 @@ _resetOptionPress() {
             + '/' + this.state.myroleid + '/' + firebase.auth().currentUser.uid).set(null)
             .then(()=>{
                 this._readyValue(false);
-                this._changeCount(false)
                 this._pressedUid('foo');
             })
     }
