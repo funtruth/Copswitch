@@ -19,6 +19,7 @@ import { NavigationActions } from 'react-navigation';
 import colors from '../misc/colors.js';
 import Rolesheet from '../misc/roles.json';
 import Images from '../../assets/images/index.js';
+import Phases from '../misc/phases.json';
 
 import { PushButton } from '../components/PushButton.js';
 import { NameButton } from '../components/NameButton.js';
@@ -140,6 +141,12 @@ componentWillMount() {
                 myname:             snap.val().name,
             })
 
+            if(snap.val().readyvalue == true){
+                this._viewChange(false,false,false,false,false,false,true)
+            } else {
+                this._viewChange(true,false,true,true,true,false,false)
+            }
+
         }
     })
 
@@ -212,91 +219,13 @@ componentWillMount() {
         if(snap.exists()){
 
             this.setState({
-                phase:snap.val()
+                phase:snap.val(),
+                phasename: (Phases[snap.val()]).name,
+                topmessage: (Phases[snap.val()]).topmessage,
+                btn1: (Phases[snap.val()]).btn1,
+                btn2: (Phases[snap.val()]).btn2,
+                phasecolor: (Phases[snap.val()]).phasecolor,
             })
-            
-            this.myInfoRef.once('value',actionbtn=>{
-                if(snap.val() == 1){
-                    this.setState({
-                        phasename:      'Lobby',
-                    })
-                } else if (snap.val() == 2){
-                    if(actionbtn.val().readyvalue == true){
-                        this._viewChange(false,false,false,false,false,false,true)
-                    } else {
-                        this._viewChange(true,false,true,true,true,false,false)
-                    }
-                    this.setState({
-                        phasename:      'DAY',
-                        topmessage:     null,
-                        btn1:           'VOTE',
-                        btn2:           'ABSTAIN',
-                        phasecolor:     colors.gamecolor,
-                    })
-                } else if (snap.val() == 3){
-                    if(actionbtn.val().readyvalue == true){
-                        this._viewChange(false,false,false,false,false,false,true)
-                    } else {
-                        this._viewChange(true,false,true,true,true,false,false)
-                    }
-                    this.setState({
-                        phasename:      'Lynch',
-                        topmessage:     'has been nominated',
-                        btn1:           'INNOCENT',
-                        btn2:           'GUILTY',
-                        phasecolor:     colors.gamecolor,
-                    })
-                } else if (snap.val() == 4){
-                    this.nominationRef.once('value',nomin=>{
-                        if(nomin.val() == firebase.auth().currentUser.uid){
-                            this._viewChange(false,false,false,false,false,true,false)
-                            this.setState({
-                                phasename:      'You are dead',
-                                topmessage:     'choose the new killer',
-                                phasecolor:     colors.gamecolor,
-                            })
-                        } else {
-                            this._viewChange(false,false,false,false,false,false,true)
-                            this._readyValue(true)
-                            this.setState({
-                                phasename:      '...',
-                                topmessage:     'is choosing the new killer',
-                                phasecolor:     colors.gamecolor,
-                            })
-                        }
-                    })
-                } else if (snap.val() == 5){
-                    if(actionbtn.val().readyvalue == true){
-                        this._viewChange(false,false,false,false,false,false,true)
-                    } else {
-                        this._viewChange(true,false,true,true,true,false,false)
-                    }
-                    this.setState({
-                        phasename:      'Night',
-                        topmessage:     null,
-                        btn1:           'VISIT',
-                        btn2:           'STAY HOME',
-                        phasecolor:     colors.gamecolor,
-                    })
-                } else if (snap.val() == 6){
-                    this._viewChange(true,false,true,true,true,false,false)
-                    this.setState({
-                        phasename:      'Town Win',
-                        btn1:           'PLAY AGAIN',
-                        btn2:           'QUIT',
-                        phasecolor:     colors.gamecolor,
-                    })
-                } else if (snap.val() == 7){
-                    this._viewChange(true,false,true,true,true,false,false)
-                    this.setState({
-                        phasename:      'Mafia Win',
-                        btn1:           'PLAY AGAIN',
-                        btn2:           'QUIT',
-                        phasecolor:     colors.gamecolor,
-                    })
-                }
-            })
-                
         }
     })
 
@@ -313,16 +242,14 @@ componentWillMount() {
     this.readyRef.on('value',snap=>{
         if(snap.exists && this.state.amiowner && ((snap.numChildren()+1)>this.state.playernum)
             && this.state.playernum>0){            
-            firebase.database().ref('phases').child(this.state.phase).once('value',phase=>{
-                
                 //Phase 2 + 4 Handling CONTINUE
-                if(phase.val().actionreset){
+                if(this.state.phase == 2 || this.state.phase == 4){
                     this.roomRef.child('actions').remove();
                     this._resetDayStatuses();
-                    this._changePhase(phase.val().continue);
+                    this._changePhase(Phases[this.state.phase].continue);
                 };
                 //Phase 3 Handling both CONTINUE and TRIGGER
-                if(phase.val().lynch){
+                if(this.state.phase == 3){
 
                     this.guiltyVotesRef.once('value',guiltyvotes=>{
 
@@ -355,7 +282,7 @@ componentWillMount() {
                                     if(dead.val().roleid == 'a' || dead.val().roleid == 'b'){
                                         this._changePhase(4);
                                     } else {
-                                        this._changePhase(phase.val().trigger)
+                                        this._changePhase(Phases[this.state.phase].trigger)
                                     }
                                 } else if (dead.val().roleid == 'W'){
                                     guiltyvotes.forEach((jester)=>{ 
@@ -365,10 +292,10 @@ componentWillMount() {
 
                                     this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
                                         names + ' have blood on their hands and look suspicious.')
-                                    this._changePhase(phase.val().trigger)
+                                    this._changePhase(Phases[this.state.phase].trigger)
 
                                 } else {
-                                    this._changePhase(phase.val().trigger)
+                                    this._changePhase(Phases[this.state.phase].trigger)
                                 }
                             })
                                 
@@ -380,13 +307,13 @@ componentWillMount() {
                             this.listRef.child(this.state.nominate)
                                 .update({immune:true})
 
-                            this._changePhase(phase.val().continue)
+                            this._changePhase(Phases[this.state.phase].continue)
                         }
 
                     })
                 };
                 //Phase 5 Handling CONTINUE
-                if(phase.val().action){
+                if(this.state.phase == 5){
                     
                     new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
                         new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
@@ -394,7 +321,7 @@ componentWillMount() {
                             this.guiltyVotesRef.remove();
                             this._resetDayStatuses();
                             
-                            this._changePhase(phase.val().continue);
+                            this._changePhase(Phases[this.state.phase].continue);
 
                             //After Night, the day count increases
                             this.dayCounterRef.once('value',daycount=>{
@@ -403,8 +330,6 @@ componentWillMount() {
                         });
                     });
                 };
-
-            })
         }
     })
 
@@ -412,20 +337,19 @@ componentWillMount() {
         if(snap.exists() && this.state.amiowner){
             snap.forEach((child)=>{
                 if(child.val().votes + 1 > this.state.triggernum){
-                    firebase.database().ref('phases').child(this.state.phase).once('value',phase=>{
-                        if(phase.val().trigger){
-                            if(phase.val().actionreset){
-                                firebase.database().ref('rooms/' + this.state.roomname + '/actions')
-                                .remove();
-                            };
-                            if(phase.val().nominate){
-                                this.roomRef.update({nominate:child.key});
-                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                                    child.val().name + ' has been nominated.')
-                            };
-                            this._changePhase(phase.val().trigger);
-                        }
-                    })
+                    if(Phases[this.state.phase].trigger){
+                        if(this.state.phase == 2 || this.state.phase == 4){
+                            firebase.database().ref('rooms/' + this.state.roomname + '/actions')
+                            .remove();
+                        };
+                        if(this.state.phase == 2){
+                            this.roomRef.update({nominate:child.key});
+                            this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                                child.val().name + ' has been nominated.')
+                        };
+                        this._changePhase(Phases[this.state.phase].trigger);
+                    }
+                    
                 }
             })
         }
@@ -499,7 +423,6 @@ _changePhase(newphase){
     }).then(()=>{
         this.roomRef.update({
             phase:newphase,
-            count:0,
         })
     })    
 }

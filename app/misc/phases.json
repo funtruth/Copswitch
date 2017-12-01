@@ -1,0 +1,51 @@
+{
+    "2" : {
+        "name" : "DAY",
+        "topmessage" : null,
+        "btn1" : "VOTE",
+        "btn2" : "ABSTAIN",
+        "phasecolor" : "#F9F2DE",
+        "continue" : 5,
+        "trigger" : 3
+    },
+    "3" : {
+        "name" : "LYNCHING",
+        "topmessage" : "has been nominated",
+        "btn1" : "INNOCENT",
+        "btn2" : "GUILTY",
+        "phasecolor" : "#F9F2DE",
+        "continue" : 2,
+        "trigger" : 5
+    },
+    "4" : {
+        "name" : "...",
+        "topmessage" : "is choosing the new killer",
+        "btn1" : "VOTE",
+        "btn2" : "ABSTAIN",
+        "phasecolor" : "#F9F2DE",
+        "continue" : 5
+    },
+    "5" : {
+        "name" : "NIGHT",
+        "topmessage" : null,
+        "btn1" : "VISIT",
+        "btn2" : "STAY HOME",
+        "phasecolor" : "#F9F2DE",
+        "continue" : 2
+    },
+    "6" : {
+        "name" : "TOWN WIN",
+        "topmessage" : null,
+        "btn1" : "PLAY AGAIN",
+        "btn2" : "QUIT",
+        "phasecolor" : "#F9F2DE"
+    },
+    "7" : {
+        "name" : "MAFIA WIN",
+        "topmessage" : null,
+        "btn1" : "PLAY AGAIN",
+        "btn2" : "QUIT",
+        "phasecolor" : "#F9F2DE"
+    }
+  }
+  
