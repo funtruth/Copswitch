@@ -47,18 +47,46 @@
         "b" : {
           "desc" : "Phases",
           "route" : "phases",
-          "type" : 2
+          "type" : 1
         },
         "c" : {
           "desc" : "Messages",
           "route" : "messages",
+          "type" : 2
+        },
+        "d" : {
+          "desc" : "Ending the Game",
+          "route" : "ending",
+          "type" : 2
+        }
+    },
+    "phases" : {
+        "a" : {
+          "desc" : "Day",
+          "route" : "day",
+          "type" : 2
+        },
+        "b" : {
+          "desc" : "Lynching",
+          "route" : "lynch",
+          "type" : 2
+        },
+        "c" : {
+          "desc" : "Night",
+          "route" : "night",
+          "type" : 2
+        },
+        "d" : {
+          "desc" : "Selection",
+          "route" : "promote",
           "type" : 2
         }
     },
     "headers" : {
       "rules" : "How to Play",
       "setup" : "Setting Up",
-      "game" : "Game Info"
+      "game" : "Game Info",
+      "phases" : "Game Phases"
     }
   }
   
