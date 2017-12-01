@@ -25,6 +25,7 @@ import { NavigationActions } from 'react-navigation';
 
 import Rolesheet from '../misc/roles.json';
 import Rules from '../misc/rules.json';
+import Menus from '../misc/menus.json';
 import firebase from '../firebase/FirebaseController.js';
 
 import colors from '../misc/colors.js';
@@ -132,7 +133,7 @@ class General extends Component {
                 radius = {50}
                 onPress = {()=>{
                     this._buttonPress();
-                    this.props.navigation.navigate('Rulebook') 
+                    this.props.navigation.navigate('Menu',{menu:'rules'}) 
                 }}
                 disabled = {this.state.disabled}
                 component = {<Text style = {styles.menuBtn}>Rulebook</Text>}
@@ -569,12 +570,14 @@ class Roles extends Component {
     }
 }
 
-class Rulebook extends Component {
-
+class Menu extends Component {
+    
     constructor(props) {
         super(props);
 
         this.state = {
+            menulist: [],
+            title:null,
             disabled:false,
         }
     }
@@ -584,164 +587,61 @@ class Rulebook extends Component {
         setTimeout(() => {this.setState({disabled: false})}, 200);
     }
 
+    componentWillMount() {
+        
+        const { params } = this.props.navigation.state;
+        const menu = params.menu;
+
+        var keys = Object.keys(Menus[menu]).sort()
+        var menulist = [];
+        keys.forEach(function(key){
+            menulist.push({
+                type:           (Menus[menu])[key].type,
+                desc:           (Menus[menu])[key].desc,
+                route:          (Menus[menu])[key].route,
+                key:            key,
+            })
+        })
+        this.setState({
+            menulist:   menulist,
+            title:      (Menus.headers)[menu],
+        })
+    }
+
+    _renderMenuButton(item) {
+        return <View style={{marginTop:5,marginBottom:5}}><PushButton
+            size = {1}
+            opacity = {1}
+            depth = {8}
+            color = {colors.menubtn}
+            radius = {50}
+            onPress = {()=>{
+                this._buttonPress();
+                item.type==1?
+                    this.props.navigation.navigate('Menu',{menu:item.route}) 
+                    :this.props.navigation.navigate('InfoPage',{section:item.route}) 
+            }}
+            disabled = {this.state.disabled}
+            component = {<Text style = {styles.flatListBtn}>{item.desc}</Text>}
+        /></View>
+        
+    }
+
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background}}>
             
-            <Header title = 'How to Play' onPress = {()=>{
+            <Header title = {this.state.title} onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back())
             }}/>
 
-            <View style = {{flex:0.02}}/>
-            <PushButton
-                size = {0.12}
-                opacity = {1}
-                depth = {8}
-                color = {colors.menubtn}
-                radius = {50}
-                onPress = {()=>{
-                    this._buttonPress();
-                    this.props.navigation.navigate('InfoPage',{section:'intro'}) 
-                }}
-                disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>Intro</Text>}
-            />
-            <View style = {{flex:0.02}}/>
-            <PushButton
-                size = {0.12}
-                opacity = {1}
-                depth = {8}
-                color = {colors.menubtn}
-                radius = {50}
-                onPress = {()=>{
-                    this._buttonPress();
-                    this.props.navigation.navigate('InfoPage',{section:'general'}) 
-                }}
-                disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>General</Text>}
-            />
-            <View style = {{flex:0.02}}/>
-            <PushButton
-                size = {0.12}
-                opacity = {1}
-                depth = {8}
-                color = {colors.menubtn}
-                radius = {50}
-                onPress = {()=>{
-                    this._buttonPress();
-                    this.props.navigation.navigate('Setup') 
-                }}
-                disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>Set Up</Text>}
-            />
-            <View style = {{flex:0.02}}/>
-            <PushButton
-                size = {0.12}
-                opacity = {1}
-                depth = {8}
-                color = {colors.menubtn}
-                radius = {50}
-                onPress = {()=>{
-                    this._buttonPress();
-                }}
-                disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>My Role</Text>}
-            />
-            <View style = {{flex:0.02}}/>
-            <PushButton
-                size = {0.12}
-                opacity = {1}
-                depth = {8}
-                color = {colors.menubtn}
-                radius = {50}
-                onPress = {()=>{
-                    this._buttonPress();
-                }}
-                disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>Phases</Text>}
-            />
-            <View style = {{flex:0.02}}/>
-            <PushButton
-                size = {0.12}
-                opacity = {1}
-                depth = {8}
-                color = {colors.menubtn}
-                radius = {50}
-                onPress = {()=>{
-                    this._buttonPress();
-                }}
-                disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>Messages</Text>}
-            />
-        </View>
-    }
-}
-
-class Setup extends Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            disabled:false,
-        }
-    }
-    
-    _buttonPress() {
-        this.setState({disabled:true});
-        setTimeout(() => {this.setState({disabled: false})}, 600);
-    }
-
-    render(){
-        return <View style = {{flex:1,backgroundColor:colors.background }}>
-
-            <Header title = 'Setting Up' onPress = {()=>{
-                this.props.navigation.dispatch(NavigationActions.back())
-            }}/>
-
-            <View style = {{flex:0.2}}/>
-
-            <PushButton
-                size = {0.12}
-                opacity = {1}
-                depth = {8}
-                color = {colors.menubtn}
-                radius = {50}
-                onPress = {()=>{
-                    this._buttonPress();
-                    this.props.navigation.navigate('InfoPage',{section:'making'}) 
-                }}
-                disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>Making a Room</Text>}
-            />
-            <View style = {{flex:0.02}}/>
-            <PushButton
-                size = {0.12}
-                opacity = {1}
-                depth = {8}
-                color = {colors.menubtn}
-                radius = {50}
-                onPress = {()=>{
-                    this._buttonPress();
-                    this.props.navigation.navigate('InfoPage',{section:'joining'}) 
-                }}
-                disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>Joining a Room</Text>}
-            />
-            <View style = {{flex:0.02}}/>
-            <PushButton
-                size = {0.12}
-                opacity = {1}
-                depth = {8}
-                color = {colors.menubtn}
-                radius = {50}
-                onPress = {()=>{
-                    this._buttonPress();
-                    this.props.navigation.navigate('InfoPage',{section:'selection'}) 
-                }}
-                disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>Role Selection</Text>}
-            />
-            <View style = {{flex:0.1}}/>
+            <View style = {{flex:0.9, justifyContent:'center'}}>
+                <FlatList
+                    data={this.state.menulist}
+                    renderItem={({item}) => this._renderMenuButton(item) }
+                    numColumns = {1}
+                    keyExtractor={item => item.key}
+                />
+            </View>
         </View>
     }
 }
@@ -753,6 +653,7 @@ class InfoPage extends Component {
 
         this.state = {
             infolist: [],
+            title:null,
 
             page: 1,
             last: 10,
@@ -808,6 +709,7 @@ class InfoPage extends Component {
             infolist:   infolist,
             section:    section,
             page:       page,
+            title:      (Rules.headers)[section],
             last:       Object.keys(Rules[section]).length,
         })
     }
@@ -815,7 +717,7 @@ class InfoPage extends Component {
     render(){
         return <View style = {{ flex:1,backgroundColor:colors.background }}>
 
-            <Header title = {this.state.section} onPress = {()=>{
+            <Header title = {this.state.title} onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back());
             }}/>
             
@@ -884,11 +786,8 @@ export default RuleBook = StackNavigator(
       Roles: {
         screen: Roles,
       },
-      Rulebook: {
-        screen: Rulebook,
-      },
-      Setup: {
-        screen: Setup,
+      Menu: {
+        screen: Menu,
       },
       InfoPage: {
         screen: InfoPage,
@@ -929,6 +828,14 @@ export default RuleBook = StackNavigator(
         fontSize: 25,
         color: colors.font,
         alignSelf:'center'
+    },
+    flatListBtn : {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 25,
+        color: colors.font,
+        alignSelf:'center',
+        marginTop:10,
+        marginBottom:10
     },
     titleFont: {
         fontFamily:'ConcertOne-Regular',

@@ -1,0 +1,64 @@
+{
+    "rules" : {
+        "a" : {
+          "desc" : "Intro",
+          "route" : "intro",
+          "type" : 2
+        },
+        "b" : {
+          "desc" : "General",
+          "route" : "general",
+          "type" : 2
+        },
+        "c" : {
+          "desc" : "Setup",
+          "route" : "setup",
+          "type" : 1
+        },
+        "d" : {
+          "desc" : "Game Info",
+          "route" : "game",
+          "type" : 1
+        }
+    },
+    "setup" : {
+        "a" : {
+          "desc" : "Making a Room",
+          "route" : "making",
+          "type" : 2
+        },
+        "b" : {
+          "desc" : "Joining a Room",
+          "route" : "joining",
+          "type" : 2
+        },
+        "c" : {
+          "desc" : "Role Selection",
+          "route" : "selection",
+          "type" : 2
+        }
+    },
+    "game" : {
+        "a" : {
+          "desc" : "My Role",
+          "route" : "profile",
+          "type" : 2
+        },
+        "b" : {
+          "desc" : "Phases",
+          "route" : "phases",
+          "type" : 2
+        },
+        "c" : {
+          "desc" : "Messages",
+          "route" : "messages",
+          "type" : 2
+        }
+    },
+    "headers" : {
+      "rules" : "How to Play",
+      "setup" : "Setting Up",
+      "game" : "Game Info"
+    }
+  }
+  

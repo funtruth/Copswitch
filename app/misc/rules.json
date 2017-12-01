@@ -215,6 +215,14 @@
           "type" : 1
         }
       }
+    },
+    "headers" : {
+      "about" : "About the App",
+      "intro" : "About Mafia",
+      "general" : "General",
+      "making" : "Making a Room",
+      "joining" : "Joining a Room",
+      "selection" : "Selecting Roles"
     }
   }
   
