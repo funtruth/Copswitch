@@ -37,10 +37,15 @@ export default colors = {
     night:      '#375469',
 
     pushbutton: '#D86059',
-    namebtn:    '#3FD0A9',
+    namebtn:    '#F0B483',
     menubtn:    '#d65e5e',
     digit:      '#d65e5e',
     dots:       '#d65e5e',
+
+    //Game Palette
+    details:    '#454a4a',
+    gameback:   '#e9e2ca',
+    tab:        '#454a4a',
 
 //COMPONENTS
 
@@ -48,10 +53,5 @@ export default colors = {
     tabbackground:          '#e9e2ca',
     indicatorcolor:         '#873c3d',
     iconcolor:              '#873c3d',
-    
-    //Header Style
-    headerbackground:       '#54537A', //purple
-    headerbackground:       '#1F476E', //blue
-    headerfont:             'white',
     
 }

@@ -106,13 +106,13 @@ export class Messages extends Component {
         return <View style = {{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
 
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
-                borderRadius:2, backgroundColor:this.state.publicchat?colors.dfont:colors.background}}
+                borderRadius:2, backgroundColor:this.state.publicchat?colors.details:colors.gameback}}
                 onPress = {()=>{this.setState({publicchat:true})}}>
                 <Text style = {this.state.publicchat?styles.dchat:styles.chat}>Public</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
-                borderRadius:2, backgroundColor:this.state.publicchat?colors.background:colors.dfont}}
+                borderRadius:2, backgroundColor:this.state.publicchat?colors.gameback:colors.details}}
                 onPress = {()=>{this.setState({publicchat:false})}}>
                 <Text style = {this.state.publicchat?styles.chat:styles.dchat}>Private</Text>
             </TouchableOpacity>
@@ -152,13 +152,13 @@ export class Messages extends Component {
     render() {
 
         if(this.state.loading){
-            return <View style = {{flex:1,backgroundColor:colors.background}}/>
+            return <View style = {{flex:1,backgroundColor:colors.details}}/>
         }
 
-        return <View style = {{flex:1,backgroundColor:colors.background}}>
+        return <View style = {{flex:1,backgroundColor:colors.gameback}}>
             <View style = {{flex:0.03}}/>
-            <View style = {{flex:0.1, flexDirection:'row', 
-            justifyContent:'center', alignItems:'center'}}>{this._renderTitle()}</View>
+            <View style = {{flex:0.1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+                {this._renderTitle()}</View>
             <View style = {{flex:0.84}}>{this._renderMessageComponent()}</View>
             <View style = {{flex:0.03}}/>
         </View>
@@ -294,12 +294,12 @@ export class Profile extends Component {
         return <TouchableWithoutFeedback style = {{flex:1}}
         onPressOut = {()=>{ this.handlePressOut()}}
         onPressIn={() =>  {this.handlePressIn()}}>
-            <View style = {{flex:1, backgroundColor:colors.background,
+            <View style = {{flex:1, backgroundColor:colors.gameback,
                 justifyContent:'center', alignItems:'center'}}>
                     
                     <Animated.View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: this.state.iconVertical, 
                         justifyContent: 'center', alignItems: 'center'}}>
-                        <AnimatedIcon name='user-secret' style={{ color:colors.main, fontSize: this.state.iconSize }}/>
+                        <AnimatedIcon name='user-secret' style={{ color:colors.details, fontSize: this.state.iconSize }}/>
                     </Animated.View>
                 
                     <Animated.View style = {{ opacity:this.state.pressOpacity || 0,
@@ -332,7 +332,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.main,
+        color: colors.details,
         marginLeft: 40,
         marginRight:40,
     },
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.background,
+        color: colors.gameback,
         marginLeft: 40,
         marginRight:40,
     },
@@ -348,12 +348,12 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.main,
+        color: colors.details,
     },
     chat:{
         fontSize:20,
         fontFamily:'ConcertOne-Regular',
-        color:colors.dfont,
+        color:colors.details,
         alignSelf: 'center',
         marginTop:5,
         marginBottom:5,
@@ -361,7 +361,7 @@ const styles = StyleSheet.create({
     dchat:{
         fontSize:20,
         fontFamily:'ConcertOne-Regular',
-        color:colors.background,
+        color:colors.gameback,
         alignSelf: 'center',
         marginTop:5,
         marginBottom:5,
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
     leftconcerto:{
         fontSize:17,
         fontFamily:'ConcertOne-Regular',
-        color:colors.main,
+        color:colors.details,
         marginTop:5,
     },
     

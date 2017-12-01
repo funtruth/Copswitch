@@ -1200,14 +1200,11 @@ _gameOver() {
         })
     )
 }
-
+/*<Image source = {require('../../assets/images/night.png')} 
+style = {{flex:1, alignSelf:'stretch', width:null}}>*/
 render() {
 
-return <Image source = {require('../../assets/images/night.png')} 
-style = {{flex:1, alignSelf:'stretch', width:null}}>
-
-<View style = {{flex:1, padding:10, justifyContent:'center'}}>
-
+return <View style = {{flex:1,backgroundColor:colors.background, justifyContent:'center'}}>
 
     <Animated.View style = {{flex:this.state.titleSize,justifyContent:'center',
         borderRadius:2, marginBottom:10}}>
@@ -1289,8 +1286,9 @@ style = {{flex:1, alignSelf:'stretch', width:null}}>
         {this._renderListComponent()}
     </Animated.View>
 
-</View></Image>
+</View>
 }
+//</Image>
 }
 
 const styles = StyleSheet.create({
