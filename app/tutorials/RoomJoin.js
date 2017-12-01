@@ -425,7 +425,7 @@ export class Lobby1 extends Component {
         super(props);
 
         this.state = {
-            alias:'',
+            alias:null,
             errormessage:null,
         };
     }
@@ -441,10 +441,10 @@ export class Lobby1 extends Component {
 
 
     _continue(name) {
-        if(name && name.length>0 && name.length < 11){
+        if(name && name.trim().length>0 && name.trim().length < 11){
             firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
             .child(firebase.auth().currentUser.uid).update({
-                name:               name,
+                name:               name.trim(),
                 readyvalue:         false,
                 presseduid:         'foo',
             }).then(()=>{
@@ -462,7 +462,10 @@ export class Lobby1 extends Component {
         return <View style = {{flex:0.7, justifyContent:'center', alignItems:'center',
             width:this.props.width}}>
 
-            <Text style = {[styles.subtitle,{flex:0.15}]}>What is your name?</Text>
+            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.mconcerto}>You joined the Room</Text>
+                <Text style = {styles.subtitle}>What is your name?</Text>
+            </View>
             <View style = {{flex:0.25}}/>
             <View style = {{flex:0.12,flexDirection:'row'}}>
                 <TextInput
@@ -480,7 +483,7 @@ export class Lobby1 extends Component {
                     value={this.state.alias}
                     onChangeText = {(text) => {this.setState({alias: text})}}
                     onSubmitEditing = {()=>{ 
-                        this._continue(this.state.alias.trim());
+                        this._continue(this.state.alias);
                     }}
                 />
                 <CustomButton
@@ -491,7 +494,7 @@ export class Lobby1 extends Component {
                     rightradius = {25}
                     color = {colors.menubtn}
                     onPress = {()=>{
-                        this._continue(this.state.alias.trim());
+                        this._continue(this.state.alias);
                     }}
                     component = {<Text style = {styles.concerto}>GO</Text>}
                 />
@@ -508,8 +511,6 @@ export class Lobby2 extends Component {
         super(props);
 
         this.state = {
-            alias:'',
-
             namelist:[],
         };
     }
@@ -542,11 +543,13 @@ export class Lobby2 extends Component {
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
-                <TouchableOpacity 
-                    onPress={() => { }}
-                    style = {{ justifyContent:'center', marginTop:5, marginBottom:5 }} > 
-                    <Text style = {styles.concerto}>{item.name}</Text>
-                </TouchableOpacity>
+                <Text style = {{
+                    fontSize: 25,
+                    fontFamily: 'ConcertOne-Regular',
+                    textAlign:'center',
+                    color: colors.shadow,
+                    margin:5,
+                }}>{item.name}</Text>
             )}
             contentContainerStyle = {{marginTop:20, marginBottom:20}}
             numColumns={1}
@@ -557,17 +560,18 @@ export class Lobby2 extends Component {
     render() {
         return <View style = {{flex:0.7,backgroundColor:colors.background,
             width:this.props.width}}>
-            <View style = {{flex:0.1, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.mconcerto}>Players:</Text>
+            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.mconcerto}>You joined the Lobby</Text>
+                <Text style = {[styles.concerto,{color:colors.shadow}]}>Wait for Owner to start game.</Text>
             </View>
             
-            <View style = {{flex:0.87, flexDirection:'row', justifyContent:'center'}}>
-                <View style = {{flex:0.7, backgroundColor:colors.menubtn, borderRadius:30}}>
+            <View style = {{flex:0.8, flexDirection:'row', justifyContent:'center'}}>
+                <View style = {{flex:0.7}}>
                     {this._renderListComponent()}
                 </View>
             </View>
 
-            <View style = {{flex:0.03}}/>
+            <View style = {{flex:0.05}}/>
         </View>
     }
 }
