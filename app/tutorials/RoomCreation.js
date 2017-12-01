@@ -802,63 +802,34 @@ export class Creation4 extends Component {
                 />
             </View>
 
-            <Animated.View style = {{flex:0.75, opacity:this.state.listOpacity}}>
+            <Animated.View style = {{flex:0.75, opacity:this.state.listOpacity, marginTop:10}}>
                 <FlatList
                     data={this.state.showtown?this.state.townlist:
                         (this.state.showmafia?this.state.mafialist:this.state.neutrallist)}
                     renderItem={({item}) => (
-                        <View style = {{marginBottom:3, flexDirection:'row'}}>
-                            <CustomButton
-                                size = {0.2}
-                                flex = {0.8}
-                                opacity = {1}
-                                depth = {6}
-                                color = {colors.lightbutton}
-                                leftradius = {40}
-                                rightradius = {40}
-                                onPress = {()=>{
-                                    this._removeRole(item.key,item.index) 
-                                }}
-                                component = {<View style = {{justifyContent:'center',alignItems:'center'}}>
-                                    <Text style = {{
-                                        color:colors.font,
-                                        fontFamily: 'ConcertOne-Regular',
-                                        fontSize:18}}>{item.count?item.count:null}</Text>
-                                </View>}
-                            />
-                            <CustomButton
-                                size = {0.7}
-                                flex = {1}
-                                opacity = {1}
-                                depth = {5}
-                                color = {colors.lightbutton}
-                                radius = {5}
-                                onPress = {()=>{
-                                    this._roleBtnPress(item.key,item.index) 
-                                }}
-                                component = {<View style = {{justifyContent:'center',alignItems:'center'}}>
-                                    <Text style = {{
-                                        color:colors.font,
-                                        fontFamily: 'ConcertOne-Regular',
-                                        fontSize:18,
-                                        marginTop:5}}>{item.name}</Text>
-                                    <Text style = {{
-                                        color:colors.font,
-                                        fontFamily: 'ConcertOne-Regular',
-                                        fontSize:14,
-                                        marginBottom:5}}>{item.category}</Text>
-                                </View>}
-                            />
-                            <View style = {{flex:0.2,flexDirection:'row', justifyContent:'center'}}>
-                                <View style = {{flex:0.7, backgroundColor:colors.font, borderRadius:5,
-                                    marginBottom:3, marginTop:3, justifyContent:'center'}}>
-                                    <Text style = {{
-                                        color:colors.shadow,
-                                        fontFamily: 'ConcertOne-Regular',
-                                        fontSize:18,
-                                        alignSelf:'center'}}>{item.count?item.count:null}
-                                    </Text>
-                                </View>
+                        <View style = {{marginBottom:3, flexDirection:'row',justifyContent:'center'}}>
+                            <View style = {{flex:0.75, backgroundColor:colors.lightbutton, 
+                                borderRadius:40, flexDirection:'row',justifyContent:'center'}}>
+                                <TouchableOpacity
+                                    style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
+                                    onPress = {()=>{ this._removeRole(item.key,item.index) }}
+                                    disabled = {!item.count}
+                                ><MaterialCommunityIcons name={item.count?'close-circle':null}
+                                    style={{color:colors.menubtn,fontSize:30}}/>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style = {{flex:0.7, justifyContent:'center', alignItems:'center'}}
+                                    onPress = {()=>{ this._roleBtnPress(item.key,item.index) }}>
+                                    <Text style = {{ color:colors.font, fontFamily: 'ConcertOne-Regular',
+                                        fontSize:18, marginTop:5}}>{item.name}</Text>
+                                    <Text style = {{ color:colors.font, fontFamily: 'ConcertOne-Regular',
+                                        fontSize:14, marginBottom:5}}>{item.category}</Text>
+                                </TouchableOpacity>
+                                <Text style = {{ flex:0.2, color:colors.font,
+                                    fontFamily: 'ConcertOne-Regular', fontSize:18, 
+                                    alignSelf:'center'}}>
+                                    {item.count?item.count:null}
+                                </Text>
                             </View>
                         </View>
                     )}

@@ -462,7 +462,8 @@ export class Lobby1 extends Component {
         return <View style = {{flex:0.7, justifyContent:'center', alignItems:'center',
             width:this.props.width}}>
 
-            <Text style = {styles.subtitle}>What is your name?</Text>
+            <Text style = {[styles.subtitle,{flex:0.15}]}>What is your name?</Text>
+            <View style = {{flex:0.25}}/>
             <View style = {{flex:0.12,flexDirection:'row'}}>
                 <TextInput
                     style={{
@@ -495,10 +496,9 @@ export class Lobby1 extends Component {
                     component = {<Text style = {styles.concerto}>GO</Text>}
                 />
             </View>
-            <Animatable.Text style = {styles.sconcerto} ref = 'nameerror'>
+            <Animatable.Text style = {[styles.sconcerto,{flex:0.05}]} ref = 'nameerror'>
                 {this.state.errormessage}</Animatable.Text>
-            
-            <View style = {{ flex:0.4 }}/>
+            <View style = {{ flex:0.48 }}/>
         </View>
     }
 }
