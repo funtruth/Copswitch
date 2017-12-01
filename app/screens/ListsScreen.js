@@ -185,13 +185,7 @@ class Roles extends Component {
             showmafia:   false,
             showneutral: false,
 
-            townSize:       new Animated.Value(0.88),
-            mafiaSize:      new Animated.Value(0.01),
-            neutralSize:    new Animated.Value(0.01),
-            
-            townOpacity:    new Animated.Value(1),
-            mafiaOpacity:   new Animated.Value(0),
-            neutralOpacity: new Animated.Value(0),
+            listOpacity:    new Animated.Value(1),
         }
 
     }
@@ -306,58 +300,18 @@ class Roles extends Component {
             showmafia:mafia,
             showneutral:neutral,
         })
+
         Animated.sequence([
-            Animated.parallel([
-                Animated.timing(
-                    this.state.townOpacity, {
-                        duration: FADEOUT_ANIM,
-                        toValue: 0
-                }),
-                Animated.timing(
-                    this.state.mafiaOpacity, {
-                        duration: FADEOUT_ANIM,
-                        toValue: 0
-                }),
-                Animated.timing(
-                    this.state.neutralOpacity, {
-                        duration: FADEOUT_ANIM,
-                        toValue: 0
-                })
-            ]),
-            Animated.parallel([
-                Animated.timing(
-                    this.state.townSize, {
-                        duration: SIZE_ANIM,
-                        toValue: town?0.88:0.01
-                }),
-                Animated.timing(
-                    this.state.mafiaSize, {
-                        duration: SIZE_ANIM,
-                        toValue: mafia?0.88:0.01
-                }),
-                Animated.timing(
-                    this.state.neutralSize, {
-                        duration: SIZE_ANIM,
-                        toValue: neutral?0.88:0.01
-                })
-            ]),
-            Animated.parallel([
-                Animated.timing(
-                    this.state.townOpacity, {
-                        duration: FADEIN_ANIM,
-                        toValue: town?1:0
-                }),
-                Animated.timing(
-                    this.state.mafiaOpacity, {
-                        duration: FADEIN_ANIM,
-                        toValue: mafia?1:0
-                }),
-                Animated.timing(
-                    this.state.neutralOpacity, {
-                        duration: FADEIN_ANIM,
-                        toValue: neutral?1:0
-                })
-            ])
+            Animated.timing(
+                this.state.listOpacity, {
+                    duration: 300,
+                    toValue: 0
+            }),
+            Animated.timing(
+                this.state.listOpacity, {
+                    duration: 600,
+                    toValue: 1
+            })
         ]).start()
     }
 
@@ -379,17 +333,17 @@ class Roles extends Component {
                 <TouchableWithoutFeedback 
                     style = {{flex:1}}
                     onPress = {()=>{this.setState({modalVisible:false})}}>
-                    <View style = {{flex:1, backgroundColor:'rgba(109, 132, 156, 0.73)',
+                    <View style = {{flex:1, backgroundColor:'rgba(249, 242, 222, 0.34)',
                         justifyContent:'center',alignItems:'center'}}>
                         <TouchableWithoutFeedback>
-                            <View style = {{flex:0.7,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
-                                <View style = {{backgroundColor:colors.menubtn,flex:0.9,borderRadius:10}}>
+                            <View style = {{flex:0.5,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
+                                <View style = {{backgroundColor:colors.lightbutton,flex:0.9,borderRadius:10}}>
                                     <View style = {{flex:0.15, flexDirection:'row',
                                         justifyContent:'center',alignItems:'center'}}>
                                         <Text style = {styles.titleFont}>
                                             {Rolesheet[this.state.roleid].name}</Text>
                                     </View>
-                                    <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
+                                    <View style = {{flex:0.1,justifyContent:'center',alignItems:'center'}}>
                                         <Text style = {styles.normalFont}>
                                             {Rolesheet[this.state.roleid].desc}</Text>
                                     </View>
@@ -399,8 +353,8 @@ class Roles extends Component {
                                         <Text style = {styles.normalFont}>{'Visits: ' + Rolesheet[this.state.roleid].visits}</Text>
                                         <Text style = {styles.normalFont}>{'Rules: ' + Rolesheet[this.state.roleid].rules}</Text>
                                     </View>
-                                    <CustomButton size = {0.1} flex = {0.4} opacity = {1} depth = {6}
-                                        color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {40}
+                                    <CustomButton size = {0.2} flex = {0.4} opacity = {1} depth = {6} radius = {40}
+                                        color = {colors.menubtn}
                                         onPress = {()=>{this.setState({modalVisible:false})}}
                                         component = {<Text style={styles.concerto}>CLOSE</Text>}/>
                                     <View style = {{flex:0.05}}/>
@@ -418,12 +372,12 @@ class Roles extends Component {
             <View style = {{position:'absolute', top:60, left:0, right:0, height:42,
                 flexDirection:'row', justifyContent:'center'}}>
                 <CustomButton
-                    size = {0.25}
+                    size = {0.3}
                     flex = {1}
                     opacity = {1}
                     depth = {4}
                     color = {this.state.showtown?colors.menubtn:colors.lightbutton}
-                    leftradius = {15}
+                    leftradius = {30}
                     rightradius = {5}
                     onPress = {()=>{
                         this._viewChange(true,false,false)
@@ -433,7 +387,7 @@ class Roles extends Component {
                 />
                 <View style = {{width:4, backgroundColor:colors.background}}/>
                 <CustomButton
-                    size = {0.25}
+                    size = {0.3}
                     flex = {1}
                     opacity = {1}
                     depth = {4}
@@ -447,12 +401,12 @@ class Roles extends Component {
                 />
                 <View style = {{width:4, backgroundColor:colors.background}}/>
                 <CustomButton
-                    size = {0.25}
+                    size = {0.3}
                     flex = {1}
                     opacity = {1}
                     depth = {4}
                     color = {this.state.showneutral?colors.menubtn:colors.lightbutton}
-                    rightradius = {15}
+                    rightradius = {30}
                     leftradius = {5}
                     onPress = {()=>{
                         this._viewChange(false,false,true)
@@ -464,104 +418,28 @@ class Roles extends Component {
 
             <View style = {{height:40}}/>
 
-            <Animated.View style = {{flex:this.state.townSize, opacity:this.state.townOpacity}}>
+            <Animated.View style = {{flex:0.9, opacity:this.state.listOpacity, 
+                marginLeft:10, marginRight:10}}>
                 <FlatList
                     data={this.state.showtown?this.state.townlist:
-                        (this.state.showmafia?this.state.mafialist:this.state.showneutral)}
+                        (this.state.showmafia?this.state.mafialist:this.state.neutrallist)}
                     renderItem={({item}) => (
-                        <View style = {{marginBottom:10}}>
-                        <CustomButton
-                            size = {1}
-                            flex = {0.75}
-                            opacity = {1}
-                            depth = {5}
-                            color = {colors.lightbutton}
-                            radius = {50}
-                            onPress = {()=>{
-                                this._roleBtnPress(item.key,item.index) 
-                            }}
-                            component = {<View style = {{justifyContent:'center',alignItems:'center'}}>
-                                <Text style = {{
-                                    color:colors.font,
-                                    fontFamily: 'ConcertOne-Regular',
-                                    fontSize:18,
-                                    marginTop:5}}>{item.name}</Text>
-                                <Text style = {{
-                                    color:colors.font,
-                                    fontFamily: 'ConcertOne-Regular',
-                                    fontSize:14,
-                                    marginBottom:5}}>{item.category}</Text>
-                            </View>}
-                        /></View>
-                    )}
-                    style={{margin:3}}
-                    numColumns = {1}
-                    keyExtractor={item => item.key}/>
-            </Animated.View>
-
-            <Animated.View style = {{flex:this.state.mafiaSize, opacity:this.state.mafiaOpacity}}>
-                <FlatList
-                    data={this.state.mafialist}
-                    renderItem={({item}) => (
-                        <View style = {{flex:1, marginBottom:10}}>
-                            <CustomButton
-                                size = {0.5}
-                                flex = {0.9}
-                                opacity = {1}
-                                depth = {4}
-                                color = {colors.lightbutton}
-                                radius = {50}
-                                onPress = {()=>{
-                                    this._roleBtnPress(item.key,item.index) 
-                                }}
-                                component = {<View style = {{justifyContent:'center',alignItems:'center'}}>
-                                    <Text style = {{
-                                        color:colors.font,
-                                        fontFamily: 'ConcertOne-Regular',
-                                        fontSize:18,
-                                        marginTop:5}}>{item.name}</Text>
-                                    <Text style = {{
-                                        color:colors.font,
-                                        fontFamily: 'ConcertOne-Regular',
-                                        fontSize:14,
-                                        marginBottom:5}}>{item.category}</Text>
-                                </View>}
-                        /></View>
+                        <View style = {{flex:0.5, flexDirection:'row',justifyContent:'center'}}>
+                            <View style = {{flex:1, backgroundColor:colors.lightbutton, 
+                                borderRadius:40,justifyContent:'center', margin:5}}>
+                                <TouchableOpacity
+                                    style = {{ justifyContent:'center', alignItems:'center'}}
+                                    onPress = {()=>{ this._roleBtnPress(item.key,item.index) }}>
+                                    <Text style = {{ color:colors.font, fontFamily: 'ConcertOne-Regular',
+                                        fontSize:18, marginTop:5}}>{item.name}</Text>
+                                    <Text style = {{ color:colors.font, fontFamily: 'ConcertOne-Regular',
+                                        fontSize:14, marginBottom:5}}>{item.category}</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
                     )}
                     style={{margin:3}}
                     numColumns = {2}
-                    keyExtractor={item => item.key}/>
-            </Animated.View>
-
-            <Animated.View style = {{flex:this.state.neutralSize, opacity:this.state.neutralOpacity}}>
-                <FlatList
-                    data={this.state.neutrallist}
-                    renderItem={({item}) => (
-                        <TouchableOpacity
-                            onPress = {()=>{
-                                this._roleBtnPress(item.key,item.index)  
-                            }}
-                            style = {{backgroundColor:colors.background,flex:0.33,
-                                borderRadius:10, margin:3}}>
-                            <View style = {{justifyContent:'center',alignItems:'center'}}>
-                                <Image 
-                                    style={{width:70,height:70}}
-                                    source={{uri: Rolesheet[item.key].image}}
-                                />
-                                <Text style = {{
-                                    color:colors.font,
-                                    fontFamily: 'ConcertOne-Regular',
-                                    fontSize:18}}>{item.name}</Text>
-                                <Text style = {{
-                                    color:colors.font,
-                                    fontFamily: 'ConcertOne-Regular',
-                                    fontSize:14,
-                                    marginBottom:5}}>{item.category}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    )}
-                    style={{margin:3}}
-                    numColumns = {3}
                     keyExtractor={item => item.key}/>
             </Animated.View>
 
@@ -803,7 +681,7 @@ export default RuleBook = StackNavigator(
     normalFont: {
         fontFamily:'ConcertOne-Regular',
         fontSize: 18,
-        color: colors.background,
+        color: colors.font,
     },
     centeredBtn: {
         fontFamily:'ConcertOne-Regular',
