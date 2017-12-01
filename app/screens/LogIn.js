@@ -6,7 +6,6 @@ import {
 } from "react-native";
 
 import { onSignIn } from "../auth";
-import { MenuButton } from '../components/MenuButton.js';
 
 import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';

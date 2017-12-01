@@ -16,7 +16,6 @@ import {
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { MenuButton } from '../components/MenuButton.js';
 import { PushButton } from '../components/PushButton.js';
 import { CustomButton } from '../components/CustomButton.js';
 import { Header } from '../components/Header.js';
@@ -361,43 +360,11 @@ class Roles extends Component {
         ]).start()
     }
 
-    _renderTitle() {
-        return <View style = {{flex:0.7, flexDirection:'row',
-            justifyContent:'center',alignItems:'center'}}>
-            <Text style = {styles.titleFont}>
-                {Rolesheet[this.state.roleid].name}</Text>
-        </View>
-    }
-    _renderDesc() {
-        return <View style = {{flex:0.3,justifyContent:'center',alignItems:'center'}}>
-            <Text style = {styles.normalFont}>
-                {Rolesheet[this.state.roleid].desc}</Text>
-        </View>
-    }
-    _renderImage(){
-        return <View style = {{flex:4,justifyContent:'center',alignItems:'center'}}>
-            <Image 
-                style={{width:200,height:200}}
-                source={{uri: Rolesheet[this.state.roleid].image}}
-            />
-        </View>
-    }
     _renderInfoBox() {
-        return <View style = {{flex:3,marginLeft:10,marginRight:10}}>
-            <Text style = {styles.normalFont}>{'Team: ' + Rolesheet[this.state.roleid].type}</Text>
-            <Text style = {styles.normalFont}>{'Suspicious: ' + Rolesheet[this.state.roleid].suspicious}</Text>
-            <Text style = {styles.normalFont}>{'Visits: ' + Rolesheet[this.state.roleid].visits}</Text>
-            <Text style = {styles.normalFont}>{'Rules: ' + Rolesheet[this.state.roleid].rules}</Text>
-        </View>
+        return 
     }
     _renderCloseBtn() {
-        return <MenuButton
-            viewFlex = {1}
-            flex = {0.6}
-            fontSize = {20}
-            title = 'CLOSE'
-            onPress = {()=>{this.setState({modalVisible:false})}}
-        />
+        return 
     }
 
     render(){
@@ -415,12 +382,27 @@ class Roles extends Component {
                         justifyContent:'center',alignItems:'center'}}>
                         <TouchableWithoutFeedback>
                             <View style = {{flex:0.7,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
-                                <View style = {{backgroundColor:colors.main,flex:0.9,borderRadius:10}}>
-                                    {this._renderTitle()}
-                                    {this._renderDesc()}
-                                    {this._renderImage()}
-                                    {this._renderInfoBox()}
-                                    {this._renderCloseBtn()}
+                                <View style = {{backgroundColor:colors.menubtn,flex:0.9,borderRadius:10}}>
+                                    <View style = {{flex:0.15, flexDirection:'row',
+                                        justifyContent:'center',alignItems:'center'}}>
+                                        <Text style = {styles.titleFont}>
+                                            {Rolesheet[this.state.roleid].name}</Text>
+                                    </View>
+                                    <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
+                                        <Text style = {styles.normalFont}>
+                                            {Rolesheet[this.state.roleid].desc}</Text>
+                                    </View>
+                                    <View style = {{flex:0.55,marginLeft:10,marginRight:10}}>
+                                        <Text style = {styles.normalFont}>{'Team: ' + Rolesheet[this.state.roleid].type}</Text>
+                                        <Text style = {styles.normalFont}>{'Suspicious: ' + Rolesheet[this.state.roleid].suspicious}</Text>
+                                        <Text style = {styles.normalFont}>{'Visits: ' + Rolesheet[this.state.roleid].visits}</Text>
+                                        <Text style = {styles.normalFont}>{'Rules: ' + Rolesheet[this.state.roleid].rules}</Text>
+                                    </View>
+                                    <CustomButton size = {0.1} flex = {0.4} opacity = {1} depth = {6}
+                                        color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {40}
+                                        onPress = {()=>{this.setState({modalVisible:false})}}
+                                        component = {<Text style={styles.concerto}>CLOSE</Text>}/>
+                                    <View style = {{flex:0.05}}/>
                                 </View>
                             </View>
                         </TouchableWithoutFeedback>
@@ -935,6 +917,12 @@ export default RuleBook = StackNavigator(
         fontSize: 18,
         color: colors.font,
         alignSelf:'center',
+    },
+    concerto: {
+        fontSize: 20,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.font,
     },
     menuBtn : {
         fontFamily:'ConcertOne-Regular',
