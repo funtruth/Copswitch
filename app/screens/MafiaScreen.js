@@ -828,31 +828,7 @@ _renderListComponent(){
             keyExtractor={item => item.key}
         />
     } else if (this.state.phase==6 || this.state.phase==7){
-        return <FlatList
-            data={this.state.namelist}
-            renderItem={({item}) => (
-                <NameButton
-                    color = {item.dead ? colors.dead : (item.immune? colors.immune : colors.alive)}
-                    depth = {5}
-                    radius = {5}
-                    component = {
-                        <View style = {{flexDirection:'row',alignItems:'center',justifyContent:'center'}}>
-                            <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
-                            <MaterialCommunityIcons name={item.dead?'skull':null}
-                                style={{color:'white', fontSize:26}}/>
-                            </View>
-                            <View style = {{flex:5}}>
-                                <Text style = {styles.dconcerto}>
-                                    {item.name + ' ' + (item.type==2?'(Town)':
-                                    item.type==1?'(Mafia)':'(Neutral)')}</Text>
-                            </View>
-                            <View style = {{flex:1}}/>
-                        </View>
-                    }
-                />
-            )}
-            keyExtractor={item => item.key}
-        />
+        return null
     }
 }
 
