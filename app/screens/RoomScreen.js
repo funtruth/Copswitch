@@ -45,19 +45,17 @@ export class Home extends React.Component {
     constructor(props) {
         super(props);
 
-        let {width, height} = Dimensions.get('window');
-
         this.state = {
             connected:  true,
             disabled:   false,
             loading:    false,
             transition: false,
-
-            radius: Math.pow((Math.pow(width,2) + Math.pow(height,2)),0.5),
-            width: width,
-            height: height,
-            circle: new Animated.Value(10),
-        }
+        };
+        
+        this.width = 180,
+        this.height = 320,
+        this.radius = 370,
+        this.circle = new Animated.Value(10),
 
         this.connectedRef = firebase.database().ref(".info/connected");
         
@@ -112,58 +110,60 @@ export class Home extends React.Component {
     }
 
     _createRoom() {
-        if(this.state.connected){
+        this._buttonPress();
 
-            this._buttonPress();
-
-            const roomname = randomize('0',6);
-            //TODO: Check if room already exists
-            AsyncStorage.setItem('ROOM-KEY', roomname);
-            firebase.database().ref('rooms/' + roomname).set({
-                phase: 1,
-                owner: firebase.auth().currentUser.uid,
-                daycounter:1,
-            }).then(()=>{
-                this.props.navigation.dispatch(
-                    NavigationActions.navigate({
-                        routeName: 'CreationTutorial',
-                        action: NavigationActions.navigate({ 
-                            routeName: 'CreationPager',
-                            params: {roomname:roomname}
-                        })
+        const roomname = randomize('0',6);
+        //TODO: Check if room already exists
+        AsyncStorage.setItem('ROOM-KEY', roomname);
+        firebase.database().ref('rooms/' + roomname).set({
+            phase: 1,
+            owner: firebase.auth().currentUser.uid,
+            daycounter:1,
+        }).then(()=>{
+            this.props.navigation.dispatch(
+                NavigationActions.navigate({
+                    routeName: 'CreationTutorial',
+                    action: NavigationActions.navigate({ 
+                        routeName: 'CreationPager',
+                        params: {roomname:roomname}
                     })
-                )
-            })
-
-        }
-            
+                })
+            )
+            this.setState({transition:!this.state.transition})
+        }) 
     }
 
     _joinRoom() {
+        this._buttonPress();
 
-        if(this.state.connected){
-            
-            this._buttonPress();
-
-            this.props.navigation.dispatch(
-                NavigationActions.navigate({
-                    routeName: 'JoinTutorial',
-                    action: NavigationActions.navigate({ 
-                        routeName: 'Join1'
-                    })
+        this.props.navigation.dispatch(
+            NavigationActions.navigate({
+                routeName: 'JoinTutorial',
+                action: NavigationActions.navigate({ 
+                    routeName: 'Join1'
                 })
-            );
-            
-        } 
+            })
+        );
     }
 
-    _transitionIn(){
-        Animated.timing(
-            this.state.circle, {
-                toValue: this.state.radius,
-                duration:1000
-            }
-        ).start()
+    _transition(){
+        this.setState({transition:!this.state.transition})
+        this._createRoom()
+        Animated.sequence([
+            Animated.timing(
+                this.circle, {
+                    toValue: this.radius,
+                    duration:2000
+                }
+            ),
+            Animated.timing(
+                this.circle, {
+                    toValue: 10,
+                    duration:2000
+                }
+            )
+        ]).start()
+        
     }
 
     render() {
@@ -180,9 +180,8 @@ export class Home extends React.Component {
                 color = {colors.menubtn}
                 radius = {50}
                 onPress = {()=>{ 
-                    //this.setState({transition:!this.state.transition})
-                    //this._transitionIn()
-                    this._createRoom() 
+                    //this._transition()
+                    this._createRoom()
                 }}
                 disabled = {this.state.disabled}
                 component = {
@@ -204,18 +203,18 @@ export class Home extends React.Component {
             />
             <View style = {{flex:0.12}}/>
 
-            {this.state.transition?<Animated.View style = {{position: 'absolute',
-                top: (this.state.height/2)-this.state.radius,
-                left: (this.state.width/2)-this.state.radius,
-                right: (this.state.width/2)-this.state.radius,
-                bottom: (this.state.height/2)-this.state.radius,
+            {/*{this.state.transition?<Animated.View style = {{position: 'absolute',
+                top: this.height-this.radius,
+                left: this.width-this.radius,
+                right: this.width-this.radius,
+                bottom: this.height-this.radius,
                 backgroundColor: 'transparent',
 
-                borderWidth: this.state.circle,
-                borderRadius: this.state.circle,
+                borderWidth: this.circle,
+                borderRadius: 370,
                 borderColor: colors.shadow,
                 opacity: 1,}}>
-            </Animated.View>:null}
+            </Animated.View>:null}*/}
         </View>
     }
 }
