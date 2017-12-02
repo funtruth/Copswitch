@@ -109,8 +109,8 @@ class General extends Component {
     }
 
     render(){
-        return <View style = {{flex:1,backgroundColor:colors.background,
-            justifyContent:'center', alignItems:'center'}}>
+        return <View style = {{flex:1,backgroundColor:colors.background}}>
+            <View style = {{flex:0.1}}/>
             <PushButton
                 size = {0.1}
                 opacity = {1}
@@ -150,9 +150,9 @@ class General extends Component {
                     this.props.navigation.navigate('InfoPage',{section:'about'})
                 }}
                 disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>About</Text>}
+                component = {<Text style = {styles.menuBtn}>About App</Text>}
             />
-            <View style = {{flex:0.02}}/>
+            <View style = {{flex:0.35}}/>
             <PushButton
                 size = {0.1}
                 opacity = {1}
