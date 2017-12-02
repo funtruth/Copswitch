@@ -369,8 +369,7 @@ class Roles extends Component {
                 this.props.navigation.dispatch(NavigationActions.back())
             }}/>
 
-            <View style = {{position:'absolute', top:60, left:0, right:0, height:42,
-                flexDirection:'row', justifyContent:'center'}}>
+            <View style = {{flex:0.1, flexDirection:'row', justifyContent:'center'}}>
                 <CustomButton
                     size = {0.3}
                     flex = {1}
@@ -415,8 +414,6 @@ class Roles extends Component {
                         styles.centeredBtn:styles.centeredBtnPressed}>Neutral</Text>}
                 />
             </View>
-
-            <View style = {{height:40}}/>
 
             <Animated.View style = {{flex:0.9, opacity:this.state.listOpacity, 
                 marginLeft:10, marginRight:10}}>
