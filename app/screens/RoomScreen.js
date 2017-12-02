@@ -14,7 +14,8 @@ import {
     TouchableWithoutFeedback,
     ActivityIndicator,
     Animated,
-    Modal
+    Modal,
+    Dimensions
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -44,10 +45,18 @@ export class Home extends React.Component {
     constructor(props) {
         super(props);
 
+        let {width, height} = Dimensions.get('window');
+
         this.state = {
             connected:  true,
             disabled:   false,
             loading:    false,
+            transition: false,
+
+            radius: Math.pow((Math.pow(width,2) + Math.pow(height,2)),0.5),
+            width: width,
+            height: height,
+            circle: new Animated.Value(10),
         }
 
         this.connectedRef = firebase.database().ref(".info/connected");
@@ -148,7 +157,17 @@ export class Home extends React.Component {
         } 
     }
 
+    _transitionIn(){
+        Animated.timing(
+            this.state.circle, {
+                toValue: this.state.radius,
+                duration:1000
+            }
+        ).start()
+    }
+
     render() {
+
         return <View style = {{ flex:1, backgroundColor:colors.background }}>
 
             <View style = {{flex:0.7}}/>
@@ -160,7 +179,11 @@ export class Home extends React.Component {
                 depth = {8}
                 color = {colors.menubtn}
                 radius = {50}
-                onPress = {()=>{ this._createRoom() }}
+                onPress = {()=>{ 
+                    //this.setState({transition:!this.state.transition})
+                    //this._transitionIn()
+                    this._createRoom() 
+                }}
                 disabled = {this.state.disabled}
                 component = {
                     <Text style = {styles.bconcerto}>Create Room</Text>
@@ -180,6 +203,19 @@ export class Home extends React.Component {
                 }
             />
             <View style = {{flex:0.12}}/>
+
+            {this.state.transition?<Animated.View style = {{position: 'absolute',
+                top: (this.state.height/2)-this.state.radius,
+                left: (this.state.width/2)-this.state.radius,
+                right: (this.state.width/2)-this.state.radius,
+                bottom: (this.state.height/2)-this.state.radius,
+                backgroundColor: 'transparent',
+
+                borderWidth: this.state.circle,
+                borderRadius: this.state.circle,
+                borderColor: colors.shadow,
+                opacity: 1,}}>
+            </Animated.View>:null}
         </View>
     }
 }
