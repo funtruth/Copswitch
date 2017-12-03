@@ -52,6 +52,8 @@ export class CreationPager extends Component {
             playernum: null,
             playercount: null,
             difficulty: null,
+
+            transition:false,
         };
 
         this.dot1 = new Animated.Value(1);
@@ -268,6 +270,13 @@ export class CreationPager extends Component {
                 <AnimatedDot name='checkbox-blank-circle'
                     style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot5}}/>
             </View>
+
+            {this.state.transition?<Animated.View
+                style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
+                <ActivityIndicator size='large' color={colors.font} 
+                    style = {{position:'absolute',bottom:25,right:25}}/>
+            </Animated.View>:null}
         </View>
     }
 }
@@ -917,6 +926,10 @@ export class Creation5 extends Component {
                 }
             }
         })
+    }
+
+    componentDidMount(){
+
     }
 
     componentWillUnmount() {

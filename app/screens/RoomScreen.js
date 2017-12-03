@@ -49,13 +49,11 @@ export class Home extends React.Component {
             connected:  true,
             disabled:   false,
             loading:    false,
-            transition: false,
         };
         
         this.width = 180,
         this.height = 320,
         this.radius = 370,
-        this.circle = new Animated.Value(10),
 
         this.connectedRef = firebase.database().ref(".info/connected");
         
@@ -94,11 +92,6 @@ export class Home extends React.Component {
         </Animatable.View>
     }
 
-    _buttonPress() {
-        this.setState({disabled:true});
-        setTimeout(() => {this.setState({disabled: false})}, 600);
-    }
-
     _connection() {
         this.connectedRef.once('value',snap=>{
             if(snap.val()==true){
@@ -110,16 +103,20 @@ export class Home extends React.Component {
     }
 
     _createRoom() {
-        this._buttonPress();
+        
+        this.setState({disabled:true});
 
         const roomname = randomize('0',6);
         //TODO: Check if room already exists
         AsyncStorage.setItem('ROOM-KEY', roomname);
+
+
         firebase.database().ref('rooms/' + roomname).set({
             phase: 1,
             owner: firebase.auth().currentUser.uid,
             daycounter:1,
         }).then(()=>{
+            
             this.props.navigation.dispatch(
                 NavigationActions.navigate({
                     routeName: 'CreationTutorial',
@@ -128,41 +125,27 @@ export class Home extends React.Component {
                         params: {roomname:roomname}
                     })
                 })
-            )
-            this.setState({transition:!this.state.transition})
-        }) 
+            );
+            setTimeout(() => {this.setState({disabled: false})}, 600);
+        })
     }
 
     _joinRoom() {
-        this._buttonPress();
+        this.setState({disabled:true});
+        setTimeout(() => {
 
-        this.props.navigation.dispatch(
-            NavigationActions.navigate({
-                routeName: 'JoinTutorial',
-                action: NavigationActions.navigate({ 
-                    routeName: 'Join1'
+            this.setState({disabled: false})
+            this.props.navigation.dispatch(
+                NavigationActions.navigate({
+                    routeName: 'JoinTutorial',
+                    action: NavigationActions.navigate({ 
+                        routeName: 'Join1'
+                    })
                 })
-            })
-        );
-    }
+            );
+        
+        }, 600);
 
-    _transition(){
-        this.setState({transition:!this.state.transition})
-        this._createRoom()
-        Animated.sequence([
-            Animated.timing(
-                this.circle, {
-                    toValue: this.radius,
-                    duration:2000
-                }
-            ),
-            Animated.timing(
-                this.circle, {
-                    toValue: 10,
-                    duration:2000
-                }
-            )
-        ]).start()
         
     }
 
@@ -180,7 +163,6 @@ export class Home extends React.Component {
                 color = {colors.menubtn}
                 radius = {50}
                 onPress = {()=>{ 
-                    //this._transition()
                     this._createRoom()
                 }}
                 disabled = {this.state.disabled}
@@ -203,18 +185,6 @@ export class Home extends React.Component {
             />
             <View style = {{flex:0.12}}/>
 
-            {/*{this.state.transition?<Animated.View style = {{position: 'absolute',
-                top: this.height-this.radius,
-                left: this.width-this.radius,
-                right: this.width-this.radius,
-                bottom: this.height-this.radius,
-                backgroundColor: 'transparent',
-
-                borderWidth: this.circle,
-                borderRadius: 370,
-                borderColor: colors.shadow,
-                opacity: 1,}}>
-            </Animated.View>:null}*/}
         </View>
     }
 }

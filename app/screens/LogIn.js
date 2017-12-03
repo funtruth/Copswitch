@@ -54,7 +54,7 @@ export class Splash extends React.Component {
                     style = {{
                     fontFamily: 'ConcertOne-Regular',
                     fontSize:20,
-                    color: colors.font,
+                    color: colors.shadow,
                 }}>Click to Start</Animatable.Text>
             </View>
         </TouchableWithoutFeedback>
