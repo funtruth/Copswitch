@@ -42,8 +42,6 @@ export class CreationPager extends Component {
         const roomname = params.roomname;
 
         this.state = {
-            page: 1,
-
             roomname: params.roomname,
             alias:'',
             loading:true,
@@ -54,6 +52,7 @@ export class CreationPager extends Component {
             difficulty: null,
 
             transition:false,
+            transitionOpacity: new Animated.Value(0),
         };
 
         this.dot1 = new Animated.Value(1);
@@ -68,6 +67,7 @@ export class CreationPager extends Component {
                             .child('name');
         this.playerRef      = this.roomRef.child('playernum');
         this.difficultyRef  = this.roomRef.child('difficulty');
+        this.phaseRef       = this.roomRef.child('phase');
         this.listOfRolesRef = firebase.database().ref('listofroles').child(roomname);
         this.listPlayerRef  = this.roomRef.child('listofplayers')
         
@@ -80,6 +80,13 @@ export class CreationPager extends Component {
                 alias:snap.val(),
                 loading:false,
             })
+        })
+        this.phaseRef.on('value',snap=>{
+            if(snap.exists()){
+                if(snap.val()==1){
+                    this._startGame(this.state.roomname)
+                }
+            }
         })
         this.difficultyRef.on('value',snap=>{
             if(snap.exists()){
@@ -114,6 +121,9 @@ export class CreationPager extends Component {
         if(this.nameRef){
             this.nameRef.off();
         }
+        if(this.phaseRef){
+            this.phaseRef.off();
+        }
         if(this.difficultyRef){
             this.difficultyRef.off();
         }
@@ -145,7 +155,7 @@ export class CreationPager extends Component {
         }
     }
 
-    _handleScroll(position) {
+    _handleDots(position) {
         Animated.parallel([
             Animated.timing(
                 this.dot1, {
@@ -180,26 +190,84 @@ export class CreationPager extends Component {
         ]).start()
     }
 
-    _continue(name) {
-        if(this.state.loading){
-            this.setState({errormessage:'Wi-Fi connection Required.'})
-            this.refs.nameerror.shake(800)
-        } else {
-            if(name && name.length>0 && name.length < 11){
-                firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
-                .child(firebase.auth().currentUser.uid).update({
-                    name:               name,
-                    readyvalue:         false,
-                    presseduid:         'foo',
-                }).then(()=>{
-                    this.setState({errormessage:null})
-                    this.refs.scrollView.scrollTo({x:this.width,y:0,animation:true})
-                })
-            } else {
-                this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
-                this.refs.nameerror.shake(800)
+    _transition() {
+        
+        this.setState({transition:true})
+        Animated.timing(
+            this.state.transitionOpacity,{
+                toValue:1,
+                duration:2000
             }
-        }
+        ).start()
+    }
+
+    _startGame(roomname) {
+        AsyncStorage.setItem('GAME-KEY',roomname);
+        
+        this._handOutRoles(roomname);
+        this._transition();
+
+        setTimeout(()=>{
+            firebase.database().ref('rooms').child(roomname).child('phase').set(2).then(()=>{
+                this.props.navigation.dispatch(
+                    NavigationActions.navigate({
+                        routeName: 'Mafia',
+                        action: NavigationActions.navigate({ 
+                            routeName: 'MafiaRoom',
+                            params: {roomname:roomname}
+                        })
+                    })
+                )
+            })
+        },2000)
+    }
+
+    _handOutRoles(roomname){
+        
+        var randomstring = '';
+        var charcount = 0;
+
+        firebase.database().ref('listofroles/' + roomname).once('value',snap=>{
+
+            snap.forEach((child)=>{
+                for(i=0;i<child.val();i++){
+                    randomstring = randomstring + randomize('?', 1, {chars: child.key})
+                    charcount++
+                }
+            })
+
+            var min = Math.ceil(1);
+            var max = Math.ceil(charcount);
+
+            this.listPlayerRef.once('value',insidesnap=>{
+                insidesnap.forEach((child)=>{
+
+                    var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
+                    var randomrole = randomstring.charAt(randomnumber-1);
+
+                    this.listPlayerRef.child(child.key).update({
+                        roleid:         randomrole,
+                        charges:        Rolesheet[randomrole].charges,
+                        suspicious:     Rolesheet[randomrole].suspicious,
+                        type:           Rolesheet[randomrole].type,
+                    })
+
+                    if(randomrole == randomrole.toLowerCase()){
+                        firebase.database().ref('rooms/' + roomname + '/mafia/' 
+                        + child.key).update({
+                            roleid:randomrole,
+                            name: child.val().name,
+                            alive: true,
+                        })
+                    }
+                    
+                    max = max - 1;
+                    randomstring = randomstring.slice(0,randomnumber-1) 
+                        + randomstring.slice(randomnumber);
+                })
+            })
+
+        })
     }
 
     render() {
@@ -225,7 +293,9 @@ export class CreationPager extends Component {
             <ScrollView style = {{flex:0.75,backgroundColor:colors.background}}
                 horizontal showsHorizontalScrollIndicator={false} ref='scrollView' pagingEnabled
                 scrollEventThrottle = {16}
-                onScroll = {(event) => { this._handleScroll(event.nativeEvent.contentOffset.x) }}>
+                onScroll = {(event) => { 
+                    this._handleDots(event.nativeEvent.contentOffset.x)
+                }}>
                 
                 <Creation1
                     roomname = {this.state.roomname}
@@ -369,20 +439,20 @@ export class Creation2 extends Component {
     }
 
     componentWillMount() {
-            firebase.database().ref('rooms').child(this.props.roomname)
-            .child('playernum').once('value',snap=>{
-                if(snap.exists()){
-                    this.setState({
-                        playercount: snap.val().playernum,
-                        loading: false,
-                    })
-                } else {
-                    this.setState({
-                        loading:false,
-                    })
-                }
-                    
-            })
+        firebase.database().ref('rooms').child(this.props.roomname)
+        .child('playernum').once('value',snap=>{
+            if(snap.exists()){
+                this.setState({
+                    playercount: snap.val().playernum,
+                    loading: false,
+                })
+            } else {
+                this.setState({
+                    loading:false,
+                })
+            }
+                
+        })
     }
 
     _digit(digit) {
@@ -414,7 +484,7 @@ export class Creation2 extends Component {
         this.setState({ playercount: null })
     }
     _done() {
-        if(!this.state.playercount || this.state.playercount < 6 || this.state.playercount > 15){
+        if(!this.state.playercount || this.state.playercount < 0 || this.state.playercount > 15){
             this.refs.error.shake(800)
             this.setState({playercount:null})
         } else {
@@ -856,8 +926,6 @@ export class Creation5 extends Component {
         super(props);
 
         this.state = {
-            starting:false,
-
             namelist:[],
 
             players:null,       //ListOfPlayers count
@@ -928,10 +996,6 @@ export class Creation5 extends Component {
         })
     }
 
-    componentDidMount(){
-
-    }
-
     componentWillUnmount() {
         if(this.listOfRolesRef){
             this.listOfRolesRef.off();
@@ -945,73 +1009,7 @@ export class Creation5 extends Component {
     }
 
     _startGame(roomname) {
-        AsyncStorage.setItem('GAME-KEY',roomname);
-        
-        this._handOutRoles(roomname);
-
-        this.setState({starting:true})
-
-        setTimeout(()=>{
-            firebase.database().ref('rooms').child(roomname).child('phase').set(2).then(()=>{
-                this.props.navigation.dispatch(
-                    NavigationActions.navigate({
-                        routeName: 'Mafia',
-                        action: NavigationActions.navigate({ 
-                            routeName: 'MafiaRoom',
-                            params: {roomname:roomname}
-                        })
-                    })
-                )
-            })
-        },2000)
-    }
-
-    _handOutRoles(roomname){
-        
-        var randomstring = '';
-        var charcount = 0;
-
-        firebase.database().ref('listofroles/' + roomname).once('value',snap=>{
-
-            snap.forEach((child)=>{
-                for(i=0;i<child.val();i++){
-                    randomstring = randomstring + randomize('?', 1, {chars: child.key})
-                    charcount++
-                }
-            })
-
-            var min = Math.ceil(1);
-            var max = Math.ceil(charcount);
-
-            this.listofplayersRef.once('value',insidesnap=>{
-                insidesnap.forEach((child)=>{
-
-                    var randomnumber = Math.floor(Math.random() * (max - min + 1)) + min;
-                    var randomrole = randomstring.charAt(randomnumber-1);
-
-                    this.listofplayersRef.child(child.key).update({
-                        roleid:         randomrole,
-                        charges:        Rolesheet[randomrole].charges,
-                        suspicious:     Rolesheet[randomrole].suspicious,
-                        type:           Rolesheet[randomrole].type,
-                    })
-
-                    if(randomrole == randomrole.toLowerCase()){
-                        firebase.database().ref('rooms/' + roomname + '/mafia/' 
-                        + child.key).update({
-                            roleid:randomrole,
-                            name: child.val().name,
-                            alive: true,
-                        })
-                    }
-                    
-                    max = max - 1;
-                    randomstring = randomstring.slice(0,randomnumber-1) 
-                        + randomstring.slice(randomnumber);
-                })
-            })
-
-        })
+        firebase.database().ref('rooms').child(roomname).child('phase').set(1)
     }
 
     _renderWarning1() {
@@ -1062,19 +1060,6 @@ export class Creation5 extends Component {
     }
 
     render() {
-        if(this.state.starting){
-            return <View style = {{ backgroundColor: colors.background, flex: 1, 
-                justifyContent:'center', alignItems:'center'}}>
-                    <ActivityIndicator size='large' color={colors.font}/>
-                    <Text style = {{fontSize:23,
-                    fontFamily:'ConcertOne-Regular',
-                    color:colors.font,
-                    alignSelf: 'center',
-                    }}>Handing out Roles</Text>
-                    <View style = {{flex:0.25}}/>
-                </View>
-        }
-
         return <View style = {{flex:0.7,backgroundColor:colors.background,width:this.props.width}}>
 
                 <View style = {{flex:0.1, justifyContent:'center', alignItems:'center'}}>
@@ -1094,6 +1079,13 @@ export class Creation5 extends Component {
                 
                 {this.state.warning1?this._renderWarning1():null}
                 {this.state.warning2?this._renderWarning2():null}
+
+                {this.state.transition?<Animated.View
+                    style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                    backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
+                    <ActivityIndicator size='large' color={colors.font} 
+                        style = {{position:'absolute',bottom:25,right:25}}/>
+                </Animated.View>:null}
         </View>
     }
 }

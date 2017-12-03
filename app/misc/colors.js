@@ -46,6 +46,10 @@ export default colors = {
     details:    '#454a4a',
     gameback:   '#e9e2ca',
     tab:        '#454a4a',
+    //Game Palette
+    details:    '#873c3d',
+    gameback:   '#e9e2ca',
+    tab:        '#873c3d',
 
 //COMPONENTS
 

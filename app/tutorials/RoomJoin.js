@@ -9,6 +9,7 @@ import {
     FlatList,
     StyleSheet,
     AsyncStorage,
+    ActivityIndicator,
     Keyboard,
     BackHandler,
     TouchableOpacity,
@@ -46,9 +47,9 @@ export class Join1 extends Component {
     _continue(roomname) {
         if(roomname.length==6){
             firebase.database().ref('rooms/' + roomname).once('value', snap => {
-                if(snap.exists() && (snap.val().phase == 1)){
+                if(snap.exists() && (snap.val().phase == 0)){
                     this._joinRoom(roomname)
-                } else if (snap.exists() && (snap.val().phase > 1)) {
+                } else if (snap.exists() && (snap.val().phase > 0)) {
                     this.setState({errormessage:'Game has already started'})
                     this.refs.error.shake(800)
                 } else {
@@ -259,6 +260,9 @@ export class LobbyPager extends Component {
             roomname: params.roomname,
             alias:'',
             loading:true,
+
+            transition: false,
+            transitionOpacity: new Animated.Value(0),
         };
 
         this.dot1 = new Animated.Value(1);
@@ -284,7 +288,10 @@ export class LobbyPager extends Component {
 
         this.phaseRef.on('value',snap=>{
             if(snap.exists()){
-                if(snap.val()>1){
+                if(snap.val() == 1){
+                    this._transition();
+                    this.setState({transition:true})
+                } else if(snap.val()>1){
                     AsyncStorage.setItem('GAME-KEY',this.state.roomname);
 
                     this.props.navigation.dispatch(
@@ -296,6 +303,8 @@ export class LobbyPager extends Component {
                             })
                         })
                     )
+
+                    this.setState({transition:false})
                 }
             }
         })
@@ -371,6 +380,17 @@ export class LobbyPager extends Component {
         }
     }
 
+    _transition() {
+        
+        this.setState({transition:true})
+        Animated.timing(
+            this.state.transitionOpacity,{
+                toValue:1,
+                duration:2000
+            }
+        ).start()
+    }
+
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
             <View style = {{flexDirection:'row', flex:0.15, justifyContent:'center',alignItems:'center'}}>
@@ -415,6 +435,13 @@ export class LobbyPager extends Component {
                 <AnimatedDot name='checkbox-blank-circle'
                     style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot2}}/>
             </View>
+
+            {this.state.transition?<Animated.View
+                style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
+                <ActivityIndicator size='large' color={colors.font} 
+                    style = {{position:'absolute',bottom:25,right:25}}/>
+            </Animated.View>:null}
         </View>
     }
 }
