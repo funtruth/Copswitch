@@ -207,27 +207,18 @@ class Roles extends Component {
                                 mafialist.push({
                                     name:           Rolesheet[child.key].name,
                                     index:          Rolesheet[child.key].index,
-                                    count:          child.val(),
-                                    image:          Rolesheet[child.key].image,
-                                    color:          Rolesheet[child.key].color,
                                     key:            child.key,    
                                 })
                             } else if (Rolesheet[child.key].type == 2) {
                                 townlist.push({
                                     name:           Rolesheet[child.key].name,
                                     index:          Rolesheet[child.key].index,
-                                    count:          child.val(),
-                                    image:          Rolesheet[child.key].image,
-                                    color:          Rolesheet[child.key].color,
                                     key:            child.key,    
                                 })
                             } else {
                                 neutrallist.push({
                                     name:           Rolesheet[child.key].name,
                                     index:          Rolesheet[child.key].index,
-                                    count:          child.val(),
-                                    image:          Rolesheet[child.key].image,
-                                    color:          Rolesheet[child.key].color,
                                     key:            child.key,    
                                 })
                             }
@@ -251,24 +242,18 @@ class Roles extends Component {
                         mafialist.push({
                             name:           Rolesheet[key].name,
                             index:          Rolesheet[key].index,
-                            image:          Rolesheet[key].image,
-                            color:          Rolesheet[key].color,
                             key:            key,
                         })
                     } else if (Rolesheet[key].type == 2) {
                         townlist.push({
                             name:           Rolesheet[key].name,
                             index:          Rolesheet[key].index,
-                            image:          Rolesheet[key].image,
-                            color:          Rolesheet[key].color,
                             key:            key,
                         })
                     } else {
                         neutrallist.push({
                             name:           Rolesheet[key].name,
                             index:          Rolesheet[key].index,
-                            image:          Rolesheet[key].image,
-                            color:          Rolesheet[key].color,
                             key:            key,
                         })
                     }
@@ -372,7 +357,7 @@ class Roles extends Component {
                     color = {this.state.showtown?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.showtown?colors.shadow:colors.lightshadow}
                     leftradius = {30}
-                    rightradius = {5}
+                    rightradius = {0}
                     onPress = {()=>{
                         this._viewChange(true,false,false)
                     }}
@@ -387,7 +372,7 @@ class Roles extends Component {
                     depth = {6}
                     color = {this.state.showmafia?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.showmafia?colors.shadow:colors.lightshadow}
-                    radius = {5}
+                    radius = {0}
                     onPress = {()=>{
                         this._viewChange(false,true,false)
                     }}
@@ -403,7 +388,7 @@ class Roles extends Component {
                     color = {this.state.showneutral?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.showneutral?colors.shadow:colors.lightshadow}
                     rightradius = {30}
-                    leftradius = {5}
+                    leftradius = {0}
                     onPress = {()=>{
                         this._viewChange(false,false,true)
                     }}
@@ -418,20 +403,20 @@ class Roles extends Component {
                     data={this.state.showtown?this.state.townlist:
                         (this.state.showmafia?this.state.mafialist:this.state.neutrallist)}
                     renderItem={({item}) => (
-                        <View style = {{flex:0.5, flexDirection:'row',justifyContent:'center'}}>
+                        <View style = {{flex:1, flexDirection:'row',justifyContent:'center'}}>
                             <View style = {{flex:1, backgroundColor:colors.lightbutton, 
                                 borderRadius:40,justifyContent:'center', margin:5}}>
                                 <TouchableOpacity
                                     style = {{ justifyContent:'center', alignItems:'center'}}
                                     onPress = {()=>{ this._roleBtnPress(item.key,item.index) }}>
                                     <Text style = {{ color:colors.font, fontFamily: 'ConcertOne-Regular',
-                                        fontSize:18, marginTop:8, marginBottom:8}}>{item.name}</Text>
+                                        fontSize:20, marginTop:8, marginBottom:8}}>{item.name}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
                     )}
                     style={{margin:3}}
-                    numColumns = {2}
+                    numColumns = {1}
                     keyExtractor={item => item.key}/>
             </Animated.View>
 

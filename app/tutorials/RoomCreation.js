@@ -751,9 +751,6 @@ export class Creation4 extends Component {
                     name:           Rolesheet[key].name,
                     index:          Rolesheet[key].index,
                     count:          0,
-                    image:          Rolesheet[key].image,
-                    color:          Rolesheet[key].color,
-                    difficulty:     Rolesheet[key].difficulty,
                     key:            key,
                 })
             } else if (Rolesheet[key].type == 2) {
@@ -761,9 +758,6 @@ export class Creation4 extends Component {
                     name:           Rolesheet[key].name,
                     index:          Rolesheet[key].index,
                     count:          0,
-                    image:          Rolesheet[key].image,
-                    color:          Rolesheet[key].color,
-                    difficulty:     Rolesheet[key].difficulty,
                     key:            key,
                 })
             } else {
@@ -771,9 +765,6 @@ export class Creation4 extends Component {
                     name:           Rolesheet[key].name,
                     index:          Rolesheet[key].index,
                     count:          0,
-                    image:          Rolesheet[key].image,
-                    color:          Rolesheet[key].color,
-                    difficulty:     Rolesheet[key].difficulty,
                     key:            key,
                 })
             }
