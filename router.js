@@ -10,7 +10,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { Splash } from "./app/screens/LogIn";
 import colors from './app/misc/colors.js';
 
-import { Home, Expired } from "./app/screens/RoomScreen";
+import { Home, Loading } from "./app/screens/RoomScreen";
 import Lists from "./app/screens/ListsScreen";
 
 import MafiaRoom from "./app/screens/MafiaScreen";
@@ -171,16 +171,16 @@ export const createRootNavigator = (signedIn, inGame) => {
     
     return StackNavigator(
       {
+        Loading: {
+          screen: Loading,
+          navigationOptions: {
+            gesturesEnabled: false,
+          }
+        },
         SignedIn: {
           screen: SignedIn,
           navigationOptions: {
             gesturesEnabled: false
-          }
-        },
-        SignedOut: {
-          screen: SignedOut,
-          navigationOptions: {
-            gesturesEnabled: false,
           }
         },
         CreationTutorial: {
@@ -207,17 +207,11 @@ export const createRootNavigator = (signedIn, inGame) => {
             gesturesEnabled: false,
           }
         },
-        Expired: {
-          screen: Expired,
-          navigationOptions: {
-            gesturesEnabled: false,
-          }
-        },
       },
       {
         headerMode: "none",
         mode: "modal",
-        initialRouteName: signedIn ? (inGame?"Expired":"SignedIn") : "SignedOut",
+        initialRouteName: "Loading",
       }
     );
 };
