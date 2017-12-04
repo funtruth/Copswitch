@@ -107,7 +107,7 @@ constructor(props) {
     //Owner Listening
     this.readyRef           = this.roomRef.child('listofplayers').orderByChild('readyvalue').equalTo(true);
     this.guiltyVotesRef     = this.roomRef.child('guiltyvotes');
-    this.popularVoteRef     = this.roomRef.child('listofplayers').orderByChild('votes').limitToLast(1);
+    this.voteRef     = this.roomRef.child('votes');
 
     //Transition Screen
     this.dayCounterRef      = this.roomRef.child('daycounter');
@@ -171,7 +171,6 @@ componentWillMount() {
                     status:         child.val().status?true:false,
                     statusname:     child.val().status,
                     type:           child.val().type,
-                    votes:          child.val().votes,
     
                     key:            child.key,
                 })
@@ -333,10 +332,10 @@ componentWillMount() {
         }
     })
 
-    this.popularVoteRef.on('value',snap=>{
+    this.voteRef.on('value',snap=>{
         if(snap.exists() && this.state.amiowner){
             snap.forEach((child)=>{
-                if(child.val().votes + 1 > this.state.triggernum){
+                if(child.numChildren() + 1 > this.state.triggernum){
                     if(Phases[this.state.phase].trigger){
                         if(this.state.phase == 2 || this.state.phase == 4){
                             firebase.database().ref('rooms/' + this.state.roomname + '/actions')
@@ -344,12 +343,13 @@ componentWillMount() {
                         };
                         if(this.state.phase == 2){
                             this.roomRef.update({nominate:child.key});
-                            this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                                child.val().name + ' has been nominated.')
+                            this.listRef.child(child.key).child('name').once('value',getname=>{
+                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                                getname.val() + ' has been nominated.')
+                            })
                         };
                         this._changePhase(Phases[this.state.phase].trigger);
                     }
-                    
                 }
             })
         }
@@ -386,8 +386,8 @@ componentWillUnmount() {
     if(this.readyRef){
         this.readyRef.off();
     }
-    if(this.popularVoteRef){
-        this.popularVoteRef.off();
+    if(this.voteRef){
+        this.voteRef.off();
     }
 
     //Transition Screen
@@ -418,8 +418,10 @@ _changePhase(newphase){
         snap.forEach((child)=>{
             //Set all votes to 0 and RESET Buttons
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.key)
-                .update({votes:0, readyvalue:false, presseduid:'foo'})
+                .update({readyvalue:false, presseduid:'foo'})
         })
+    }).then(()=>{
+        this.voteRef.remove();
     }).then(()=>{
         this.roomRef.update({
             phase:newphase,
@@ -547,9 +549,11 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
         this.setState({topmessage:'You have selected ' + name + '.'})
 
         this._pressedUid(uid);
-        this.listRef.child(uid).child('votes').transaction((votes)=>{ return votes + 1 }).then(()=>{
-            this._readyValue(true)
-        })  
+        
+        this.voteRef.child(uid).child(firebase.auth().currentUser.uid)
+            .set(this.state.myname).then(()=>{
+                this._readyValue(true);
+            })
 
     }  else if(phase == 4){
         //Check if selected player is a mafia member
@@ -662,8 +666,7 @@ _resetOptionPress() {
 
         if(this.state.presseduid != 'foo'){
             this._pressedUid('foo');
-            this.listRef.child(this.state.presseduid).child('votes')
-                .transaction((votes)=>{ return votes - 1 }) 
+            this.voteRef.child(this.state.presseduid).child(firebase.auth().currentUser.uid).remove()
         }
 
     } else if (this.state.phase == 3){
