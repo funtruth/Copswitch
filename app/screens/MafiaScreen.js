@@ -182,10 +182,10 @@ componentWillMount() {
 
     this.playernumRef.on('value',snap=>{
         if(snap.exists()){
-
-            const mod = snap.val()%2;
+            const minusone = snap.val() - 1;
+            const mod = minusone%2;
             this.setState({ 
-                triggernum:     (((snap.val() - mod)/2)+1),
+                triggernum:     (((minusone - mod)/2)+1),
                 playernum:      snap.val(),
             })
 

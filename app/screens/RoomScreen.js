@@ -193,22 +193,6 @@ export class Loading extends React.Component {
     
     constructor(props) {
         super(props);
-
-        this.state = {
-            loading: true,
-            message: 'LOADING',
-        }
-    }
-
-    componentWillMount() {
-        AsyncStorage.getItem('GAME-KEY',(error,result)=>{
-            firebase.database().ref('rooms').child(result).once('value').then(()=>{
-                this.setState({
-                    loading:false,
-                    message:'PRESS TO CONTINUE'
-                })
-            })
-        })
     }
     
     _continueGame() {
@@ -278,15 +262,13 @@ export class Loading extends React.Component {
                         4:{opacity:0},
                     }}
                     iterationCount="infinite" duration={2000}
-                    style={styles.continue}>{this.state.message}</Animatable.Text>
+                    style={styles.continue}>Tap to Start!</Animatable.Text>
             </Animatable.View>
         </View>
     }
 
     _onPress() {
-        if(!this.state.loading){
-            this._continueGame();
-        } 
+        this._continueGame();
     }
     
     render() {

@@ -1,6 +1,5 @@
 {
   "a" : {
-    "category" : "killing",
     "color" : "#4B4352",
     "desc" : "Highly Trained Assassin.",
     "difficulty" : 2,
@@ -13,7 +12,6 @@
     "visits" : true
   },
   "b" : {
-    "category" : "killing",
     "color" : "#4B4352",
     "desc" : "Murderer of the Mafia.",
     "difficulty" : 1,
@@ -27,7 +25,6 @@
     "visits" : true
   },
   "c" : {
-    "category" : "mischief",
     "color" : "#4B4352",
     "desc" : "Skilled framer of the Mafia.",
     "difficulty" : 2,
@@ -41,7 +38,6 @@
     "visits" : true
   },
   "d" : {
-    "category" : "mischief",
     "color" : "#4B4352",
     "desc" : "Informant of the Mafia.",
     "difficulty" : 2,
@@ -55,7 +51,6 @@
     "visits" : true
   },
   "dc" : {
-    "category" : "random",
     "color" : "#4B4352",
     "desc" : "Random Mafia with a Mischief Role.",
     "difficulty" : 3,
@@ -67,7 +62,6 @@
     "type" : 1
   },
   "e" : {
-    "category" : "mischief",
     "color" : "#4B4352",
     "desc" : "Memory worker of the Mafia.",
     "difficulty" : 3,
@@ -81,7 +75,6 @@
     "visits" : true
   },
   "f" : {
-    "category" : "mischief",
     "color" : "#4B4352",
     "desc" : "Extortionist of the Mafia.",
     "difficulty" : 1,
@@ -94,7 +87,6 @@
     "visits" : true
   },
   "j" : {
-    "category" : "none",
     "color" : "#4B4352",
     "desc" : "A low-level mafia recruit.",
     "difficulty" : 1,
@@ -106,7 +98,6 @@
     "type" : 1
   },
   "A" : {
-    "category" : "inspective",
     "color" : "#8F626A",
     "desc" : "On the case.",
     "difficulty" : 1,
@@ -118,7 +109,6 @@
     "visits" : true
   },
   "B" : {
-    "category" : "inspective",
     "color" : "#8F626A",
     "desc" : "Investigates houses for clues.",
     "difficulty" : 2,
@@ -130,7 +120,6 @@
     "visits" : true
   },
   "BA" : {
-    "category" : "random",
     "color" : "#8F626A",
     "desc" : "Random Inspective Town member.",
     "difficulty" : 3,
@@ -141,7 +130,6 @@
     "type" : 2
   },
   "D" : {
-    "category" : "stalling",
     "color" : "#8F626A",
     "desc" : "PHD in Stab wounds.",
     "difficulty" : 1,
@@ -153,7 +141,6 @@
     "visits" : true
   },
   "E" : {
-    "category" : "stalling",
     "color" : "#8F626A",
     "desc" : "Distracts a player for the Night.",
     "difficulty" : 1,
@@ -165,7 +152,6 @@
     "visits" : true
   },
   "ED" : {
-    "category" : "random",
     "color" : "#8F626A",
     "desc" : "Random protective Town member.",
     "difficulty" : 3,
@@ -176,7 +162,6 @@
     "type" : 2
   },
   "G" : {
-    "category" : "specialist",
     "color" : "#8F626A",
     "desc" : "Watches over the town.",
     "difficulty" : 2,
@@ -188,7 +173,6 @@
     "visits" : true
   },
   "H" : {
-    "category" : "specialist",
     "color" : "#8F626A",
     "desc" : "Examines dead bodies.",
     "difficulty" : 2,
@@ -201,7 +185,6 @@
     "visits" : true
   },
   "I" : {
-    "category" : "specialist",
     "color" : "#8F626A",
     "desc" : "Watches over a certain player.",
     "difficulty" : 2,
@@ -213,7 +196,6 @@
     "visits" : true
   },
   "IHG" : {
-    "category" : "random",
     "color" : "#8F626A",
     "desc" : "Random specialist Town member.",
     "difficulty" : 3,
@@ -224,7 +206,6 @@
     "type" : 2
   },
   "IHGEDBA" : {
-    "category" : "random",
     "color" : "#8F626A",
     "desc" : "Random Town member.",
     "difficulty" : 3,
@@ -235,7 +216,6 @@
     "type" : 2
   },
   "J" : {
-    "category" : "specialist",
     "color" : "#8F626A",
     "desc" : "Hunter of the Town.",
     "difficulty" : 2,
@@ -248,7 +228,6 @@
     "visits" : true
   },
   "K" : {
-    "category" : "specialist",
     "color" : "#8F626A",
     "desc" : "Master of Disguise.",
     "difficulty" : 3,
@@ -262,7 +241,6 @@
     "visits" : true
   },
   "U" : {
-    "category" : "none",
     "color" : "#8F626A",
     "desc" : "Normal Town member.",
     "difficulty" : 1,
@@ -273,7 +251,6 @@
     "type" : 2
   },
   "W" : {
-    "category" : "chaos",
     "color" : "#54537A",
     "desc" : "A mischief maker trying to get hung.",
     "difficulty" : 2,

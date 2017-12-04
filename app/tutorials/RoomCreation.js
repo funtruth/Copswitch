@@ -750,7 +750,6 @@ export class Creation4 extends Component {
                 mafialist.push({
                     name:           Rolesheet[key].name,
                     index:          Rolesheet[key].index,
-                    category:       Rolesheet[key].category,
                     count:          0,
                     image:          Rolesheet[key].image,
                     color:          Rolesheet[key].color,
@@ -761,7 +760,6 @@ export class Creation4 extends Component {
                 townlist.push({
                     name:           Rolesheet[key].name,
                     index:          Rolesheet[key].index,
-                    category:       Rolesheet[key].category,
                     count:          0,
                     image:          Rolesheet[key].image,
                     color:          Rolesheet[key].color,
@@ -772,7 +770,6 @@ export class Creation4 extends Component {
                 neutrallist.push({
                     name:           Rolesheet[key].name,
                     index:          Rolesheet[key].index,
-                    category:       Rolesheet[key].category,
                     count:          0,
                     image:          Rolesheet[key].image,
                     color:          Rolesheet[key].color,
@@ -842,6 +839,7 @@ export class Creation4 extends Component {
                     opacity = {1}
                     depth = {6}
                     color = {this.state.showtown?colors.menubtn:colors.lightbutton}
+                    shadow = {this.state.showtown?colors.shadow:colors.lightshadow}
                     leftradius = {30}
                     rightradius = {2}
                     onPress = {()=>{
@@ -857,6 +855,7 @@ export class Creation4 extends Component {
                     opacity = {1}
                     depth = {6}
                     color = {this.state.showmafia?colors.menubtn:colors.lightbutton}
+                    shadow = {this.state.showmafia?colors.shadow:colors.lightshadow}
                     radius = {2}
                     onPress = {()=>{
                         this._viewChange(false,true,false)
@@ -871,6 +870,7 @@ export class Creation4 extends Component {
                     opacity = {1}
                     depth = {6}
                     color = {this.state.showneutral?colors.menubtn:colors.lightbutton}
+                    shadow = {this.state.showneutral?colors.shadow:colors.lightshadow}
                     rightradius = {30}
                     leftradius = {2}
                     onPress = {()=>{
@@ -887,7 +887,7 @@ export class Creation4 extends Component {
                         (this.state.showmafia?this.state.mafialist:this.state.neutrallist)}
                     renderItem={({item}) => (
                         <View style = {{marginBottom:3, flexDirection:'row',justifyContent:'center'}}>
-                            <View style = {{flex:0.75, backgroundColor:colors.lightbutton, 
+                            <View style = {{flex:0.75, backgroundColor:colors.lightbutton, marginBottom:5,
                                 borderRadius:40, flexDirection:'row',justifyContent:'center'}}>
                                 <TouchableOpacity
                                     style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
@@ -900,9 +900,7 @@ export class Creation4 extends Component {
                                     style = {{flex:0.7, justifyContent:'center', alignItems:'center'}}
                                     onPress = {()=>{ this._roleBtnPress(item.key,item.index) }}>
                                     <Text style = {{ color:colors.font, fontFamily: 'ConcertOne-Regular',
-                                        fontSize:18, marginTop:5}}>{item.name}</Text>
-                                    <Text style = {{ color:colors.font, fontFamily: 'ConcertOne-Regular',
-                                        fontSize:14, marginBottom:5}}>{item.category}</Text>
+                                        fontSize:18, marginTop:8, marginBottom:8}}>{item.name}</Text>
                                 </TouchableOpacity>
                                 <Text style = {{ flex:0.2, color:colors.font,
                                     fontFamily: 'ConcertOne-Regular', fontSize:18, 
