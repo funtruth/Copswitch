@@ -735,17 +735,18 @@ _renderListComponent(){
                     }}
                     color = {item.dead ? colors.dead : (item.immune? colors.immune : 
                         (item.status?colors.status:colors.namebtn))}
-                    depth = {5}
-                    radius = {5}
+                    shadow = {colors.lightshadow}
+                    depth = {6}
+                    radius = {40}
                     disabled = {this.state.amidead?true:(item.immune?true:item.dead)}
                     component = {<View style = {{flexDirection:'row',alignItems:'center',
                         justifyContent:'center', height:35}}>
-                        <View style = {{flex:1,justifyContent:'center',alignItems:'center'}}>
+                        <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
                         <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
                             'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
                             style={{color:colors.font, fontSize:26}}/>
                         </View>
-                        <View style = {{flex:5, justifyContent:'center'}}>
+                        <View style = {{flex:0.7, justifyContent:'center'}}>
                             {item.dead?
                                 <Text style = {styles.concerto}>
                                     {item.name + ' ' + (item.type==2?'(Town)':
@@ -754,7 +755,7 @@ _renderListComponent(){
                                 <Text style = {styles.concerto}>{item.name}</Text>
                             }
                         </View>
-                        <View style = {{flex:1}}>
+                        <View style = {{flex:0.15}}>
                             <Text style = {styles.concerto}>{item.votes>0?item.votes:null}</Text>
                         </View>
                     </View>}
@@ -774,8 +775,8 @@ _renderListComponent(){
                         this._nameBtnPress(item.key,item.name,this.state.triggernum,
                         this.state.phase,this.state.roomname)}}
                     style = {item.dead ? colors.dead : colors.alive}
-                    depth = {5}
-                    radius = {5}
+                    depth = {6}
+                    radius = {40}
                     disabled = {this.state.amipicking?item.dead:false}
                     component = {item.dead?<MaterialCommunityIcons name={item.dead?'skull':null}
                         style={{color:colors.main, fontSize:26,alignSelf:'center'}}/>:
@@ -798,8 +799,8 @@ _renderListComponent(){
                         this._nameBtnLongPress(item.key,item.name,this.state.phase)
                     }}
                     color = {item.dead ? colors.dead : colors.alive}
-                    depth = {5}
-                    radius = {5}
+                    depth = {6}
+                    radius = {40}
                     disabled = {this.state.amidead?true:this.state.targettown?
                         (this.state.targetdead? (item.type==1 || !item.dead) : item.type == 1 ) 
                         : (this.state.targetdead? !item.dead : false )}

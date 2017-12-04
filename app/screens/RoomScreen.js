@@ -253,7 +253,7 @@ export class Expired extends React.Component {
                     this._resetGame()
                 }} >
                 <MaterialCommunityIcons name='close-circle'
-                    style={{color:colors.font,fontSize:23}}/>
+                    style={{color:colors.shadow,fontSize:23}}/>
             </TouchableOpacity>
         </View>
     }
@@ -264,7 +264,7 @@ export class Expired extends React.Component {
                 alignItems:'center', position:'absolute',top:0,bottom:30,left:0,right:0}} 
                 animation = 'fadeIn' duration = {1000}>
                 <AnimatableIcon ref='duh' animation="swing" iterationCount='infinite' direction="alternate"
-                    name='user-secret' style={{ color:colors.main, fontSize: 40 }}/>
+                    name='user-secret' style={{ color:colors.shadow, fontSize: 40 }}/>
                 <Animatable.Text ref='continue' animation={{
                         0: {opacity:0},
                         0.25:{opacity:0.5},
@@ -317,7 +317,7 @@ const styles = StyleSheet.create({
     continue: {
         fontSize:20,
         fontFamily:'ConcertOne-Regular',
-        color:colors.font,
+        color:colors.shadow,
         alignSelf: 'center',
         marginTop:5
     },
