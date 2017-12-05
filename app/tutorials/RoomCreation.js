@@ -477,9 +477,9 @@ export class Creation2 extends Component {
         }
     }
     _backspace() {
-        if(this.state.playercount.length == 1){
+        if(this.state.playercount && this.state.playercount.toString().length == 1){
             this.setState({ playercount: null })
-        } else if (this.state.playercount.length == 2){
+        } else if (this.state.playercount && this.state.playercount.length == 2){
             this.setState({ playercount: this.state.playercount.slice(0,1)})
         }
         

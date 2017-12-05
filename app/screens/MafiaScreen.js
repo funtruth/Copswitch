@@ -96,6 +96,7 @@ constructor(props) {
 
     this.roomRef            = firebase.database().ref('rooms/' + roomname);
     this.myInfoRef          = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid);
+    this.readyValueRef      = this.myInfoRef.child('readyvalue');
     this.mafiaRef           = this.roomRef.child('mafia');
     
     this.listRef            = this.roomRef.child('listofplayers');
@@ -140,13 +141,18 @@ componentWillMount() {
                 amidead:            snap.val().dead,
                 myname:             snap.val().name,
             })
+        }
+    })
 
-            if(snap.val().readyvalue == true){
+    this.readyValueRef.on('value',snap=>{
+        if(snap.exists()){
+            if(snap && snap.val() == true){
+                alert('why')
                 this._viewChange(false,false,false,false,false,false,true)
             } else {
+                alert('frickin')
                 this._viewChange(true,false,true,true,true,false,false)
             }
-
         }
     })
 
@@ -244,7 +250,6 @@ componentWillMount() {
                 if(this.state.phase == 2){
 
                     this.voteRef.once('value', snap=>{
-
                         var flag = false;
                         snap.forEach((child)=>{
                             if(child.numChildren() + 1 > this.state.triggernum){
@@ -377,6 +382,9 @@ componentWillUnmount() {
 
     if(this.myInfoRef){
         this.myInfoRef.off();
+    }
+    if(this.readyValueRef){
+        this.readyValueRef.off();
     }
     if(this.ownerRef){
         this.ownerRef.off();
@@ -560,7 +568,6 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
     this._buttonPress();
 
     if(phase == 2){ 
-        this._viewChange(false,false,false,false,false,false,true)
         this.setState({topmessage:'You have selected ' + name + '.'})
 
         this._pressedUid(uid);
@@ -589,7 +596,6 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
         })
     } else if (phase==5) {
 
-        this._viewChange(false,false,false,false,false,false,true)
         this.setState({topmessage:'You have selected ' + name + '.'})
 
         firebase.database().ref('rooms/' + roomname + '/actions/' 
@@ -629,7 +635,6 @@ _optionOnePress() {
     if(this.state.phase == 2){
         this._viewChange(false,true,false,false,false,true,false)
     } else if (this.state.phase == 3){
-        this._viewChange(false,false,false,false,false,false,true)
         this.setState({topmessage:'You voted INNOCENT.'})
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
             this._readyValue(true);
@@ -647,17 +652,14 @@ _optionTwoPress() {
     this._buttonPress();
 
     if(this.state.phase == 2){
-        this._viewChange(false,false,false,false,false,false,true)
         this._readyValue(true);
         this.setState({topmessage:'You abstained.'})
     } else if (this.state.phase == 3){
-        this._viewChange(false,false,false,false,false,false,true)
         this.setState({topmessage:'You voted GUILTY.'})
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname).then(()=>{
             this._readyValue(true);
         })
     } else if (this.state.phase == 5){
-        this._viewChange(false,false,false,false,false,false,true)
         this._readyValue(true);
         this.setState({topmessage:'You stayed home.'})
     } else if (this.state.phase == 6 || this.state.phase == 7){

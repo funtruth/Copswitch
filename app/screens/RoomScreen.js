@@ -106,7 +106,7 @@ export class Home extends React.Component {
         
         this.setState({disabled:true});
 
-        const roomname = randomize('0',6);
+        const roomname = randomize('0',4);
         //TODO: Check if room already exists
         AsyncStorage.setItem('ROOM-KEY', roomname);
 

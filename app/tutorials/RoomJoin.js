@@ -39,13 +39,13 @@ export class Join1 extends Component {
 
         this.state = {
             roomname:'',
-            errormessage:'Code must be 6 Digits long',
+            errormessage:'Code must be 4 Digits long',
         };
         
     }
 
     _continue(roomname) {
-        if(roomname.length==6){
+        if(roomname.length==4){
             firebase.database().ref('rooms/' + roomname).once('value', snap => {
                 if(snap.exists() && (snap.val().phase == 0)){
                     this._joinRoom(roomname)
@@ -59,7 +59,7 @@ export class Join1 extends Component {
             })
                 
         } else {
-            this.setState({errormessage:'Code must be 6 Digits long'})
+            this.setState({errormessage:'Code must be 4 Digits long'})
             this.refs.error.shake(800)
         }
     }
@@ -68,8 +68,8 @@ export class Join1 extends Component {
     }
     _digit(digit) {
         if(this.state.roomname){
-            if(this.state.roomname.length > 5 ){
-                this.setState({errormessage:'Code must be 6 Digits long'})
+            if(this.state.roomname.length > 3 ){
+                this.setState({errormessage:'Code must be 4 Digits long'})
                 this.refs.error.shake(800)
             } else {
                 this.setState({
