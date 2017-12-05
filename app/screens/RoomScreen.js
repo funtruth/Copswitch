@@ -215,15 +215,30 @@ export class Loading extends React.Component {
                     })
                 )
             } else {
-                this.props.navigation.dispatch(
-                    NavigationActions.reset({
-                        index: 0,
-                        key: null,
-                        actions: [
-                            NavigationActions.navigate({ routeName: 'SignedIn'})
-                        ]
-                    })
-                )
+                if(firebase.auth().currentUser){
+                    this.props.navigation.dispatch(
+                        NavigationActions.reset({
+                            index: 0,
+                            key: null,
+                            actions: [
+                                NavigationActions.navigate({ routeName: 'SignedIn'})
+                            ]
+                        })
+                    )
+                } else {
+                    firebase.auth().signInAnonymously().then(() => {
+                        this.props.navigation.dispatch(
+                            NavigationActions.reset({
+                                index: 0,
+                                key: null,
+                                actions: [
+                                    NavigationActions.navigate({ routeName: 'SignedIn'})
+                                ]
+                            })
+                        )
+                    }).catch(function(error){alert(error)})
+                    
+                }
             }
                 
         })
