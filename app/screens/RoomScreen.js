@@ -196,6 +196,7 @@ export class Loading extends React.Component {
 
         this.state = {
             message: 'Tap to Start!',
+            disabled: false,
         }
 
         this.scale = new Animated.Value(0.4);
@@ -236,12 +237,13 @@ export class Loading extends React.Component {
             }
         ).start()
 
-        this.setState({message:'LOADING ...'})
+        this.setState({message:'LOADING ...', disabled:true})
         setTimeout(()=>{this._continueGame()},1500)
     }
     
     render() {
-        return <TouchableWithoutFeedback style = {{flex:1}} onPress = {() => { this._onPress() }} >
+        return <TouchableWithoutFeedback style = {{flex:1}} onPress = {() => { this._onPress() }}
+            disabled = {this.state.disabled} >
                 <View style = {{flex:1, backgroundColor:colors.shadow}}>
                     
                     <View style ={{flex:1,justifyContent:'center', 

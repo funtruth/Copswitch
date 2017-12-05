@@ -20,8 +20,8 @@
     "4" : {
         "name" : "...",
         "topmessage" : "is choosing the new killer",
-        "btn1" : "VOTE",
-        "btn2" : "ABSTAIN",
+        "btn1" : "PICK",
+        "btn2" : "WAIT",
         "phasecolor" : "#F9F2DE",
         "continue" : 5
     },

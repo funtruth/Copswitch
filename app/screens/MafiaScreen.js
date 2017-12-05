@@ -244,23 +244,19 @@ componentWillMount() {
                 if(this.state.phase == 2){
 
                     this.voteRef.once('value', snap=>{
-                        if(snap.exists()){
-                            var flag = false;
-                            snap.forEach((child)=>{
-                                if(child.numChildren() + 1 > this.state.triggernum){
-                                    flag = true
-                                }
-                            })
-                            if(flag == false){
-                                this.roomRef.child('actions').remove();
-                                this._resetDayStatuses();
-                                this._changePhase(Phases[this.state.phase].continue);
+
+                        var flag = false;
+                        snap.forEach((child)=>{
+                            if(child.numChildren() + 1 > this.state.triggernum){
+                                flag = true;
                             }
-                        } else {
+                        });
+                        if(flag && flag == false){
                             this.roomRef.child('actions').remove();
                             this._resetDayStatuses();
                             this._changePhase(Phases[this.state.phase].continue);
-                        }
+                        };
+                        
                     })
                 }
                 //Phase 3 Handling both CONTINUE and TRIGGER
@@ -744,120 +740,60 @@ _renderTopMessage(){
 //Rendering Main Visuals of Game Board
 _renderListComponent(){
 
-    if(this.state.phase==2){
-        return <FlatList
-            data={this.state.namelist}
-            renderItem={({item}) => (
-                <View style = {{marginBottom:10}}><CustomButton
-                flex = {0.8}    
-                onPress={() => {this.state.disabled?{}:
-                    this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                    this.state.phase,this.state.roomname)}}
-                    onLongPress={()=>{
-                    this._nameBtnLongPress(item.key,item.name,this.state.phase)
-                    }}
-                    color = {item.dead ? colors.dead : (item.immune? colors.immune : 
-                        (item.status?colors.status:colors.namebtn))}
-                    shadow = {colors.lightshadow}
-                    depth = {6}
-                    radius = {40}
-                    disabled = {this.state.amidead?true:(item.immune?true:item.dead)}
-                    component = {<View style = {{flexDirection:'row',alignItems:'center',
-                        justifyContent:'center', height:40}}>
-                        <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
-                        <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
-                            'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
-                            style={{color:colors.font, fontSize:26}}/>
-                        </View>
-                        <View style = {{flex:0.7, justifyContent:'center'}}>
-                            {item.dead?
-                                <Text style = {styles.concerto}>
-                                    {item.name + ' ' + (item.type==2?'(Town)':
-                                    item.type==1?'(Mafia)':'(Neutral)')}</Text>
-                                :
-                                <Text style = {styles.concerto}>{item.name}</Text>
-                            }
-                        </View>
-                        <View style = {{flex:0.15}}>
-                            <Text style = {styles.concerto}>{item.votes>0?item.votes:null}</Text>
-                        </View>
-                    </View>}
-                /></View>
-            )}
-            keyExtractor={item => item.key}
-        />
-    } else if(this.state.phase==3){
-        return null
-
-    } else if (this.state.phase==4){
-        return <FlatList
-            data={this.state.namelist}
-            renderItem={({item}) => (
-                <View style = {{marginBottom:10}}><CustomButton
-                    flex = {0.8}    
-                    onPress={() => {
-                        this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                        this.state.phase,this.state.roomname)}}
-                    style = {item.dead ? colors.dead : colors.alive}
-                    shadow = {colors.lightshadow}
-                    depth = {6}
-                    radius = {40}
-                    disabled = {this.state.amipicking?item.dead:false}
-                    component = {item.dead?<MaterialCommunityIcons name={item.dead?'skull':null}
-                        style={{color:colors.main, fontSize:26,alignSelf:'center'}}/>:
-                        <Text style = {styles.dconcerto}>{item.name}</Text>}
-                /></View>
-            )}
-            keyExtractor={item => item.key}
-        />
-
-    } else if (this.state.phase==5){
-        return <FlatList
-            data={this.state.namelist}
-            renderItem={({item}) => (
-                <View style = {{marginBottom:10}}><CustomButton
-                flex = {0.8}   
-                    onPress={() => {this.state.disabled?{}:
-                    this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                        this.state.phase,this.state.roomname)
-                    }}
-                    onLongPress={()=>{
-                        this._nameBtnLongPress(item.key,item.name,this.state.phase)
-                    }}
-                    color = {item.dead ? colors.dead : colors.lightbutton}
-                    shadow = {colors.lightshadow}
-                    depth = {6}
-                    radius = {40}
-                    disabled = {this.state.amidead?true:this.state.targettown?
-                        (this.state.targetdead? (item.type==1 || !item.dead) : item.type == 1 ) 
-                        : (this.state.targetdead? !item.dead : false )}
-                    component={<View style = {{flexDirection:'row',alignItems:'center',
-                        justifyContent:'center', height:40}}>
-                        <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
-                        <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
-                            'check-circle':(item.immune?'needle':null)}
-                            style={{color:colors.font, fontSize:26}}/>
-                        </View>
-                        <View style = {{flex:0.7}}>
-                            {item.dead?
-                                <Text style = {styles.concerto}>
-                                    {item.name + ' ' + (item.type==2?'(Town)':
-                                    item.type==1?'(Mafia)':'(Neutral)')}</Text>
-                                :
-                                <Text style = {styles.concerto}>{item.name}</Text>
-                            }
-                        </View>
-                        <View style = {{flex:0.15}}>
-                            <Text style = {styles.concerto}>{item.votes>0?item.votes:null}</Text>
-                        </View>
-                    </View>}
-                /></View>
-            )}
-            keyExtractor={item => item.key}
-        />
-    } else if (this.state.phase==6 || this.state.phase==7){
-        return null
-    }
+    return <FlatList
+        data={this.state.namelist}
+        renderItem={({item}) => (
+            <View style = {{marginBottom:10}}><CustomButton
+            flex = {0.8}    
+            onPress={() => {this.state.disabled?{}:
+                this._nameBtnPress(item.key,item.name,this.state.triggernum,
+                this.state.phase,this.state.roomname)}}
+                onLongPress={()=>{
+                this._nameBtnLongPress(item.key,item.name,this.state.phase)
+                }}
+                color = {item.dead ? colors.dead : (item.immune? colors.immune : 
+                    (item.status?colors.status:colors.namebtn))}
+                shadow = {colors.lightshadow}
+                depth = {6}
+                radius = {40}
+                disabled = {
+                    this.state.phase == 2?
+                    this.state.amidead?true:(item.immune?true:item.dead)
+                    :(
+                        this.state.phase == 4?
+                        this.state.amipicking?item.dead:false
+                        :(
+                            this.state.phase == 5?
+                            this.state.amidead?true:this.state.targettown?
+                            (this.state.targetdead? (item.type==1 || !item.dead) : item.type == 1 ) 
+                            : (this.state.targetdead? !item.dead : false )
+                            :true
+                        )
+                    )
+                }
+                component = {<View style = {{flexDirection:'row',alignItems:'center',
+                    justifyContent:'center', height:40}}>
+                    <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
+                    <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
+                        'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
+                        style={{color:colors.font, fontSize:26}}/>
+                    </View>
+                    <View style = {{flex:0.7, justifyContent:'center'}}>
+                        {item.dead?
+                            <Text style = {styles.concerto}>
+                                {item.name + ' ' + (item.type==2?'(Town)':
+                                item.type==1?'(Mafia)':'(Neutral)')}</Text>
+                            :
+                            <Text style = {styles.concerto}>{item.name}</Text>
+                        }
+                    </View>
+                    <View style = {{flex:0.15}}/>
+                </View>}
+            /></View>
+        )}
+        keyExtractor={item => item.key}
+    />
+    
 }
 
 _renderWaitingComponent() {

@@ -40,7 +40,6 @@ export class Messages extends Component {
             alias:'',
             roomname: '',
             difficulty: null,
-            loading:true,
 
             globallist: [],
             msglist:    [],
@@ -121,40 +120,20 @@ export class Messages extends Component {
     }
 
     _renderMessageComponent(){
-        if (this.state.publicchat){
-            return <View style = {{marginLeft:10,marginRight:10,marginBottom:5,
-                flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-                <View style = {{flex:0.8}}>
-                <FlatList
-                data={this.state.globallist}
-                renderItem={({item}) => (
-                    <Text style={styles.leftconcerto}>
-                        {'[' + item.from + '] '+ item.message}</Text>
-                )}
-                keyExtractor={item => item.key}
-                /></View></View>
-        } else {
-            return <View style = {{marginLeft:10,marginRight:10,marginBottom:5,
-                flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-                <View style = {{flex:0.8}}>
-                <FlatList
-                    data={this.state.msglist}
-                    renderItem={({item}) => (
-                        <Text style={styles.leftconcerto}>
-                            {'[' + item.from + '] ' + item.message}</Text>
-                    )}
-                    keyExtractor={item => item.key}
-                />
-            </View></View>
-        } 
+        return <View style = {{marginLeft:10,marginRight:10,marginBottom:5,
+            flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+            <View style = {{flex:0.8}}>
+            <FlatList
+            data={this.state.publicchat?this.state.globallist:this.state.msglist}
+            renderItem={({item}) => (
+                <Text style={styles.leftconcerto}>
+                    {'[' + item.from + '] '+ item.message}</Text>
+            )}
+            keyExtractor={item => item.key}
+            /></View></View>
     }
 
     render() {
-
-        if(this.state.loading){
-            return <View style = {{flex:1,backgroundColor:colors.details}}/>
-        }
-
         return <View style = {{flex:1,backgroundColor:colors.gameback}}>
             <View style = {{flex:0.03}}/>
             <View style = {{flex:0.1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
