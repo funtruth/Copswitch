@@ -80,7 +80,7 @@ constructor(props) {
 
         gameover:           false,
 
-        titleSize:          new Animated.Value(0.4),
+        titleSize:          new Animated.Value(0.13),
         backSize:           new Animated.Value(0.01),
         voteSize:           new Animated.Value(0.12),
         abstainSize:        new Animated.Value(0.12),
@@ -146,11 +146,11 @@ componentWillMount() {
 
     this.readyValueRef.on('value',snap=>{
         if(snap.exists()){
-            if(snap && snap.val() == true){
-                alert('why')
+            if(this.state.amidead){
+                this._viewChange(false,false,false,false,false,true,false)
+            } else if(snap.val() == true){
                 this._viewChange(false,false,false,false,false,false,true)
             } else {
-                alert('frickin')
                 this._viewChange(true,false,true,true,true,false,false)
             }
         }
@@ -328,11 +328,6 @@ componentWillMount() {
 
                     })
                 };
-                if (this.state.phase == 4){
-                    this.roomRef.child('actions').remove();
-                    this._resetDayStatuses();
-                    this._changePhase(Phases[this.state.phase].continue);
-                };
                 //Phase 5 Handling CONTINUE
                 if(this.state.phase == 5){
                     
@@ -440,8 +435,7 @@ _changePhase(newphase){
     this.listRef.once('value',snap=>{
         snap.forEach((child)=>{
             //Set all votes to 0 and RESET Buttons
-            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' + child.key)
-                .update({readyvalue:false, presseduid:'foo'})
+            this.listRef.child(child.key).update({readyvalue:false, presseduid:'foo'})
         })
     }).then(()=>{
         this.voteRef.remove();
@@ -502,11 +496,6 @@ _viewChange(title,back,vote,or,abstain,list,waiting) {
         ]),
         Animated.parallel([
             Animated.timing(
-                this.state.titleSize, {
-                    duration: SIZE_ANIM,
-                    toValue: title?0.4:0.13
-            }),
-            Animated.timing(
                 this.state.backSize, {
                     duration: SIZE_ANIM,
                     toValue: back?0.12:0.01
@@ -529,7 +518,7 @@ _viewChange(title,back,vote,or,abstain,list,waiting) {
             Animated.timing(
                 this.state.waitingSize, {
                     duration: SIZE_ANIM,
-                    toValue: waiting?0.18:0.01
+                    toValue: waiting?0.15:0.01
             }),
         ]),
         Animated.parallel([
@@ -585,11 +574,17 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
                 firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
                 + firebase.auth().currentUser.uid + '/roleid').once('value',snap=>{
                     firebase.database().ref('rooms/'+roomname+'/mafia/' + uid)
-                        .update({roleid:snap.val()})
-                    firebase.database().ref('rooms/'+roomname+'/listofplayers/'
-                        + uid).update({roleid:snap.val()})
+                        .update({roleid:snap.val()}).then(()=>{
+                            firebase.database().ref('rooms/'+roomname+'/listofplayers/'
+                            + uid).update({roleid:snap.val()}).then(()=>{
+                                this.roomRef.child('actions').remove();
+                                this._resetDayStatuses();
+                                this._changePhase(5)
+                                this._readyValue(true);
+                            })
+                        })
+                    
                 })
-                this._readyValue(true)
             } else {
                 this.setState({topmessage: name + ' is not a member of the Mafia.'})
             }
@@ -639,6 +634,12 @@ _optionOnePress() {
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
             this._readyValue(true);
         })
+    } else if (this.state.phase == 4){
+        if(this.state.amipicking){
+            this._viewChange(false,true,false,false,false,true,false)
+        } else {
+            alert('You are not picking.')
+        }
     } else if (this.state.phase == 5){
         this._viewChange(false,true,false,false,false,true,false)
     } else if (this.state.phase == 6 || this.state.phase == 7){
@@ -659,6 +660,8 @@ _optionTwoPress() {
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname).then(()=>{
             this._readyValue(true);
         })
+    } else if (this.state.phase == 4){
+        this._readyValue(true);
     } else if (this.state.phase == 5){
         this._readyValue(true);
         this.setState({topmessage:'You stayed home.'})
@@ -755,7 +758,8 @@ _renderListComponent(){
                 }}
                 color = {item.dead ? colors.dead : (item.immune? colors.immune : 
                     (item.status?colors.status:colors.namebtn))}
-                shadow = {colors.lightshadow}
+                shadow = {item.dead ? colors.deadshadow : (item.immune? colors.lightshadow : 
+                    (item.status?colors.statusshadow:colors.lightshadow))}
                 depth = {6}
                 radius = {40}
                 disabled = {
@@ -1112,7 +1116,6 @@ return <View style = {{flex:1,backgroundColor:colors.background, justifyContent:
                 1:{opacity:1},
             }} iterationCount="infinite" duration={2000}>
             <Text style = {styles.bconcerto}>WAITING</Text>
-            <Text style = {styles.concerto} >press to cancel</Text>
             </Animatable.View>
         }
     />

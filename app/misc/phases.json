@@ -21,7 +21,7 @@
         "name" : "...",
         "topmessage" : "is choosing the new killer",
         "btn1" : "PICK",
-        "btn2" : "WAIT",
+        "btn2" : "READY",
         "phasecolor" : "#F9F2DE",
         "continue" : 5
     },

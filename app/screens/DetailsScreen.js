@@ -138,8 +138,8 @@ export class Messages extends Component {
             <View style = {{flex:0.03}}/>
             <View style = {{flex:0.1, flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
                 {this._renderTitle()}</View>
-            <View style = {{flex:0.84}}>{this._renderMessageComponent()}</View>
-            <View style = {{flex:0.03}}/>
+            <View style = {{flex:0.8}}>{this._renderMessageComponent()}</View>
+            <View style = {{flex:0.07}}/>
         </View>
     }
 }
