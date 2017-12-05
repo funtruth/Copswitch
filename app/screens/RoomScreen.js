@@ -193,6 +193,12 @@ export class Loading extends React.Component {
     
     constructor(props) {
         super(props);
+
+        this.state = {
+            message: 'Tap to Start!',
+        }
+
+        this.scale = new Animated.Value(0.4);
     }
     
     _continueGame() {
@@ -208,76 +214,75 @@ export class Loading extends React.Component {
                     })
                 )
             } else {
-                this.props.navigation.navigate('SignedIn')
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        key: null,
+                        actions: [
+                            NavigationActions.navigate({ routeName: 'SignedIn'})
+                        ]
+                    })
+                )
             }
                 
         })
     }
 
-    _resetGame(){
-        AsyncStorage.removeItem('ROOM-KEY');
-        AsyncStorage.removeItem('GAME-KEY');
-    
-        firebase.database().ref('messages/' + firebase.auth().currentUser.uid).remove();
-        firebase.database().ref('users/' + firebase.auth().currentUser.uid + '/room')
-            .update({ name: null });
-
-        this.props.navigation.dispatch(
-            NavigationActions.reset({
-                index: 0,
-                actions: [
-                  NavigationActions.navigate({ routeName: 'SignedIn'})
-                ]
-            })
-        )
-    }
-
-    _renderCloseBtn() {
-        return <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
-            justifyContent:'center',alignItems:'center'}}>
-            <View style = {{flex:0.85}}/>
-            <TouchableOpacity
-                style = {{flex:0.15}}
-                onPress = {()=>{
-                    this._resetGame()
-                }} >
-                <MaterialCommunityIcons name='close-circle'
-                    style={{color:colors.shadow,fontSize:23}}/>
-            </TouchableOpacity>
-        </View>
-    }
-
-    _renderLoadingScreen() {
-        return <View style = {{flex:1}}>
-            <Animatable.View style ={{flex:1,justifyContent:'center', 
-                alignItems:'center', position:'absolute',top:0,bottom:30,left:0,right:0}} 
-                animation = 'fadeIn' duration = {1000}>
-                <AnimatableIcon ref='duh' animation="swing" iterationCount='infinite' direction="alternate"
-                    name='user-secret' style={{ color:colors.background, fontSize: 40 }}/>
-                <Animatable.Text ref='continue' animation={{
-                        0: {opacity:0},
-                        0.25:{opacity:0.5},
-                        0.5:{opacity:1},
-                        0.75:{opacity:0.5},
-                        4:{opacity:0},
-                    }}
-                    iterationCount="infinite" duration={2000}
-                    style={styles.continue}>Tap to Start!</Animatable.Text>
-            </Animatable.View>
-        </View>
-    }
-
     _onPress() {
-        this._continueGame();
+        Animated.timing(
+            this.scale,{
+                toValue: 3,
+                duration:1000
+            }
+        ).start()
+
+        this.setState({message:'LOADING ...'})
+        setTimeout(()=>{this._continueGame()},1500)
     }
     
     render() {
-        return <TouchableWithoutFeedback
-                style = {{flex:1}}
-                onPress = {() => { this._onPress() }} >
+        return <TouchableWithoutFeedback style = {{flex:1}} onPress = {() => { this._onPress() }} >
                 <View style = {{flex:1, backgroundColor:colors.shadow}}>
-                    {this._renderLoadingScreen()}
+                    
+                    <View style ={{flex:1,justifyContent:'center', 
+                        alignItems:'center', position:'absolute',top:0,bottom:0,left:0,right:0}}>
+                        <AnimatableIcon ref='duh' animation="swing" iterationCount='infinite' direction="alternate"
+                            name='user-secret' style={{ color:colors.background, fontSize: 60 }}/>
+                    </View>
+                    <View style = {{position:'absolute', bottom:40, left:0, right:0, alignItems:'center',}}>
+                        <Animatable.Text ref='continue' animation={{
+                            0: {opacity:0},
+                            0.25:{opacity:0.5},
+                            0.5:{opacity:1},
+                            0.75:{opacity:0.5},
+                            4:{opacity:0},
+                        }}
+                        iterationCount="infinite" duration={2000}
+                        style={styles.continue}>{this.state.message}</Animatable.Text>
+                    </View>
+
+                    <View style = {{
+                        position:'absolute',
+                        top:0,
+                        bottom:0,
+                        right:0,
+                        left:0,
+                        justifyContent: 'center', alignItems: 'center',
+                        backgroundColor:'transparent'}}>
+                        <Animated.View style = {{
+                            height:300,
+                            width:300,
+                            borderRadius:150,
+                            borderWidth:10,
+                            transform: [
+                                {scale:this.scale}
+                            ],
+                            borderColor: colors.background,
+                        }}/>
+                    </View>
                 </View>
+
+                
             </TouchableWithoutFeedback>
         }
 }

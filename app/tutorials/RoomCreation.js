@@ -362,10 +362,10 @@ export class Creation1 extends Component {
     }
 
     _continue(name) {
-        if(name && name.length>0 && name.length < 11){
+        if(name && name.trim().length>0 && name.trim().length < 11){
             firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
             .child(firebase.auth().currentUser.uid).update({
-                name:               name,
+                name:               name.trim(),
                 readyvalue:         false,
                 presseduid:         'foo',
             }).then(()=>{
@@ -398,10 +398,14 @@ export class Creation1 extends Component {
                         borderTopLeftRadius:25,
                         borderBottomLeftRadius:25,
                     }}
+                    autoFocus
                     value={this.state.alias}
                     onChangeText = {(text) => {this.setState({alias: text})}}
                     onSubmitEditing = {()=>{ 
-                        this._continue(this.state.alias.trim());
+                        this._continue(this.state.alias);
+                    }}
+                    onEndEditing = {()=>{
+                        this._continue(this.state.alias);
                     }}
                 />
                 <CustomButton

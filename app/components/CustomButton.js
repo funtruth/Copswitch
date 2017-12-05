@@ -37,10 +37,6 @@ render() {
             flexDirection:'row',
             justifyContent:'center',
             opacity:this.props.opacity,
-            borderTopLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
-            borderBottomLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
-            borderTopRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
-            borderTopRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
         }}>
             <View style = {{
                 flex:this.props.flex,

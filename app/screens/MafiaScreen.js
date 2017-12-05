@@ -236,20 +236,36 @@ componentWillMount() {
         }
     })
     
-    
     //Count listeners for the room owner
     this.readyRef.on('value',snap=>{
-        if(snap.exists && this.state.amiowner && ((snap.numChildren()+1)>this.state.playernum)
-            && this.state.playernum>0){            
-                //Phase 2 + 4 Handling CONTINUE
-                if(this.state.phase == 2 || this.state.phase == 4){
-                    this.roomRef.child('actions').remove();
-                    this._resetDayStatuses();
-                    this._changePhase(Phases[this.state.phase].continue);
-                };
+        if(snap.exists() && this.state.amiowner && ((snap.numChildren()+1)>this.state.playernum)
+            && this.state.playernum>0){
+                //Phase 2 CONTINUE
+                if(this.state.phase == 2){
+
+                    this.voteRef.once('value', snap=>{
+                        if(snap.exists()){
+                            var flag = false;
+                            snap.forEach((child)=>{
+                                if(child.numChildren() + 1 > this.state.triggernum){
+                                    flag = true
+                                }
+                            })
+                            if(flag == false){
+                                this.roomRef.child('actions').remove();
+                                this._resetDayStatuses();
+                                this._changePhase(Phases[this.state.phase].continue);
+                            }
+                        } else {
+                            this.roomRef.child('actions').remove();
+                            this._resetDayStatuses();
+                            this._changePhase(Phases[this.state.phase].continue);
+                        }
+                    })
+                }
                 //Phase 3 Handling both CONTINUE and TRIGGER
                 if(this.state.phase == 3){
-
+                    
                     this.guiltyVotesRef.once('value',guiltyvotes=>{
 
                         var counter = 0;
@@ -311,6 +327,11 @@ componentWillMount() {
 
                     })
                 };
+                if (this.state.phase == 4){
+                    this.roomRef.child('actions').remove();
+                    this._resetDayStatuses();
+                    this._changePhase(Phases[this.state.phase].continue);
+                };
                 //Phase 5 Handling CONTINUE
                 if(this.state.phase == 5){
                     
@@ -332,22 +353,20 @@ componentWillMount() {
         }
     })
 
-    this.voteRef.on('value',snap=>{
+    this.voteRef.on('value', snap=>{
+        //Votes should only exist in Phase 2
         if(snap.exists() && this.state.amiowner){
             snap.forEach((child)=>{
                 if(child.numChildren() + 1 > this.state.triggernum){
                     if(Phases[this.state.phase].trigger){
-                        if(this.state.phase == 2 || this.state.phase == 4){
-                            firebase.database().ref('rooms/' + this.state.roomname + '/actions')
-                            .remove();
-                        };
-                        if(this.state.phase == 2){
-                            this.roomRef.update({nominate:child.key});
-                            this.listRef.child(child.key).child('name').once('value',getname=>{
-                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                                getname.val() + ' has been nominated.')
-                            })
-                        };
+                        firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove();
+
+                        this.roomRef.update({nominate:child.key});
+                        this.listRef.child(child.key).child('name').once('value',getname=>{
+                            this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
+                            getname.val() + ' has been nominated.')
+                        })
+
                         this._changePhase(Phases[this.state.phase].trigger);
                     }
                 }

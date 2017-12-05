@@ -13,6 +13,7 @@ import * as Animatable from 'react-native-animatable';
 
 import { NavigationActions } from 'react-navigation';
 
+//DEPRECATED
 export class Splash extends React.Component {
     
     constructor(props) {
