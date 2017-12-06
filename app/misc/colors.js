@@ -30,7 +30,7 @@ export default colors = {
     font:       'white',
     dfont:      '#454a4a',
     main:       'white',
-    titlefont:  'white',
+    titlefont:  '#873c3d',
     shadow:     '#873c3d',
     dshadow:    '#876657',
 

@@ -107,6 +107,7 @@ constructor(props) {
     this.nominationRef      = this.roomRef.child('nominate');
     this.ownerRef           = this.roomRef.child('owner');
     this.phaseRef           = this.roomRef.child('phase');
+    this.actionRef          = this.roomRef.child('actions');
 
     //Owner Listening
     this.guiltyVotesRef     = this.roomRef.child('guiltyvotes');
@@ -280,13 +281,13 @@ componentWillMount() {
                                 if(child.numChildren() + 1 > this.state.triggernum){
                                     //Do nothing
                                 } else if (counter+1 > votes.numChildren()){
-                                    this.roomRef.child('actions').remove();
+                                    this.actionRef.remove();
                                     this._resetDayStatuses();
                                     this._changePhase(Phases[this.state.phase].continue);
                                 }
                             });
                         } else {
-                            this.roomRef.child('actions').remove();
+                            this.actionRef.remove();
                             this._resetDayStatuses();
                             this._changePhase(Phases[this.state.phase].continue);
                         }
@@ -383,7 +384,7 @@ componentWillMount() {
             snap.forEach((child)=>{
                 if(child.numChildren() + 1 > this.state.triggernum){
                     if(Phases[this.state.phase].trigger){
-                        firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove();
+                        actionRef.remove();
 
                         this.roomRef.update({nominate:child.key});
                         this.listRef.child(child.key).child('name').once('value',getname=>{
@@ -486,7 +487,9 @@ _buttonPress() {
 _changePhase(newphase){
     this.setState({nextphase:newphase})
     this.roomRef.child('nextphase').set(newphase).then(()=>{
-        this.roomRef.child('ready').remove().then(()=>{ this.voteRef.remove() }) 
+        this.roomRef.child('ready').remove().then(()=>{
+            this.voteRef.remove()
+        })
     })
 }
 
@@ -494,7 +497,7 @@ _resetDayStatuses() {
     this.listRef.once('value',snap=>{
         snap.forEach((child)=>{
             this.listRef.child(child.key).update({
-                immune:null, 
+                immune:null,
                 status:null
             })
         })
@@ -608,14 +611,12 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
         this.voteRef.child(uid).child(firebase.auth().currentUser.uid).set(this.state.myname);
 
     }  else if(phase == 4){
-        //Check if selected player is a mafia member
-        //change role id on listofplayers
         firebase.database().ref('rooms/' + roomname + '/mafia/' + uid).once('value',mafiacheck=>{
             if(mafiacheck.exists()){
                 firebase.database().ref('rooms/'+roomname+'/mafia/' + uid)
                 .update({roleid:this.state.myroleid}).then(()=>{
                     this.listRef.child(uid).update({roleid:this.state.myroleid}).then(()=>{
-                        this.roomRef.child('actions').remove();
+                        this.actionRef.remove();
                         this._resetDayStatuses();
                         this._changePhase(5);
                     })
@@ -628,14 +629,12 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
 
         this.setState({topmessage:'You have selected ' + name + '.'})
 
-        firebase.database().ref('rooms/' + roomname + '/actions/' 
-            + firebase.auth().currentUser.uid).update({
+        this.actionRef.child(firebase.auth().currentUser.uid).update({
                 target:uid,
                 targetname:name,
                 roleid:this.state.myroleid,
         }).then(()=>{
-            firebase.database().ref('rooms/' + roomname + '/actions/' + uid + '/' 
-                + this.state.myroleid + '/' + firebase.auth().currentUser.uid)
+            this.actionRef.child(uid).child(this.state.myroleid).child(firebase.auth().currentUser.uid)
                 .set(this.state.myname).then(()=>{
                     this._pressedUid(uid);
                     this._readyValue(true);
@@ -724,15 +723,14 @@ _resetOptionPress() {
 
     } else if (this.state.phase == 5){
 
-        firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
-            + firebase.auth().currentUser.uid).update({
+        this.actionRef.child(firebase.auth().currentUser.uid).update({
                 roleid:     null,
                 target:     null,
                 targetname: null,
             });
 
-        firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + this.state.presseduid 
-            + '/' + this.state.myroleid + '/' + firebase.auth().currentUser.uid).set(null)
+        this.actionRef.child(this.state.presseduid).child(this.state.myroleid)
+        .child(firebase.auth().currentUser.uid).set(null)
             .then(()=>{
                 this._readyValue(false);
                 this._pressedUid('foo');
@@ -864,14 +862,13 @@ _noticeMsgGlobal(roomname,color,message){
 
 //Action Roles that adjust
 _adjustmentPhase() {
-    firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
+    this.actionRef.once('value',snap=>{
         snap.forEach((child)=>{
 
             if (child.val().E) {
-                firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target 
-                    + '/' + child.val().roleid + '/' + child.key).remove()
-                firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.key) 
-                    .update({ targetname: 'Nobody' })
+                this.actionRef.child(child.val().target).child(child.val().roleid)
+                    .child(child.key).remove()
+                this.actionRefchild(child.key).update({ targetname: 'Nobody' })
             }
 
         })
@@ -880,13 +877,12 @@ _adjustmentPhase() {
 
 //Action Roles
 _actionPhase() {
-    firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
+    this.actionRef.once('value',snap=>{
         snap.forEach((child)=>{
             if(!child.val().E){
                 //Assassin
                 if (child.val().roleid == 'a') {
-                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
-                    .once('value',innersnap=>{
+                    this.actionRef.child(child.val().target).once('value',innersnap=>{
                         if(!innersnap.val().D){
                             this.listRef.child(child.val().target).update({dead:true});
                             this.myInfoRef.update({bloody:true});
@@ -902,8 +898,7 @@ _actionPhase() {
                 }
                 //Murderer 
                 else if (child.val().roleid == 'b') {
-                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
-                    .once('value',innersnap=>{
+                    this.actionRef.child(child.val().target).once('value',innersnap=>{
                         if(!innersnap.val().D){
                             this.listRef.child(child.val().target).update({dead:true});
                             this.myInfoRef.update({bloody:true});
@@ -938,7 +933,7 @@ _actionPhase() {
                 //Detective
                 else if (child.val().roleid == 'A') {
                     this.listRef.child(child.val().target).once('value',insidesnap=>{
-                        this.roomRef.child('actions').child(child.val().target).once('value',scheme=>{
+                        this.actionRef.child(child.val().target).once('value',scheme=>{
                             if(scheme.val().c || insidesnap.val().suspicious){
                                 this._noticeMsg(child.key, child.val().targetname + ' is suspicious ...');
                             } else {
@@ -962,8 +957,7 @@ _actionPhase() {
                 }
                 //Doctor
                 else if (child.val().roleid == 'D') {
-                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
-                    .once('value',insidesnap=>{
+                    this.actionRef.child(child.val().target).once('value',insidesnap=>{
                         if(insidesnap.val().a || insidesnap.val().b){
                             this.listRef.child(child.key).update({bloody:true});
                             this._noticeMsg(child.val().target,'The Doctor took care of your stab wounds.');
@@ -980,7 +974,7 @@ _actionPhase() {
                 }
                 //Warden
                 else if (child.val().roleid == 'G') {
-                    this.roomRef.child('actions').child(child.val().target).once('value',insnap=>{
+                    this.actionRef.child(child.val().target).once('value',insnap=>{
                         var string = 'Nobody';
                         insnap.forEach((visitor)=>{
                             if(visitor.key.length == 1){
@@ -1008,8 +1002,7 @@ _actionPhase() {
                 }
                 //Overseer
                 else if (child.val().roleid == 'I') {
-                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
-                    + child.val().target).once('value',wheredhego=>{
+                    this.actionRef.child(child.val().target).once('value',wheredhego=>{
                         if(wheredhego.val().targetname){
                             this._noticeMsg(child.key, child.val().targetname + ' visited ' 
                             + wheredhego.val().targetname +"s house last night.");
@@ -1023,8 +1016,7 @@ _actionPhase() {
                 else if (child.val().roleid == 'J') {
                     this.listRef.child(child.key).child('charges').once('value',charges=>{
                         if(charges.val() > 0){
-                            firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
-                            .once('value',innersnap=>{
+                            this.actionRef.child(child.val().target).once('value',innersnap=>{
                                 if(!innersnap.val().D){
                                     this.listRef.child(child.val().target).update({dead:true});
                                     this._changePlayerCount(false);
