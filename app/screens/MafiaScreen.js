@@ -55,6 +55,7 @@ constructor(props) {
         phasename:          '',
         topmessage:         '',
         phasebackground:    'night',
+        nextphase:          null,
 
         myname:             '',
         myrole:             '',
@@ -111,6 +112,7 @@ constructor(props) {
     this.guiltyVotesRef     = this.roomRef.child('guiltyvotes');
     this.voteRef            = this.roomRef.child('votes');
     this.readyRef           = this.roomRef.child('ready').orderByValue().equalTo(true);
+    this.loadedRef          = this.roomRef.child('loaded');
 
     //Transition Screen
     this.dayCounterRef      = this.roomRef.child('daycounter');
@@ -153,24 +155,22 @@ componentWillMount() {
                 this.setState({ready:true})
                 this._viewChange(false,false,false,false,false,true)
             } else {
-                this.setState({ready:false})
-                this._viewChange(true,false,true,true,false,false)
+                this.phaseRef.once('value',phase=>{
+                    if(phase.val() == 4){
+                        if(this.state.amipicking){
+                            this._viewChange(true,false,false,false,true,false)
+                        } else {
+                            this._viewChange(true,false,false,false,false,true)
+                        }
+                    } else {
+                        this._viewChange(true,false,true,true,false,false)
+                    }
+                })
             }
         } else {
             this.setState({ready:false})
             this._viewChange(true,false,false,false,false,false)
-            setTimeout(()=>{
-                if(this.state.phase == 4){
-                    if(this.state.amipicking){
-                        this._viewChange(true,false,false,false,true,false)
-                    } else {
-                        this._viewChange(true,false,false,false,false,true)
-                    }
-                } else {
-                    this._viewChange(true,false,true,true,false,false)
-                }
-                    
-            },1500)
+            setTimeout(()=>{this.loadedRef.child(firebase.auth().currentUser.uid).set(true)},1500)
         }
     })
 
@@ -398,6 +398,28 @@ componentWillMount() {
         }
     })
 
+    this.loadedRef.on('value',snap=>{
+        if(snap.exists() && this.state.amiowner){
+            if(snap.numChildren() == this.state.playernum){
+                this.roomRef.child('nextphase').once('value',nextphase=>{
+                    this.roomRef.update({ phase:nextphase.val() })
+                    .then(()=>{
+                        this.listRef.once('value',snap=>{
+                            snap.forEach((child)=>{
+                                //Set all votes to 0 and RESET Buttons
+                                this.listRef.child(child.key).update({presseduid:'foo'})
+                                this.roomRef.child('ready').child(child.key).set(false).then(()=>{
+                                    this.loadedRef.remove();
+                                    this.roomRef.child('nextphase').remove();
+                                })
+                            })
+                        })
+                    })
+                })
+            }
+        }
+    })
+
     BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
 }
 
@@ -435,6 +457,9 @@ componentWillUnmount() {
     if(this.voteRef){
         this.voteRef.off();
     }
+    if(this.loadedRef){
+        this.loadedRef.off();
+    }
 
     //Transition Screen
     if(this.dayCounterRef){
@@ -459,23 +484,10 @@ _buttonPress() {
 }
 
 _changePhase(newphase){
-    
-    this.roomRef.child('ready').remove()
-    .then(()=>{
-        this.voteRef.remove()
-        .then(()=>{
-            this.roomRef.update({ phase:newphase })
-            .then(()=>{
-                this.listRef.once('value',snap=>{
-                    snap.forEach((child)=>{
-                        //Set all votes to 0 and RESET Buttons
-                        this.listRef.child(child.key).update({presseduid:'foo'})
-                        this.roomRef.child('ready').child(child.key).set(false)
-                    })
-                })
-            })
-        })
-    })  
+    this.setState({nextphase:newphase})
+    this.roomRef.child('nextphase').set(newphase).then(()=>{
+        this.roomRef.child('ready').remove().then(()=>{ this.voteRef.remove() }) 
+    })
 }
 
 _resetDayStatuses() {
