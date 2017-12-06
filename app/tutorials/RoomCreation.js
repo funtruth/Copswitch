@@ -368,8 +368,11 @@ export class Creation1 extends Component {
                 name:               name.trim(),
                 presseduid:         'foo',
             }).then(()=>{
-                this.setState({errormessage:null})
-                this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animated:true})
+                firebase.database().ref('rooms').child(this.props.roomname).child('ready')
+                .child(firebase.auth().currentUser.uid).set(false).then(()=>{
+                    this.setState({errormessage:null})
+                    this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animated:true})
+                })
             })
         } else {
             this.setState({ errormessage:'Your name must be 1 - 10 Characters' })

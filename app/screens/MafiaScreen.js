@@ -10,7 +10,8 @@ import {
     FlatList,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    Animated
+    Animated,
+    Dimensions
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -87,6 +88,7 @@ constructor(props) {
         listSize:           new Animated.Value(0.01),
         waitingSize:        new Animated.Value(0.01),
         
+        titleOpacity:       new Animated.Value(0),
         backOpacity:        new Animated.Value(0),
         voteOpacity:        new Animated.Value(0),
         abstainOpacity:     new Animated.Value(0),
@@ -146,26 +148,34 @@ componentWillMount() {
     this.readyValueRef.on('value',snap=>{
         if(snap.exists()){
             if(this.state.amidead){
-                this._viewChange(false,false,false,false,false,true,false)
+                this._viewChange(false,false,false,false,true,false)
             } else if(snap.val() == true){
                 this.setState({ready:true})
-                this._viewChange(false,false,false,false,false,false,true)
+                this._viewChange(false,false,false,false,false,true)
             } else {
                 this.setState({ready:false})
-                this._viewChange(true,false,true,true,true,false,false)
+                this._viewChange(true,false,true,true,false,false)
             }
         } else {
             this.setState({ready:false})
-            this._viewChange(true,false,true,true,true,false,false)
+            this._viewChange(true,false,false,false,false,false)
+            setTimeout(()=>{
+                if(this.state.phase == 4){
+                    if(this.state.amipicking){
+                        this._viewChange(true,false,false,false,true,false)
+                    } else {
+                        this._viewChange(true,false,false,false,false,true)
+                    }
+                } else {
+                    this._viewChange(true,false,true,true,false,false)
+                }
+                    
+            },1500)
         }
     })
 
     this.ownerRef.on('value',snap=>{
-        if(snap.val() == firebase.auth().currentUser.uid){
-            this.setState({amiowner:true})
-        } else {
-            this.setState({amiowner:false})
-        }
+        this.setState({amiowner:snap.val() == firebase.auth().currentUser.uid})
     })
 
     this.listRef.on('value',snap=>{
@@ -214,26 +224,36 @@ componentWillMount() {
             this.listRef.child(snap.val()).once('value',sp=>{
                 this.setState({nominate: snap.val(), nominee: sp.val().name})
             })
-
-            if(snap.val() == firebase.auth().currentUser.uid){
-                this.setState({amipicking:true})
-            } else { 
-                this.setState({amipicking:false}) 
-            }
+            
+            this.setState({amipicking:snap.val() == firebase.auth().currentUser.uid})
         }
     })
 
     this.phaseRef.on('value',snap=>{
         if(snap.exists()){
+            Animated.timing(
+                this.state.titleOpacity,{
+                    toValue:0,
+                    duration:1000
+                }
+            ).start()
 
-            this.setState({
-                phase:snap.val(),
-                phasename: (Phases[snap.val()]).name,
-                topmessage: (Phases[snap.val()]).topmessage,
-                btn1: (Phases[snap.val()]).btn1,
-                btn2: (Phases[snap.val()]).btn2,
-                phasecolor: (Phases[snap.val()]).phasecolor,
-            })
+            setTimeout(()=>{
+                this.setState({
+                    phase:snap.val(),
+                    phasename: (Phases[snap.val()]).name,
+                    topmessage: (Phases[snap.val()]).topmessage,
+                    btn1: (Phases[snap.val()]).btn1,
+                    btn2: (Phases[snap.val()]).btn2,
+                    phasecolor: (Phases[snap.val()]).phasecolor,
+                })
+                Animated.timing(
+                    this.state.titleOpacity,{
+                        toValue:1,
+                        duration:1000
+                    }
+                ).start()
+            },1000)
         }
     })
 
@@ -251,24 +271,29 @@ componentWillMount() {
             && this.state.playernum>0){
                 //Phase 2 CONTINUE
                 if(this.state.phase == 2){
-                    this.voteRef.once('value', votes=>{
-                        var flag = false;
-                        votes.forEach((child)=>{
-                            if(child.numChildren() + 1 > this.state.triggernum){
-                                flag = true;
-                            }
-                        });
-                        if(flag){
-                            alert('test')//NEED TO FIX
-                        } else if (flag == false){
+                    
+                    this.voteRef.once('value').then((votes)=>{
+                        if(votes.exists()){
+                            var counter = 0;
+                            votes.forEach((child)=>{
+                                counter ++;
+                                if(child.numChildren() + 1 > this.state.triggernum){
+                                    //Do nothing
+                                } else if (counter+1 > votes.numChildren()){
+                                    this.roomRef.child('actions').remove();
+                                    this._resetDayStatuses();
+                                    this._changePhase(Phases[this.state.phase].continue);
+                                }
+                            });
+                        } else {
                             this.roomRef.child('actions').remove();
                             this._resetDayStatuses();
                             this._changePhase(Phases[this.state.phase].continue);
-                        };
+                        }
                     })
                 }
                 //Phase 3 Handling both CONTINUE and TRIGGER
-                if(this.state.phase == 3){
+                else if(this.state.phase == 3){
                     
                     this.guiltyVotesRef.once('value',guiltyvotes=>{
 
@@ -330,9 +355,9 @@ componentWillMount() {
                         }
 
                     })
-                };
+                }
                 //Phase 5 Handling CONTINUE
-                if(this.state.phase == 5){
+                else if(this.state.phase == 5){
                     
                     new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
                         new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
@@ -435,19 +460,22 @@ _buttonPress() {
 
 _changePhase(newphase){
     
-    this.listRef.once('value',snap=>{
-        snap.forEach((child)=>{
-            //Set all votes to 0 and RESET Buttons
-            this.listRef.child(child.key).update({presseduid:'foo'})
-            this.roomRef.child('ready').child(child.key).set(false)
+    this.roomRef.child('ready').remove()
+    .then(()=>{
+        this.voteRef.remove()
+        .then(()=>{
+            this.roomRef.update({ phase:newphase })
+            .then(()=>{
+                this.listRef.once('value',snap=>{
+                    snap.forEach((child)=>{
+                        //Set all votes to 0 and RESET Buttons
+                        this.listRef.child(child.key).update({presseduid:'foo'})
+                        this.roomRef.child('ready').child(child.key).set(false)
+                    })
+                })
+            })
         })
-    }).then(()=>{
-        this.voteRef.remove();
-    }).then(()=>{
-        this.roomRef.update({
-            phase:newphase,
-        })
-    })    
+    })  
 }
 
 _resetDayStatuses() {
@@ -468,7 +496,8 @@ _pressedUid(uid){
     this.myInfoRef.update({presseduid: uid})
 }
 
-_viewChange(title,back,vote,or,abstain,list,waiting) {
+//1100 ms TOTAL
+_viewChange(title,back,vote,abstain,list,waiting) {
 
     Animated.sequence([
         Animated.parallel([
@@ -562,32 +591,22 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
 
     if(phase == 2){ 
         this.setState({topmessage:'You have selected ' + name + '.'})
-
         this._pressedUid(uid);
-        
-        this.voteRef.child(uid).child(firebase.auth().currentUser.uid)
-            .set(this.state.myname).then(()=>{
-                this._readyValue(true);
-            })
+        this._readyValue(true);
+        this.voteRef.child(uid).child(firebase.auth().currentUser.uid).set(this.state.myname);
 
     }  else if(phase == 4){
         //Check if selected player is a mafia member
         //change role id on listofplayers
         firebase.database().ref('rooms/' + roomname + '/mafia/' + uid).once('value',mafiacheck=>{
             if(mafiacheck.exists()){
-                firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
-                + firebase.auth().currentUser.uid + '/roleid').once('value',snap=>{
-                    firebase.database().ref('rooms/'+roomname+'/mafia/' + uid)
-                        .update({roleid:snap.val()}).then(()=>{
-                            firebase.database().ref('rooms/'+roomname+'/listofplayers/'
-                            + uid).update({roleid:snap.val()}).then(()=>{
-                                this.roomRef.child('actions').remove();
-                                this._resetDayStatuses();
-                                this._changePhase(5)
-                                this._readyValue(true);
-                            })
-                        })
-                    
+                firebase.database().ref('rooms/'+roomname+'/mafia/' + uid)
+                .update({roleid:this.state.myroleid}).then(()=>{
+                    this.listRef.child(uid).update({roleid:this.state.myroleid}).then(()=>{
+                        this.roomRef.child('actions').remove();
+                        this._resetDayStatuses();
+                        this._changePhase(5);
+                    })
                 })
             } else {
                 this.setState({topmessage: name + ' is not a member of the Mafia.'})
@@ -632,20 +651,14 @@ _optionOnePress() {
     this._buttonPress();
     
     if(this.state.phase == 2){
-        this._viewChange(false,true,false,false,false,true,false)
+        this._viewChange(false,true,false,false,true,false)
     } else if (this.state.phase == 3){
         this.setState({topmessage:'You voted INNOCENT.'})
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
             this._readyValue(true);
         })
-    } else if (this.state.phase == 4){
-        if(this.state.amipicking){
-            this._viewChange(false,true,false,false,false,true,false)
-        } else {
-            alert('You are not picking.')
-        }
     } else if (this.state.phase == 5){
-        this._viewChange(false,true,false,false,false,true,false)
+        this._viewChange(false,true,false,false,true,false)
     } else if (this.state.phase == 6 || this.state.phase == 7){
         alert('feature not available yet')
     }
@@ -664,8 +677,6 @@ _optionTwoPress() {
         this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname).then(()=>{
             this._readyValue(true);
         })
-    } else if (this.state.phase == 4){
-        this._readyValue(true);
     } else if (this.state.phase == 5){
         this._readyValue(true);
         this.setState({topmessage:'You stayed home.'})
@@ -680,7 +691,7 @@ _resetOptionPress() {
     this._buttonPress();
 
     if(this.state.phase != 4){
-        this._viewChange(true,false,true,true,true,false,false)
+        this._viewChange(true,false,true,true,false,false)
         this.setState({topmessage:null})
     }
 
@@ -1065,8 +1076,8 @@ render() {
 
 return <View style = {{flex:1,backgroundColor:colors.background, justifyContent:'center'}}>
 
-    <Animated.View style = {{flex:this.state.titleSize,justifyContent:'center',
-        borderRadius:2, marginBottom:10}}>
+    <Animated.View style = {{flex:this.state.titleSize, opacity:this.state.titleOpacity,
+        justifyContent:'center', borderRadius:2, marginBottom:10}}>
             {this._renderPhaseName()}
             {this._renderTopMessage()}
     </Animated.View>
@@ -1080,7 +1091,7 @@ return <View style = {{flex:1,backgroundColor:colors.background, justifyContent:
         radius = {30}
         disabled = {this.state.disabled}
         onPress = {()=>{ 
-            this._viewChange(true,false,true,true,true,false,false) 
+            this._viewChange(true,false,true,true,false,false) 
         }}
         component = {
             <Text style = {styles.bconcerto}>RETURN</Text>

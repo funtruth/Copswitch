@@ -357,27 +357,6 @@ export class LobbyPager extends Component {
         ]).start()
     }
 
-    _continue(name) {
-        if(this.state.loading){
-            this.setState({errormessage:'Wi-Fi connection Required.'})
-            this.refs.nameerror.shake(800)
-        } else {
-            if(name && name.length>0 && name.length < 11){
-                firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
-                .child(firebase.auth().currentUser.uid).update({
-                    name:               name,
-                    presseduid:         'foo',
-                }).then(()=>{
-                    this.setState({errormessage:null})
-                    this.refs.scrollView.scrollTo({x:this.width*1,y:0,animation:true})
-                })
-            } else {
-                this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
-                this.refs.nameerror.shake(800)
-            }
-        }
-    }
-
     _transition() {
         
         this.setState({transition:true})
@@ -472,8 +451,11 @@ export class Lobby1 extends Component {
                 name:               name.trim(),
                 presseduid:         'foo',
             }).then(()=>{
-                this.setState({errormessage:null})
-                this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animated:true})
+                firebase.database().ref('rooms').child(this.props.roomname).child('ready')
+                .child(firebase.auth().currentUser.uid).set(false).then(()=>{
+                    this.setState({errormessage:null})
+                    this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animated:true})
+                })
             })
         } else {
             this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
