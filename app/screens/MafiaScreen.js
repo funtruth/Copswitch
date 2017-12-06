@@ -97,9 +97,11 @@ constructor(props) {
         waitingOpacity:     new Animated.Value(0),
     };
 
+    this.user               = this.user;
+
     this.roomRef            = firebase.database().ref('rooms/' + roomname);
-    this.myInfoRef          = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid);
-    this.readyValueRef      = this.roomRef.child('ready').child(firebase.auth().currentUser.uid);
+    this.myInfoRef          = this.roomRef.child('listofplayers').child(this.user);
+    this.readyValueRef      = this.roomRef.child('ready').child(this.user);
     this.mafiaRef           = this.roomRef.child('mafia');
     
     this.listRef            = this.roomRef.child('listofplayers');
@@ -118,7 +120,7 @@ constructor(props) {
     //Transition Screen
     this.dayCounterRef      = this.roomRef.child('daycounter');
 
-    this.msgRef             = firebase.database().ref('messages').child(firebase.auth().currentUser.uid);
+    this.msgRef             = firebase.database().ref('messages').child(this.user);
     this.globalMsgRef       = firebase.database().ref('globalmsgs').child(roomname);
 }
 
@@ -171,12 +173,12 @@ componentWillMount() {
         } else {
             this.setState({ready:false})
             this._viewChange(true,false,false,false,false,false)
-            setTimeout(()=>{this.loadedRef.child(firebase.auth().currentUser.uid).set(true)},1500)
+            setTimeout(()=>{this.loadedRef.child(this.user).set(true)},1500)
         }
     })
 
     this.ownerRef.on('value',snap=>{
-        this.setState({amiowner:snap.val() == firebase.auth().currentUser.uid})
+        this.setState({amiowner:snap.val() == this.user})
     })
 
     this.listRef.on('value',snap=>{
@@ -226,7 +228,7 @@ componentWillMount() {
                 this.setState({nominate: snap.val(), nominee: sp.val().name})
             })
             
-            this.setState({amipicking:snap.val() == firebase.auth().currentUser.uid})
+            this.setState({amipicking:snap.val() == this.user})
         }
     })
 
@@ -608,7 +610,7 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
         this.setState({topmessage:'You have selected ' + name + '.'})
         this._pressedUid(uid);
         this._readyValue(true);
-        this.voteRef.child(uid).child(firebase.auth().currentUser.uid).set(this.state.myname);
+        this.voteRef.child(uid).child(this.user).set(this.state.myname);
 
     }  else if(phase == 4){
         firebase.database().ref('rooms/' + roomname + '/mafia/' + uid).once('value',mafiacheck=>{
@@ -629,12 +631,12 @@ _nameBtnPress(uid,name,triggernum,phase,roomname){
 
         this.setState({topmessage:'You have selected ' + name + '.'})
 
-        this.actionRef.child(firebase.auth().currentUser.uid).update({
+        this.actionRef.child(this.user).update({
                 target:uid,
                 targetname:name,
                 roleid:this.state.myroleid,
         }).then(()=>{
-            this.actionRef.child(uid).child(this.state.myroleid).child(firebase.auth().currentUser.uid)
+            this.actionRef.child(uid).child(this.state.myroleid).child(this.user)
                 .set(this.state.myname).then(()=>{
                     this._pressedUid(uid);
                     this._readyValue(true);
@@ -665,7 +667,7 @@ _optionOnePress() {
         this._viewChange(false,true,false,false,true,false)
     } else if (this.state.phase == 3){
         this.setState({topmessage:'You voted INNOCENT.'})
-        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
+        this.guiltyVotesRef.child(this.user).set(null).then(()=>{
             this._readyValue(true);
         })
     } else if (this.state.phase == 5){
@@ -685,7 +687,7 @@ _optionTwoPress() {
         this.setState({topmessage:'You abstained.'})
     } else if (this.state.phase == 3){
         this.setState({topmessage:'You voted GUILTY.'})
-        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname).then(()=>{
+        this.guiltyVotesRef.child(this.user).set(this.state.myname).then(()=>{
             this._readyValue(true);
         })
     } else if (this.state.phase == 5){
@@ -712,25 +714,25 @@ _resetOptionPress() {
 
         if(this.state.presseduid != 'foo'){
             this._pressedUid('foo');
-            this.voteRef.child(this.state.presseduid).child(firebase.auth().currentUser.uid).remove()
+            this.voteRef.child(this.state.presseduid).child(this.user).remove()
         }
 
     } else if (this.state.phase == 3){
 
-        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
+        this.guiltyVotesRef.child(this.user).set(null).then(()=>{
             this._readyValue(false);
         })
 
     } else if (this.state.phase == 5){
 
-        this.actionRef.child(firebase.auth().currentUser.uid).update({
+        this.actionRef.child(this.user).update({
                 roleid:     null,
                 target:     null,
                 targetname: null,
             });
 
         this.actionRef.child(this.state.presseduid).child(this.state.myroleid)
-        .child(firebase.auth().currentUser.uid).set(null)
+        .child(this.user).set(null)
             .then(()=>{
                 this._readyValue(false);
                 this._pressedUid('foo');
@@ -754,7 +756,7 @@ _renderPhaseName() {
 
 _renderTopMessage(){
     
-    if(this.state.phase == 3 || (this.state.phase == 4 && this.state.nominate != firebase.auth().currentUser.uid)){
+    if(this.state.phase == 3 || (this.state.phase == 4 && this.state.nominate != this.user)){
         return <Text style = {{color:colors.titlefont, alignSelf:'center', 
             fontFamily: 'ConcertOne-Regular', fontSize:14}}>
             {this.state.nominee + ' ' + this.state.topmessage}
@@ -1060,7 +1062,7 @@ _gameOver() {
             firebase.database().ref('rooms/' + this.state.roomname).remove();
         } else {
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + firebase.auth().currentUser.uid).remove();
+                + this.user).remove();
         }
     })
     
