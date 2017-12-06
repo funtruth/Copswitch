@@ -284,8 +284,9 @@ componentWillMount() {
                         if((guiltyvotes.numChildren()+1)>this.state.triggernum){
 
                             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                                + this.state.nominate).update({dead:true});
-                            this._changePlayerCount(false);
+                                + this.state.nominate).update({dead:true}).then(()=>{
+                                    this._changePlayerCount(false);
+                                })
 
                             firebase.database().ref('rooms/'+ this.state.roomname +'/listofplayers/'
                             +this.state.nominate).once('value',dead=>{
@@ -320,8 +321,8 @@ componentWillMount() {
                             this._noticeMsgGlobal(this.state.roomname,'#34cd0e',this.state.nominee 
                                 + ' was not hung.',1)
 
-                            this.listRef.child(this.state.nominate)
-                                .update({immune:true})
+                            //this.listRef.child(this.state.nominate)
+                              //  .update({immune:true})
 
                             this._changePhase(Phases[this.state.phase].continue)
                         }
