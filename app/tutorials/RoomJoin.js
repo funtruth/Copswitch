@@ -88,7 +88,6 @@ export class Join1 extends Component {
 
         firebase.database().ref('rooms/' + roomname 
             + '/listofplayers/' + firebase.auth().currentUser.uid).update({
-                readyvalue:         false,
                 presseduid:         'foo',
         }).then(()=>{
             this.props.navigation.dispatch(
@@ -367,7 +366,6 @@ export class LobbyPager extends Component {
                 firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
                 .child(firebase.auth().currentUser.uid).update({
                     name:               name,
-                    readyvalue:         false,
                     presseduid:         'foo',
                 }).then(()=>{
                     this.setState({errormessage:null})
@@ -472,7 +470,6 @@ export class Lobby1 extends Component {
             firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
             .child(firebase.auth().currentUser.uid).update({
                 name:               name.trim(),
-                readyvalue:         false,
                 presseduid:         'foo',
             }).then(()=>{
                 this.setState({errormessage:null})

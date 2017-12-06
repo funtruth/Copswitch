@@ -51,6 +51,7 @@ render() {
                 <TouchableOpacity style = {{
                     flex:1, 
                     justifyContent:'center',
+                    alignItems:'center',
                     backgroundColor:this.props.color,
                     marginBottom:this.state.margin, 
                     borderTopLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,

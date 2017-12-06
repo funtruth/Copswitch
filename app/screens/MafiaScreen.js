@@ -66,7 +66,7 @@ constructor(props) {
         triggernum:         1000,
         playernum:          1000,
 
-        readyvalue:         false,
+        ready:              false,
         presseduid:         '',
         disabled:           false,
 
@@ -96,7 +96,7 @@ constructor(props) {
 
     this.roomRef            = firebase.database().ref('rooms/' + roomname);
     this.myInfoRef          = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid);
-    this.readyValueRef      = this.myInfoRef.child('readyvalue');
+    this.readyValueRef      = this.roomRef.child('ready').child(firebase.auth().currentUser.uid);
     this.mafiaRef           = this.roomRef.child('mafia');
     
     this.listRef            = this.roomRef.child('listofplayers');
@@ -106,9 +106,9 @@ constructor(props) {
     this.phaseRef           = this.roomRef.child('phase');
 
     //Owner Listening
-    this.readyRef           = this.roomRef.child('listofplayers').orderByChild('readyvalue').equalTo(true);
     this.guiltyVotesRef     = this.roomRef.child('guiltyvotes');
-    this.voteRef     = this.roomRef.child('votes');
+    this.voteRef            = this.roomRef.child('votes');
+    this.readyRef           = this.roomRef.child('ready').orderByValue().equalTo(true);
 
     //Transition Screen
     this.dayCounterRef      = this.roomRef.child('daycounter');
@@ -136,7 +136,6 @@ componentWillMount() {
 
             //Button press states and Living state
             this.setState({
-                readyvalue:         snap.val().readyvalue,
                 presseduid:         snap.val().presseduid,
                 amidead:            snap.val().dead,
                 myname:             snap.val().name,
@@ -149,10 +148,15 @@ componentWillMount() {
             if(this.state.amidead){
                 this._viewChange(false,false,false,false,false,true,false)
             } else if(snap.val() == true){
+                this.setState({ready:true})
                 this._viewChange(false,false,false,false,false,false,true)
             } else {
+                this.setState({ready:false})
                 this._viewChange(true,false,true,true,true,false,false)
             }
+        } else {
+            this.setState({ready:false})
+            this._viewChange(true,false,true,true,true,false,false)
         }
     })
 
@@ -170,7 +174,6 @@ componentWillMount() {
             var list = [];
             snap.forEach((child)=> {
                 list.push({
-                    readyvalue:     child.val().readyvalue,
                     name:           child.val().name,
                     dead:           child.val().dead?true:false,
                     immune:         child.val().immune?true:false,
@@ -248,20 +251,20 @@ componentWillMount() {
             && this.state.playernum>0){
                 //Phase 2 CONTINUE
                 if(this.state.phase == 2){
-
-                    this.voteRef.once('value', snap=>{
+                    this.voteRef.once('value', votes=>{
                         var flag = false;
-                        snap.forEach((child)=>{
+                        votes.forEach((child)=>{
                             if(child.numChildren() + 1 > this.state.triggernum){
                                 flag = true;
                             }
                         });
-                        if(flag && flag == false){
+                        if(flag){
+                            alert('test')//NEED TO FIX
+                        } else if (flag == false){
                             this.roomRef.child('actions').remove();
                             this._resetDayStatuses();
                             this._changePhase(Phases[this.state.phase].continue);
                         };
-                        
                     })
                 }
                 //Phase 3 Handling both CONTINUE and TRIGGER
@@ -321,8 +324,7 @@ componentWillMount() {
                             this._noticeMsgGlobal(this.state.roomname,'#34cd0e',this.state.nominee 
                                 + ' was not hung.',1)
 
-                            //this.listRef.child(this.state.nominate)
-                              //  .update({immune:true})
+                            this.listRef.child(this.state.nominate).update({immune:true})
 
                             this._changePhase(Phases[this.state.phase].continue)
                         }
@@ -436,7 +438,8 @@ _changePhase(newphase){
     this.listRef.once('value',snap=>{
         snap.forEach((child)=>{
             //Set all votes to 0 and RESET Buttons
-            this.listRef.child(child.key).update({readyvalue:false, presseduid:'foo'})
+            this.listRef.child(child.key).update({presseduid:'foo'})
+            this.roomRef.child('ready').child(child.key).set(false)
         })
     }).then(()=>{
         this.voteRef.remove();
@@ -459,7 +462,7 @@ _resetDayStatuses() {
 }
 
 _readyValue(status){
-    this.myInfoRef.update({readyvalue: status})
+    this.readyValueRef.set(status)
 }
 _pressedUid(uid){
     this.myInfoRef.update({presseduid: uid})

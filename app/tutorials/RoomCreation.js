@@ -366,7 +366,6 @@ export class Creation1 extends Component {
             firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
             .child(firebase.auth().currentUser.uid).update({
                 name:               name.trim(),
-                readyvalue:         false,
                 presseduid:         'foo',
             }).then(()=>{
                 this.setState({errormessage:null})
@@ -416,7 +415,7 @@ export class Creation1 extends Component {
                     rightradius = {25}
                     color = {colors.menubtn}
                     onPress = {()=>{
-                        this._continue(this.state.alias.trim());
+                        this._continue(this.state.alias);
                     }}
                     component = {<Text style = {styles.concerto}>GO</Text>}
                 />
