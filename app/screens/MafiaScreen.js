@@ -97,7 +97,7 @@ constructor(props) {
         waitingOpacity:     new Animated.Value(0),
     };
 
-    this.user               = this.user;
+    this.user               = firebase.auth().currentUser.uid;
 
     this.roomRef            = firebase.database().ref('rooms/' + roomname);
     this.myInfoRef          = this.roomRef.child('listofplayers').child(this.user);
@@ -171,9 +171,22 @@ componentWillMount() {
                 })
             }
         } else {
-            this.setState({ready:false})
-            this._viewChange(true,false,false,false,false,false)
-            setTimeout(()=>{this.loadedRef.child(this.user).set(true)},1500)
+            if(this.state.amidead){
+                this.setState({ready:false})
+                this._viewChange(true,false,false,false,false,false)
+            } else {
+                this.setState({ready:false})
+                this._viewChange(true,false,false,false,false,false)
+                setTimeout(()=>{
+                    this.readyValueRef.once('value',snap=>{
+                        if(snap.exists()){
+                            this.readyValueRef.remove();
+                        } else {
+                            this.loadedRef.child(this.user).set(true)
+                        }
+                    })
+                },1500)
+            }
         }
     })
 
@@ -483,7 +496,7 @@ _onBackPress = () => {
 
 _buttonPress() {
     this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 200);
+    setTimeout(() => {this.setState({disabled: false})}, 1100);
 }
 
 _changePhase(newphase){
@@ -602,56 +615,80 @@ _viewChange(title,back,vote,abstain,list,waiting) {
 }
 
 //Pressing any name button
-_nameBtnPress(uid,name,triggernum,phase,roomname){
+_nameBtnPress(item){
 
-    this._buttonPress();
+    if(!this.state.disabled){
 
-    if(phase == 2){ 
-        this.setState({topmessage:'You have selected ' + name + '.'})
-        this._pressedUid(uid);
-        this._readyValue(true);
-        this.voteRef.child(uid).child(this.user).set(this.state.myname);
+        this._buttonPress();
 
-    }  else if(phase == 4){
-        firebase.database().ref('rooms/' + roomname + '/mafia/' + uid).once('value',mafiacheck=>{
-            if(mafiacheck.exists()){
-                firebase.database().ref('rooms/'+roomname+'/mafia/' + uid)
-                .update({roleid:this.state.myroleid}).then(()=>{
-                    this.listRef.child(uid).update({roleid:this.state.myroleid}).then(()=>{
-                        this.actionRef.remove();
-                        this._resetDayStatuses();
-                        this._changePhase(5);
-                    })
-                })
+        if(this.state.phase == 2){ 
+            if(this.state.amidead){
+                this.setState({topmessage:'You are Dead.'})
+            } else if (item.dead){
+                this.setState({topmessage:'That player is Dead.'})
+            } else if (item.immune){
+                this.setState({topmessage:'That player is Immune'})
             } else {
-                this.setState({topmessage: name + ' is not a member of the Mafia.'})
+                this.setState({topmessage:'You have selected ' + item.name + '.'})
+                this._pressedUid(item.key);
+                this._readyValue(true);
+                this.voteRef.child(item.key).child(this.user).set(this.state.myname);
             }
-        })
-    } else if (phase==5) {
-
-        this.setState({topmessage:'You have selected ' + name + '.'})
-
-        this.actionRef.child(this.user).update({
-                target:uid,
-                targetname:name,
-                roleid:this.state.myroleid,
-        }).then(()=>{
-            this.actionRef.child(uid).child(this.state.myroleid).child(this.user)
-                .set(this.state.myname).then(()=>{
-                    this._pressedUid(uid);
-                    this._readyValue(true);
+        }  else if(this.state.phase == 4){
+            if(!this.state.amipicking){
+                this.setState({topmessage:'You are not Picking.'})
+            } else if (item.dead){
+                this.setState({topmessage:'That player is Dead.'})
+            } else {
+                this.mafiaRef.child(item.key).once('value',mafiacheck=>{
+                    if(mafiacheck.exists()){
+                        this.mafiaRef.child(item.key).update({roleid:this.state.myroleid})
+                        .then(()=>{
+                            this.listRef.child(item.key).update({roleid:this.state.myroleid})
+                            .then(()=>{
+                                this.actionRef.remove();
+                                this._resetDayStatuses();
+                                this._changePhase(5);
+                            })
+                        })
+                    } else {
+                        this.setState({topmessage: item.name + ' is not a member of the Mafia.'})
+                    }
                 })
-        })
+            }
+        } else if (this.state.phase==5) {
 
-    } 
+            if(this.state.amidead){
+                this.setState({topmessage:'You are Dead.'})
+            } else if (this.state.targettown && item.type != 2){
+                this.setState({topmessage:'Select a Town Player.'})
+            } else if (this.state.targetdead && !item.dead){
+                this.setState({topmessage:'Select a Dead player.'})
+            } else {
+                this.setState({topmessage:'You have selected ' + item.name + '.'})
+                
+                this.actionRef.child(this.user).update({
+                        target:     item.key,
+                        targetname: item.name,
+                        roleid:     this.state.myroleid,
+                }).then(()=>{
+                    this.actionRef.child(item.key).child(this.state.myroleid).child(this.user)
+                        .set(this.state.myname).then(()=>{
+                            this._pressedUid(item.key);
+                            this._readyValue(true);
+                        })
+                })
+            }
+        }
+    }
 }
 
-_nameBtnLongPress(uid,name,phase){
-    if(phase == 5) {
+_nameBtnLongPress(item){
+    if(this.state.phase == 5) {
         if(this.state.amimafia){
             this.mafiaRef.once('value',snap=>{
                 snap.forEach((child)=>{
-                    this._noticeMsg(child.key,this.state.myname+' wants to kill '+name+'.')
+                    this._noticeMsg(child.key, this.state.myname + ' wants to kill ' + item.name + '.')
                 })
             })
         }
@@ -776,34 +813,15 @@ _renderListComponent(){
         data={this.state.namelist}
         renderItem={({item}) => (
             <View style = {{marginBottom:10}}><CustomButton
-            flex = {0.8}    
-            onPress={() => {this.state.disabled?{}:
-                this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                this.state.phase,this.state.roomname)}}
-                onLongPress={()=>{
-                this._nameBtnLongPress(item.key,item.name,this.state.phase)
-                }}
-                color = {item.dead ? colors.dead : (item.immune? colors.immune : 
-                    (item.status?colors.status:colors.namebtn))}
-                shadow = {item.dead ? colors.deadshadow : (item.immune? colors.lightshadow : 
-                    (item.status?colors.statusshadow:colors.lightshadow))}
-                depth = {6}
-                radius = {40}
-                disabled = {
-                    this.state.phase == 2?
-                    this.state.amidead?true:(item.immune?true:item.dead)
-                    :(
-                        this.state.phase == 4?
-                        this.state.amipicking?item.dead:false
-                        :(
-                            this.state.phase == 5?
-                            this.state.amidead?true:this.state.targettown?
-                            (this.state.targetdead? (item.type==1 || !item.dead) : item.type == 1 ) 
-                            : (this.state.targetdead? !item.dead : false )
-                            :true
-                        )
-                    )
-                }
+                flex = {0.8}    
+                onPress         = {() => { this._nameBtnPress(item) }}
+                onLongPress     = {() => { this._nameBtnLongPress(item) }}
+                color           = {item.dead ? colors.dead : (item.immune? colors.immune : 
+                                  (item.status?colors.status:colors.namebtn))}
+                shadow          = {item.dead ? colors.deadshadow : (item.immune? colors.lightshadow : 
+                                  (item.status?colors.statusshadow:colors.lightshadow))}
+                depth           = {6}
+                radius          = {40}
                 component = {<View style = {{flexDirection:'row',alignItems:'center',
                     justifyContent:'center', height:40}}>
                     <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
