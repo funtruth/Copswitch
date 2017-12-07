@@ -31,6 +31,8 @@ import colors from '../misc/colors.js';
 
 import * as Animatable from 'react-native-animatable';
 const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons)
+const MENU_ANIM = 200;
+const GAME_ANIM = 1000;
 import randomize from 'randomatic';
 
 export class CreationPager extends Component {
@@ -42,6 +44,9 @@ export class CreationPager extends Component {
         const roomname = params.roomname;
 
         this.state = {
+
+            page:1,
+
             roomname: params.roomname,
             alias:'',
             loading:true,
@@ -53,14 +58,20 @@ export class CreationPager extends Component {
 
             transition:false,
             transitionOpacity: new Animated.Value(0),
+            
+            modal: false,
+            modalOpacity: new Animated.Value(0),
+            menuHeight: new Animated.Value(0),
         };
 
-        this.dot1 = new Animated.Value(1);
-        this.dot2 = new Animated.Value(0.3);
-        this.dot3 = new Animated.Value(0.3);
-        this.dot4 = new Animated.Value(0.3);
-        this.dot5 = new Animated.Value(0.3);
-        this.width = Dimensions.get('window').width
+        this.dot1           = new Animated.Value(1);
+        this.dot2           = new Animated.Value(0.3);
+        this.dot3           = new Animated.Value(0.3);
+        this.dot4           = new Animated.Value(0.3);
+        this.dot5           = new Animated.Value(0.3);
+
+        this.height         = Dimensions.get('window').height;
+        this.width          = Dimensions.get('window').width;
 
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
         this.nameRef        = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid)
@@ -143,6 +154,13 @@ export class CreationPager extends Component {
         })  
     }
 
+    _deleteRoom() {
+        this.roomRef.remove()
+        .then(()=>{
+            this.props.navigation.dispatch(NavigationActions.back());
+        })
+    }
+
     _pagingEnabled(position){
         const width  = this.width;
         const half   = width/2;
@@ -190,6 +208,42 @@ export class CreationPager extends Component {
         ]).start()
     }
 
+    _menuPress() {
+        if(this.state.modal){
+            setTimeout(()=>{this.setState({modal:false})},MENU_ANIM)
+            Animated.parallel([
+                Animated.timing(
+                    this.state.modalOpacity,{
+                        toValue:0,
+                        duration:MENU_ANIM
+                    }
+                ),
+                Animated.timing(
+                    this.state.menuHeight,{
+                        toValue:0,
+                        duration:MENU_ANIM
+                    }
+                )
+            ]).start()
+        } else {
+            this.setState({modal:true})
+            Animated.parallel([
+                Animated.timing(
+                    this.state.modalOpacity,{
+                        toValue:1,
+                        duration:MENU_ANIM
+                    }
+                ),
+                Animated.timing(
+                    this.state.menuHeight,{
+                        toValue:this.height*0.6,
+                        duration:MENU_ANIM
+                    }
+                )
+            ]).start()
+        }
+    }
+
     _transition() {
         
         this.setState({transition:true})
@@ -199,6 +253,16 @@ export class CreationPager extends Component {
                 duration:2000
             }
         ).start()
+    }
+
+    _updatePage(page){
+        this.setState({page:page, currentpage:page})
+    }
+
+    _changePage(page){
+        this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
+        this.setState({currentpage:page})
+        this._menuPress()
     }
 
     _startGame(roomname) {
@@ -272,62 +336,101 @@ export class CreationPager extends Component {
 
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
-            <View style = {{flexDirection:'row', flex:0.15, justifyContent:'center',alignItems:'center'}}>
-                <View style = {{flex:0.15}}/>
-                <View style = {{flex:0.7, justifyContent:'center'}}> 
+            <View style = {{flexDirection:'row', height:this.height*0.1, 
+            justifyContent:'center', alignItems:'center', backgroundColor:colors.shadow}}>
+                <TouchableOpacity
+                    style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}
+                    onPress = {()=>{ this._menuPress() }}>
+                    <MaterialCommunityIcons name='menu' style={{color:'white',fontSize:30}}/>
+                </TouchableOpacity>
+                <View style = {{flex:0.7, justifyContent:'center', borderRadius:30}}> 
                     <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                 </View>
-                <TouchableOpacity
-                    style = {{flex:0.15}}
-                    onPress = {()=>{
-                        firebase.database().ref('rooms').child(this.state.roomname).remove()
-                        .then(()=>{
-                            this.props.navigation.dispatch(NavigationActions.back());
-                        })
-                    }} >
-                    <MaterialCommunityIcons name='close-circle'
-                        style={{color:colors.menubtn,fontSize:30}}/>
-                </TouchableOpacity>
+                <View style = {{flex:0.15}}/>
             </View>
 
-            <ScrollView style = {{flex:0.75,backgroundColor:colors.background}}
-                horizontal showsHorizontalScrollIndicator={false} ref='scrollView' pagingEnabled
-                scrollEventThrottle = {16}
-                onScroll = {(event) => { 
-                    this._handleDots(event.nativeEvent.contentOffset.x)
-                }}>
-                
-                <Creation1
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                />
-                <Creation2 
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                />
-                <Creation3
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                />
-                <Creation4
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                    playernum = {this.state.playernum}
-                    playercount = {this.state.playercount}
-                />
-                <Creation5
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                    navigation = {this.props.navigation}
-                />
-            </ScrollView>
+            <View style = {{height:this.height*0.8}}>
+                <ScrollView style = {{flex:1,backgroundColor:colors.background}}
+                    horizontal showsHorizontalScrollIndicator={false} ref='scrollView'
+                    scrollEnabled = {false}>
+                    
+                    <Creation1
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                        updatePage = {val => this._updatePage(val)}
+                    />
+                    <Creation2 
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                        updatePage = {val => this._updatePage(val)}
+                    />
+                    <Creation3
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                        updatePage = {val => this._updatePage(val)}
+                    />
+                    <Creation4
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                        playernum = {this.state.playernum}
+                        playercount = {this.state.playercount}
+                        updatePage = {val => this._updatePage(val)}
+                    />
+                    <Creation5
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                        navigation = {this.props.navigation}
+                    />
+                </ScrollView>
+                {this.state.modal?
+                    <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{this._menuPress()}}>
+                        <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                            backgroundColor:'rgba(0, 0, 0, 0.5)', alignItems:'center',
+                            opacity:this.state.modalOpacity}}>
+                            <Animated.View style = {{height:this.state.menuHeight, width:this.width*0.85,
+                                backgroundColor:colors.shadow, justifyContent:'center', alignItems:'center',
+                                borderBottomLeftRadius:30, borderBottomRightRadius:30}}>
+                                <TouchableOpacity
+                                    style = {styles.optionBox}
+                                    onPress = {()=>{ this._changePage(1) }}>
+                                    <Text style = {styles.options}>Edit Name</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style = {this.state.page<2?styles.disabledBox:styles.optionBox}
+                                    onPress = {()=>{ this.state.page<2?{}:this._changePage(2) }}>
+                                    <Text style = {styles.options}># of Players</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style = {this.state.page<3?styles.disabledBox:styles.optionBox}
+                                    onPress = {()=>{ this.state.page<3?{}:this._changePage(3) }}>
+                                    <Text style = {styles.options}>Difficulty</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style = {this.state.page<4?styles.disabledBox:styles.optionBox}
+                                    onPress = {()=>{ this.state.page<4?{}:this._changePage(4) }}>
+                                    <Text style = {styles.options}>Select Roles</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style = {this.state.page<5?styles.disabledBox:styles.optionBox}
+                                    onPress = {()=>{ this.state.page<5?{}:this._changePage(5) }}>
+                                    <Text style = {styles.options}>Lobby</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style = {[styles.optionBox,{backgroundColor:colors.menubtn}]}
+                                    onPress = {()=>{this._leaveRoom()}}>
+                                    <Text style = {[styles.options,{color:'white'}]}>Leave Room</Text>
+                                </TouchableOpacity>
+                            </Animated.View>
+                        </Animated.View>
+                    </TouchableWithoutFeedback>:null}
+            </View>
 
-            <View style = {{flex:0.1, flexDirection:'row',
+            <View style = {{height:this.height*0.1, flexDirection:'row',
                 justifyContent:'center', alignItems:'center'}}>
                 <AnimatedDot name='checkbox-blank-circle'
                     style={{color:colors.dots,fontSize:15, opacity:this.dot1}}/>
@@ -363,6 +466,9 @@ export class Creation1 extends Component {
 
     _continue(name) {
         if(name && name.trim().length>0 && name.trim().length < 11){
+
+            this.props.updatePage(2)
+
             firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
             .child(firebase.auth().currentUser.uid).update({
                 name:               name.trim(),
@@ -400,7 +506,6 @@ export class Creation1 extends Component {
                         borderTopLeftRadius:25,
                         borderBottomLeftRadius:25,
                     }}
-                    autoFocus
                     value={this.state.alias}
                     onChangeText = {(text) => {this.setState({alias: text})}}
                     onSubmitEditing = {()=>{ 
@@ -494,6 +599,9 @@ export class Creation2 extends Component {
             this.refs.error.shake(800)
             this.setState({playercount:null})
         } else {
+
+            this.props.updatePage(3)
+
             firebase.database().ref('rooms').child(this.props.roomname).update({
                 playernum: Number(this.state.playercount)
             }).then(()=>{
@@ -629,6 +737,9 @@ export class Creation3 extends Component {
     }
 
     _selectDifficulty(difficulty) {
+
+        this.props.updatePage(4)
+
         firebase.database().ref('rooms').child(this.props.roomname).update({
             difficulty: difficulty
         }).then(()=>{
@@ -788,10 +899,19 @@ export class Creation4 extends Component {
         }
     }
 
+    _selectionDone() {
+        this.props.updatePage(5)
+        this.props.refs.scrollView.scrollTo({x:this.props.width*4,animated:true})
+    }
+
     _roleBtnPress(key,index,count) {
         this.listOfRoles.child(key).transaction((count)=>{
             return count + 1;
         })
+
+        if(this.props.playercount + 1 == this.props.playernum){
+            this._selectionDone()
+        }
     }
 
     _removeRole(key, index) {
@@ -1090,7 +1210,31 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.menubtn,
+        color: colors.font,
+    },
+    
+    options: {
+        fontSize: 25,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.shadow,
+        marginTop:10,
+        marginBottom:10
+    },
+    optionBox: {
+        width:Dimensions.get('window').width*0.7, 
+        borderRadius:30, 
+        backgroundColor:colors.background,
+        marginTop:5,
+        marginBottom:5
+    },
+    disabledBox: {
+        width:Dimensions.get('window').width*0.7, 
+        borderRadius:30, 
+        backgroundColor:colors.background,
+        opacity:0.5,
+        marginTop:5,
+        marginBottom:5
     },
     subtitle : {
         fontSize: 20,

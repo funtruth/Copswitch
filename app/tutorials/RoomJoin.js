@@ -32,6 +32,7 @@ import colors from '../misc/colors.js';
 import * as Animatable from 'react-native-animatable';
 const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons);
 const MENU_ANIM = 200;
+const GAME_ANIM = 1000;
 
 export class Join1 extends Component {
 
@@ -389,15 +390,15 @@ export class LobbyPager extends Component {
             Animated.timing(
                 this.state.transitionOpacity,{
                     toValue:1,
-                    duration:MENU_ANIM
+                    duration:GAME_ANIM
                 }
             ).start()
         } else {
-            setTimeout(()=>{this.setState({transition:false})},MENU_ANIM)
+            setTimeout(()=>{this.setState({transition:false})},GAME_ANIM)
             Animated.timing(
                 this.state.transitionOpacity,{
                     toValue:0,
-                    duration:MENU_ANIM
+                    duration:GAME_ANIM
                 }
             ).start()
         }
