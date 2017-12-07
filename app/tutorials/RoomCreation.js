@@ -492,11 +492,12 @@ export class Creation1 extends Component {
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background,
             justifyContent:'center', alignItems:'center', width:this.props.width}}>
-                    
-            <Text style = {[styles.subtitle,{flex:0.1}]}>
-                What is your name?</Text>
+            
+            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.title}>Step 1 of 4</Text>
+                <Text style = {styles.subtitle}>What is your name?</Text>
+            </View>
 
-            <View style = {{flex:0.25}}/>
             <View style = {{flex:0.12,flexDirection:'row'}}>
                 <TextInput
                     style={{
@@ -531,9 +532,12 @@ export class Creation1 extends Component {
                     component = {<Text style = {styles.concerto}>GO</Text>}
                 />
             </View>
-            <Animatable.Text style = {[styles.sconcerto,{flex:0.05}]} ref = 'nameerror'>
-                {this.state.errormessage}</Animatable.Text>
-            <View style = {{ flex:0.48 }}/>
+
+            <View style = {{justifyContent:'center',alignItems:'center', flex:0.07}}>
+                <Animatable.Text style = {styles.sconcerto} ref = 'nameerror'>
+                    {this.state.errormessage}</Animatable.Text>
+            </View>
+            <View style = {{ flex:0.4 }}/>
         </View>
     }
 }
@@ -617,8 +621,12 @@ export class Creation2 extends Component {
         return <View style = {{flex:0.7,backgroundColor:colors.background, 
             width:this.props.width}}>
 
-            <Text style = {[styles.subtitle,{flex:0.1}]}>
-                {'How many people' + '\n' +  'are playing?'}</Text>
+            <View style = {{flex:0.05}}/>
+
+            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.title}>Step 2 of 4</Text>
+                <Text style = {styles.subtitle}>{'How many people' + '\n' +  'are playing?'}</Text>
+            </View>
 
             <View style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}>
                 <View style = {{flex:0.7, flexDirection:'row'}}>
@@ -637,9 +645,7 @@ export class Creation2 extends Component {
                 </View>
             </View>
 
-            <View style = {{flex:0.05}}/>
-
-            <View style = {{flex:0.6, justifyContent:'center', alignItems:'center',
+            <View style = {{flex:0.5, justifyContent:'center', alignItems:'center',
                 marginLeft:10, marginRight:10, borderRadius:2, paddingTop:5, paddingBottom:5}}>
                 <Animatable.Text style = {styles.error}ref='error'>
                     {this.state.errormessage}</Animatable.Text>
@@ -724,7 +730,6 @@ export class Creation2 extends Component {
                         component = {<Text style={styles.concerto}>DONE</Text>}/>
                 </View>
             </View>
-            <View style = {{flex:0.05}}/>
 
         </View>
     }
@@ -752,16 +757,16 @@ export class Creation3 extends Component {
     }
 
     render() {
-        return <View style = {{flex:0.7,backgroundColor:colors.background,
-            width: this.props.width}}>
+        return <View style = {{flex:0.7,backgroundColor:colors.background, alignItems:'center',
+            width: this.props.width, justifyContent:'center', borderWidth:1}}>
 
-                <View style = {{flex:0.1,backgroundColor:colors.background, 
-                    justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.subtitle}>
-                        {'How experienced' + '\n' + 'is your Group?'}</Text>
+                <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
+                    <Text style = {styles.title}>Step 3 of 4</Text>
+                    <Text style = {styles.subtitle}>{'How experienced' + '\n' + 'is your Group?'}</Text>
                 </View>
-                <View style = {{flex:0.06}}/>
-                <CustomButton size = {0.27} flex = {0.8} depth = {10} radius = {80}
+
+                <View style = {{flex:0.03}}/>
+                <CustomButton size = {0.2} flex = {0.8} depth = {10} radius = {80}
                     color = {this.state.difficulty==1?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==1?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(1) }}
@@ -773,8 +778,8 @@ export class Creation3 extends Component {
                             {'We are just trying out' + '\n' + 'Mafia for the first time!'}</Text>
                     </View>}
                 />
-                <View style = {{flex:0.04}}/>
-                <CustomButton size = {0.27} flex = {0.8} depth = {10} radius = {80}
+                <View style = {{flex:0.02}}/>
+                <CustomButton size = {0.2} flex = {0.8} depth = {10} radius = {80}
                     color = {this.state.difficulty==2?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==2?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(2) }}
@@ -789,8 +794,8 @@ export class Creation3 extends Component {
                             {'We play once and a while' + '\n' + 'and know most of the roles.'}</Text>
                     </View>}
                 />
-                <View style = {{flex:0.04}}/>
-                <CustomButton size = {0.27} flex = {0.8} depth = {10} radius = {80}
+                <View style = {{flex:0.02}}/>
+                <CustomButton size = {0.2} flex = {0.8} depth = {10} radius = {80}
                     color = {this.state.difficulty==3?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==3?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(3) }}
@@ -949,8 +954,11 @@ export class Creation4 extends Component {
         return <View style = {{flex:0.7,backgroundColor:colors.background,
             width:this.props.width,justifyContent:'center'}}>
 
-            <Text style = {[styles.subtitle,{flex:0.1}]}>
-                {'Select ' + (this.props.playernum - this.props.playercount) + ' more roles'}</Text>
+            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.title}>Step 4 of 4</Text>
+                <Text style = {styles.subtitle}>
+                    {'Select ' + (this.props.playernum - this.props.playercount) + ' more roles'}</Text>
+            </View>
 
             <View style = {{flex:0.1, flexDirection:'row', justifyContent:'center'}}>
                 <CustomButton
@@ -1001,7 +1009,7 @@ export class Creation4 extends Component {
                 />
             </View>
 
-            <Animated.View style = {{flex:0.75, opacity:this.state.listOpacity, marginTop:10}}>
+            <Animated.View style = {{flex:0.65, opacity:this.state.listOpacity, marginTop:10}}>
                 <FlatList
                     data={this.state.showtown?this.state.townlist:
                         (this.state.showmafia?this.state.mafialist:this.state.neutrallist)}
@@ -1053,6 +1061,9 @@ export class Creation5 extends Component {
             warning1:           true,
             warning2:           true,
         };
+
+        this.height = Dimensions.get('window').height;
+        this.width  = Dimensions.get('window').width;
     }
 
     componentWillMount() {
@@ -1161,49 +1172,50 @@ export class Creation5 extends Component {
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
-                <Text style = {styles.concerto}>{item.name}</Text>
+                <Text style = {{
+                    fontSize: 20,
+                    fontFamily: 'ConcertOne-Regular',
+                    textAlign:'center',
+                    color: colors.shadow }}>{item.name}</Text>
             )}
             numColumns={1}
             keyExtractor={item => item.key}/>
     }
 
     _renderOptions() {
-        return <CustomButton size = {0.1} flex = {0.7} opacity = {1} depth = {6}
-            color = {colors.menubtn} radius = {40}
-            onPress = {()=>{ 
-                !this.state.warning1 && !this.state.warning2 ? 
-                this._startGame(this.props.roomname) : alert('Unable to Start game.')
-            }}
-            component = {<Text style={styles.mconcerto}>START GAME</Text>}/>
+        return <View style = {{height:this.height*0.1, width:this.width*0.7}}>
+            <CustomButton size = {1} flex = {1} opacity = {1} depth = {6}
+                color = {colors.menubtn} radius = {40}
+                onPress = {()=>{ 
+                    !this.state.warning1 && !this.state.warning2 ? 
+                    this._startGame(this.props.roomname) : alert('Unable to Start game.')
+                }}
+                component = {<Text style={styles.mconcerto}>START GAME</Text>}/>
+        </View>
     }
 
     render() {
-        return <View style = {{flex:0.7,backgroundColor:colors.background,width:this.props.width}}>
+        return <View style = {{flex:0.7,backgroundColor:colors.background,width:this.props.width,
+            alignItems:'center'}}>
 
-                <View style = {{flex:0.1, justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.mdconcerto}>Players:</Text>
-                </View>
+            <View style = {{height:this.height*0.15, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.title}>Game Lobby</Text>
+                <Text style = {styles.subtitle}>Players:</Text>
+            </View>
 
-                <View style = {{flex:0.7, justifyContent:'center', alignItems:'center',
-                    flexDirection:'row'}}>
-                    <View style = {{flex:0.7,backgroundColor:colors.menubtn,borderRadius:30}}>
-                        {this._renderListComponent()}
-                    </View>
-                </View>
+            <View style = {{height:this.height*0.55, width:this.width*0.7, justifyContent:'center'}}>
+                {this._renderListComponent()}
+            </View>
 
-                <View style = {{flex:0.05}}/>
-                {this._renderOptions()}
-                <View style = {{flex:0.05}}/>
-                
-                {this.state.warning1?this._renderWarning1():null}
-                {this.state.warning2?this._renderWarning2():null}
+            {this._renderOptions()}
+            <View style = {{height:this.height*0.04}}/>
 
-                {this.state.transition?<Animated.View
-                    style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-                    backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
-                    <ActivityIndicator size='large' color={colors.font} 
-                        style = {{position:'absolute',bottom:25,right:25}}/>
-                </Animated.View>:null}
+            {this.state.transition?<Animated.View
+                style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
+                <ActivityIndicator size='large' color={colors.font} 
+                    style = {{position:'absolute',bottom:25,right:25}}/>
+            </Animated.View>:null}
         </View>
     }
 }
@@ -1239,6 +1251,12 @@ const styles = StyleSheet.create({
         marginTop:5,
         marginBottom:5
     },
+    title : {
+        fontSize: 30,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.shadow,
+    },
     subtitle : {
         fontSize: 20,
         fontFamily: 'ConcertOne-Regular',
@@ -1261,7 +1279,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.font,
+        color: colors.shadow,
     },
     error: {
         fontSize: 15,
