@@ -155,7 +155,7 @@ export class Join1 extends Component {
 
                 <View style = {{flex:0.5, justifyContent:'center', alignItems:'center',
                  marginLeft:10, marginRight:10, borderRadius:2, paddingTop:5, paddingBottom:5}}>
-                    <Animatable.Text style = {[styles.sconcerto,{color:colors.shadow}]}ref='error'>
+                    <Animatable.Text style = {styles.sconcerto}ref='error'>
                         {this.state.errormessage}</Animatable.Text>
                     <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
@@ -256,6 +256,7 @@ export class LobbyPager extends Component {
 
         this.state = {
             page: 1,
+            currentpage:1,
 
             roomname: params.roomname,
             alias:'',
@@ -325,12 +326,14 @@ export class LobbyPager extends Component {
     }
 
     _onBackPress = () => {
-        firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
-        .child(firebase.auth().currentUser.uid).remove()
-        .then(()=>{
-            this.props.navigation.dispatch(NavigationActions.back({key:'Room'}));
-            return true
-        })  
+        if(this.state.modal){
+            this._menuPress()
+        }
+        if(this.state.currentpage > 1){
+            this.refs.scrollView.scrollTo({x:(this.state.currentpage - 2)*this.width,animated:true})
+            this.setState({currentpage:this.state.currentpage - 1})
+        }
+        return true
     }
 
     _leaveRoom() {
@@ -387,7 +390,13 @@ export class LobbyPager extends Component {
     }
 
     _updatePage(page){
-        this.setState({page:page})
+        this.setState({page:page, currentpage:page})
+    }
+
+    _changePage(page){
+        this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
+        this.setState({currentpage:page})
+        this._menuPress()
     }
 
     render() {
@@ -432,19 +441,12 @@ export class LobbyPager extends Component {
                                 borderBottomLeftRadius:30, borderBottomRightRadius:30}}>
                                 <TouchableOpacity
                                     style = {styles.optionBox}
-                                    onPress = {()=>{
-                                        this.refs.scrollView.scrollTo({x:0,animated:true})
-                                        this._menuPress()
-                                    }}>
+                                    onPress = {()=>{ this._changePage(1) }}>
                                     <Text style = {styles.options}>Edit Name</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style = {this.state.page<2?styles.disabledBox:styles.optionBox}
-                                    onPress = {()=>{
-                                        this.state.page<2?{}:
-                                        this.refs.scrollView.scrollTo({x:this.width,animated:true})
-                                        this._menuPress()
-                                    }}>
+                                    onPress = {()=>{ this.state.page<2?{}:this._changePage(2) }}>
                                     <Text style = {styles.options}>Lobby</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
@@ -552,8 +554,8 @@ export class Lobby1 extends Component {
                     component = {<Text style = {styles.concerto}>GO</Text>}
                 />
             </View>
-            <Animatable.Text style = {[styles.sconcerto,{height:this.height*0.05}]} ref = 'nameerror'>
-                {this.state.errormessage}</Animatable.Text>
+            <Animatable.Text style = {[styles.sconcerto,{height:this.height*0.05}]} 
+                ref = 'nameerror'>{this.state.errormessage}</Animatable.Text>
             <View style = {{flex:0.5}}/>
         </View>
     }
@@ -675,7 +677,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.font,
+        color: colors.shadow,
+        marginTop:10,
     },
     concerto: {
         fontSize: 20,
