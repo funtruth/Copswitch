@@ -148,10 +148,13 @@ export class CreationPager extends Component {
     }
 
     _onBackPress = () => {
-        firebase.database().ref('rooms').child(this.state.roomname).remove().then(()=>{
-            this.props.navigation.dispatch(NavigationActions.back({key:'Room'}));
-            return true
-        })  
+        if(this.state.modal){
+            this._menuPress()
+        } else if(this.state.currentpage > 1){
+            this.refs.scrollView.scrollTo({x:(this.state.currentpage-2)*this.width,animated:true})
+            this.setState({currentpage:this.state.currentpage-1})
+        }
+        return true
     }
 
     _deleteRoom() {
@@ -349,7 +352,7 @@ export class CreationPager extends Component {
                 <View style = {{flex:0.15}}/>
             </View>
 
-            <View style = {{height:this.height*0.8}}>
+            <View style = {{height:this.height*0.9}}>
                 <ScrollView style = {{flex:1,backgroundColor:colors.background}}
                     horizontal showsHorizontalScrollIndicator={false} ref='scrollView'
                     scrollEnabled = {false}>
@@ -422,15 +425,15 @@ export class CreationPager extends Component {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style = {[styles.optionBox,{backgroundColor:colors.menubtn}]}
-                                    onPress = {()=>{this._leaveRoom()}}>
-                                    <Text style = {[styles.options,{color:'white'}]}>Leave Room</Text>
+                                    onPress = {()=>{this._deleteRoom()}}>
+                                    <Text style = {[styles.options,{color:'white'}]}>Delete Room</Text>
                                 </TouchableOpacity>
                             </Animated.View>
                         </Animated.View>
                     </TouchableWithoutFeedback>:null}
             </View>
 
-            <View style = {{height:this.height*0.1, flexDirection:'row',
+            {/*<View style = {{height:this.height*0.1, flexDirection:'row',
                 justifyContent:'center', alignItems:'center'}}>
                 <AnimatedDot name='checkbox-blank-circle'
                     style={{color:colors.dots,fontSize:15, opacity:this.dot1}}/>
@@ -442,7 +445,7 @@ export class CreationPager extends Component {
                     style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot4}}/>
                 <AnimatedDot name='checkbox-blank-circle'
                     style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot5}}/>
-            </View>
+            </View>*/}
 
             {this.state.transition?<Animated.View
                 style = {{position:'absolute', top:0, bottom:0, left:0, right:0,

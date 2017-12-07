@@ -316,8 +316,7 @@ export class LobbyPager extends Component {
     _onBackPress = () => {
         if(this.state.modal){
             this._menuPress()
-        }
-        if(this.state.currentpage > 1){
+        } else if(this.state.currentpage > 1){
             this.refs.scrollView.scrollTo({x:(this.state.currentpage - 2)*this.width,animated:true})
             this.setState({currentpage:this.state.currentpage - 1})
         }
@@ -495,16 +494,6 @@ export class Lobby1 extends Component {
 
         this.height = Dimensions.get('window').height;
     }
-
-
-    _onBackPress = () => {
-        firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
-        .child(firebase.auth().currentUser.uid).remove().then(()=>{
-            this.props.navigation.dispatch(NavigationActions.back({key:'Join1'}));
-            return true
-        })  
-    }
-
 
     _continue(name) {
         if(name && name.trim().length>0 && name.trim().length < 11){
