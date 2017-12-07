@@ -30,7 +30,8 @@ import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
 
 import * as Animatable from 'react-native-animatable';
-const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons)
+const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons);
+const MENU_ANIM = 200;
 
 export class Join1 extends Component {
 
@@ -262,11 +263,13 @@ export class LobbyPager extends Component {
 
             transition: false,
             transitionOpacity: new Animated.Value(0),
+            modal: false,
+            modalOpacity: new Animated.Value(0),
+            menuHeight: new Animated.Value(0),
         };
 
-        this.dot1 = new Animated.Value(1);
-        this.dot2 = new Animated.Value(0.3);
-        this.width = Dimensions.get('window').width
+        this.width  = Dimensions.get('window').width;
+        this.height = Dimensions.get('window').height;
 
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
         this.nameRef        = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid)
@@ -322,95 +325,132 @@ export class LobbyPager extends Component {
     }
 
     _onBackPress = () => {
-        firebase.database().ref('rooms').child(this.state.roomname).remove().then(()=>{
+        firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
+        .child(firebase.auth().currentUser.uid).remove()
+        .then(()=>{
             this.props.navigation.dispatch(NavigationActions.back({key:'Room'}));
             return true
         })  
     }
 
-    _pagingEnabled(position){
-        const width  = this.width;
-        const half   = width/2;
-        const clip   = position%width;
-        const rev    = width - clip;
-        if(clip>half){
-            this.refs.scrollView.scrollTo({x:position+rev, animated:true})
+    _leaveRoom() {
+        firebase.database().ref('rooms').child(this.state.roomname).remove()
+        .then(()=>{
+            this.props.navigation.dispatch(NavigationActions.back());
+        })
+    }
+
+    _menuPress() {
+        if(this.state.modal){
+            setTimeout(()=>{this.setState({modal:false})},MENU_ANIM)
+            Animated.parallel([
+                Animated.timing(
+                    this.state.modalOpacity,{
+                        toValue:0,
+                        duration:MENU_ANIM
+                    }
+                ),
+                Animated.timing(
+                    this.state.menuHeight,{
+                        toValue:0,
+                        duration:MENU_ANIM
+                    }
+                )
+            ]).start()
         } else {
-            this.refs.scrollView.scrollTo({x:position-clip, animated:true})
+            this.setState({modal:true})
+            Animated.parallel([
+                Animated.timing(
+                    this.state.modalOpacity,{
+                        toValue:1,
+                        duration:MENU_ANIM
+                    }
+                ),
+                Animated.timing(
+                    this.state.menuHeight,{
+                        toValue:this.height*0.3,
+                        duration:MENU_ANIM
+                    }
+                )
+            ]).start()
         }
     }
 
-    _handleScroll(position) {
-        Animated.parallel([
-            Animated.timing(
-                this.dot1, {
-                    toValue:position<181?1:0.3,
-                    duration:50,
-                } 
-            ),
-            Animated.timing(
-                this.dot2, {
-                    toValue:position>180 && position<500?1:0.3,
-                    duration:50,
-                } 
-            )
-        ]).start()
-    }
-
     _transition() {
-        
         this.setState({transition:true})
         Animated.timing(
             this.state.transitionOpacity,{
                 toValue:1,
-                duration:2000
+                duration:MENU_ANIM
             }
         ).start()
     }
 
     render() {
-        return <View style = {{flex:1, backgroundColor:colors.background}}>
-            <View style = {{flexDirection:'row', flex:0.15, justifyContent:'center',alignItems:'center'}}>
-                <View style = {{flex:0.15}}/>
-                <View style = {{flex:0.7, justifyContent:'center'}}> 
+        return <View style = {{flex:1, backgroundColor:colors.shadow}}>
+            <View style = {{flexDirection:'row', height:this.height*0.1, 
+            justifyContent:'center', alignItems:'center'}}>
+                <TouchableOpacity
+                    style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}
+                    onPress = {()=>{ this._menuPress() }}>
+                    <MaterialCommunityIcons name='menu' style={{color:'white',fontSize:30}}/>
+                </TouchableOpacity>
+                <View style = {{flex:0.7, justifyContent:'center', borderRadius:30,
+                    backgroundColor:'white'}}> 
                     <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                 </View>
-                <TouchableOpacity
-                    style = {{flex:0.15}}
-                    onPress = {()=>{
-                        firebase.database().ref('rooms').child(this.state.roomname).remove()
-                        .then(()=>{
-                            this.props.navigation.dispatch(NavigationActions.back());
-                        })
-                    }} >
-                    <MaterialCommunityIcons name='close-circle'
-                        style={{color:colors.menubtn,fontSize:30}}/>
-                </TouchableOpacity>
-            </View>
-
-            <ScrollView style = {{flex:0.75,backgroundColor:colors.background}}
-                horizontal showsHorizontalScrollIndicator={false} ref='scrollView' pagingEnabled
-                scrollEventThrottle = {16}
-                onScroll = {(event) => { this._handleScroll(event.nativeEvent.contentOffset.x) }}>
+                <View style = {{flex:0.15}}/>
                 
-                <Lobby1
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                />
-                <Lobby2 
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                />
-            </ScrollView>
+            </View>
+            <View style = {{height:this.height*0.9}}>
+                <ScrollView style = {{flex:1,backgroundColor:colors.background}}
+                    horizontal showsHorizontalScrollIndicator={false} ref='scrollView' 
+                    scrollEnabled = {false}>
+                    <Lobby1
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                    />
+                    <Lobby2 
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                    />
+                </ScrollView>
 
-            <View style = {{flex:0.1, flexDirection:'row',
-                justifyContent:'center', alignItems:'center'}}>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, opacity:this.dot1}}/>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot2}}/>
+                {this.state.modal?
+                    <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{this._menuPress()}}>
+                        <Animated.View
+                        style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                        backgroundColor:'rgba(0, 0, 0, 0.5)',  alignItems:'center',
+                        opacity:this.state.modalOpacity,}}>
+                            <Animated.View style = {{height:this.state.menuHeight, width:this.width*0.85,
+                                backgroundColor:colors.shadow, justifyContent:'center', alignItems:'center',
+                                borderBottomLeftRadius:30, borderBottomRightRadius:30}}>
+                                <TouchableOpacity
+                                    style = {styles.optionBox}
+                                    onPress = {()=>{
+                                        this.refs.scrollView.scrollTo({x:0,animated:true})
+                                        this._menuPress()
+                                    }}>
+                                    <Text style = {styles.options}>Edit Name</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style = {styles.optionBox}
+                                    onPress = {()=>{
+                                        this.refs.scrollView.scrollTo({x:this.width,animated:true})
+                                        this._menuPress()
+                                    }}>
+                                    <Text style = {styles.options}>Lobby</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                    style = {[styles.optionBox,{backgroundColor:colors.menubtn}]}
+                                    onPress = {()=>{this._leaveRoom()}}>
+                                    <Text style = {[styles.options,{color:'white'}]}>Leave Room</Text>
+                                </TouchableOpacity>
+                            </Animated.View>
+                        </Animated.View>
+                    </TouchableWithoutFeedback>:null}
             </View>
 
             {this.state.transition?<Animated.View
@@ -432,6 +472,8 @@ export class Lobby1 extends Component {
             alias:null,
             errormessage:null,
         };
+
+        this.height = Dimensions.get('window').height;
     }
 
 
@@ -468,12 +510,11 @@ export class Lobby1 extends Component {
         return <View style = {{flex:0.7, justifyContent:'center', alignItems:'center',
             width:this.props.width}}>
 
-            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.mconcerto}>You joined the Room</Text>
+            <View style = {{height:this.height*0.13, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.mconcerto}>You joined the Room!</Text>
                 <Text style = {styles.subtitle}>What is your name?</Text>
             </View>
-            <View style = {{flex:0.25}}/>
-            <View style = {{flex:0.12,flexDirection:'row'}}>
+            <View style = {{height:this.height*0.1,flexDirection:'row'}}>
                 <TextInput
                     style={{
                         backgroundColor: colors.main,
@@ -485,10 +526,9 @@ export class Lobby1 extends Component {
                         borderTopLeftRadius:25,
                         borderBottomLeftRadius:25,
                     }}
-                    //autoFocus = {true}
                     value={this.state.alias}
                     onChangeText = {(text) => {this.setState({alias: text})}}
-                    onSubmitEditing = {()=>{ 
+                    onEndEditing = {()=>{
                         this._continue(this.state.alias);
                     }}
                 />
@@ -505,9 +545,9 @@ export class Lobby1 extends Component {
                     component = {<Text style = {styles.concerto}>GO</Text>}
                 />
             </View>
-            <Animatable.Text style = {[styles.sconcerto,{flex:0.05}]} ref = 'nameerror'>
+            <Animatable.Text style = {[styles.sconcerto,{height:this.height*0.05}]} ref = 'nameerror'>
                 {this.state.errormessage}</Animatable.Text>
-            <View style = {{ flex:0.48 }}/>
+            <View style = {{flex:0.5}}/>
         </View>
     }
 }
@@ -519,6 +559,9 @@ export class Lobby2 extends Component {
         this.state = {
             namelist:[],
         };
+
+        this.height = Dimensions.get('window').height;
+        this.width  = Dimensions.get('window').width;
     }
 
     componentWillMount() {
@@ -557,27 +600,23 @@ export class Lobby2 extends Component {
                     margin:5,
                 }}>{item.name}</Text>
             )}
-            contentContainerStyle = {{marginTop:20, marginBottom:20}}
+            contentContainerStyle = {{marginTop:10, marginBottom:10}}
             numColumns={1}
             keyExtractor={item => item.key}
         />
     }
 
     render() {
-        return <View style = {{flex:0.7,backgroundColor:colors.background,
-            width:this.props.width}}>
-            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.mconcerto}>You joined the Lobby</Text>
+        return <View style = {{flex:0.7,backgroundColor:colors.background, width:this.props.width,
+            alignItems:'center'}}>
+            <View style = {{height:this.height*0.15, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.mconcerto}>You are in the Lobby</Text>
                 <Text style = {[styles.concerto,{color:colors.shadow}]}>Wait for Owner to start game.</Text>
             </View>
             
-            <View style = {{flex:0.8, flexDirection:'row', justifyContent:'center'}}>
-                <View style = {{flex:0.7}}>
-                    {this._renderListComponent()}
-                </View>
+            <View style = {{height:this.height*0.6, width:this.width*0.7, justifyContent:'center'}}>
+                {this._renderListComponent()}
             </View>
-
-            <View style = {{flex:0.05}}/>
         </View>
     }
 }
@@ -588,7 +627,22 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.menubtn,
+        color: colors.shadow,
+    },
+    options: {
+        fontSize: 25,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.shadow,
+        marginTop:7,
+        marginBottom:7
+    },
+    optionBox: {
+        width:Dimensions.get('window').width*0.7, 
+        borderRadius:30, 
+        backgroundColor:colors.background,
+        marginTop:5,
+        marginBottom:5
     },
     subtitle : {
         fontSize: 20,

@@ -138,7 +138,7 @@ class General extends Component {
                 disabled = {this.state.disabled}
                 component = {<Text style = {styles.menuBtn}>Rulebook</Text>}
             />
-            <View style = {{flex:0.02}}/>
+            <View style = {{flex:0.35}}/>
             <PushButton
                 size = {0.1}
                 opacity = {1}
@@ -152,7 +152,7 @@ class General extends Component {
                 disabled = {this.state.disabled}
                 component = {<Text style = {styles.menuBtn}>About App</Text>}
             />
-            <View style = {{flex:0.35}}/>
+            <View style = {{flex:0.02}}/>
             <PushButton
                 size = {0.1}
                 opacity = {1}
