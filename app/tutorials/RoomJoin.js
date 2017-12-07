@@ -386,6 +386,10 @@ export class LobbyPager extends Component {
         ).start()
     }
 
+    _updatePage(page){
+        this.setState({page:page})
+    }
+
     render() {
         return <View style = {{flex:1, backgroundColor:colors.shadow}}>
             <View style = {{flexDirection:'row', height:this.height*0.1, 
@@ -395,8 +399,7 @@ export class LobbyPager extends Component {
                     onPress = {()=>{ this._menuPress() }}>
                     <MaterialCommunityIcons name='menu' style={{color:'white',fontSize:30}}/>
                 </TouchableOpacity>
-                <View style = {{flex:0.7, justifyContent:'center', borderRadius:30,
-                    backgroundColor:'white'}}> 
+                <View style = {{flex:0.7, justifyContent:'center', borderRadius:30}}> 
                     <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                 </View>
                 <View style = {{flex:0.15}}/>
@@ -410,6 +413,7 @@ export class LobbyPager extends Component {
                         roomname = {this.state.roomname}
                         width = {this.width}
                         refs = {this.refs}
+                        updatePage = {val => this._updatePage(val)}
                     />
                     <Lobby2 
                         roomname = {this.state.roomname}
@@ -420,10 +424,9 @@ export class LobbyPager extends Component {
 
                 {this.state.modal?
                     <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{this._menuPress()}}>
-                        <Animated.View
-                        style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-                        backgroundColor:'rgba(0, 0, 0, 0.5)',  alignItems:'center',
-                        opacity:this.state.modalOpacity,}}>
+                        <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                            backgroundColor:'rgba(0, 0, 0, 0.5)', alignItems:'center',
+                            opacity:this.state.modalOpacity}}>
                             <Animated.View style = {{height:this.state.menuHeight, width:this.width*0.85,
                                 backgroundColor:colors.shadow, justifyContent:'center', alignItems:'center',
                                 borderBottomLeftRadius:30, borderBottomRightRadius:30}}>
@@ -436,8 +439,9 @@ export class LobbyPager extends Component {
                                     <Text style = {styles.options}>Edit Name</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity
-                                    style = {styles.optionBox}
+                                    style = {this.state.page<2?styles.disabledBox:styles.optionBox}
                                     onPress = {()=>{
+                                        this.state.page<2?{}:
                                         this.refs.scrollView.scrollTo({x:this.width,animated:true})
                                         this._menuPress()
                                     }}>
@@ -488,6 +492,9 @@ export class Lobby1 extends Component {
 
     _continue(name) {
         if(name && name.trim().length>0 && name.trim().length < 11){
+
+            this.props.updatePage(2)
+
             firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
             .child(firebase.auth().currentUser.uid).update({
                 name:               name.trim(),
@@ -627,20 +634,28 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.shadow,
+        color: colors.font,
     },
     options: {
         fontSize: 25,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
         color: colors.shadow,
-        marginTop:7,
-        marginBottom:7
+        marginTop:10,
+        marginBottom:10
     },
     optionBox: {
         width:Dimensions.get('window').width*0.7, 
         borderRadius:30, 
         backgroundColor:colors.background,
+        marginTop:5,
+        marginBottom:5
+    },
+    disabledBox: {
+        width:Dimensions.get('window').width*0.7, 
+        borderRadius:30, 
+        backgroundColor:colors.background,
+        opacity:0.5,
         marginTop:5,
         marginBottom:5
     },
