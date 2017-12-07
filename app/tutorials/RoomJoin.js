@@ -273,27 +273,18 @@ export class LobbyPager extends Component {
         this.height = Dimensions.get('window').height;
 
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
-        this.nameRef        = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid)
-                            .child('name');
         this.listPlayerRef  = this.roomRef.child('listofplayers');
+        this.myInfoRef      = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid);
         this.phaseRef       = this.roomRef.child('phase');
         
     }
 
     
     componentWillMount() {
-        this.nameRef.on('value',snap=>{
-            this.setState({
-                alias:snap.val(),
-                loading:false,
-            })
-        })
-
         this.phaseRef.on('value',snap=>{
             if(snap.exists()){
                 if(snap.val() == 1){
-                    this._transition();
-                    this.setState({transition:true})
+                    this._transition(true);
                 } else if(snap.val()>1){
                     AsyncStorage.setItem('GAME-KEY',this.state.roomname);
 
@@ -306,8 +297,7 @@ export class LobbyPager extends Component {
                             })
                         })
                     )
-
-                    this.setState({transition:false})
+                    this._transition(false);
                 }
             }
         })
@@ -316,9 +306,6 @@ export class LobbyPager extends Component {
     }
 
     componentWillUnmount() {
-        if(this.nameRef){
-            this.nameRef.off();
-        }
         if(this.phaseRef){
             this.phaseRef.off();
         }
@@ -337,10 +324,27 @@ export class LobbyPager extends Component {
     }
 
     _leaveRoom() {
-        firebase.database().ref('rooms').child(this.state.roomname).remove()
-        .then(()=>{
-            this.props.navigation.dispatch(NavigationActions.back());
+        //Remove my player information, then check if there are still players
+        //If there are no players left, delete the Room
+        //Navigate back to home screen
+        this.myInfoRef.remove().then(()=>{
+            this.myInfoRef.once('value',snap=>{
+                if(!snap.exists()){
+                    this.roomRef.remove();
+                }
+            }).then(()=>{
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        key: null,
+                        actions: [
+                            NavigationActions.navigate({ routeName: 'SignedIn'})
+                        ]
+                    })
+                )
+            })
         })
+        
     }
 
     _menuPress() {
@@ -379,14 +383,24 @@ export class LobbyPager extends Component {
         }
     }
 
-    _transition() {
-        this.setState({transition:true})
-        Animated.timing(
-            this.state.transitionOpacity,{
-                toValue:1,
-                duration:MENU_ANIM
-            }
-        ).start()
+    _transition(boolean) {
+        if(boolean){
+            this.setState({transition:true})
+            Animated.timing(
+                this.state.transitionOpacity,{
+                    toValue:1,
+                    duration:MENU_ANIM
+                }
+            ).start()
+        } else {
+            setTimeout(()=>{this.setState({transition:false})},MENU_ANIM)
+            Animated.timing(
+                this.state.transitionOpacity,{
+                    toValue:0,
+                    duration:MENU_ANIM
+                }
+            ).start()
+        }
     }
 
     _updatePage(page){
@@ -460,10 +474,9 @@ export class LobbyPager extends Component {
             </View>
 
             {this.state.transition?<Animated.View
-                style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-                backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
-                <ActivityIndicator size='large' color={colors.font} 
-                    style = {{position:'absolute',bottom:25,right:25}}/>
+                style = {{position:'absolute', top:0, bottom:0, left:0, right:0, justifyContent:'center',
+                alignItems:'center', backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
+                <Text style = {styles.roomcode}>LOADING ...</Text>
             </Animated.View>:null}
         </View>
     }
