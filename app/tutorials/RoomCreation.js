@@ -1032,9 +1032,9 @@ export class Creation5 extends Component {
     }
 
     _startGame() {
-        if(this.props.playercount != this.props.playernum){
+        if(this.state.playercount != this.props.playernum){
             this._warning(true)
-        } else if (this.props.playercount != this.props.rolecount){
+        } else if (this.state.playercount != this.props.rolecount){
             this._warning(true)
         } else {
             firebase.database().ref('rooms').child(this.props.roomname).child('phase').set(1)
