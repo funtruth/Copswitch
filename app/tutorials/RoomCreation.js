@@ -61,7 +61,7 @@ export class CreationPager extends Component {
             
             modal: false,
             modalOpacity: new Animated.Value(0),
-            menuHeight: new Animated.Value(0),
+            menuWidth: new Animated.Value(0),
         };
 
         this.dot1           = new Animated.Value(1);
@@ -162,7 +162,7 @@ export class CreationPager extends Component {
                     }
                 ),
                 Animated.timing(
-                    this.state.menuHeight,{
+                    this.state.menuWidth,{
                         toValue:0,
                         duration:MENU_ANIM
                     }
@@ -178,8 +178,8 @@ export class CreationPager extends Component {
                     }
                 ),
                 Animated.timing(
-                    this.state.menuHeight,{
-                        toValue:this.height*0.6,
+                    this.state.menuWidth,{
+                        toValue:this.width*0.7,
                         duration:MENU_ANIM
                     }
                 )
@@ -199,7 +199,11 @@ export class CreationPager extends Component {
     }
 
     _updatePage(page){
-        this.setState({page:page, currentpage:page})
+        if(page > this.state.page){
+            this.setState({page:page, currentpage:page})
+        } else {
+            this.setState({currentpage:page})
+        }
     }
 
     _changePage(page){
@@ -338,41 +342,45 @@ export class CreationPager extends Component {
                 {this.state.modal?
                     <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{this._menuPress()}}>
                         <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-                            backgroundColor:'rgba(0, 0, 0, 0.5)', alignItems:'center',
-                            opacity:this.state.modalOpacity}}>
-                            <Animated.View style = {{height:this.state.menuHeight, width:this.width*0.85,
-                                backgroundColor:colors.shadow, justifyContent:'center', alignItems:'center',
-                                borderBottomLeftRadius:30, borderBottomRightRadius:30}}>
-                                <TouchableOpacity
-                                    style = {styles.optionBox}
-                                    onPress = {()=>{ this._changePage(1) }}>
-                                    <Text style = {styles.options}>Edit Name</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style = {this.state.page<2?styles.disabledBox:styles.optionBox}
-                                    onPress = {()=>{ this.state.page<2?{}:this._changePage(2) }}>
-                                    <Text style = {styles.options}># of Players</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style = {this.state.page<3?styles.disabledBox:styles.optionBox}
-                                    onPress = {()=>{ this.state.page<3?{}:this._changePage(3) }}>
-                                    <Text style = {styles.options}>Difficulty</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style = {this.state.page<4?styles.disabledBox:styles.optionBox}
-                                    onPress = {()=>{ this.state.page<4?{}:this._changePage(4) }}>
-                                    <Text style = {styles.options}>Select Roles</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style = {this.state.page<5?styles.disabledBox:styles.optionBox}
-                                    onPress = {()=>{ this.state.page<5?{}:this._changePage(5) }}>
-                                    <Text style = {styles.options}>Lobby</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style = {[styles.optionBox,{backgroundColor:colors.menubtn}]}
-                                    onPress = {()=>{this._deleteRoom()}}>
-                                    <Text style = {[styles.options,{color:'white'}]}>Delete Room</Text>
-                                </TouchableOpacity>
+                            backgroundColor:'rgba(0, 0, 0, 0.5)', opacity:this.state.modalOpacity}}>
+                            <Animated.View style = {{height:this.height*1, width:this.state.menuWidth,
+                                backgroundColor:colors.shadow}}>
+                                <TouchableWithoutFeedback style = {{flex:1 }} onPress = {()=>{}}>
+                                <View style = {{flex:1}}>
+                                    <View style = {{flex:0.05}}/>
+                                    <TouchableOpacity
+                                        style = {{flex:0.07}}
+                                        onPress = {()=>{ this._changePage(1) }}>
+                                        <Text style = {styles.options}>1. Edit Name</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style = {{flex:0.07, opacity:this.state.page<2?0.5:1}}
+                                        onPress = {()=>{ this.state.page<2?{}:this._changePage(2) }}>
+                                        <Text style = {styles.options}>2. # of Players</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style = {{flex:0.07, opacity:this.state.page<3?0.5:1}}
+                                        onPress = {()=>{ this.state.page<3?{}:this._changePage(3) }}>
+                                        <Text style = {styles.options}>3. Difficulty</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style = {{flex:0.07, opacity:this.state.page<4?0.5:1}}
+                                        onPress = {()=>{ this.state.page<4?{}:this._changePage(4) }}>
+                                        <Text style = {styles.options}>4. Select Roles</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style = {{flex:0.07, opacity:this.state.page<5?0.5:1}}
+                                        onPress = {()=>{ this.state.page<5?{}:this._changePage(5) }}>
+                                        <Text style = {styles.options}>5. Lobby</Text>
+                                    </TouchableOpacity>
+                                    <View style = {{flex:0.3}}/>
+                                    <TouchableOpacity
+                                        style = {{flex:0.07}}
+                                        onPress = {()=>{this._deleteRoom()}}>
+                                        <Text style = {styles.options}>X. Delete Room</Text>
+                                    </TouchableOpacity>
+                                </View>
+                                </TouchableWithoutFeedback>
                             </Animated.View>
                         </Animated.View>
                     </TouchableWithoutFeedback>:null}
@@ -536,7 +544,7 @@ export class Creation2 extends Component {
         
     }
     _clear() {
-        this.setState({ playercount: null })
+        this.setState({ playernum: null })
     }
     _done() {
         if(!this.state.playernum || this.state.playernum < 0 || this.state.playernum > 15){
@@ -1163,27 +1171,10 @@ const styles = StyleSheet.create({
         color: colors.font,
     },
     options: {
-        fontSize: 25,
+        fontSize: 20,
         fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-        marginTop:10,
-        marginBottom:10
-    },
-    optionBox: {
-        width:Dimensions.get('window').width*0.7, 
-        borderRadius:30, 
-        backgroundColor:colors.background,
-        marginTop:5,
-        marginBottom:5
-    },
-    disabledBox: {
-        width:Dimensions.get('window').width*0.7, 
-        borderRadius:30, 
-        backgroundColor:colors.background,
-        opacity:0.5,
-        marginTop:5,
-        marginBottom:5
+        marginLeft:20,
+        color: colors.font,
     },
     title : {
         fontSize: 30,
