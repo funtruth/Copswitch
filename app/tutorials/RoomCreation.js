@@ -23,6 +23,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import { CustomButton } from '../components/CustomButton.js';
 import { ListItem } from '../components/ListItem.js';
+import { Pager } from '../components/Pager.js';
 
 import { NavigationActions } from 'react-navigation';
 
@@ -47,6 +48,7 @@ export class CreationPager extends Component {
         this.state = {
 
             page:1,
+            currentpage:1,
 
             roomname: params.roomname,
             alias:'',
@@ -104,8 +106,7 @@ export class CreationPager extends Component {
         if(this.state.modal){
             this._menuPress()
         } else if(this.state.currentpage > 1){
-            this.refs.scrollView.scrollTo({x:(this.state.currentpage-2)*this.width,animated:true})
-            this.setState({currentpage:this.state.currentpage-1})
+            this._changePage(this.state.currentpage - 1)
         }
         return true
     }
@@ -208,6 +209,13 @@ export class CreationPager extends Component {
     }
 
     _changePage(page){
+        if(page<6 && page>0){
+            this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
+            this.setState({currentpage:page})
+        }
+    }
+
+    _navigateTo(page){
         this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
         this.setState({currentpage:page})
         this._menuPress()
@@ -297,7 +305,7 @@ export class CreationPager extends Component {
                 <View style = {{flex:0.15}}/>
             </View>
 
-            <View style = {{height:this.height*0.9}}>
+            <View style = {{height:this.height*0.75}}>
                 <ScrollView style = {{flex:1,backgroundColor:colors.background}}
                     horizontal showsHorizontalScrollIndicator={false} ref='scrollView'
                     scrollEnabled = {false}>
@@ -342,6 +350,14 @@ export class CreationPager extends Component {
                 </ScrollView>
             </View>
 
+            <Pager
+                height = {this.height*0.08}
+                page = {this.state.currentpage}
+                lastpage = {5}
+                goBack = {() => this._changePage(this.state.currentpage - 1)}
+                goForward = {() => this._changePage(this.state.currentpage + 1)}
+            />
+
             {this.state.modal?
             <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{this._menuPress()}}>
                 <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
@@ -351,26 +367,33 @@ export class CreationPager extends Component {
                         <TouchableWithoutFeedback style = {{flex:1 }} onPress = {()=>{}}>
                         <View style = {{flex:1}}>
                             <ListItem flex={0.1} title={this.state.roomname} icon={'menu'} fontSize={40}
-                                onPress = {()=>{this._menuPress()}}/>
+                                onPress = {()=>{this._menuPress()}} 
+                                index = {1} page = {this.state.page}/>
                             <ListItem flex={0.07} title={'Edit Name'} fontSize={20}
                                 icon={'pencil'}
-                                onPress = {()=>{this._changePage(1)}}/>
+                                onPress = {()=>{this._navigateTo(1)}}
+                                index = {1} page = {this.state.page}/>
                             <ListItem flex={0.07} title={'# of Players'} fontSize={20}
                                 icon={'account-multiple'} 
-                                onPress = {()=>{this.state.page<2?{}:this._changePage(2)}}/>
+                                onPress = {()=>{this.state.page<2?{}:this._navigateTo(2)}}
+                                index = {2} page = {this.state.page}/>
                             <ListItem flex={0.07} title={'Difficulty'} fontSize={20}
                                 icon={'scale-balance'}
-                                onPress = {()=>{this.state.page<3?{}:this._changePage(3)}}/>
+                                onPress = {()=>{this.state.page<3?{}:this._navigateTo(3)}}
+                                index = {3} page = {this.state.page}/>
                             <ListItem flex={0.07} title={'Select Roles'} fontSize={20}
                                 icon={'script'}
-                                onPress = {()=>{this.state.page<4?{}:this._changePage(4)}}/>
+                                onPress = {()=>{this.state.page<4?{}:this._navigateTo(4)}}
+                                index = {4} page = {this.state.page}/>
                             <ListItem flex={0.07} title={'Lobby'} fontSize={20}
                                 icon={'home'}
-                                onPress = {()=>{this.state.page<5?{}:this._changePage(5)}}/>
+                                onPress = {()=>{this.state.page<5?{}:this._navigateTo(5)}}
+                                index = {5} page = {this.state.page}/>
                             <View style = {{flex:0.4}}/>
                             <ListItem flex={0.07} title={'Delete Room'} fontSize={25}
                                 icon={'close-circle'}
-                                onPress = {()=>{this._deleteRoom()}}/>
+                                onPress = {()=>{this._deleteRoom()}}
+                                index = {1} page = {this.state.currentpage}/>
                         </View>
                         </TouchableWithoutFeedback>
                     </Animated.View>
@@ -438,7 +461,7 @@ export class Creation1 extends Component {
             justifyContent:'center', alignItems:'center', width:this.props.width}}>
             
             <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.title}>Step 1 of 4</Text>
+                <Text style = {styles.title}>Step 1</Text>
                 <Text style = {styles.subtitle}>What is your name?</Text>
             </View>
 
@@ -558,10 +581,8 @@ export class Creation2 extends Component {
         return <View style = {{flex:0.7,backgroundColor:colors.background, 
             width:this.props.width}}>
 
-            <View style = {{flex:0.05}}/>
-
             <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.title}>Step 2 of 4</Text>
+                <Text style = {styles.title}>Step 2</Text>
                 <Text style = {styles.subtitle}>{'How many people' + '\n' +  'are playing?'}</Text>
             </View>
 
@@ -581,7 +602,7 @@ export class Creation2 extends Component {
                 </View>
             </View>
 
-            <View style = {{flex:0.5, justifyContent:'center', alignItems:'center',
+            <View style = {{flex:0.6, justifyContent:'center', alignItems:'center',
                 marginLeft:10, marginRight:10, borderRadius:2, paddingTop:5, paddingBottom:5}}>
                 <Animatable.Text style = {styles.error}ref='error'>
                     {this.state.errormessage}</Animatable.Text>
@@ -695,10 +716,10 @@ export class Creation3 extends Component {
 
     render() {
         return <View style = {{flex:0.7,backgroundColor:colors.background, alignItems:'center',
-            width: this.props.width, justifyContent:'center', borderWidth:1}}>
+            width: this.props.width, justifyContent:'center'}}>
 
                 <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.title}>Step 3 of 4</Text>
+                    <Text style = {styles.title}>Step 3</Text>
                     <Text style = {styles.subtitle}>{'How experienced' + '\n' + 'is your Group?'}</Text>
                 </View>
 
@@ -896,9 +917,9 @@ export class Creation4 extends Component {
             width:this.props.width,justifyContent:'center'}}>
 
             <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.title}>Step 4 of 4</Text>
-                <Text style = {styles.subtitle}>
-                    {this.state.rolecount + ' out of ' + this.props.playernum + ' roles selected.'}</Text>
+                <Text style = {styles.title}>Step 4</Text>
+                <Text style = {styles.subtitle}>{this.state.rolecount + ' out of ' 
+                    + this.props.playernum + ' roles selected.'}</Text>
             </View>
 
             <View style = {{flex:0.1, flexDirection:'row', justifyContent:'center'}}>
@@ -950,7 +971,7 @@ export class Creation4 extends Component {
                 />
             </View>
 
-            <Animated.View style = {{flex:0.65, opacity:this.state.listOpacity, marginTop:10}}>
+            <Animated.View style = {{flex:0.7, opacity:this.state.listOpacity, marginTop:10}}>
                 <FlatList
                     data={this.state.showtown?this.state.townlist:
                         (this.state.showmafia?this.state.mafialist:this.state.neutrallist)}
@@ -1190,6 +1211,12 @@ const styles = StyleSheet.create({
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
         color: colors.shadow,
+    },
+    menuBtn : {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 25,
+        color: colors.font,
+        alignSelf:'center'
     },
     sconcerto: {
         fontSize: 15,

@@ -12,6 +12,7 @@ import {
     TouchableWithoutFeedback,
     Modal,
     Animated,
+    Dimensions,
 }   from 'react-native';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -19,6 +20,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { PushButton } from '../components/PushButton.js';
 import { CustomButton } from '../components/CustomButton.js';
 import { Header } from '../components/Header.js';
+import { Pager } from '../components/Pager.js';
 
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
@@ -511,8 +513,10 @@ class InfoPage extends Component {
             title:null,
 
             page: 1,
-            last: 10,
+            lastpage: 10,
         }
+
+        this.height = Dimensions.get('window').height;
     }
 
 
@@ -543,7 +547,7 @@ class InfoPage extends Component {
         this._newPage(this.state.page>1?this.state.page-1:1)
     }
     _pageForward() {
-        this._newPage(this.state.page<this.state.last?this.state.page+1:this.state.page)
+        this._newPage(this.state.page<this.state.lastpage?this.state.page+1:this.state.page)
     }
 
     _newPage(page){
@@ -565,7 +569,7 @@ class InfoPage extends Component {
             section:    section,
             page:       page,
             title:      (Rules.headers)[section],
-            last:       Object.keys(Rules[section]).length,
+            lastpage:       Object.keys(Rules[section]).length,
         })
     }
 
@@ -576,8 +580,8 @@ class InfoPage extends Component {
                 this.props.navigation.dispatch(NavigationActions.back());
             }}/>
             
-            <View style = {{flex:0.9, backgroundColor:colors.dshadow, borderRadius:15,
-                marginLeft:15, marginRight:15}}>
+            <View style = {{flex:1, backgroundColor:colors.dshadow, borderRadius:15,
+                marginLeft:15, marginRight:15, marginBottom:10}}>
                 <View style = {{flex:1, backgroundColor:colors.font,borderRadius:15, marginBottom:6}}>
                     <FlatList
                         data={this.state.infolist}
@@ -588,44 +592,12 @@ class InfoPage extends Component {
                 </View>
             </View>
 
-            <View style = {{flex:0.1, flexDirection:'row', 
-                justifyContent:'center', marginTop:10}}>
-                <View style = {{flex:0.25, justifyContent:'center'}}>
-                    <CustomButton
-                        size = {1}
-                        flex = {0.8}
-                        depth = {6}
-                        color = {colors.lightbutton}
-                        shadow = {colors.lightshadow}
-                        radius = {15}
-                        onPress = {()=>{this._pageBack()}}
-                        component = {
-                            <MaterialCommunityIcons name='page-first' 
-                                style={{ color:colors.main, fontSize: 30, alignSelf:'center'}}/>
-                        }
-                    />
-                </View>
-                <View style = {{flex:0.25, justifyContent:'center',
-                    borderRadius:15, backgroundColor:colors.menubtn}}>
-                    <Text style = {styles.menuBtn}>{this.state.page + '/' + this.state.last}</Text>
-                </View>
-                <View style = {{flex:0.25, justifyContent:'center'}}>
-                    <CustomButton
-                        size = {1}
-                        flex = {0.8}
-                        depth = {6}
-                        color = {colors.lightbutton}
-                        shadow = {colors.lightshadow}
-                        radius = {15}
-                        onPress = {()=>{this._pageForward()}}
-                        component = {
-                            <MaterialCommunityIcons name='page-last' 
-                                style={{ color:colors.main, fontSize: 30, alignSelf:'center' 
-                            }}/>
-                        }
-                    />
-                </View>
-            </View>
+            <Pager height={this.height*0.08} 
+                page={this.state.page} 
+                lastpage = {this.state.lastpage}
+                goBack = {() => this._pageBack()}
+                goForward = {() => this._pageForward()}    
+            /> 
 
             <View style = {{height:50}}/>
         </View>
