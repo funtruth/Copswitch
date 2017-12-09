@@ -22,6 +22,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { CustomButton } from '../components/CustomButton.js';
+import { ListItem } from '../components/ListItem.js';
 
 import { NavigationActions } from 'react-navigation';
 
@@ -284,14 +285,14 @@ export class CreationPager extends Component {
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
             <View style = {{flexDirection:'row', height:this.height*0.1, 
-            justifyContent:'center', alignItems:'center', backgroundColor:colors.shadow}}>
+            justifyContent:'center', alignItems:'center'}}>
                 <TouchableOpacity
                     style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}
                     onPress = {()=>{ this._menuPress() }}>
-                    <MaterialCommunityIcons name='menu' style={{color:'white',fontSize:30}}/>
+                    <MaterialCommunityIcons name='menu' style={{color:colors.shadow,fontSize:30}}/>
                 </TouchableOpacity>
                 <View style = {{flex:0.7, justifyContent:'center', borderRadius:30}}> 
-                    <Text style = {styles.roomcode}>{this.state.roomname}</Text>
+                    <Text style = {styles.roomcode}></Text>
                 </View>
                 <View style = {{flex:0.15}}/>
             </View>
@@ -339,52 +340,42 @@ export class CreationPager extends Component {
                         navigation = {this.props.navigation}
                     />
                 </ScrollView>
-                {this.state.modal?
-                    <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{this._menuPress()}}>
-                        <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-                            backgroundColor:'rgba(0, 0, 0, 0.5)', opacity:this.state.modalOpacity}}>
-                            <Animated.View style = {{height:this.height*1, width:this.state.menuWidth,
-                                backgroundColor:colors.shadow}}>
-                                <TouchableWithoutFeedback style = {{flex:1 }} onPress = {()=>{}}>
-                                <View style = {{flex:1}}>
-                                    <View style = {{flex:0.05}}/>
-                                    <TouchableOpacity
-                                        style = {{flex:0.07}}
-                                        onPress = {()=>{ this._changePage(1) }}>
-                                        <Text style = {styles.options}>1. Edit Name</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style = {{flex:0.07, opacity:this.state.page<2?0.5:1}}
-                                        onPress = {()=>{ this.state.page<2?{}:this._changePage(2) }}>
-                                        <Text style = {styles.options}>2. # of Players</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style = {{flex:0.07, opacity:this.state.page<3?0.5:1}}
-                                        onPress = {()=>{ this.state.page<3?{}:this._changePage(3) }}>
-                                        <Text style = {styles.options}>3. Difficulty</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style = {{flex:0.07, opacity:this.state.page<4?0.5:1}}
-                                        onPress = {()=>{ this.state.page<4?{}:this._changePage(4) }}>
-                                        <Text style = {styles.options}>4. Select Roles</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity
-                                        style = {{flex:0.07, opacity:this.state.page<5?0.5:1}}
-                                        onPress = {()=>{ this.state.page<5?{}:this._changePage(5) }}>
-                                        <Text style = {styles.options}>5. Lobby</Text>
-                                    </TouchableOpacity>
-                                    <View style = {{flex:0.3}}/>
-                                    <TouchableOpacity
-                                        style = {{flex:0.07}}
-                                        onPress = {()=>{this._deleteRoom()}}>
-                                        <Text style = {styles.options}>X. Delete Room</Text>
-                                    </TouchableOpacity>
-                                </View>
-                                </TouchableWithoutFeedback>
-                            </Animated.View>
-                        </Animated.View>
-                    </TouchableWithoutFeedback>:null}
             </View>
+
+            {this.state.modal?
+            <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{this._menuPress()}}>
+                <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                    backgroundColor:'rgba(0, 0, 0, 0.5)', opacity:this.state.modalOpacity}}>
+                    <Animated.View style = {{height:this.height*1, width:this.state.menuWidth,
+                        backgroundColor:colors.shadow}}>
+                        <TouchableWithoutFeedback style = {{flex:1 }} onPress = {()=>{}}>
+                        <View style = {{flex:1}}>
+                            <ListItem flex={0.1} title={this.state.roomname} icon={'menu'} fontSize={40}
+                                onPress = {()=>{this._menuPress()}}/>
+                            <ListItem flex={0.07} title={'Edit Name'} fontSize={20}
+                                icon={'pencil'}
+                                onPress = {()=>{this._changePage(1)}}/>
+                            <ListItem flex={0.07} title={'# of Players'} fontSize={20}
+                                icon={'account-multiple'} 
+                                onPress = {()=>{this.state.page<2?{}:this._changePage(2)}}/>
+                            <ListItem flex={0.07} title={'Difficulty'} fontSize={20}
+                                icon={'scale-balance'}
+                                onPress = {()=>{this.state.page<3?{}:this._changePage(3)}}/>
+                            <ListItem flex={0.07} title={'Select Roles'} fontSize={20}
+                                icon={'script'}
+                                onPress = {()=>{this.state.page<4?{}:this._changePage(4)}}/>
+                            <ListItem flex={0.07} title={'Lobby'} fontSize={20}
+                                icon={'home'}
+                                onPress = {()=>{this.state.page<5?{}:this._changePage(5)}}/>
+                            <View style = {{flex:0.4}}/>
+                            <ListItem flex={0.07} title={'Delete Room'} fontSize={25}
+                                icon={'close-circle'}
+                                onPress = {()=>{this._deleteRoom()}}/>
+                        </View>
+                        </TouchableWithoutFeedback>
+                    </Animated.View>
+                </Animated.View>
+            </TouchableWithoutFeedback>:null}
 
             {/*<View style = {{height:this.height*0.1, flexDirection:'row',
                 justifyContent:'center', alignItems:'center'}}>
@@ -1156,7 +1147,7 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.font,
+        color: colors.shadow,
     },
     warningTitle: {
         fontSize: 22,
