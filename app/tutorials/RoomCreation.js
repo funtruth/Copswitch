@@ -181,7 +181,7 @@ export class CreationPager extends Component {
                 ),
                 Animated.timing(
                     this.state.menuWidth,{
-                        toValue:this.width*0.7,
+                        toValue:this.width*0.8,
                         duration:MENU_ANIM
                     }
                 )
@@ -352,10 +352,12 @@ export class CreationPager extends Component {
 
             <Pager
                 height = {this.height*0.08}
-                page = {this.state.currentpage}
+                page = {this.state.page}
+                currentpage = {this.state.currentpage}
                 lastpage = {5}
                 goBack = {() => this._changePage(this.state.currentpage - 1)}
                 goForward = {() => this._changePage(this.state.currentpage + 1)}
+                finish = {() => this._startGame(this.state.roomname)}
             />
 
             {this.state.modal?
@@ -1148,14 +1150,13 @@ export class Creation5 extends Component {
                 <Text style = {styles.subtitle}>Players:</Text>
             </View>
 
-            <View style = {{height:this.height*0.55, width:this.width*0.7, justifyContent:'center'}}>
+            <View style = {{height:this.height*0.48, width:this.width*0.7, justifyContent:'center'}}>
                 {this._renderListComponent()}
             </View>
 
             <View style = {{height:this.height*0.1, width:this.width*0.7}}>
                 {this._renderOptions()}
             </View>
-            <View style = {{height:this.height*0.04}}/>
 
             {this._renderModal()}
 

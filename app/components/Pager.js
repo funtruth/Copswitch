@@ -12,7 +12,18 @@ constructor(props) {
     super(props);
 }
 
+/*
+props.page refers to the page the user is allowed to navigate to
+    This is ONLY RELEVANT for LISTSCREEN
+props.currentpage refers to the page the user is CURRENTLY on
+props.lastpage refers to the number of pages a certain section has
+*/
+
 render() {
+
+    this.firstpage = this.props.currentpage==1;
+    this.lastpage = this.props.currentpage == this.props.lastpage;
+    this.forwardDisabled = this.props.page<=this.props.currentpage;
 
     return ( 
         <View style = {{height:this.props.height, flexDirection:'row', justifyContent:'center'}}>
@@ -25,6 +36,8 @@ render() {
                     shadow = {colors.lightshadow}
                     radius = {15}
                     onPress = {this.props.goBack}
+                    disabled = {this.firstpage}
+                    opacity = {this.firstpage?0.5:1}
                     component = {
                         <MaterialCommunityIcons name='page-first' 
                             style={{ color:colors.main, fontSize: 30, alignSelf:'center'}}/>
@@ -38,7 +51,7 @@ render() {
                     fontSize: 25,
                     color: colors.font,
                     alignSelf:'center'
-                }}>{this.props.page + '/' + this.props.lastpage}</Text>
+                }}>{this.props.currentpage + '/' + this.props.lastpage}</Text>
             </View>
             <View style = {{flex:0.25, justifyContent:'center'}}>
                 <CustomButton
@@ -49,8 +62,10 @@ render() {
                     shadow = {colors.lightshadow}
                     radius = {15}
                     onPress = {this.props.goForward}
+                    disabled = {this.lastpage?true:this.forwardDisabled}
+                    opacity = {this.lastpage?true:this.forwardDisabled?0.5:1}
                     component = {
-                        <MaterialCommunityIcons name='page-last' 
+                        <MaterialCommunityIcons name={this.forwardDisabled?'lock':'page-last'} 
                             style={{ color:colors.main, fontSize: 30, alignSelf:'center' 
                         }}/>
                     }

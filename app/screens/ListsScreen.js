@@ -593,10 +593,11 @@ class InfoPage extends Component {
             </View>
 
             <Pager height={this.height*0.08} 
-                page={this.state.page} 
+                currentpage={this.state.page} 
                 lastpage = {this.state.lastpage}
                 goBack = {() => this._pageBack()}
-                goForward = {() => this._pageForward()}    
+                goForward = {() => this._pageForward()}
+                finish = {() => { this.props.navigation.goBack() }}
             /> 
 
             <View style = {{height:50}}/>
