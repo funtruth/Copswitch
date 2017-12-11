@@ -22,6 +22,8 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { CustomButton } from '../components/CustomButton.js';
+import { ListItem } from '../components/ListItem.js';
+import { Pager } from '../components/Pager.js';
 
 import { NavigationActions } from 'react-navigation';
 
@@ -267,7 +269,7 @@ export class LobbyPager extends Component {
             transitionOpacity: new Animated.Value(0),
             modal: false,
             modalOpacity: new Animated.Value(0),
-            menuHeight: new Animated.Value(0),
+            menuWidth: new Animated.Value(0),
         };
 
         this.width  = Dimensions.get('window').width;
@@ -358,7 +360,7 @@ export class LobbyPager extends Component {
                     }
                 ),
                 Animated.timing(
-                    this.state.menuHeight,{
+                    this.state.menuWidth,{
                         toValue:0,
                         duration:MENU_ANIM
                     }
@@ -374,8 +376,8 @@ export class LobbyPager extends Component {
                     }
                 ),
                 Animated.timing(
-                    this.state.menuHeight,{
-                        toValue:this.height*0.3,
+                    this.state.menuWidth,{
+                        toValue:this.width*0.8,
                         duration:MENU_ANIM
                     }
                 )
@@ -404,31 +406,40 @@ export class LobbyPager extends Component {
     }
 
     _updatePage(page){
-        this.setState({page:page, currentpage:page})
+        if(page > this.state.page){
+            this.setState({page:page, currentpage:page})
+        } else {
+            this.setState({currentpage:page})
+        }
     }
 
-    _changePage(page){
+    _navigateTo(page){
         this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
         this.setState({currentpage:page})
         this._menuPress()
     }
 
+    _changePage(page){
+        if(page<6 && page>0){
+            this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
+            this.setState({currentpage:page})
+        }
+    }
+
     render() {
-        return <View style = {{flex:1, backgroundColor:colors.shadow}}>
+        return <View style = {{flex:1, backgroundColor:colors.background}}>
             <View style = {{flexDirection:'row', height:this.height*0.1, 
             justifyContent:'center', alignItems:'center'}}>
                 <TouchableOpacity
                     style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}
                     onPress = {()=>{ this._menuPress() }}>
-                    <MaterialCommunityIcons name='menu' style={{color:'white',fontSize:30}}/>
+                    <MaterialCommunityIcons name='menu' style={{color:colors.shadow,fontSize:30}}/>
                 </TouchableOpacity>
-                <View style = {{flex:0.7, justifyContent:'center', borderRadius:30}}> 
-                    <Text style = {styles.roomcode}>{this.state.roomname}</Text>
-                </View>
+                <View style = {{flex:0.7, justifyContent:'center', borderRadius:30}}/>
                 <View style = {{flex:0.15}}/>
                 
             </View>
-            <View style = {{height:this.height*0.9}}>
+            <View style = {{height:this.height*0.75}}>
                 <ScrollView style = {{flex:1,backgroundColor:colors.background}}
                     horizontal showsHorizontalScrollIndicator={false} ref='scrollView' 
                     scrollEnabled = {false}>
@@ -444,34 +455,46 @@ export class LobbyPager extends Component {
                         refs = {this.refs}
                     />
                 </ScrollView>
-
-                {this.state.modal?
-                    <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{this._menuPress()}}>
-                        <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-                            backgroundColor:'rgba(0, 0, 0, 0.5)', alignItems:'center',
-                            opacity:this.state.modalOpacity}}>
-                            <Animated.View style = {{height:this.state.menuHeight, width:this.width*0.85,
-                                backgroundColor:colors.shadow, justifyContent:'center', alignItems:'center',
-                                borderBottomLeftRadius:30, borderBottomRightRadius:30}}>
-                                <TouchableOpacity
-                                    style = {styles.optionBox}
-                                    onPress = {()=>{ this._changePage(1) }}>
-                                    <Text style = {styles.options}>Edit Name</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style = {this.state.page<2?styles.disabledBox:styles.optionBox}
-                                    onPress = {()=>{ this.state.page<2?{}:this._changePage(2) }}>
-                                    <Text style = {styles.options}>Lobby</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style = {[styles.optionBox,{backgroundColor:colors.menubtn}]}
-                                    onPress = {()=>{this._leaveRoom()}}>
-                                    <Text style = {[styles.options,{color:'white'}]}>Leave Room</Text>
-                                </TouchableOpacity>
-                            </Animated.View>
-                        </Animated.View>
-                    </TouchableWithoutFeedback>:null}
             </View>
+
+            <Pager
+                height = {this.height*0.08}
+                page = {this.state.page}
+                currentpage = {this.state.currentpage}
+                lastpage = {2}
+                goBack = {() => this._changePage(this.state.currentpage - 1)}
+                goForward = {() => this._changePage(this.state.currentpage + 1)}
+            />
+
+            {this.state.modal?
+                <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{this._menuPress()}}>
+                    <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                        backgroundColor:'rgba(0, 0, 0, 0.5)', opacity:this.state.modalOpacity}}>
+                        <Animated.View style = {{height:this.height*1, width:this.state.menuWidth,
+                            backgroundColor:colors.shadow}}>
+                            <TouchableWithoutFeedback style = {{flex:1 }} onPress = {()=>{}}>
+                            <View style = {{flex:1}}>
+                                <ListItem flex={0.1} title={this.state.roomname} icon={'menu'} fontSize={40}
+                                    onPress = {()=>{this._menuPress()}} 
+                                    index = {1} page = {this.state.page}/>
+                                <ListItem flex={0.07} title={'Edit Name'} fontSize={20}
+                                    icon={'pencil'}
+                                    onPress = {()=>{this._navigateTo(1)}}
+                                    index = {1} page = {this.state.page}/>
+                                <ListItem flex={0.07} title={'Lobby'} fontSize={20}
+                                    icon={'home'}
+                                    onPress = {()=>{this.state.page<2?{}:this._navigateTo(2)}}
+                                    index = {2} page = {this.state.page}/>
+                                <View style = {{flex:0.61}}/>
+                                <ListItem flex={0.07} title={'Delete Room'} fontSize={25}
+                                    icon={'close-circle'}
+                                    onPress = {()=>{this._leaveRoom()}}
+                                    index = {1} page = {this.state.currentpage}/>
+                            </View>
+                            </TouchableWithoutFeedback>
+                        </Animated.View>
+                    </Animated.View>
+                </TouchableWithoutFeedback>:null}
 
             {this.state.transition?<Animated.View
                 style = {{position:'absolute', top:0, bottom:0, left:0, right:0, justifyContent:'center',
