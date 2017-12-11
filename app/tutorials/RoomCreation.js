@@ -56,8 +56,12 @@ export class CreationPager extends Component {
             errormessage:null,
 
             playernum:          null,
+            playercount:        null,
             difficulty:         null,
             rolecount:          null,
+
+            warning:false,
+            warningOpacity: new Animated.Value(0),
 
             transition:false,
             transitionOpacity: new Animated.Value(0),
@@ -66,12 +70,6 @@ export class CreationPager extends Component {
             modalOpacity: new Animated.Value(0),
             menuWidth: new Animated.Value(0),
         };
-
-        this.dot1           = new Animated.Value(1);
-        this.dot2           = new Animated.Value(0.3);
-        this.dot3           = new Animated.Value(0.3);
-        this.dot4           = new Animated.Value(0.3);
-        this.dot5           = new Animated.Value(0.3);
 
         this.height         = Dimensions.get('window').height;
         this.width          = Dimensions.get('window').width;
@@ -116,41 +114,6 @@ export class CreationPager extends Component {
         .then(()=>{
             this.props.navigation.dispatch(NavigationActions.back());
         })
-    }
-
-    _handleDots(position) {
-        Animated.parallel([
-            Animated.timing(
-                this.dot1, {
-                    toValue:position<180?1:0.3,
-                    duration:50,
-                } 
-            ),
-            Animated.timing(
-                this.dot2, {
-                    toValue:position>179 && position<540?1:0.3,
-                    duration:50,
-                } 
-            ),
-            Animated.timing(
-                this.dot3, {
-                    toValue:position>539 && position<900?1:0.3,
-                    duration:50,
-                } 
-            ),
-            Animated.timing(
-                this.dot4, {
-                    toValue:position>899 && position<1260?1:0.3,
-                    duration:50,
-                } 
-            ),
-            Animated.timing(
-                this.dot5, {
-                    toValue:position>1259?1:0.3,
-                    duration:50,
-                } 
-            )
-        ]).start()
     }
 
     _menuPress() {
@@ -198,6 +161,26 @@ export class CreationPager extends Component {
                 duration:2000
             }
         ).start()
+    }
+
+    _warning(boolean) {
+        if(boolean){
+            this.setState({warning:true})
+            Animated.timing(
+                this.state.warningOpacity,{
+                    toValue:1,
+                    duration:MENU_ANIM
+                }
+            ).start()
+        } else {
+            setTimeout(()=>{this.setState({warning:false}),1000})
+            Animated.timing(
+                this.state.warningOpacity,{
+                    toValue:0,
+                    duration:MENU_ANIM
+                }
+            ).start()
+        }
     }
 
     _updatePage(page){
@@ -290,6 +273,41 @@ export class CreationPager extends Component {
         })
     }
 
+    _renderModal() {
+        return this.state.warning?
+            <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{ this._warning(false)}}>
+                <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                    backgroundColor:'rgba(0, 0, 0, 0.5)', alignItems:'center', justifyContent:'center',
+                    opacity:this.state.warningOpacity}}>
+                    <TouchableWithoutFeedback style = {{height:this.height*0.4, width:this.width*0.85, 
+                        backgroundColor:colors.shadow }}
+                        onPress = {()=>{}}>
+                        <View style = {{ flex:0.4, justifyContent:'center', alignItems:'center'}}>
+
+                            <View style = {{flex:0.3, justifyContent:'center'}}>
+                                <Text style = {styles.warningTitle}>Cannot start game</Text>
+                                <Text style = {styles.warningText}>{'The following numbers' 
+                                    + '\n' + 'should be equal.'}</Text>
+                            </View>
+                            <View style = {{flex:0.45, justifyContent:'center'}}>
+                                <Text style = {styles.warningText}>{'Size of Room: ' 
+                                    + this.state.playernum}</Text>
+                                <Text style = {styles.warningText}>{'People in Room: ' 
+                                    + this.state.playercount}</Text>
+                                <Text style = {styles.warningText}>{'Roles Selected: ' 
+                                    + this.state.rolecount}</Text>
+                            </View>
+                            <View style = {{flex:0.25,justifyContent:'center'}}>
+                                <Text style = {styles.warningText}>{'Check the numbers' 
+                                    + '\n' + 'and try again.'}</Text>
+                            </View>
+
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Animated.View>
+            </TouchableWithoutFeedback>:null
+    }
+
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
             <View style = {{flexDirection:'row', height:this.height*0.1, 
@@ -345,6 +363,8 @@ export class CreationPager extends Component {
                         refs = {this.refs}
                         playernum = {this.state.playernum}
                         rolecount = {this.state.rolecount}
+                        updatePlayercount = {val => this.setState({playercount:val})}
+                        warningOn = {val => this._warning(val)}
                         navigation = {this.props.navigation}
                     />
                 </ScrollView>
@@ -402,19 +422,7 @@ export class CreationPager extends Component {
                 </Animated.View>
             </TouchableWithoutFeedback>:null}
 
-            {/*<View style = {{height:this.height*0.1, flexDirection:'row',
-                justifyContent:'center', alignItems:'center'}}>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, opacity:this.dot1}}/>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot2}}/>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot3}}/>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot4}}/>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot5}}/>
-            </View>*/}
+            {this._renderModal()}
 
             {this.state.transition?<Animated.View
                 style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
@@ -1021,9 +1029,6 @@ export class Creation5 extends Component {
 
             playercount:    null,   //ListOfPlayers count
             rolecount:      null,     //ListOfRoles count
-
-            warning:        false,
-            warningOpacity: new Animated.Value(0),
         };
 
         this.height = Dimensions.get('window').height;
@@ -1044,6 +1049,7 @@ export class Creation5 extends Component {
                 namelist:       list,
                 playercount:    snap.numChildren(),
             })
+            this.props.updatePlayercount(snap.numChildren())
         })
     }
 
@@ -1055,31 +1061,11 @@ export class Creation5 extends Component {
 
     _startGame() {
         if(this.state.playercount != this.props.playernum){
-            this._warning(true)
+            this.props.warningOn(true)
         } else if (this.state.playercount != this.props.rolecount){
-            this._warning(true)
+            this.props.warningOn(true)
         } else {
             firebase.database().ref('rooms').child(this.props.roomname).child('phase').set(1)
-        }
-    }
-
-    _warning(boolean) {
-        if(boolean){
-            this.setState({warning:true})
-            Animated.timing(
-                this.state.warningOpacity,{
-                    toValue:1,
-                    duration:MENU_ANIM
-                }
-            ).start()
-        } else {
-            setTimeout(()=>{this.setState({warning:false}),1000})
-            Animated.timing(
-                this.state.warningOpacity,{
-                    toValue:0,
-                    duration:MENU_ANIM
-                }
-            ).start()
         }
     }
 
@@ -1105,42 +1091,6 @@ export class Creation5 extends Component {
         />
     }
 
-    _renderModal() {
-        return this.state.warning?
-            <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{ this._warning(false)}}>
-                <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-                    backgroundColor:'rgba(0, 0, 0, 0.5)', alignItems:'center',
-                    opacity:this.state.warningOpacity}}>
-                    <TouchableWithoutFeedback style = {{height:this.height*0.4, width:this.width*0.85, 
-                        marginTop:this.height*0.15, backgroundColor:colors.shadow }}
-                        onPress = {()=>{}}>
-                        <View style = {{ flex:0.4, justifyContent:'center', 
-                            alignItems:'center', borderRadius:30, marginTop:this.height*0.14}}>
-
-                            <View style = {{flex:0.3, justifyContent:'center'}}>
-                                <Text style = {styles.warningTitle}>Cannot start game</Text>
-                                <Text style = {styles.warningText}>{'The following numbers' 
-                                    + '\n' + 'should be equal.'}</Text>
-                            </View>
-                            <View style = {{flex:0.45, justifyContent:'center'}}>
-                                <Text style = {styles.warningText}>{'Size of Room: ' 
-                                    + this.props.playernum}</Text>
-                                <Text style = {styles.warningText}>{'People in Room: ' 
-                                    + this.state.playercount}</Text>
-                                <Text style = {styles.warningText}>{'Roles Selected: ' 
-                                    + this.props.rolecount}</Text>
-                            </View>
-                            <View style = {{flex:0.25,justifyContent:'center'}}>
-                                <Text style = {styles.warningText}>{'Check the numbers' 
-                                    + '\n' + 'and try again.'}</Text>
-                            </View>
-
-                        </View>
-                    </TouchableWithoutFeedback>
-                </Animated.View>
-            </TouchableWithoutFeedback>:null
-    }
-
     render() {
         return <View style = {{flex:0.7,backgroundColor:colors.background,width:this.props.width,
             alignItems:'center'}}>
@@ -1157,8 +1107,6 @@ export class Creation5 extends Component {
             <View style = {{height:this.height*0.1, width:this.width*0.7}}>
                 {this._renderOptions()}
             </View>
-
-            {this._renderModal()}
 
         </View>
     }

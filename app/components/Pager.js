@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, TouchableOpacity, Text } from 'react-native';
+import { View, Text } from 'react-native';
 
 import colors from '../misc/colors.js';
 import * as Animatable from 'react-native-animatable';
@@ -28,7 +28,7 @@ render() {
     return ( 
         <View style = {{height:this.props.height, flexDirection:'row', justifyContent:'center'}}>
             <View style = {{flex:0.25, justifyContent:'center'}}>
-                <CustomButton
+                {this.firstpage?null:<CustomButton
                     size = {1}
                     flex = {0.8}
                     depth = {6}
@@ -36,13 +36,11 @@ render() {
                     shadow = {colors.lightshadow}
                     radius = {15}
                     onPress = {this.props.goBack}
-                    disabled = {this.firstpage}
-                    opacity = {this.firstpage?0.5:1}
                     component = {
                         <MaterialCommunityIcons name='page-first' 
                             style={{ color:colors.main, fontSize: 30, alignSelf:'center'}}/>
                     }
-                />
+                />}
             </View>
             <View style = {{flex:0.25, justifyContent:'center',
                 borderRadius:15, backgroundColor:colors.menubtn}}>
@@ -54,7 +52,7 @@ render() {
                 }}>{this.props.currentpage + '/' + this.props.lastpage}</Text>
             </View>
             <View style = {{flex:0.25, justifyContent:'center'}}>
-                <CustomButton
+                {this.lastpage?null:<CustomButton
                     size = {1}
                     flex = {0.8}
                     depth = {6}
@@ -62,14 +60,14 @@ render() {
                     shadow = {colors.lightshadow}
                     radius = {15}
                     onPress = {this.props.goForward}
-                    disabled = {this.lastpage?true:this.forwardDisabled}
-                    opacity = {this.lastpage?true:this.forwardDisabled?0.5:1}
+                    disabled = {this.forwardDisabled}
+                    opacity = {this.forwardDisabled?0.5:1}
                     component = {
-                        <MaterialCommunityIcons name={this.forwardDisabled?'lock':'page-last'} 
+                        <MaterialCommunityIcons name='page-last'
                             style={{ color:colors.main, fontSize: 30, alignSelf:'center' 
                         }}/>
                     }
-                />
+                />}
             </View>
         </View>
     )
