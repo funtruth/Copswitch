@@ -428,18 +428,20 @@ export class LobbyPager extends Component {
 
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
-            <View style = {{flexDirection:'row', height:this.height*0.1, 
+            <View style = {{flexDirection:'row', height:this.height*0.15, 
             justifyContent:'center', alignItems:'center'}}>
+                <View style = {{flex:0.2}}/>
+                <View style = {{flex:0.6, justifyContent:'center', borderRadius:30}}> 
+                    <Text style = {styles.roomcode}>{this.state.roomname}</Text>
+                </View>
                 <TouchableOpacity
-                    style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}
-                    onPress = {()=>{ this._menuPress() }}>
-                    <MaterialCommunityIcons name='menu' style={{color:colors.shadow,fontSize:30}}/>
+                    style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
+                    onPress = {()=>{ this._leaveRoom() }}>
+                    <MaterialCommunityIcons name='close' style={{color:colors.shadow,fontSize:30}}/>
                 </TouchableOpacity>
-                <View style = {{flex:0.7, justifyContent:'center', borderRadius:30}}/>
-                <View style = {{flex:0.15}}/>
                 
             </View>
-            <View style = {{height:this.height*0.75}}>
+            <View style = {{height:this.height*0.7}}>
                 <ScrollView style = {{flex:1,backgroundColor:colors.background}}
                     horizontal showsHorizontalScrollIndicator={false} ref='scrollView' 
                     scrollEnabled = {false}>
@@ -465,36 +467,6 @@ export class LobbyPager extends Component {
                 goBack = {() => this._changePage(this.state.currentpage - 1)}
                 goForward = {() => this._changePage(this.state.currentpage + 1)}
             />
-
-            {this.state.modal?
-                <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{this._menuPress()}}>
-                    <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-                        backgroundColor:'rgba(0, 0, 0, 0.5)', opacity:this.state.modalOpacity}}>
-                        <Animated.View style = {{height:this.height*1, width:this.state.menuWidth,
-                            backgroundColor:colors.shadow}}>
-                            <TouchableWithoutFeedback style = {{flex:1 }} onPress = {()=>{}}>
-                            <View style = {{flex:1}}>
-                                <ListItem flex={0.1} title={this.state.roomname} icon={'menu'} fontSize={40}
-                                    onPress = {()=>{this._menuPress()}} 
-                                    index = {1} page = {this.state.page}/>
-                                <ListItem flex={0.07} title={'Edit Name'} fontSize={20}
-                                    icon={'pencil'}
-                                    onPress = {()=>{this._navigateTo(1)}}
-                                    index = {1} page = {this.state.page}/>
-                                <ListItem flex={0.07} title={'Lobby'} fontSize={20}
-                                    icon={'home'}
-                                    onPress = {()=>{this.state.page<2?{}:this._navigateTo(2)}}
-                                    index = {2} page = {this.state.page}/>
-                                <View style = {{flex:0.61}}/>
-                                <ListItem flex={0.07} title={'Delete Room'} fontSize={25}
-                                    icon={'close-circle'}
-                                    onPress = {()=>{this._leaveRoom()}}
-                                    index = {1} page = {this.state.currentpage}/>
-                            </View>
-                            </TouchableWithoutFeedback>
-                        </Animated.View>
-                    </Animated.View>
-                </TouchableWithoutFeedback>:null}
 
             {this.state.transition?<Animated.View
                 style = {{position:'absolute', top:0, bottom:0, left:0, right:0, justifyContent:'center',
@@ -644,12 +616,12 @@ export class Lobby2 extends Component {
     render() {
         return <View style = {{flex:0.7,backgroundColor:colors.background, width:this.props.width,
             alignItems:'center'}}>
-            <View style = {{height:this.height*0.15, justifyContent:'center', alignItems:'center'}}>
+            <View style = {{height:this.height*0.1, justifyContent:'center', alignItems:'center'}}>
                 <Text style = {styles.mconcerto}>You are in the Lobby</Text>
                 <Text style = {[styles.concerto,{color:colors.shadow}]}>Wait for Owner to start game.</Text>
             </View>
             
-            <View style = {{height:this.height*0.6, width:this.width*0.7, justifyContent:'center'}}>
+            <View style = {{height:this.height*0.65, width:this.width*0.7, justifyContent:'center'}}>
                 {this._renderListComponent()}
             </View>
         </View>
@@ -662,7 +634,7 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.font,
+        color: colors.shadow,
     },
     options: {
         fontSize: 25,

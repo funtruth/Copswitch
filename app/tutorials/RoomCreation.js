@@ -318,7 +318,7 @@ export class CreationPager extends Component {
                     <MaterialCommunityIcons name='menu' style={{color:colors.shadow,fontSize:30}}/>
                 </TouchableOpacity>
                 <View style = {{flex:0.7, justifyContent:'center', borderRadius:30}}> 
-                    <Text style = {styles.roomcode}></Text>
+                    <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                 </View>
                 <View style = {{flex:0.15}}/>
             </View>
@@ -514,7 +514,6 @@ export class Creation1 extends Component {
                 <Animatable.Text style = {styles.sconcerto} ref = 'nameerror'>
                     {this.state.errormessage}</Animatable.Text>
             </View>
-            <View style = {{ flex:0.4 }}/>
         </View>
     }
 }
