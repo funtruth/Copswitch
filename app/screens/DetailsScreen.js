@@ -292,7 +292,7 @@ export class Profile extends Component {
                             renderItem={({item}) => (
                                 <Text style={{fontSize:17,
                                     fontFamily:'ConcertOne-Regular',
-                                    color:'#24527f',
+                                    color:colors.shadow,
                                     justifyContent:'center',
                                     alignSelf:'center',
                                     textDecorationLine:item.alive?'none':'line-through'}}>

@@ -22,6 +22,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { CustomButton } from '../components/CustomButton.js';
+import { ListItem } from '../components/ListItem.js';
+import { Pager } from '../components/Pager.js';
+import { Alert } from '../components/Alert.js';
 
 import { NavigationActions } from 'react-navigation';
 
@@ -30,7 +33,9 @@ import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
 
 import * as Animatable from 'react-native-animatable';
-const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons)
+const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons);
+const MENU_ANIM = 200;
+const GAME_ANIM = 1000;
 
 export class Join1 extends Component {
 
@@ -88,7 +93,6 @@ export class Join1 extends Component {
 
         firebase.database().ref('rooms/' + roomname 
             + '/listofplayers/' + firebase.auth().currentUser.uid).update({
-                readyvalue:         false,
                 presseduid:         'foo',
         }).then(()=>{
             this.props.navigation.dispatch(
@@ -155,7 +159,7 @@ export class Join1 extends Component {
 
                 <View style = {{flex:0.5, justifyContent:'center', alignItems:'center',
                  marginLeft:10, marginRight:10, borderRadius:2, paddingTop:5, paddingBottom:5}}>
-                    <Animatable.Text style = {[styles.sconcerto,{color:colors.shadow}]}ref='error'>
+                    <Animatable.Text style = {styles.sconcerto}ref='error'>
                         {this.state.errormessage}</Animatable.Text>
                     <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
                         <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
@@ -256,41 +260,34 @@ export class LobbyPager extends Component {
 
         this.state = {
             page: 1,
+            currentpage:1,
 
             roomname: params.roomname,
             alias:'',
             loading:true,
 
+            alertVisible: false,
+
             transition: false,
             transitionOpacity: new Animated.Value(0),
         };
 
-        this.dot1 = new Animated.Value(1);
-        this.dot2 = new Animated.Value(0.3);
-        this.width = Dimensions.get('window').width
+        this.width  = Dimensions.get('window').width;
+        this.height = Dimensions.get('window').height;
 
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
-        this.nameRef        = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid)
-                            .child('name');
         this.listPlayerRef  = this.roomRef.child('listofplayers');
+        this.myInfoRef      = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid);
         this.phaseRef       = this.roomRef.child('phase');
         
     }
 
     
     componentWillMount() {
-        this.nameRef.on('value',snap=>{
-            this.setState({
-                alias:snap.val(),
-                loading:false,
-            })
-        })
-
         this.phaseRef.on('value',snap=>{
             if(snap.exists()){
                 if(snap.val() == 1){
-                    this._transition();
-                    this.setState({transition:true})
+                    this._transition(true);
                 } else if(snap.val()>1){
                     AsyncStorage.setItem('GAME-KEY',this.state.roomname);
 
@@ -303,8 +300,7 @@ export class LobbyPager extends Component {
                             })
                         })
                     )
-
-                    this.setState({transition:false})
+                    this._transition(false);
                 }
             }
         })
@@ -313,9 +309,6 @@ export class LobbyPager extends Component {
     }
 
     componentWillUnmount() {
-        if(this.nameRef){
-            this.nameRef.off();
-        }
         if(this.phaseRef){
             this.phaseRef.off();
         }
@@ -323,124 +316,135 @@ export class LobbyPager extends Component {
     }
 
     _onBackPress = () => {
-        firebase.database().ref('rooms').child(this.state.roomname).remove().then(()=>{
-            this.props.navigation.dispatch(NavigationActions.back({key:'Room'}));
-            return true
-        })  
-    }
-
-    _pagingEnabled(position){
-        const width  = this.width;
-        const half   = width/2;
-        const clip   = position%width;
-        const rev    = width - clip;
-        if(clip>half){
-            this.refs.scrollView.scrollTo({x:position+rev, animated:true})
-        } else {
-            this.refs.scrollView.scrollTo({x:position-clip, animated:true})
+        if(this.state.currentpage > 1){
+            this.refs.scrollView.scrollTo({x:(this.state.currentpage - 2)*this.width,animated:true})
+            this.setState({currentpage:this.state.currentpage - 1})
         }
+        return true
     }
 
-    _handleScroll(position) {
-        Animated.parallel([
-            Animated.timing(
-                this.dot1, {
-                    toValue:position<181?1:0.3,
-                    duration:50,
-                } 
-            ),
-            Animated.timing(
-                this.dot2, {
-                    toValue:position>180 && position<500?1:0.3,
-                    duration:50,
-                } 
-            )
-        ]).start()
-    }
-
-    _continue(name) {
-        if(this.state.loading){
-            this.setState({errormessage:'Wi-Fi connection Required.'})
-            this.refs.nameerror.shake(800)
-        } else {
-            if(name && name.length>0 && name.length < 11){
-                firebase.database().ref('rooms').child(this.state.roomname).child('listofplayers')
-                .child(firebase.auth().currentUser.uid).update({
-                    name:               name,
-                    readyvalue:         false,
-                    presseduid:         'foo',
-                }).then(()=>{
-                    this.setState({errormessage:null})
-                    this.refs.scrollView.scrollTo({x:this.width*1,y:0,animation:true})
-                })
-            } else {
-                this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
-                this.refs.nameerror.shake(800)
-            }
-        }
-    }
-
-    _transition() {
+    _leaveRoom() {
+        //Remove my player information, then check if there are still players
+        //If there are no players left, delete the Room
+        //Navigate back to home screen
+        this.myInfoRef.remove().then(()=>{
+            this.myInfoRef.once('value',snap=>{
+                if(!snap.exists()){
+                    this.roomRef.remove();
+                }
+            }).then(()=>{
+                this.props.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        key: null,
+                        actions: [
+                            NavigationActions.navigate({ routeName: 'SignedIn'})
+                        ]
+                    })
+                )
+            })
+        })
         
-        this.setState({transition:true})
-        Animated.timing(
-            this.state.transitionOpacity,{
-                toValue:1,
-                duration:2000
-            }
-        ).start()
+    }
+
+    _transition(boolean) {
+        if(boolean){
+            this.setState({transition:true})
+            Animated.timing(
+                this.state.transitionOpacity,{
+                    toValue:1,
+                    duration:GAME_ANIM
+                }
+            ).start()
+        } else {
+            setTimeout(()=>{this.setState({transition:false})},GAME_ANIM)
+            Animated.timing(
+                this.state.transitionOpacity,{
+                    toValue:0,
+                    duration:GAME_ANIM
+                }
+            ).start()
+        }
+    }
+
+    _updatePage(page){
+        if(page > this.state.page){
+            this.setState({page:page, currentpage:page})
+        } else {
+            this.setState({currentpage:page})
+        }
+    }
+
+    _navigateTo(page){
+        this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
+        this.setState({currentpage:page})
+        this._menuPress()
+    }
+
+    _changePage(page){
+        if(page<6 && page>0){
+            this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
+            this.setState({currentpage:page})
+        }
     }
 
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
-            <View style = {{flexDirection:'row', flex:0.15, justifyContent:'center',alignItems:'center'}}>
-                <View style = {{flex:0.15}}/>
-                <View style = {{flex:0.7, justifyContent:'center'}}> 
+            <View style = {{flexDirection:'row', height:this.height*0.15, 
+            justifyContent:'center', alignItems:'center'}}>
+                <View style = {{flex:0.2}}/>
+                <View style = {{flex:0.6, justifyContent:'center', borderRadius:30}}> 
                     <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                 </View>
                 <TouchableOpacity
-                    style = {{flex:0.15}}
-                    onPress = {()=>{
-                        firebase.database().ref('rooms').child(this.state.roomname).remove()
-                        .then(()=>{
-                            this.props.navigation.dispatch(NavigationActions.back());
-                        })
-                    }} >
-                    <MaterialCommunityIcons name='close-circle'
-                        style={{color:colors.menubtn,fontSize:30}}/>
+                    style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
+                    onPress = {()=>{ this.setState({alertVisible:true}) }}>
+                    <MaterialCommunityIcons name='close' style={{color:colors.shadow,fontSize:30}}/>
                 </TouchableOpacity>
-            </View>
-
-            <ScrollView style = {{flex:0.75,backgroundColor:colors.background}}
-                horizontal showsHorizontalScrollIndicator={false} ref='scrollView' pagingEnabled
-                scrollEventThrottle = {16}
-                onScroll = {(event) => { this._handleScroll(event.nativeEvent.contentOffset.x) }}>
                 
-                <Lobby1
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                />
-                <Lobby2 
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                />
-            </ScrollView>
-
-            <View style = {{flex:0.1, flexDirection:'row',
-                justifyContent:'center', alignItems:'center'}}>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, opacity:this.dot1}}/>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot2}}/>
             </View>
+            <View style = {{height:this.height*0.7}}>
+                <ScrollView style = {{flex:1,backgroundColor:colors.background}}
+                    horizontal showsHorizontalScrollIndicator={false} ref='scrollView' 
+                    scrollEnabled = {false}>
+                    <Lobby1
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                        updatePage = {val => this._updatePage(val)}
+                    />
+                    <Lobby2 
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                    />
+                </ScrollView>
+            </View>
+
+            <Pager
+                height = {this.height*0.08}
+                page = {this.state.page}
+                currentpage = {this.state.currentpage}
+                lastpage = {2}
+                goBack = {() => this._changePage(this.state.currentpage - 1)}
+                goForward = {() => this._changePage(this.state.currentpage + 1)}
+            />
+
+            <Alert
+                title = 'Leave Room?'
+                subtitle = {'Are you sure you want' + '\n' + 'to leave the room?'}
+                okay = 'OK'
+                cancel = 'Cancel'
+                visible = {this.state.alertVisible}
+                onClose = {() => this.setState({alertVisible:false})}
+                onOkay = {() => this._leaveRoom()}
+                onCancel = {() => this.setState({alertVisible:false})}
+            />
 
             {this.state.transition?<Animated.View
-                style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-                backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
-                <ActivityIndicator size='large' color={colors.font} 
-                    style = {{position:'absolute',bottom:25,right:25}}/>
+                style = {{position:'absolute', top:0, bottom:0, left:0, right:0, justifyContent:'center',
+                alignItems:'center', backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
+                <Text style = {styles.roomcode}>LOADING ...</Text>
             </Animated.View>:null}
         </View>
     }
@@ -455,28 +459,25 @@ export class Lobby1 extends Component {
             alias:null,
             errormessage:null,
         };
+
+        this.height = Dimensions.get('window').height;
     }
-
-
-    _onBackPress = () => {
-        firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
-        .child(firebase.auth().currentUser.uid).remove().then(()=>{
-            this.props.navigation.dispatch(NavigationActions.back({key:'Join1'}));
-            return true
-        })  
-    }
-
 
     _continue(name) {
         if(name && name.trim().length>0 && name.trim().length < 11){
+
+            this.props.updatePage(2)
+
             firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
             .child(firebase.auth().currentUser.uid).update({
                 name:               name.trim(),
-                readyvalue:         false,
                 presseduid:         'foo',
             }).then(()=>{
-                this.setState({errormessage:null})
-                this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animated:true})
+                firebase.database().ref('rooms').child(this.props.roomname).child('ready')
+                .child(firebase.auth().currentUser.uid).set(false).then(()=>{
+                    this.setState({errormessage:null})
+                    this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animated:true})
+                })
             })
         } else {
             this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
@@ -489,12 +490,11 @@ export class Lobby1 extends Component {
         return <View style = {{flex:0.7, justifyContent:'center', alignItems:'center',
             width:this.props.width}}>
 
-            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.mconcerto}>You joined the Room</Text>
+            <View style = {{height:this.height*0.13, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.mconcerto}>You joined the Room!</Text>
                 <Text style = {styles.subtitle}>What is your name?</Text>
             </View>
-            <View style = {{flex:0.25}}/>
-            <View style = {{flex:0.12,flexDirection:'row'}}>
+            <View style = {{height:this.height*0.1,flexDirection:'row'}}>
                 <TextInput
                     style={{
                         backgroundColor: colors.main,
@@ -506,10 +506,9 @@ export class Lobby1 extends Component {
                         borderTopLeftRadius:25,
                         borderBottomLeftRadius:25,
                     }}
-                    //autoFocus = {true}
                     value={this.state.alias}
                     onChangeText = {(text) => {this.setState({alias: text})}}
-                    onSubmitEditing = {()=>{ 
+                    onEndEditing = {()=>{
                         this._continue(this.state.alias);
                     }}
                 />
@@ -526,9 +525,9 @@ export class Lobby1 extends Component {
                     component = {<Text style = {styles.concerto}>GO</Text>}
                 />
             </View>
-            <Animatable.Text style = {[styles.sconcerto,{flex:0.05}]} ref = 'nameerror'>
-                {this.state.errormessage}</Animatable.Text>
-            <View style = {{ flex:0.48 }}/>
+            <Animatable.Text style = {[styles.sconcerto,{height:this.height*0.05}]} 
+                ref = 'nameerror'>{this.state.errormessage}</Animatable.Text>
+            <View style = {{flex:0.5}}/>
         </View>
     }
 }
@@ -540,6 +539,9 @@ export class Lobby2 extends Component {
         this.state = {
             namelist:[],
         };
+
+        this.height = Dimensions.get('window').height;
+        this.width  = Dimensions.get('window').width;
     }
 
     componentWillMount() {
@@ -578,27 +580,23 @@ export class Lobby2 extends Component {
                     margin:5,
                 }}>{item.name}</Text>
             )}
-            contentContainerStyle = {{marginTop:20, marginBottom:20}}
+            contentContainerStyle = {{marginTop:10, marginBottom:10}}
             numColumns={1}
             keyExtractor={item => item.key}
         />
     }
 
     render() {
-        return <View style = {{flex:0.7,backgroundColor:colors.background,
-            width:this.props.width}}>
-            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.mconcerto}>You joined the Lobby</Text>
+        return <View style = {{flex:0.7,backgroundColor:colors.background, width:this.props.width,
+            alignItems:'center'}}>
+            <View style = {{height:this.height*0.1, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.mconcerto}>You are in the Lobby</Text>
                 <Text style = {[styles.concerto,{color:colors.shadow}]}>Wait for Owner to start game.</Text>
             </View>
             
-            <View style = {{flex:0.8, flexDirection:'row', justifyContent:'center'}}>
-                <View style = {{flex:0.7}}>
-                    {this._renderListComponent()}
-                </View>
+            <View style = {{height:this.height*0.65, width:this.width*0.7, justifyContent:'center'}}>
+                {this._renderListComponent()}
             </View>
-
-            <View style = {{flex:0.05}}/>
         </View>
     }
 }
@@ -609,7 +607,30 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.menubtn,
+        color: colors.shadow,
+    },
+    options: {
+        fontSize: 25,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.shadow,
+        marginTop:10,
+        marginBottom:10
+    },
+    optionBox: {
+        width:Dimensions.get('window').width*0.7, 
+        borderRadius:30, 
+        backgroundColor:colors.background,
+        marginTop:5,
+        marginBottom:5
+    },
+    disabledBox: {
+        width:Dimensions.get('window').width*0.7, 
+        borderRadius:30, 
+        backgroundColor:colors.background,
+        opacity:0.5,
+        marginTop:5,
+        marginBottom:5
     },
     subtitle : {
         fontSize: 20,
@@ -627,7 +648,8 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.font,
+        color: colors.shadow,
+        marginTop:10,
     },
     concerto: {
         fontSize: 20,

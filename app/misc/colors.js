@@ -6,6 +6,8 @@ export default colors = {
     statusshadow:'#7e7da6',
     dead:       '#919191',
     deadshadow: '#666666',
+    done:       '#57C77A',
+    doneshadow: '#249447',
     alive:      '#3FD0A9',
 
     //Blue Palette
@@ -30,7 +32,7 @@ export default colors = {
     font:       'white',
     dfont:      '#454a4a',
     main:       'white',
-    titlefont:  'white',
+    titlefont:  '#873c3d',
     shadow:     '#873c3d',
     dshadow:    '#876657',
 

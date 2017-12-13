@@ -10,7 +10,8 @@ import {
     FlatList,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    Animated
+    Animated,
+    Dimensions
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -54,6 +55,7 @@ constructor(props) {
         phasename:          '',
         topmessage:         '',
         phasebackground:    'night',
+        nextphase:          null,
 
         myname:             '',
         myrole:             '',
@@ -66,7 +68,7 @@ constructor(props) {
         triggernum:         1000,
         playernum:          1000,
 
-        readyvalue:         false,
+        ready:              false,
         presseduid:         '',
         disabled:           false,
 
@@ -87,6 +89,7 @@ constructor(props) {
         listSize:           new Animated.Value(0.01),
         waitingSize:        new Animated.Value(0.01),
         
+        titleOpacity:       new Animated.Value(0),
         backOpacity:        new Animated.Value(0),
         voteOpacity:        new Animated.Value(0),
         abstainOpacity:     new Animated.Value(0),
@@ -94,9 +97,11 @@ constructor(props) {
         waitingOpacity:     new Animated.Value(0),
     };
 
+    this.user               = firebase.auth().currentUser.uid;
+
     this.roomRef            = firebase.database().ref('rooms/' + roomname);
-    this.myInfoRef          = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid);
-    this.readyValueRef      = this.myInfoRef.child('readyvalue');
+    this.myInfoRef          = this.roomRef.child('listofplayers').child(this.user);
+    this.readyValueRef      = this.roomRef.child('ready').child(this.user);
     this.mafiaRef           = this.roomRef.child('mafia');
     
     this.listRef            = this.roomRef.child('listofplayers');
@@ -104,16 +109,18 @@ constructor(props) {
     this.nominationRef      = this.roomRef.child('nominate');
     this.ownerRef           = this.roomRef.child('owner');
     this.phaseRef           = this.roomRef.child('phase');
+    this.actionRef          = this.roomRef.child('actions');
 
     //Owner Listening
-    this.readyRef           = this.roomRef.child('listofplayers').orderByChild('readyvalue').equalTo(true);
     this.guiltyVotesRef     = this.roomRef.child('guiltyvotes');
-    this.voteRef     = this.roomRef.child('votes');
+    this.voteRef            = this.roomRef.child('votes');
+    this.readyRef           = this.roomRef.child('ready').orderByValue().equalTo(true);
+    this.loadedRef          = this.roomRef.child('loaded');
 
     //Transition Screen
     this.dayCounterRef      = this.roomRef.child('daycounter');
 
-    this.msgRef             = firebase.database().ref('messages').child(firebase.auth().currentUser.uid);
+    this.msgRef             = firebase.database().ref('messages').child(this.user);
     this.globalMsgRef       = firebase.database().ref('globalmsgs').child(roomname);
 }
 
@@ -136,7 +143,6 @@ componentWillMount() {
 
             //Button press states and Living state
             this.setState({
-                readyvalue:         snap.val().readyvalue,
                 presseduid:         snap.val().presseduid,
                 amidead:            snap.val().dead,
                 myname:             snap.val().name,
@@ -147,21 +153,45 @@ componentWillMount() {
     this.readyValueRef.on('value',snap=>{
         if(snap.exists()){
             if(this.state.amidead){
-                this._viewChange(false,false,false,false,false,true,false)
+                this._viewChange(false,false,false,false,true,false)
             } else if(snap.val() == true){
-                this._viewChange(false,false,false,false,false,false,true)
+                this.setState({ready:true})
+                this._viewChange(false,false,false,false,false,true)
             } else {
-                this._viewChange(true,false,true,true,true,false,false)
+                this.phaseRef.once('value',phase=>{
+                    if(phase.val() == 4){
+                        if(this.state.amipicking){
+                            this._viewChange(true,false,false,false,true,false)
+                        } else {
+                            this._viewChange(true,false,false,false,false,true)
+                        }
+                    } else {
+                        this._viewChange(true,false,true,true,false,false)
+                    }
+                })
+            }
+        } else {
+            if(this.state.amidead){
+                this.setState({ready:false})
+                this._viewChange(true,false,false,false,false,false)
+            } else {
+                this.setState({ready:false})
+                this._viewChange(true,false,false,false,false,false)
+                setTimeout(()=>{
+                    this.readyValueRef.once('value',snap=>{
+                        if(snap.exists()){
+                            this.readyValueRef.remove();
+                        } else {
+                            this.loadedRef.child(this.user).set(true)
+                        }
+                    })
+                },1500)
             }
         }
     })
 
     this.ownerRef.on('value',snap=>{
-        if(snap.val() == firebase.auth().currentUser.uid){
-            this.setState({amiowner:true})
-        } else {
-            this.setState({amiowner:false})
-        }
+        this.setState({amiowner:snap.val() == this.user})
     })
 
     this.listRef.on('value',snap=>{
@@ -170,7 +200,6 @@ componentWillMount() {
             var list = [];
             snap.forEach((child)=> {
                 list.push({
-                    readyvalue:     child.val().readyvalue,
                     name:           child.val().name,
                     dead:           child.val().dead?true:false,
                     immune:         child.val().immune?true:false,
@@ -211,26 +240,36 @@ componentWillMount() {
             this.listRef.child(snap.val()).once('value',sp=>{
                 this.setState({nominate: snap.val(), nominee: sp.val().name})
             })
-
-            if(snap.val() == firebase.auth().currentUser.uid){
-                this.setState({amipicking:true})
-            } else { 
-                this.setState({amipicking:false}) 
-            }
+            
+            this.setState({amipicking:snap.val() == this.user})
         }
     })
 
     this.phaseRef.on('value',snap=>{
         if(snap.exists()){
+            Animated.timing(
+                this.state.titleOpacity,{
+                    toValue:0,
+                    duration:1000
+                }
+            ).start()
 
-            this.setState({
-                phase:snap.val(),
-                phasename: (Phases[snap.val()]).name,
-                topmessage: (Phases[snap.val()]).topmessage,
-                btn1: (Phases[snap.val()]).btn1,
-                btn2: (Phases[snap.val()]).btn2,
-                phasecolor: (Phases[snap.val()]).phasecolor,
-            })
+            setTimeout(()=>{
+                this.setState({
+                    phase:snap.val(),
+                    phasename: (Phases[snap.val()]).name,
+                    topmessage: (Phases[snap.val()]).topmessage,
+                    btn1: (Phases[snap.val()]).btn1,
+                    btn2: (Phases[snap.val()]).btn2,
+                    phasecolor: (Phases[snap.val()]).phasecolor,
+                })
+                Animated.timing(
+                    this.state.titleOpacity,{
+                        toValue:1,
+                        duration:1000
+                    }
+                ).start()
+            },1000)
         }
     })
 
@@ -248,24 +287,29 @@ componentWillMount() {
             && this.state.playernum>0){
                 //Phase 2 CONTINUE
                 if(this.state.phase == 2){
-
-                    this.voteRef.once('value', snap=>{
-                        var flag = false;
-                        snap.forEach((child)=>{
-                            if(child.numChildren() + 1 > this.state.triggernum){
-                                flag = true;
-                            }
-                        });
-                        if(flag && flag == false){
-                            this.roomRef.child('actions').remove();
+                    
+                    this.voteRef.once('value').then((votes)=>{
+                        if(votes.exists()){
+                            var counter = 0;
+                            votes.forEach((child)=>{
+                                counter ++;
+                                if(child.numChildren() + 1 > this.state.triggernum){
+                                    //Do nothing
+                                } else if (counter+1 > votes.numChildren()){
+                                    this.actionRef.remove();
+                                    this._resetDayStatuses();
+                                    this._changePhase(Phases[this.state.phase].continue);
+                                }
+                            });
+                        } else {
+                            this.actionRef.remove();
                             this._resetDayStatuses();
                             this._changePhase(Phases[this.state.phase].continue);
-                        };
-                        
+                        }
                     })
                 }
                 //Phase 3 Handling both CONTINUE and TRIGGER
-                if(this.state.phase == 3){
+                else if(this.state.phase == 3){
                     
                     this.guiltyVotesRef.once('value',guiltyvotes=>{
 
@@ -321,16 +365,15 @@ componentWillMount() {
                             this._noticeMsgGlobal(this.state.roomname,'#34cd0e',this.state.nominee 
                                 + ' was not hung.',1)
 
-                            //this.listRef.child(this.state.nominate)
-                              //  .update({immune:true})
+                            this.listRef.child(this.state.nominate).update({immune:true})
 
                             this._changePhase(Phases[this.state.phase].continue)
                         }
 
                     })
-                };
+                }
                 //Phase 5 Handling CONTINUE
-                if(this.state.phase == 5){
+                else if(this.state.phase == 5){
                     
                     new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
                         new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
@@ -356,7 +399,7 @@ componentWillMount() {
             snap.forEach((child)=>{
                 if(child.numChildren() + 1 > this.state.triggernum){
                     if(Phases[this.state.phase].trigger){
-                        firebase.database().ref('rooms/' + this.state.roomname + '/actions').remove();
+                        actionRef.remove();
 
                         this.roomRef.update({nominate:child.key});
                         this.listRef.child(child.key).child('name').once('value',getname=>{
@@ -368,6 +411,28 @@ componentWillMount() {
                     }
                 }
             })
+        }
+    })
+
+    this.loadedRef.on('value',snap=>{
+        if(snap.exists() && this.state.amiowner){
+            if(snap.numChildren() == this.state.playernum){
+                this.roomRef.child('nextphase').once('value',nextphase=>{
+                    this.roomRef.update({ phase:nextphase.val() })
+                    .then(()=>{
+                        this.listRef.once('value',snap=>{
+                            snap.forEach((child)=>{
+                                //Set all votes to 0 and RESET Buttons
+                                this.listRef.child(child.key).update({presseduid:'foo'})
+                                this.roomRef.child('ready').child(child.key).set(false).then(()=>{
+                                    this.loadedRef.remove();
+                                    this.roomRef.child('nextphase').remove();
+                                })
+                            })
+                        })
+                    })
+                })
+            }
         }
     })
 
@@ -408,6 +473,9 @@ componentWillUnmount() {
     if(this.voteRef){
         this.voteRef.off();
     }
+    if(this.loadedRef){
+        this.loadedRef.off();
+    }
 
     //Transition Screen
     if(this.dayCounterRef){
@@ -428,30 +496,23 @@ _onBackPress = () => {
 
 _buttonPress() {
     this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 200);
+    setTimeout(() => {this.setState({disabled: false})}, 1100);
 }
 
 _changePhase(newphase){
-    
-    this.listRef.once('value',snap=>{
-        snap.forEach((child)=>{
-            //Set all votes to 0 and RESET Buttons
-            this.listRef.child(child.key).update({readyvalue:false, presseduid:'foo'})
+    this.setState({nextphase:newphase})
+    this.roomRef.child('nextphase').set(newphase).then(()=>{
+        this.roomRef.child('ready').remove().then(()=>{
+            this.voteRef.remove()
         })
-    }).then(()=>{
-        this.voteRef.remove();
-    }).then(()=>{
-        this.roomRef.update({
-            phase:newphase,
-        })
-    })    
+    })
 }
 
 _resetDayStatuses() {
     this.listRef.once('value',snap=>{
         snap.forEach((child)=>{
             this.listRef.child(child.key).update({
-                immune:null, 
+                immune:null,
                 status:null
             })
         })
@@ -459,13 +520,14 @@ _resetDayStatuses() {
 }
 
 _readyValue(status){
-    this.myInfoRef.update({readyvalue: status})
+    this.readyValueRef.set(status)
 }
 _pressedUid(uid){
     this.myInfoRef.update({presseduid: uid})
 }
 
-_viewChange(title,back,vote,or,abstain,list,waiting) {
+//1100 ms TOTAL
+_viewChange(title,back,vote,abstain,list,waiting) {
 
     Animated.sequence([
         Animated.parallel([
@@ -553,70 +615,80 @@ _viewChange(title,back,vote,or,abstain,list,waiting) {
 }
 
 //Pressing any name button
-_nameBtnPress(uid,name,triggernum,phase,roomname){
+_nameBtnPress(item){
 
-    this._buttonPress();
+    if(!this.state.disabled){
 
-    if(phase == 2){ 
-        this.setState({topmessage:'You have selected ' + name + '.'})
+        this._buttonPress();
 
-        this._pressedUid(uid);
-        
-        this.voteRef.child(uid).child(firebase.auth().currentUser.uid)
-            .set(this.state.myname).then(()=>{
+        if(this.state.phase == 2){ 
+            if(this.state.amidead){
+                this.setState({topmessage:'You are Dead.'})
+            } else if (item.dead){
+                this.setState({topmessage:'That player is Dead.'})
+            } else if (item.immune){
+                this.setState({topmessage:'That player is Immune'})
+            } else {
+                this.setState({topmessage:'You have selected ' + item.name + '.'})
+                this._pressedUid(item.key);
                 this._readyValue(true);
-            })
-
-    }  else if(phase == 4){
-        //Check if selected player is a mafia member
-        //change role id on listofplayers
-        firebase.database().ref('rooms/' + roomname + '/mafia/' + uid).once('value',mafiacheck=>{
-            if(mafiacheck.exists()){
-                firebase.database().ref('rooms/' + roomname + '/listofplayers/' 
-                + firebase.auth().currentUser.uid + '/roleid').once('value',snap=>{
-                    firebase.database().ref('rooms/'+roomname+'/mafia/' + uid)
-                        .update({roleid:snap.val()}).then(()=>{
-                            firebase.database().ref('rooms/'+roomname+'/listofplayers/'
-                            + uid).update({roleid:snap.val()}).then(()=>{
-                                this.roomRef.child('actions').remove();
+                this.voteRef.child(item.key).child(this.user).set(this.state.myname);
+            }
+        }  else if(this.state.phase == 4){
+            if(!this.state.amipicking){
+                this.setState({topmessage:'You are not Picking.'})
+            } else if (item.dead){
+                this.setState({topmessage:'That player is Dead.'})
+            } else {
+                this.mafiaRef.child(item.key).once('value',mafiacheck=>{
+                    if(mafiacheck.exists()){
+                        this.mafiaRef.child(item.key).update({roleid:this.state.myroleid})
+                        .then(()=>{
+                            this.listRef.child(item.key).update({roleid:this.state.myroleid})
+                            .then(()=>{
+                                this.actionRef.remove();
                                 this._resetDayStatuses();
-                                this._changePhase(5)
-                                this._readyValue(true);
+                                this._changePhase(5);
                             })
                         })
-                    
+                    } else {
+                        this.setState({topmessage: item.name + ' is not a member of the Mafia.'})
+                    }
                 })
-            } else {
-                this.setState({topmessage: name + ' is not a member of the Mafia.'})
             }
-        })
-    } else if (phase==5) {
+        } else if (this.state.phase==5) {
 
-        this.setState({topmessage:'You have selected ' + name + '.'})
-
-        firebase.database().ref('rooms/' + roomname + '/actions/' 
-            + firebase.auth().currentUser.uid).update({
-                target:uid,
-                targetname:name,
-                roleid:this.state.myroleid,
-        }).then(()=>{
-            firebase.database().ref('rooms/' + roomname + '/actions/' + uid + '/' 
-                + this.state.myroleid + '/' + firebase.auth().currentUser.uid)
-                .set(this.state.myname).then(()=>{
-                    this._pressedUid(uid);
-                    this._readyValue(true);
+            if(this.state.amidead){
+                this.setState({topmessage:'You are Dead.'})
+            } else if (this.state.targettown && item.type != 2){
+                this.setState({topmessage:'Select a Town Player.'})
+            } else if (this.state.targetdead && !item.dead){
+                this.setState({topmessage:'Select a Dead player.'})
+            } else {
+                this.setState({topmessage:'You have selected ' + item.name + '.'})
+                
+                this.actionRef.child(this.user).update({
+                        target:     item.key,
+                        targetname: item.name,
+                        roleid:     this.state.myroleid,
+                }).then(()=>{
+                    this.actionRef.child(item.key).child(this.state.myroleid).child(this.user)
+                        .set(this.state.myname).then(()=>{
+                            this._pressedUid(item.key);
+                            this._readyValue(true);
+                        })
                 })
-        })
-
-    } 
+            }
+        }
+    }
 }
 
-_nameBtnLongPress(uid,name,phase){
-    if(phase == 5) {
+_nameBtnLongPress(item){
+    if(this.state.phase == 5) {
         if(this.state.amimafia){
             this.mafiaRef.once('value',snap=>{
                 snap.forEach((child)=>{
-                    this._noticeMsg(child.key,this.state.myname+' wants to kill '+name+'.')
+                    this._noticeMsg(child.key, this.state.myname + ' wants to kill ' + item.name + '.')
                 })
             })
         }
@@ -629,20 +701,14 @@ _optionOnePress() {
     this._buttonPress();
     
     if(this.state.phase == 2){
-        this._viewChange(false,true,false,false,false,true,false)
+        this._viewChange(false,true,false,false,true,false)
     } else if (this.state.phase == 3){
         this.setState({topmessage:'You voted INNOCENT.'})
-        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
+        this.guiltyVotesRef.child(this.user).set(null).then(()=>{
             this._readyValue(true);
         })
-    } else if (this.state.phase == 4){
-        if(this.state.amipicking){
-            this._viewChange(false,true,false,false,false,true,false)
-        } else {
-            alert('You are not picking.')
-        }
     } else if (this.state.phase == 5){
-        this._viewChange(false,true,false,false,false,true,false)
+        this._viewChange(false,true,false,false,true,false)
     } else if (this.state.phase == 6 || this.state.phase == 7){
         alert('feature not available yet')
     }
@@ -658,11 +724,9 @@ _optionTwoPress() {
         this.setState({topmessage:'You abstained.'})
     } else if (this.state.phase == 3){
         this.setState({topmessage:'You voted GUILTY.'})
-        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(this.state.myname).then(()=>{
+        this.guiltyVotesRef.child(this.user).set(this.state.myname).then(()=>{
             this._readyValue(true);
         })
-    } else if (this.state.phase == 4){
-        this._readyValue(true);
     } else if (this.state.phase == 5){
         this._readyValue(true);
         this.setState({topmessage:'You stayed home.'})
@@ -677,7 +741,7 @@ _resetOptionPress() {
     this._buttonPress();
 
     if(this.state.phase != 4){
-        this._viewChange(true,false,true,true,true,false,false)
+        this._viewChange(true,false,true,true,false,false)
         this.setState({topmessage:null})
     }
 
@@ -687,26 +751,25 @@ _resetOptionPress() {
 
         if(this.state.presseduid != 'foo'){
             this._pressedUid('foo');
-            this.voteRef.child(this.state.presseduid).child(firebase.auth().currentUser.uid).remove()
+            this.voteRef.child(this.state.presseduid).child(this.user).remove()
         }
 
     } else if (this.state.phase == 3){
 
-        this.guiltyVotesRef.child(firebase.auth().currentUser.uid).set(null).then(()=>{
+        this.guiltyVotesRef.child(this.user).set(null).then(()=>{
             this._readyValue(false);
         })
 
     } else if (this.state.phase == 5){
 
-        firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
-            + firebase.auth().currentUser.uid).update({
+        this.actionRef.child(this.user).update({
                 roleid:     null,
                 target:     null,
                 targetname: null,
             });
 
-        firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + this.state.presseduid 
-            + '/' + this.state.myroleid + '/' + firebase.auth().currentUser.uid).set(null)
+        this.actionRef.child(this.state.presseduid).child(this.state.myroleid)
+        .child(this.user).set(null)
             .then(()=>{
                 this._readyValue(false);
                 this._pressedUid('foo');
@@ -730,7 +793,7 @@ _renderPhaseName() {
 
 _renderTopMessage(){
     
-    if(this.state.phase == 3 || (this.state.phase == 4 && this.state.nominate != firebase.auth().currentUser.uid)){
+    if(this.state.phase == 3 || (this.state.phase == 4 && this.state.nominate != this.user)){
         return <Text style = {{color:colors.titlefont, alignSelf:'center', 
             fontFamily: 'ConcertOne-Regular', fontSize:14}}>
             {this.state.nominee + ' ' + this.state.topmessage}
@@ -750,34 +813,15 @@ _renderListComponent(){
         data={this.state.namelist}
         renderItem={({item}) => (
             <View style = {{marginBottom:10}}><CustomButton
-            flex = {0.8}    
-            onPress={() => {this.state.disabled?{}:
-                this._nameBtnPress(item.key,item.name,this.state.triggernum,
-                this.state.phase,this.state.roomname)}}
-                onLongPress={()=>{
-                this._nameBtnLongPress(item.key,item.name,this.state.phase)
-                }}
-                color = {item.dead ? colors.dead : (item.immune? colors.immune : 
-                    (item.status?colors.status:colors.namebtn))}
-                shadow = {item.dead ? colors.deadshadow : (item.immune? colors.lightshadow : 
-                    (item.status?colors.statusshadow:colors.lightshadow))}
-                depth = {6}
-                radius = {40}
-                disabled = {
-                    this.state.phase == 2?
-                    this.state.amidead?true:(item.immune?true:item.dead)
-                    :(
-                        this.state.phase == 4?
-                        this.state.amipicking?item.dead:false
-                        :(
-                            this.state.phase == 5?
-                            this.state.amidead?true:this.state.targettown?
-                            (this.state.targetdead? (item.type==1 || !item.dead) : item.type == 1 ) 
-                            : (this.state.targetdead? !item.dead : false )
-                            :true
-                        )
-                    )
-                }
+                flex = {0.8}    
+                onPress         = {() => { this._nameBtnPress(item) }}
+                onLongPress     = {() => { this._nameBtnLongPress(item) }}
+                color           = {item.dead ? colors.dead : (item.immune? colors.immune : 
+                                  (item.status?colors.status:colors.namebtn))}
+                shadow          = {item.dead ? colors.deadshadow : (item.immune? colors.lightshadow : 
+                                  (item.status?colors.statusshadow:colors.lightshadow))}
+                depth           = {6}
+                radius          = {40}
                 component = {<View style = {{flexDirection:'row',alignItems:'center',
                     justifyContent:'center', height:40}}>
                     <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
@@ -838,14 +882,13 @@ _noticeMsgGlobal(roomname,color,message){
 
 //Action Roles that adjust
 _adjustmentPhase() {
-    firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
+    this.actionRef.once('value',snap=>{
         snap.forEach((child)=>{
 
             if (child.val().E) {
-                firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target 
-                    + '/' + child.val().roleid + '/' + child.key).remove()
-                firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.key) 
-                    .update({ targetname: 'Nobody' })
+                this.actionRef.child(child.val().target).child(child.val().roleid)
+                    .child(child.key).remove()
+                this.actionRefchild(child.key).update({ targetname: 'Nobody' })
             }
 
         })
@@ -854,13 +897,12 @@ _adjustmentPhase() {
 
 //Action Roles
 _actionPhase() {
-    firebase.database().ref('rooms/' + this.state.roomname + '/actions').once('value',snap=>{
+    this.actionRef.once('value',snap=>{
         snap.forEach((child)=>{
             if(!child.val().E){
                 //Assassin
                 if (child.val().roleid == 'a') {
-                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
-                    .once('value',innersnap=>{
+                    this.actionRef.child(child.val().target).once('value',innersnap=>{
                         if(!innersnap.val().D){
                             this.listRef.child(child.val().target).update({dead:true});
                             this.myInfoRef.update({bloody:true});
@@ -876,8 +918,7 @@ _actionPhase() {
                 }
                 //Murderer 
                 else if (child.val().roleid == 'b') {
-                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
-                    .once('value',innersnap=>{
+                    this.actionRef.child(child.val().target).once('value',innersnap=>{
                         if(!innersnap.val().D){
                             this.listRef.child(child.val().target).update({dead:true});
                             this.myInfoRef.update({bloody:true});
@@ -912,7 +953,7 @@ _actionPhase() {
                 //Detective
                 else if (child.val().roleid == 'A') {
                     this.listRef.child(child.val().target).once('value',insidesnap=>{
-                        this.roomRef.child('actions').child(child.val().target).once('value',scheme=>{
+                        this.actionRef.child(child.val().target).once('value',scheme=>{
                             if(scheme.val().c || insidesnap.val().suspicious){
                                 this._noticeMsg(child.key, child.val().targetname + ' is suspicious ...');
                             } else {
@@ -936,8 +977,7 @@ _actionPhase() {
                 }
                 //Doctor
                 else if (child.val().roleid == 'D') {
-                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
-                    .once('value',insidesnap=>{
+                    this.actionRef.child(child.val().target).once('value',insidesnap=>{
                         if(insidesnap.val().a || insidesnap.val().b){
                             this.listRef.child(child.key).update({bloody:true});
                             this._noticeMsg(child.val().target,'The Doctor took care of your stab wounds.');
@@ -954,7 +994,7 @@ _actionPhase() {
                 }
                 //Warden
                 else if (child.val().roleid == 'G') {
-                    this.roomRef.child('actions').child(child.val().target).once('value',insnap=>{
+                    this.actionRef.child(child.val().target).once('value',insnap=>{
                         var string = 'Nobody';
                         insnap.forEach((visitor)=>{
                             if(visitor.key.length == 1){
@@ -982,8 +1022,7 @@ _actionPhase() {
                 }
                 //Overseer
                 else if (child.val().roleid == 'I') {
-                    firebase.database().ref('rooms/' + this.state.roomname + '/actions/' 
-                    + child.val().target).once('value',wheredhego=>{
+                    this.actionRef.child(child.val().target).once('value',wheredhego=>{
                         if(wheredhego.val().targetname){
                             this._noticeMsg(child.key, child.val().targetname + ' visited ' 
                             + wheredhego.val().targetname +"s house last night.");
@@ -997,8 +1036,7 @@ _actionPhase() {
                 else if (child.val().roleid == 'J') {
                     this.listRef.child(child.key).child('charges').once('value',charges=>{
                         if(charges.val() > 0){
-                            firebase.database().ref('rooms/' + this.state.roomname + '/actions/' + child.val().target)
-                            .once('value',innersnap=>{
+                            this.actionRef.child(child.val().target).once('value',innersnap=>{
                                 if(!innersnap.val().D){
                                     this.listRef.child(child.val().target).update({dead:true});
                                     this._changePlayerCount(false);
@@ -1042,7 +1080,7 @@ _gameOver() {
             firebase.database().ref('rooms/' + this.state.roomname).remove();
         } else {
             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                + firebase.auth().currentUser.uid).remove();
+                + this.user).remove();
         }
     })
     
@@ -1062,8 +1100,8 @@ render() {
 
 return <View style = {{flex:1,backgroundColor:colors.background, justifyContent:'center'}}>
 
-    <Animated.View style = {{flex:this.state.titleSize,justifyContent:'center',
-        borderRadius:2, marginBottom:10}}>
+    <Animated.View style = {{flex:this.state.titleSize, opacity:this.state.titleOpacity,
+        justifyContent:'center', borderRadius:2, marginBottom:10}}>
             {this._renderPhaseName()}
             {this._renderTopMessage()}
     </Animated.View>
@@ -1077,7 +1115,7 @@ return <View style = {{flex:1,backgroundColor:colors.background, justifyContent:
         radius = {30}
         disabled = {this.state.disabled}
         onPress = {()=>{ 
-            this._viewChange(true,false,true,true,true,false,false) 
+            this._viewChange(true,false,true,true,false,false) 
         }}
         component = {
             <Text style = {styles.bconcerto}>RETURN</Text>

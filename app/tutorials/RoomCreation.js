@@ -22,6 +22,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { CustomButton } from '../components/CustomButton.js';
+import { ListItem } from '../components/ListItem.js';
+import { Pager } from '../components/Pager.js';
+import { Alert } from '../components/Alert.js';
 
 import { NavigationActions } from 'react-navigation';
 
@@ -31,6 +34,8 @@ import colors from '../misc/colors.js';
 
 import * as Animatable from 'react-native-animatable';
 const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons)
+const MENU_ANIM = 200;
+const GAME_ANIM = 1000;
 import randomize from 'randomatic';
 
 export class CreationPager extends Component {
@@ -42,45 +47,41 @@ export class CreationPager extends Component {
         const roomname = params.roomname;
 
         this.state = {
+
+            page:1,
+            currentpage:1,
+
             roomname: params.roomname,
             alias:'',
             loading:true,
             errormessage:null,
 
-            playernum: null,
-            playercount: null,
-            difficulty: null,
+            playernum:          null,
+            playercount:        null,
+            difficulty:         null,
+            rolecount:          null,
+
+            warning:false,
+            warningOpacity: new Animated.Value(0),
 
             transition:false,
             transitionOpacity: new Animated.Value(0),
+            
+            alertVisible: false,
+            modalOpacity: new Animated.Value(0),
         };
 
-        this.dot1 = new Animated.Value(1);
-        this.dot2 = new Animated.Value(0.3);
-        this.dot3 = new Animated.Value(0.3);
-        this.dot4 = new Animated.Value(0.3);
-        this.dot5 = new Animated.Value(0.3);
-        this.width = Dimensions.get('window').width
+        this.height         = Dimensions.get('window').height;
+        this.width          = Dimensions.get('window').width;
 
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
-        this.nameRef        = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid)
-                            .child('name');
-        this.playerRef      = this.roomRef.child('playernum');
-        this.difficultyRef  = this.roomRef.child('difficulty');
         this.phaseRef       = this.roomRef.child('phase');
-        this.listOfRolesRef = firebase.database().ref('listofroles').child(roomname);
         this.listPlayerRef  = this.roomRef.child('listofplayers')
         
     }
 
     
     componentWillMount() {
-        this.nameRef.on('value',snap=>{
-            this.setState({
-                alias:snap.val(),
-                loading:false,
-            })
-        })
         this.phaseRef.on('value',snap=>{
             if(snap.exists()){
                 if(snap.val()==1){
@@ -88,106 +89,67 @@ export class CreationPager extends Component {
                 }
             }
         })
-        this.difficultyRef.on('value',snap=>{
-            if(snap.exists()){
-                this.setState({
-                    difficulty:snap.val()
-                })
-            }
-        })
-        this.playerRef.on('value',snap=>{
-            if(snap.exists()){
-                this.setState({
-                    playernum:snap.val()
-                })
-            }
-        })
-        this.listOfRolesRef.on('value',snap=>{
-            if(snap.exists()){
-                var playercount = 0;
-                snap.forEach((child)=>{
-                    playercount = playercount + child.val()
-                })
-                this.setState({
-                    playercount:playercount
-                })
-            }
-        })
 
         BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
     }
 
     componentWillUnmount() {
-        if(this.nameRef){
-            this.nameRef.off();
-        }
         if(this.phaseRef){
             this.phaseRef.off();
-        }
-        if(this.difficultyRef){
-            this.difficultyRef.off();
-        }
-        if(this.listOfRolesRef){
-            this.listOfRolesRef.off();
-        }
-        if(this.playerRef){
-            this.playerRef.off();
         }
         BackHandler.removeEventListener("hardwareBackPress", this._onBackPress);
     }
 
     _onBackPress = () => {
-        firebase.database().ref('rooms').child(this.state.roomname).remove().then(()=>{
-            this.props.navigation.dispatch(NavigationActions.back({key:'Room'}));
-            return true
-        })  
-    }
-
-    _pagingEnabled(position){
-        const width  = this.width;
-        const half   = width/2;
-        const clip   = position%width;
-        const rev    = width - clip;
-        if(clip>half){
-            this.refs.scrollView.scrollTo({x:position+rev, animated:true})
-        } else {
-            this.refs.scrollView.scrollTo({x:position-clip, animated:true})
+        if(this.state.modal){
+            this._menuPress()
+        } else if(this.state.currentpage > 1){
+            this._changePage(this.state.currentpage - 1)
         }
+        return true
     }
 
-    _handleDots(position) {
-        Animated.parallel([
-            Animated.timing(
-                this.dot1, {
-                    toValue:position<180?1:0.3,
-                    duration:50,
-                } 
-            ),
-            Animated.timing(
-                this.dot2, {
-                    toValue:position>179 && position<540?1:0.3,
-                    duration:50,
-                } 
-            ),
-            Animated.timing(
-                this.dot3, {
-                    toValue:position>539 && position<900?1:0.3,
-                    duration:50,
-                } 
-            ),
-            Animated.timing(
-                this.dot4, {
-                    toValue:position>899 && position<1260?1:0.3,
-                    duration:50,
-                } 
-            ),
-            Animated.timing(
-                this.dot5, {
-                    toValue:position>1259?1:0.3,
-                    duration:50,
-                } 
-            )
-        ]).start()
+    _deleteRoom() {
+        this.roomRef.remove()
+        .then(()=>{
+            this.props.navigation.dispatch(NavigationActions.back());
+        })
+    }
+
+    _menuPress() {
+        if(this.state.modal){
+            setTimeout(()=>{this.setState({modal:false})},MENU_ANIM)
+            Animated.parallel([
+                Animated.timing(
+                    this.state.modalOpacity,{
+                        toValue:0,
+                        duration:MENU_ANIM
+                    }
+                ),
+                Animated.timing(
+                    this.state.menuWidth,{
+                        toValue:0,
+                        duration:MENU_ANIM
+                    }
+                )
+            ]).start()
+        } else {
+            this.setState({modal:true})
+            Animated.parallel([
+                Animated.timing(
+                    this.state.modalOpacity,{
+                        toValue:1,
+                        duration:MENU_ANIM
+                    }
+                ),
+                Animated.timing(
+                    this.state.menuWidth,{
+                        toValue:this.width*0.8,
+                        duration:MENU_ANIM
+                    }
+                )
+            ]).start()
+        }
     }
 
     _transition() {
@@ -199,6 +161,47 @@ export class CreationPager extends Component {
                 duration:2000
             }
         ).start()
+    }
+
+    _warning(boolean) {
+        if(boolean){
+            this.setState({warning:true})
+            Animated.timing(
+                this.state.warningOpacity,{
+                    toValue:1,
+                    duration:MENU_ANIM
+                }
+            ).start()
+        } else {
+            setTimeout(()=>{this.setState({warning:false}),1000})
+            Animated.timing(
+                this.state.warningOpacity,{
+                    toValue:0,
+                    duration:MENU_ANIM
+                }
+            ).start()
+        }
+    }
+
+    _updatePage(page){
+        if(page > this.state.page){
+            this.setState({page:page, currentpage:page})
+        } else {
+            this.setState({currentpage:page})
+        }
+    }
+
+    _changePage(page){
+        if(page<6 && page>0){
+            this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
+            this.setState({currentpage:page})
+        }
+    }
+
+    _navigateTo(page){
+        this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
+        this.setState({currentpage:page})
+        this._menuPress()
     }
 
     _startGame(roomname) {
@@ -270,76 +273,167 @@ export class CreationPager extends Component {
         })
     }
 
+    _renderModal() {
+        return this.state.warning?
+            <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{ this._warning(false)}}>
+                <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                    backgroundColor:'rgba(0, 0, 0, 0.5)', alignItems:'center', justifyContent:'center',
+                    opacity:this.state.warningOpacity}}>
+                    <TouchableWithoutFeedback style = {{height:this.height*0.4, width:this.width*0.85, 
+                        backgroundColor:colors.shadow }}
+                        onPress = {()=>{}}>
+                        <View style = {{ flex:0.4, justifyContent:'center', alignItems:'center'}}>
+
+                            <View style = {{flex:0.3, justifyContent:'center'}}>
+                                <Text style = {styles.warningTitle}>Cannot start game</Text>
+                                <Text style = {styles.warningText}>{'The following numbers' 
+                                    + '\n' + 'should be equal.'}</Text>
+                            </View>
+                            <View style = {{flex:0.45, justifyContent:'center'}}>
+                                <Text style = {styles.warningText}>{'Size of Room: ' 
+                                    + this.state.playernum}</Text>
+                                <Text style = {styles.warningText}>{'People in Room: ' 
+                                    + this.state.playercount}</Text>
+                                <Text style = {styles.warningText}>{'Roles Selected: ' 
+                                    + this.state.rolecount}</Text>
+                            </View>
+                            <View style = {{flex:0.25,justifyContent:'center'}}>
+                                <Text style = {styles.warningText}>{'Check the numbers' 
+                                    + '\n' + 'and try again.'}</Text>
+                            </View>
+
+                        </View>
+                    </TouchableWithoutFeedback>
+                </Animated.View>
+            </TouchableWithoutFeedback>:null
+    }
+
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
-            <View style = {{flexDirection:'row', flex:0.15, justifyContent:'center',alignItems:'center'}}>
-                <View style = {{flex:0.15}}/>
-                <View style = {{flex:0.7, justifyContent:'center'}}> 
+            <View style = {{flexDirection:'row', height:this.height*0.1, 
+            justifyContent:'center', alignItems:'center'}}>
+                <View style = {{flex:0.2}}/>
+                <View style = {{flex:0.6, justifyContent:'center', borderRadius:30}}> 
                     <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                 </View>
                 <TouchableOpacity
-                    style = {{flex:0.15}}
-                    onPress = {()=>{
-                        firebase.database().ref('rooms').child(this.state.roomname).remove()
-                        .then(()=>{
-                            this.props.navigation.dispatch(NavigationActions.back());
-                        })
-                    }} >
-                    <MaterialCommunityIcons name='close-circle'
-                        style={{color:colors.menubtn,fontSize:30}}/>
+                    style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
+                    onPress = {()=>{ this.setState({alertVisible:true}) }}>
+                    <MaterialCommunityIcons name='close' style={{color:colors.shadow,fontSize:30}}/>
                 </TouchableOpacity>
             </View>
 
-            <ScrollView style = {{flex:0.75,backgroundColor:colors.background}}
-                horizontal showsHorizontalScrollIndicator={false} ref='scrollView' pagingEnabled
-                scrollEventThrottle = {16}
-                onScroll = {(event) => { 
-                    this._handleDots(event.nativeEvent.contentOffset.x)
-                }}>
-                
-                <Creation1
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                />
-                <Creation2 
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                />
-                <Creation3
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                />
-                <Creation4
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                    playernum = {this.state.playernum}
-                    playercount = {this.state.playercount}
-                />
-                <Creation5
-                    roomname = {this.state.roomname}
-                    width = {this.width}
-                    refs = {this.refs}
-                    navigation = {this.props.navigation}
-                />
-            </ScrollView>
-
-            <View style = {{flex:0.1, flexDirection:'row',
-                justifyContent:'center', alignItems:'center'}}>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, opacity:this.dot1}}/>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot2}}/>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot3}}/>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot4}}/>
-                <AnimatedDot name='checkbox-blank-circle'
-                    style={{color:colors.dots,fontSize:15, marginLeft:20, opacity:this.dot5}}/>
+            <View style = {{height:this.height*0.75}}>
+                <ScrollView style = {{flex:1,backgroundColor:colors.background}}
+                    horizontal showsHorizontalScrollIndicator={false} ref='scrollView'
+                    scrollEnabled = {false}>
+                    
+                    <Creation1
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                        updatePage = {val => this._updatePage(val)}
+                    />
+                    <Creation2 
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                        updatePage = {val => this._updatePage(val)}
+                        updatePlayernum = {val => this.setState({playernum:val})}
+                    />
+                    <Creation3
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                        updatePage = {val => this._updatePage(val)}
+                        updateDifficulty = {val => this.setState({difficulty:val})}
+                    />
+                    <Creation4
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                        playernum = {this.state.playernum}
+                        difficulty = {this.state.difficulty}
+                        updatePage = {val => this._updatePage(val)}
+                        updateRolecount = {val => this.setState({rolecount:val})}
+                    />
+                    <Creation5
+                        roomname = {this.state.roomname}
+                        width = {this.width}
+                        refs = {this.refs}
+                        playernum = {this.state.playernum}
+                        rolecount = {this.state.rolecount}
+                        updatePlayercount = {val => this.setState({playercount:val})}
+                        warningOn = {val => this._warning(val)}
+                        navigation = {this.props.navigation}
+                    />
+                </ScrollView>
             </View>
+
+            <Pager
+                height = {this.height*0.08}
+                page = {this.state.page}
+                currentpage = {this.state.currentpage}
+                lastpage = {5}
+                goBack = {() => this._changePage(this.state.currentpage - 1)}
+                goForward = {() => this._changePage(this.state.currentpage + 1)}
+                finish = {() => this._startGame(this.state.roomname)}
+            />
+
+            <Alert 
+                title = 'Delete Room?'
+                subtitle = {'Are you sure you want' + '\n' + 'to delete the room?'}
+                okay = 'OK'
+                cancel = 'Cancel'
+                visible = {this.state.alertVisible}
+                onClose = {() => this.setState({alertVisible:false})}
+                onOkay = {() => this._deleteRoom()}
+                onCancel = {() => this.setState({alertVisible:false})}
+            />
+
+            {this.state.modal?
+            <TouchableWithoutFeedback style = {{flex:1}} onPress={()=>{this._menuPress()}}>
+                <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
+                    backgroundColor:'rgba(0, 0, 0, 0.5)', opacity:this.state.modalOpacity}}>
+                    <Animated.View style = {{height:this.height*1, width:this.state.menuWidth,
+                        backgroundColor:colors.shadow}}>
+                        <TouchableWithoutFeedback style = {{flex:1 }} onPress = {()=>{}}>
+                        <View style = {{flex:1}}>
+                            <ListItem flex={0.1} title={this.state.roomname} icon={'menu'} fontSize={40}
+                                onPress = {()=>{this._menuPress()}} 
+                                index = {1} page = {this.state.page}/>
+                            <ListItem flex={0.07} title={'Edit Name'} fontSize={20}
+                                icon={'pencil'}
+                                onPress = {()=>{this._navigateTo(1)}}
+                                index = {1} page = {this.state.page}/>
+                            <ListItem flex={0.07} title={'# of Players'} fontSize={20}
+                                icon={'account-multiple'} 
+                                onPress = {()=>{this.state.page<2?{}:this._navigateTo(2)}}
+                                index = {2} page = {this.state.page}/>
+                            <ListItem flex={0.07} title={'Difficulty'} fontSize={20}
+                                icon={'scale-balance'}
+                                onPress = {()=>{this.state.page<3?{}:this._navigateTo(3)}}
+                                index = {3} page = {this.state.page}/>
+                            <ListItem flex={0.07} title={'Select Roles'} fontSize={20}
+                                icon={'script'}
+                                onPress = {()=>{this.state.page<4?{}:this._navigateTo(4)}}
+                                index = {4} page = {this.state.page}/>
+                            <ListItem flex={0.07} title={'Lobby'} fontSize={20}
+                                icon={'home'}
+                                onPress = {()=>{this.state.page<5?{}:this._navigateTo(5)}}
+                                index = {5} page = {this.state.page}/>
+                            <View style = {{flex:0.4}}/>
+                            <ListItem flex={0.07} title={'Delete Room'} fontSize={25}
+                                icon={'close-circle'}
+                                onPress = {()=>{this._deleteRoom()}}
+                                index = {1} page = {this.state.currentpage}/>
+                        </View>
+                        </TouchableWithoutFeedback>
+                    </Animated.View>
+                </Animated.View>
+            </TouchableWithoutFeedback>:null}
+
+            {this._renderModal()}
 
             {this.state.transition?<Animated.View
                 style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
@@ -363,14 +457,19 @@ export class Creation1 extends Component {
 
     _continue(name) {
         if(name && name.trim().length>0 && name.trim().length < 11){
+
+            this.props.updatePage(2)
+
             firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
             .child(firebase.auth().currentUser.uid).update({
                 name:               name.trim(),
-                readyvalue:         false,
                 presseduid:         'foo',
             }).then(()=>{
-                this.setState({errormessage:null})
-                this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animated:true})
+                firebase.database().ref('rooms').child(this.props.roomname).child('ready')
+                .child(firebase.auth().currentUser.uid).set(false).then(()=>{
+                    this.setState({errormessage:null})
+                    this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animated:true})
+                })
             })
         } else {
             this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
@@ -380,12 +479,15 @@ export class Creation1 extends Component {
 
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background,
-            justifyContent:'center', alignItems:'center', width:this.props.width}}>
-                    
-            <Text style = {[styles.subtitle,{flex:0.1}]}>
-                What is your name?</Text>
+            alignItems:'center', width:this.props.width}}>
+            
+            <View style = {{flex:0.15}}/>
 
-            <View style = {{flex:0.25}}/>
+            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.title}>Step 1</Text>
+                <Text style = {styles.subtitle}>What is your name?</Text>
+            </View>
+
             <View style = {{flex:0.12,flexDirection:'row'}}>
                 <TextInput
                     style={{
@@ -398,7 +500,6 @@ export class Creation1 extends Component {
                         borderTopLeftRadius:25,
                         borderBottomLeftRadius:25,
                     }}
-                    autoFocus
                     value={this.state.alias}
                     onChangeText = {(text) => {this.setState({alias: text})}}
                     onSubmitEditing = {()=>{ 
@@ -416,14 +517,16 @@ export class Creation1 extends Component {
                     rightradius = {25}
                     color = {colors.menubtn}
                     onPress = {()=>{
-                        this._continue(this.state.alias.trim());
+                        this._continue(this.state.alias);
                     }}
                     component = {<Text style = {styles.concerto}>GO</Text>}
                 />
             </View>
-            <Animatable.Text style = {[styles.sconcerto,{flex:0.05}]} ref = 'nameerror'>
-                {this.state.errormessage}</Animatable.Text>
-            <View style = {{ flex:0.48 }}/>
+
+            <View style = {{justifyContent:'center',alignItems:'center', flex:0.07}}>
+                <Animatable.Text style = {styles.sconcerto} ref = 'nameerror'>
+                    {this.state.errormessage}</Animatable.Text>
+            </View>
         </View>
     }
 }
@@ -434,66 +537,62 @@ export class Creation2 extends Component {
         super(props);
 
         this.state = {
-            alias:'',
-            playercount: null,
-            playernum: 1,
+            playernum: null,
             errormessage:'Must be between 6 - 15',
-            loading:true,
         };
     }
 
+    //In case the user already selected and is remounting
     componentWillMount() {
-        firebase.database().ref('rooms').child(this.props.roomname)
-        .child('playernum').once('value',snap=>{
+        firebase.database().ref('rooms').child(this.props.roomname).child('playernum')
+        .once('value',snap=>{
             if(snap.exists()){
                 this.setState({
-                    playercount: snap.val().playernum,
-                    loading: false,
-                })
-            } else {
-                this.setState({
-                    loading:false,
+                    playernum: snap.val().playernum,
                 })
             }
-                
         })
     }
 
     _digit(digit) {
-        if(this.state.playercount){
-            if(this.state.playercount.length > 1){
+        if(this.state.playernum){
+            if(this.state.playernum.length > 1){
                 this.refs.error.shake(800)
-            } else if (Number(this.state.playercount + digit.toString()>15)) {
+            } else if (Number(this.state.playernum + digit.toString()>15)) {
                 this.refs.error.shake(800)
             } else {
                 this.setState({
-                    playercount: this.state.playercount + digit.toString()
+                    playernum: this.state.playernum + digit.toString()
                 })
             }
         } else {
             this.setState({
-                playercount: digit
+                playernum: digit
             })
         }
     }
     _backspace() {
-        if(this.state.playercount && this.state.playercount.toString().length == 1){
-            this.setState({ playercount: null })
-        } else if (this.state.playercount && this.state.playercount.length == 2){
-            this.setState({ playercount: this.state.playercount.slice(0,1)})
+        if(this.state.playernum && this.state.playernum.toString().length == 1){
+            this.setState({ playernum: null })
+        } else if (this.state.playernum && this.state.playernum.length == 2){
+            this.setState({ playernum: this.state.playernum.slice(0,1)})
         }
         
     }
     _clear() {
-        this.setState({ playercount: null })
+        this.setState({ playernum: null })
     }
     _done() {
-        if(!this.state.playercount || this.state.playercount < 0 || this.state.playercount > 15){
+        if(!this.state.playernum || this.state.playernum < 0 || this.state.playernum > 15){
             this.refs.error.shake(800)
-            this.setState({playercount:null})
+            this.setState({playernum:null})
         } else {
+
+            this.props.updatePage(3)
+            this.props.updatePlayernum(this.state.playernum)
+
             firebase.database().ref('rooms').child(this.props.roomname).update({
-                playernum: Number(this.state.playercount)
+                playernum: Number(this.state.playernum)
             }).then(()=>{
                 this.props.refs.scrollView.scrollTo({x:this.props.width*2,y:0,animated:true})
             })
@@ -504,17 +603,18 @@ export class Creation2 extends Component {
         return <View style = {{flex:0.7,backgroundColor:colors.background, 
             width:this.props.width}}>
 
-            <Text style = {[styles.subtitle,{flex:0.1}]}>
-                {'How many people' + '\n' +  'are playing?'}</Text>
+            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.title}>Step 2</Text>
+                <Text style = {styles.subtitle}>{'How many people' + '\n' +  'are playing?'}</Text>
+            </View>
 
             <View style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}>
                 <View style = {{flex:0.7, flexDirection:'row'}}>
                     <View style = {{flex:0.8, justifyContent:'center', alignItems:'center',
                         backgroundColor:colors.font, borderRadius:5, flexDirection:'row'}}>
                         <View style = {{flex:0.3}}/>
-                        <Text style = {[styles.bigconcerto,
-                            {color:colors.menubtn, flex:0.4}]}>
-                            {this.state.playercount?this.state.playercount:'?'}</Text>
+                        <Text style = {[styles.bigconcerto, {color:colors.menubtn, flex:0.4}]}>
+                            {this.state.playernum?this.state.playernum:'?'}</Text>
                         <TouchableOpacity style = {{flex:0.3}} onPress = {()=>{this._backspace()}}>
                             <MaterialCommunityIcons name = 'backspace'
                                 style={{ color:colors.menubtn, fontSize: 40, alignSelf:'center'}}
@@ -523,8 +623,6 @@ export class Creation2 extends Component {
                     </View>
                 </View>
             </View>
-
-            <View style = {{flex:0.05}}/>
 
             <View style = {{flex:0.6, justifyContent:'center', alignItems:'center',
                 marginLeft:10, marginRight:10, borderRadius:2, paddingTop:5, paddingBottom:5}}>
@@ -611,7 +709,6 @@ export class Creation2 extends Component {
                         component = {<Text style={styles.concerto}>DONE</Text>}/>
                 </View>
             </View>
-            <View style = {{flex:0.05}}/>
 
         </View>
     }
@@ -627,6 +724,10 @@ export class Creation3 extends Component {
     }
 
     _selectDifficulty(difficulty) {
+
+        this.props.updatePage(4)
+        this.props.updateDifficulty(difficulty)
+
         firebase.database().ref('rooms').child(this.props.roomname).update({
             difficulty: difficulty
         }).then(()=>{
@@ -636,57 +737,43 @@ export class Creation3 extends Component {
     }
 
     render() {
-        return <View style = {{flex:0.7,backgroundColor:colors.background,
-            width: this.props.width}}>
+        return <View style = {{flex:0.7,backgroundColor:colors.background, alignItems:'center',
+            width: this.props.width, justifyContent:'center'}}>
 
-                <View style = {{flex:0.1,backgroundColor:colors.background, 
-                    justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.subtitle}>
-                        {'How experienced' + '\n' + 'is your Group?'}</Text>
+                <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
+                    <Text style = {styles.title}>Step 3</Text>
+                    <Text style = {styles.subtitle}>{'How experienced' + '\n' + 'is your Group?'}</Text>
                 </View>
-                <View style = {{flex:0.06}}/>
-                <CustomButton size = {0.27} flex = {0.8} depth = {10} radius = {80}
+
+                <View style = {{flex:0.03}}/>
+                <CustomButton size = {0.2} flex = {0.8} depth = {8} radius = {80}
                     color = {this.state.difficulty==1?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==1?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(1) }}
                     component = {<View style = {{justifyContent:'center', alignItems:'center'}}>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
                         <Text style = {styles.concerto}>New</Text>
                         <Text style = {styles.sconcerto}>
                             {'We are just trying out' + '\n' + 'Mafia for the first time!'}</Text>
                     </View>}
                 />
-                <View style = {{flex:0.04}}/>
-                <CustomButton size = {0.27} flex = {0.8} depth = {10} radius = {80}
+                <View style = {{flex:0.02}}/>
+                <CustomButton size = {0.2} flex = {0.8} depth = {8} radius = {80}
                     color = {this.state.difficulty==2?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==2?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(2) }}
                     component = {<View style = {{justifyContent:'center', alignItems:'center'}}>
-                        <View style = {{flexDirection:'row'}}>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
-                    </View><Text style = {styles.concerto}>Average</Text>
+                        <Text style = {styles.concerto}>Average</Text>
                         <Text style = {styles.sconcerto}>
                             {'We play once and a while' + '\n' + 'and know most of the roles.'}</Text>
                     </View>}
                 />
-                <View style = {{flex:0.04}}/>
-                <CustomButton size = {0.27} flex = {0.8} depth = {10} radius = {80}
+                <View style = {{flex:0.02}}/>
+                <CustomButton size = {0.2} flex = {0.8} depth = {8} radius = {80}
                     color = {this.state.difficulty==3?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.difficulty==3?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(3) }}
                     component = {<View style = {{justifyContent:'center', alignItems:'center'}}>
-                        <View style = {{flexDirection:'row'}}>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
-                    </View><Text style = {styles.concerto}>Experts</Text>
+                        <Text style = {styles.concerto}>Experts</Text>
                         <Text style = {styles.sconcerto}>
                             {'We play very frequently' + '\n' + 'and enjoy complicated gameplay.'}</Text>
                     </View>}
@@ -705,6 +792,9 @@ export class Creation4 extends Component {
         super(props);
 
         this.state = {
+
+            rolecount: 0,
+
             townlist: [],
             mafialist: [],
             neutrallist: [],
@@ -725,7 +815,9 @@ export class Creation4 extends Component {
                 var mafialist = this.state.mafialist;
                 var townlist = this.state.townlist;
                 var neutrallist = this.state.neutrallist;
+                var rolecount = 0;
                 snap.forEach((child)=>{
+                    rolecount = rolecount + child.val()
                     if(Rolesheet[child.key].type == 1){
                         mafialist[Rolesheet[child.key].index]['count'] = child.val()
                     } else if (Rolesheet[child.key].type == 2) {
@@ -733,15 +825,14 @@ export class Creation4 extends Component {
                     } else {
                         neutrallist[Rolesheet[child.key].index]['count'] = child.val()
                     }
-                })
+                });
                 this.setState({
-                    ownermode:true,
+                    rolecount:rolecount,
                     mafialist:mafialist,
                     townlist:townlist,
                     neutrallist:neutrallist
-                })
-            } else {
-                this.setState({ownermode:false})
+                });
+                this.props.updateRolecount(rolecount);
             }
         })
 
@@ -786,10 +877,19 @@ export class Creation4 extends Component {
         }
     }
 
-    _roleBtnPress(key,index,count) {
+    _selectionDone() {
+        this.props.updatePage(5)
+        this.props.refs.scrollView.scrollTo({x:this.props.width*4,animated:true})
+    }
+
+    _roleBtnPress(key,index,count,rolecount) {
         this.listOfRoles.child(key).transaction((count)=>{
             return count + 1;
         })
+
+        if(rolecount + 1 == this.props.playernum){
+            this._selectionDone()
+        }
     }
 
     _removeRole(key, index) {
@@ -824,8 +924,11 @@ export class Creation4 extends Component {
         return <View style = {{flex:0.7,backgroundColor:colors.background,
             width:this.props.width,justifyContent:'center'}}>
 
-            <Text style = {[styles.subtitle,{flex:0.1}]}>
-                {'Select ' + (this.props.playernum - this.props.playercount) + ' more roles'}</Text>
+            <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.title}>Step 4</Text>
+                <Text style = {styles.subtitle}>{this.state.rolecount + ' out of ' 
+                    + this.props.playernum + ' roles selected.'}</Text>
+            </View>
 
             <View style = {{flex:0.1, flexDirection:'row', justifyContent:'center'}}>
                 <CustomButton
@@ -876,7 +979,7 @@ export class Creation4 extends Component {
                 />
             </View>
 
-            <Animated.View style = {{flex:0.75, opacity:this.state.listOpacity, marginTop:10}}>
+            <Animated.View style = {{flex:0.7, opacity:this.state.listOpacity, marginTop:10}}>
                 <FlatList
                     data={this.state.showtown?this.state.townlist:
                         (this.state.showmafia?this.state.mafialist:this.state.neutrallist)}
@@ -893,7 +996,8 @@ export class Creation4 extends Component {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style = {{flex:0.7, justifyContent:'center', alignItems:'center'}}
-                                    onPress = {()=>{ this._roleBtnPress(item.key,item.index) }}>
+                                    onPress = {()=>{ this._roleBtnPress(item.key,item.index,
+                                        item.count, this.state.rolecount) }}>
                                     <Text style = {{ color:colors.font, fontFamily: 'ConcertOne-Regular',
                                         fontSize:18, marginTop:8, marginBottom:8}}>{item.name}</Text>
                                 </TouchableOpacity>
@@ -921,13 +1025,12 @@ export class Creation5 extends Component {
         this.state = {
             namelist:[],
 
-            players:null,       //ListOfPlayers count
-            playernum: null,    //Creation2 number
-            rolecount:null,     //ListOfRoles count
-
-            warning1:           true,
-            warning2:           true,
+            playercount:    null,   //ListOfPlayers count
+            rolecount:      null,     //ListOfRoles count
         };
+
+        this.height = Dimensions.get('window').height;
+        this.width  = Dimensions.get('window').width;
     }
 
     componentWillMount() {
@@ -941,51 +1044,10 @@ export class Creation5 extends Component {
                 })
             })
             this.setState({
-                namelist:list,
-                players:snap.numChildren(),
-                loading:false
+                namelist:       list,
+                playercount:    snap.numChildren(),
             })
-
-            if(snap.numChildren() == this.state.playernum){
-                this.setState({warning2:false})
-            } else {
-                this.setState({warning2:true})
-            }
-        })
-
-        this.playernumRef = firebase.database().ref('rooms').child(this.props.roomname).child('playernum')
-        this.playernumRef.on('value',snap=>{
-            this.setState({
-                playernum: snap.val(),
-            })
-
-            if(snap.val() == this.state.players){
-                this.setState({warning2:false})
-            } else {
-                this.setState({warning2:true})
-            }
-            if(snap.val() == this.state.rolecount){
-                this.setState({warning1:false})
-            } else {
-                this.setState({warning1:true})
-            }
-        })
-
-        this.listOfRolesRef = firebase.database().ref('listofroles').child(this.props.roomname)
-        this.listOfRolesRef.on('value',snap=>{
-            if(snap.exists()){
-                var rolecount = 0;
-                snap.forEach((child)=>{
-                    rolecount = rolecount + child.val();
-                })
-                this.setState({rolecount:rolecount})
-                
-                if(rolecount == this.state.playernum){
-                    this.setState({warning1:false})
-                } else {
-                    this.setState({warning1:true})
-                }
-            }
+            this.props.updatePlayercount(snap.numChildren())
         })
     }
 
@@ -993,92 +1055,57 @@ export class Creation5 extends Component {
         if(this.listOfRolesRef){
             this.listOfRolesRef.off();
         }
-        if(this.listofplayersRef){
-            this.listofplayersRef.off();
-        }
-        if(this.playernumRef){
-            this.playernumRef.off();
-        }
     }
 
-    _startGame(roomname) {
-        firebase.database().ref('rooms').child(roomname).child('phase').set(1)
-    }
-
-    _renderWarning1() {
-        return <Animated.View 
-            style = {{ height:80, justifyContent:'center', position:'absolute', 
-                left:0, right:0, bottom:0 }}>
-            <CustomButton size = {1} flex = {0.9} opacity = {1} depth = {8}
-                color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {50}
-                onPress = {()=>{
-                    this.props.refs.scrollView.scrollTo({x:this.props.width*3,y:0,animation:true})
-                }}
-                component = {<Text style = {styles.concerto}>
-                {'Role Selection' + '\n' + 'does not match Room Size!'}</Text>}/>
-        </Animated.View>
-    }
-    _renderWarning2() {
-        return <Animated.View 
-            style = {{ height:80, justifyContent:'center', position:'absolute', 
-                left:0, right:0, bottom:90 }}>
-            <CustomButton size = {1} flex = {0.9} opacity = {1} depth = {8}
-                color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {50}
-                onPress = {()=>{
-                    this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animation:true})
-                }}
-                component = {<Text style = {styles.concerto}>
-                {'No. of Players' + '\n' + 'does not match Room Size!'}</Text>}/>
-        </Animated.View>
+    _startGame() {
+        if(this.state.playercount != this.props.playernum){
+            this.props.warningOn(true)
+        } else if (this.state.playercount != this.props.rolecount){
+            this.props.warningOn(true)
+        } else {
+            firebase.database().ref('rooms').child(this.props.roomname).child('phase').set(1)
+        }
     }
 
     _renderListComponent(){
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
-                <Text style = {styles.concerto}>{item.name}</Text>
+                <Text style = {{
+                    fontSize: 20,
+                    fontFamily: 'ConcertOne-Regular',
+                    textAlign:'center',
+                    color: colors.shadow }}>{item.name}</Text>
             )}
             numColumns={1}
             keyExtractor={item => item.key}/>
     }
 
     _renderOptions() {
-        return <CustomButton size = {0.1} flex = {0.7} opacity = {1} depth = {6}
+        return <CustomButton size = {1} flex = {1} opacity = {1} depth = {6}
             color = {colors.menubtn} radius = {40}
-            onPress = {()=>{ 
-                !this.state.warning1 && !this.state.warning2 ? 
-                this._startGame(this.props.roomname) : alert('Unable to Start game.')
-            }}
-            component = {<Text style={styles.mconcerto}>START GAME</Text>}/>
+            onPress = {()=>{ this._startGame() }}
+            component = {<Text style={styles.mconcerto}>START GAME</Text>}
+        />
     }
 
     render() {
-        return <View style = {{flex:0.7,backgroundColor:colors.background,width:this.props.width}}>
+        return <View style = {{flex:0.7,backgroundColor:colors.background,width:this.props.width,
+            alignItems:'center'}}>
 
-                <View style = {{flex:0.1, justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {styles.mdconcerto}>Players:</Text>
-                </View>
+            <View style = {{height:this.height*0.15, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.title}>Game Lobby</Text>
+                <Text style = {styles.subtitle}>Players:</Text>
+            </View>
 
-                <View style = {{flex:0.7, justifyContent:'center', alignItems:'center',
-                    flexDirection:'row'}}>
-                    <View style = {{flex:0.7,backgroundColor:colors.menubtn,borderRadius:30}}>
-                        {this._renderListComponent()}
-                    </View>
-                </View>
+            <View style = {{height:this.height*0.48, width:this.width*0.7, justifyContent:'center'}}>
+                {this._renderListComponent()}
+            </View>
 
-                <View style = {{flex:0.05}}/>
+            <View style = {{height:this.height*0.1, width:this.width*0.7}}>
                 {this._renderOptions()}
-                <View style = {{flex:0.05}}/>
-                
-                {this.state.warning1?this._renderWarning1():null}
-                {this.state.warning2?this._renderWarning2():null}
+            </View>
 
-                {this.state.transition?<Animated.View
-                    style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-                    backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
-                    <ActivityIndicator size='large' color={colors.font} 
-                        style = {{position:'absolute',bottom:25,right:25}}/>
-                </Animated.View>:null}
         </View>
     }
 }
@@ -1088,7 +1115,31 @@ const styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.menubtn,
+        color: colors.shadow,
+    },
+    warningTitle: {
+        fontSize: 22,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.font,
+    },
+    warningText: {
+        fontSize: 17,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.font,
+    },
+    options: {
+        fontSize: 20,
+        fontFamily: 'ConcertOne-Regular',
+        marginLeft:20,
+        color: colors.font,
+    },
+    title : {
+        fontSize: 30,
+        fontFamily: 'ConcertOne-Regular',
+        textAlign:'center',
+        color: colors.shadow,
     },
     subtitle : {
         fontSize: 20,
@@ -1107,6 +1158,12 @@ const styles = StyleSheet.create({
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
         color: colors.shadow,
+    },
+    menuBtn : {
+        fontFamily:'ConcertOne-Regular',
+        fontSize: 25,
+        color: colors.font,
+        alignSelf:'center'
     },
     sconcerto: {
         fontSize: 15,
