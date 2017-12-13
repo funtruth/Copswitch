@@ -20,6 +20,25 @@ constructor(props) {
     
 }
 
+_cancel() {
+    Animated.timing(
+        this.state.opacity,{
+            toValue:0,
+            duration:200
+        }
+    ).start()
+
+    setTimeout(()=>{
+        this.props.onCancel()
+        Animated.timing(
+            this.state.opacity,{
+                toValue:1,
+                duration:50
+            }
+        ).start()
+    },250)
+}
+
 render() {
 
     if(!this.props.visible){
@@ -70,7 +89,7 @@ render() {
                         depth = {3}
                         radius = {15}
                         color = {colors.background}
-                        onPress = {()=>{ this.props.onOkay() }}
+                        onPress = {()=>this._cancel()}
                         component = {<Text style = {{
                             fontSize: 20,
                             fontFamily: 'ConcertOne-Regular',

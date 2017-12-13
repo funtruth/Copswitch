@@ -24,6 +24,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { CustomButton } from '../components/CustomButton.js';
 import { ListItem } from '../components/ListItem.js';
 import { Pager } from '../components/Pager.js';
+import { Alert } from '../components/Alert.js';
 
 import { NavigationActions } from 'react-navigation';
 
@@ -265,6 +266,8 @@ export class LobbyPager extends Component {
             alias:'',
             loading:true,
 
+            alertVisible: false,
+
             transition: false,
             transitionOpacity: new Animated.Value(0),
         };
@@ -395,7 +398,7 @@ export class LobbyPager extends Component {
                 </View>
                 <TouchableOpacity
                     style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
-                    onPress = {()=>{ this._leaveRoom() }}>
+                    onPress = {()=>{ this.setState({alertVisible:true}) }}>
                     <MaterialCommunityIcons name='close' style={{color:colors.shadow,fontSize:30}}/>
                 </TouchableOpacity>
                 
@@ -425,6 +428,17 @@ export class LobbyPager extends Component {
                 lastpage = {2}
                 goBack = {() => this._changePage(this.state.currentpage - 1)}
                 goForward = {() => this._changePage(this.state.currentpage + 1)}
+            />
+
+            <Alert
+                title = 'Leave Room?'
+                subtitle = {'Are you sure you want' + '\n' + 'to leave the room?'}
+                okay = 'OK'
+                cancel = 'Cancel'
+                visible = {this.state.alertVisible}
+                onClose = {() => this.setState({alertVisible:false})}
+                onOkay = {() => this._leaveRoom()}
+                onCancel = {() => this.setState({alertVisible:false})}
             />
 
             {this.state.transition?<Animated.View

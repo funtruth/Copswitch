@@ -67,9 +67,8 @@ export class CreationPager extends Component {
             transition:false,
             transitionOpacity: new Animated.Value(0),
             
-            modal: false,
+            alertVisible: false,
             modalOpacity: new Animated.Value(0),
-            menuWidth: new Animated.Value(0),
         };
 
         this.height         = Dimensions.get('window').height;
@@ -320,7 +319,7 @@ export class CreationPager extends Component {
                 <TouchableOpacity
                     style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
                     onPress = {()=>{ this.setState({alertVisible:true}) }}>
-                    <MaterialCommunityIcons name='delete-forever' style={{color:colors.shadow,fontSize:30}}/>
+                    <MaterialCommunityIcons name='close' style={{color:colors.shadow,fontSize:30}}/>
                 </TouchableOpacity>
             </View>
 
@@ -480,8 +479,10 @@ export class Creation1 extends Component {
 
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background,
-            justifyContent:'center', alignItems:'center', width:this.props.width}}>
+            alignItems:'center', width:this.props.width}}>
             
+            <View style = {{flex:0.15}}/>
+
             <View style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}>
                 <Text style = {styles.title}>Step 1</Text>
                 <Text style = {styles.subtitle}>What is your name?</Text>
@@ -750,8 +751,6 @@ export class Creation3 extends Component {
                     shadow = {this.state.difficulty==1?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(1) }}
                     component = {<View style = {{justifyContent:'center', alignItems:'center'}}>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
                         <Text style = {styles.concerto}>New</Text>
                         <Text style = {styles.sconcerto}>
                             {'We are just trying out' + '\n' + 'Mafia for the first time!'}</Text>
@@ -763,12 +762,7 @@ export class Creation3 extends Component {
                     shadow = {this.state.difficulty==2?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(2) }}
                     component = {<View style = {{justifyContent:'center', alignItems:'center'}}>
-                        <View style = {{flexDirection:'row'}}>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
-                    </View><Text style = {styles.concerto}>Average</Text>
+                        <Text style = {styles.concerto}>Average</Text>
                         <Text style = {styles.sconcerto}>
                             {'We play once and a while' + '\n' + 'and know most of the roles.'}</Text>
                     </View>}
@@ -779,14 +773,7 @@ export class Creation3 extends Component {
                     shadow = {this.state.difficulty==3?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(3) }}
                     component = {<View style = {{justifyContent:'center', alignItems:'center'}}>
-                        <View style = {{flexDirection:'row'}}>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
-                        <MaterialCommunityIcons name='star-circle'
-                            style={{color:colors.font,fontSize:30}}/>
-                    </View><Text style = {styles.concerto}>Experts</Text>
+                        <Text style = {styles.concerto}>Experts</Text>
                         <Text style = {styles.sconcerto}>
                             {'We play very frequently' + '\n' + 'and enjoy complicated gameplay.'}</Text>
                     </View>}
@@ -1182,7 +1169,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.shadow,
+        color: colors.font,
     },
     error: {
         fontSize: 15,
