@@ -267,9 +267,6 @@ export class LobbyPager extends Component {
 
             transition: false,
             transitionOpacity: new Animated.Value(0),
-            modal: false,
-            modalOpacity: new Animated.Value(0),
-            menuWidth: new Animated.Value(0),
         };
 
         this.width  = Dimensions.get('window').width;
@@ -316,9 +313,7 @@ export class LobbyPager extends Component {
     }
 
     _onBackPress = () => {
-        if(this.state.modal){
-            this._menuPress()
-        } else if(this.state.currentpage > 1){
+        if(this.state.currentpage > 1){
             this.refs.scrollView.scrollTo({x:(this.state.currentpage - 2)*this.width,animated:true})
             this.setState({currentpage:this.state.currentpage - 1})
         }
@@ -347,42 +342,6 @@ export class LobbyPager extends Component {
             })
         })
         
-    }
-
-    _menuPress() {
-        if(this.state.modal){
-            setTimeout(()=>{this.setState({modal:false})},MENU_ANIM)
-            Animated.parallel([
-                Animated.timing(
-                    this.state.modalOpacity,{
-                        toValue:0,
-                        duration:MENU_ANIM
-                    }
-                ),
-                Animated.timing(
-                    this.state.menuWidth,{
-                        toValue:0,
-                        duration:MENU_ANIM
-                    }
-                )
-            ]).start()
-        } else {
-            this.setState({modal:true})
-            Animated.parallel([
-                Animated.timing(
-                    this.state.modalOpacity,{
-                        toValue:1,
-                        duration:MENU_ANIM
-                    }
-                ),
-                Animated.timing(
-                    this.state.menuWidth,{
-                        toValue:this.width*0.8,
-                        duration:MENU_ANIM
-                    }
-                )
-            ]).start()
-        }
     }
 
     _transition(boolean) {

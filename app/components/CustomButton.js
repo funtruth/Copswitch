@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button } from 'react-native-elements';
-import { View, Animated, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 
 import colors from '../misc/colors.js';
 
@@ -32,7 +32,7 @@ _handlePressOut(){
 render() {
 
     return (
-        <Animated.View style = {{
+        <View style = {{
             flex:this.props.size,
             flexDirection:'row',
             justifyContent:'center',
@@ -72,7 +72,7 @@ render() {
                     {this.props.component}
                 </TouchableOpacity>
             </View>
-        </Animated.View>
+        </View>
     )
 }
 }

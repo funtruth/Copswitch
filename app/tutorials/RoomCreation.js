@@ -24,6 +24,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { CustomButton } from '../components/CustomButton.js';
 import { ListItem } from '../components/ListItem.js';
 import { Pager } from '../components/Pager.js';
+import { Alert } from '../components/Alert.js';
 
 import { NavigationActions } from 'react-navigation';
 
@@ -312,15 +313,15 @@ export class CreationPager extends Component {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
             <View style = {{flexDirection:'row', height:this.height*0.1, 
             justifyContent:'center', alignItems:'center'}}>
-                <TouchableOpacity
-                    style = {{flex:0.15, justifyContent:'center', alignItems:'center'}}
-                    onPress = {()=>{ this._menuPress() }}>
-                    <MaterialCommunityIcons name='menu' style={{color:colors.shadow,fontSize:30}}/>
-                </TouchableOpacity>
-                <View style = {{flex:0.7, justifyContent:'center', borderRadius:30}}> 
+                <View style = {{flex:0.2}}/>
+                <View style = {{flex:0.6, justifyContent:'center', borderRadius:30}}> 
                     <Text style = {styles.roomcode}>{this.state.roomname}</Text>
                 </View>
-                <View style = {{flex:0.15}}/>
+                <TouchableOpacity
+                    style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
+                    onPress = {()=>{ this.setState({alertVisible:true}) }}>
+                    <MaterialCommunityIcons name='delete-forever' style={{color:colors.shadow,fontSize:30}}/>
+                </TouchableOpacity>
             </View>
 
             <View style = {{height:this.height*0.75}}>
@@ -378,6 +379,17 @@ export class CreationPager extends Component {
                 goBack = {() => this._changePage(this.state.currentpage - 1)}
                 goForward = {() => this._changePage(this.state.currentpage + 1)}
                 finish = {() => this._startGame(this.state.roomname)}
+            />
+
+            <Alert 
+                title = 'Delete Room?'
+                subtitle = {'Are you sure you want' + '\n' + 'to delete the room?'}
+                okay = 'OK'
+                cancel = 'Cancel'
+                visible = {this.state.alertVisible}
+                onClose = {() => this.setState({alertVisible:false})}
+                onOkay = {() => this._deleteRoom()}
+                onCancel = {() => this.setState({alertVisible:false})}
             />
 
             {this.state.modal?
