@@ -8,6 +8,7 @@ import { CustomButton } from './CustomButton';
 
 export class Alert extends React.Component {
 
+    
 constructor(props) {
     super(props);
 
