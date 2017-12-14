@@ -26,3 +26,8 @@ and
 
 9. react-native run-android
 
+10. (ERROR) If 'adb' is unrecognized, add it in the PATH variable through Control Panel
+Control Panel -> System and Security -> System -> Change Settings -> Advanced -> ENV Variables
+Add to System Variables -> Path -> New
+C:\Users\YOUR_USER_NAME\AppData\Local\Android\Sdk\platform-tools
+
