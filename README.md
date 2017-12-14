@@ -16,5 +16,13 @@ https://facebook.github.io/react-native/docs/getting-started.html
 
 7. Restart Powershell -> npm install
 
-8. react-native run-android
+8. Go to folder /node_modules/react-native-tab-view/src/TabViewAnimated
+at the 'renderHeader' and 'renderFooter' lines (approx 265 & 278),
+remove the Collapsable 'View' Components
+it should look like:
+{renderHeader && renderHeader(props)}
+and
+{renderFooter && renderFooter(props)}
+
+9. react-native run-android
 
