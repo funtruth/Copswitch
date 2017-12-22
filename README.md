@@ -24,6 +24,10 @@ it should look like:
 and
 {renderFooter && renderFooter(props)}
 
+9. Fonts will need to be linked again: 
+    run: react-native link
+    delete: changes made in settings.gradle and MainActivity if there are duplicates
+
 9. react-native run-android
 
 10. (ERROR) If 'adb' is unrecognized, add it in the PATH variable through Control Panel

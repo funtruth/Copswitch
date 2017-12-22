@@ -29,7 +29,7 @@
 	},
 	"rnpm": {
 		"assets": [
-			"assets/fonts/ConcertOne-Regular"
+			"assets/fonts"
 		]
 	}
 }

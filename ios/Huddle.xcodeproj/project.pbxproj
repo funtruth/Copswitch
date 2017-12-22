@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302AC1ABCB8CE00DB3ED1 /* libRCTActionSheet.a */; };
 		00C302E71ABCBA2D00DB3ED1 /* libRCTGeolocation.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C302BA1ABCB90400DB3ED1 /* libRCTGeolocation.a */; };
@@ -54,6 +53,9 @@
 		E8A8FF3EF46AC64066FDBD00 /* libPods-Huddle.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 459DD6ABFD1A8C24D1D2C74F /* libPods-Huddle.a */; };
 		E9E4B820685D444D8B9CB939 /* SimpleLineIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9DB727CA6C3446EFA992E888 /* SimpleLineIcons.ttf */; };
 		EB7BDBD6AE0547088E6EB373 /* libRNVectorIcons.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 968FC186731B4DA284985E80 /* libRNVectorIcons.a */; };
+		F9D47ABA92EE4C3996FE90B0 /* ConcertOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E1ED7EFDCF034ADCB23D2850 /* ConcertOne-Regular.ttf */; };
+		A4B149AB4BDB4E0FBFEF9F97 /* VollkornSC-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9547B739B8D14841AEBF763B /* VollkornSC-Regular.ttf */; };
+		EA70AE630A6745DCA4070FD7 /* GloriaHallelujah.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6AA641F489024C45B7F1D3A9 /* GloriaHallelujah.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -343,6 +345,9 @@
 		E9998265CA7495EE52EC3067 /* Pods-Huddle-tvOS.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Huddle-tvOS.release.xcconfig"; path = "Pods/Target Support Files/Pods-Huddle-tvOS/Pods-Huddle-tvOS.release.xcconfig"; sourceTree = "<group>"; };
 		F98F076910FD4F41A247A553 /* Entypo.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = Entypo.ttf; path = "../node_modules/react-native-vector-icons/Fonts/Entypo.ttf"; sourceTree = "<group>"; };
 		FD1C7308903A61D1B1377B85 /* libPods-Huddle-tvOS.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Huddle-tvOS.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1ED7EFDCF034ADCB23D2850 /* ConcertOne-Regular.ttf */ = {isa = PBXFileReference; name = "ConcertOne-Regular.ttf"; path = "../assets/fonts/ConcertOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9547B739B8D14841AEBF763B /* VollkornSC-Regular.ttf */ = {isa = PBXFileReference; name = "VollkornSC-Regular.ttf"; path = "../assets/fonts/VollkornSC-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6AA641F489024C45B7F1D3A9 /* GloriaHallelujah.ttf */ = {isa = PBXFileReference; name = "GloriaHallelujah.ttf"; path = "../assets/fonts/GloriaHallelujah.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -552,6 +557,9 @@
 				64E2F9E27A6B413E9E9ADC96 /* Octicons.ttf */,
 				9DB727CA6C3446EFA992E888 /* SimpleLineIcons.ttf */,
 				268FC370ADB645DB99259461 /* Zocial.ttf */,
+				E1ED7EFDCF034ADCB23D2850 /* ConcertOne-Regular.ttf */,
+				9547B739B8D14841AEBF763B /* VollkornSC-Regular.ttf */,
+				6AA641F489024C45B7F1D3A9 /* GloriaHallelujah.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1095,6 +1103,9 @@
 				E9E4B820685D444D8B9CB939 /* SimpleLineIcons.ttf in Resources */,
 				99B2C604EE134DFDA53093B5 /* Zocial.ttf in Resources */,
 				2878D76D1FB207A800B1607B /* GoogleService-Info.plist in Resources */,
+				F9D47ABA92EE4C3996FE90B0 /* ConcertOne-Regular.ttf in Resources */,
+				A4B149AB4BDB4E0FBFEF9F97 /* VollkornSC-Regular.ttf in Resources */,
+				EA70AE630A6745DCA4070FD7 /* GloriaHallelujah.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

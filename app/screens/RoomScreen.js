@@ -324,7 +324,7 @@ const styles = StyleSheet.create({
     },
     continue: {
         fontSize:20,
-        fontFamily:'ConcertOne-Regular',
+        fontFamily:'GloriaHallelujah',
         color:colors.background,
         alignSelf: 'center',
         marginTop:5
