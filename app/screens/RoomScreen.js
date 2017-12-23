@@ -31,7 +31,6 @@ const QUICK_ANIM    = 400;
 const MED_ANIM      = 600;
 const SLOW_ANIM     = 1000;
 
-import { PushButton } from '../components/PushButton.js';
 import { CustomButton } from '../components/CustomButton.js';
 
 import colors from '../misc/colors.js';
@@ -156,32 +155,34 @@ export class Home extends React.Component {
             <View style = {{flex:0.7}}/>
             
             <View style = {{flex:0.02}}/>
-            <PushButton
+            <CustomButton
                 size = {0.12}
+                flex = {0.85}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
                 radius = {50}
+                fontSize = {24}
+                title = 'Create Room'
                 onPress = {()=>{ 
                     this._createRoom()
                 }}
                 disabled = {this.state.disabled}
-                component = {
-                    <Text style = {styles.bconcerto}>Create Room</Text>
-                }
             />
             <View style = {{flex:0.02}}/>
-            <PushButton
+            <CustomButton
                 size = {0.12}
+                flex = {0.85}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
                 radius = {50}
-                onPress = {()=>{ this._joinRoom() }}
+                fontSize = {24}
+                title = 'Join Room'
+                onPress = {()=>{ 
+                    this._joinRoom()
+                }}
                 disabled = {this.state.disabled}
-                component = {
-                    <Text style = {styles.bconcerto}>Join Room</Text>
-                }
             />
             <View style = {{flex:0.12}}/>
 

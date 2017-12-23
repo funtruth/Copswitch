@@ -11,7 +11,6 @@ export default colors = {
     alive:      '#3FD0A9',
 
     //Blue Palette
-    main:       '#DBE0D6', 
     background: '#e9e2ca',
     title:      '#231715',
     icon:       'white',  
@@ -55,6 +54,13 @@ export default colors = {
     gameback:   '#e9e2ca',
     tab:        '#873c3d',
 
+    
+    //PIgeons
+    background: '#acaec6',
+    menubtn:    '#9285a8',
+    shadow:     '#5f5374',
+    font:       'white',
+
 //COMPONENTS
 
     //Tab Navigator
@@ -62,4 +68,10 @@ export default colors = {
     indicatorcolor:         '#873c3d',
     iconcolor:              '#873c3d',
     
+
+    //Pigeons
+    tabbackground:          '#e9e2ca',
+    indicatorcolor:         '#5f5374',
+    iconcolor:              '#5f5374',
+
 }

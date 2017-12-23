@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button } from 'react-native-elements';
-import { View, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, Animated } from 'react-native';
 
 import colors from '../misc/colors.js';
 
@@ -32,7 +32,7 @@ _handlePressOut(){
 render() {
 
     return (
-        <View style = {{
+        <Animated.View style = {{
             flex:this.props.size,
             flexDirection:'row',
             justifyContent:'center',
@@ -69,10 +69,16 @@ render() {
                     }}
                     activeOpacity = {0.6}
                     disabled = {this.props.disabled}>
-                    {this.props.component}
+                    <Text style = {{
+                        fontSize:this.props.fontSize,
+                        fontFamily:'LuckiestGuy-Regular',
+                        color:colors.font,
+                        alignSelf: 'center',
+                        margin: this.props.textMargin,
+                    }}>{this.props.title}</Text>
                 </TouchableOpacity>
             </View>
-        </View>
+        </Animated.View>
     )
 }
 }

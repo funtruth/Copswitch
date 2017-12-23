@@ -17,7 +17,6 @@ import {
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { PushButton } from '../components/PushButton.js';
 import { CustomButton } from '../components/CustomButton.js';
 import { Header } from '../components/Header.js';
 import { Pager } from '../components/Pager.js';
@@ -113,59 +112,67 @@ class General extends Component {
     render(){
         return <View style = {{flex:1,backgroundColor:colors.background}}>
             <View style = {{flex:0.1}}/>
-            <PushButton
+            <CustomButton
                 size = {0.1}
+                flex = {0.85}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
                 radius = {50}
+                fontSize = {24}
                 onPress = {()=>{ 
                     this._buttonPress();
                     this.props.navigation.navigate('Roles');
                 }}
                 disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>Roles</Text>}
+                title = 'Roles'
             />
             <View style = {{flex:0.02}}/>
-            <PushButton
+            <CustomButton
                 size = {0.1}
+                flex = {0.85}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
                 radius = {50}
+                fontSize = {24}
                 onPress = {()=>{
                     this._buttonPress();
                     this.props.navigation.navigate('Menu',{menu:'rules'}) 
                 }}
                 disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>Rulebook</Text>}
+                title = 'Rulebook'
             />
             <View style = {{flex:0.35}}/>
-            <PushButton
+            <CustomButton
                 size = {0.1}
+                flex = {0.85}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
                 radius = {50}
+                fontSize = {24}
                 onPress = {()=>{ 
                     this._buttonPress();
                     this.props.navigation.navigate('InfoPage',{section:'about'})
                 }}
                 disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>About App</Text>}
+                title = 'About App'
             />
             <View style = {{flex:0.02}}/>
-            <PushButton
+            <CustomButton
                 size = {0.1}
+                flex = {0.85}
                 opacity = {1}
                 depth = {8}
                 color = {colors.menubtn}
                 radius = {50}
+                fontSize = {24}
                 onPress = {()=>{ 
                     this._deleteRoom()
                 }}
                 disabled = {this.state.disabled}
-                component = {<Text style = {styles.menuBtn}>Quit</Text>}
+                title = 'Quit'
             />
         </View>
     }
@@ -466,12 +473,14 @@ class Menu extends Component {
     }
 
     _renderMenuButton(item) {
-        return <View style={{marginTop:5,marginBottom:5}}><PushButton
+        return <View style={{marginTop:5,marginBottom:5, height:55}}><CustomButton
             size = {1}
+            flex = {0.85}
             opacity = {1}
             depth = {8}
             color = {colors.menubtn}
             radius = {50}
+            fontSize = {24}
             onPress = {()=>{
                 this._buttonPress();
                 item.type==1?
@@ -479,7 +488,7 @@ class Menu extends Component {
                     :this.props.navigation.navigate('InfoPage',{section:item.route}) 
             }}
             disabled = {this.state.disabled}
-            component = {<Text style = {styles.flatListBtn}>{item.desc}</Text>}
+            title = {item.desc}
         /></View>
         
     }
@@ -534,10 +543,10 @@ class InfoPage extends Component {
                 <Text style = {styles.comment}>{item.desc}</Text>
             </View>
         } else if (item.type == 3){
-            return <View style = {styles.linkContainer}><CustomButton size = {0.05} 
-                depth = {6} radius = {15}
+            return <View style = {styles.linkContainer}><CustomButton size = {0.05}
+                depth = {3} radius = {15} fontSize = {15} textMargin = {5}
                 color = {colors.link} shadow = {colors.linkshadow}
-                component = {<Text style = {styles.link}>{item.desc}</Text>}
+                title = {item.desc}
                 onPress = {()=>{this.props.navigation.navigate('InfoPage',{section:item.route})}}
             /></View>
         }
@@ -580,7 +589,7 @@ class InfoPage extends Component {
                 this.props.navigation.dispatch(NavigationActions.back());
             }}/>
             
-            <View style = {{flex:1, backgroundColor:colors.dshadow, borderRadius:15,
+            <View style = {{flex:1, backgroundColor:colors.shadow, borderRadius:15,
                 marginLeft:15, marginRight:15, marginBottom:10}}>
                 <View style = {{flex:1, backgroundColor:colors.font,borderRadius:15, marginBottom:6}}>
                     <FlatList
@@ -671,7 +680,7 @@ export default RuleBook = StackNavigator(
         color: colors.main,
     },
     detail: {
-        color:colors.dshadow,
+        color:colors.shadow,
         fontFamily: 'ConcertOne-Regular',
         fontSize:17,
         lineHeight: 25,
@@ -689,7 +698,7 @@ export default RuleBook = StackNavigator(
         marginRight:10,
     },
     comment: {
-        color:colors.dshadow,
+        color:colors.shadow,
         fontFamily: 'ConcertOne-Regular',
         fontSize:17,
         lineHeight: 25,

@@ -22,7 +22,6 @@ import Rolesheet from '../misc/roles.json';
 import Images from '../../assets/images/index.js';
 import Phases from '../misc/phases.json';
 
-import { PushButton } from '../components/PushButton.js';
 import { CustomButton } from '../components/CustomButton.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -1107,71 +1106,64 @@ return <View style = {{flex:1,backgroundColor:colors.background, justifyContent:
     </Animated.View>
 
 
-    <PushButton
+    <CustomButton
         size = {this.state.backSize}
+        flex = {0.85}
         opacity = {this.state.backOpacity}
         depth = {8}
         color = {colors.pushbutton}
         radius = {30}
+        fontSize = {25}
         disabled = {this.state.disabled}
         onPress = {()=>{ 
             this._viewChange(true,false,true,true,false,false) 
         }}
-        component = {
-            <Text style = {styles.bconcerto}>RETURN</Text>
-        }
+        title = 'RETURN'
     />
 
-    <PushButton
+    <CustomButton
         size = {this.state.voteSize}
+        flex = {0.85}
         opacity = {this.state.voteOpacity}
         depth = {8}
         color = {colors.pushbutton}
         radius = {30}
+        fontSize = {25}
         disabled = {this.state.disabled}
         onPress = {()=>{ 
             this._optionOnePress()
         }}
-        component = {
-            <Text style = {styles.bconcerto}>{this.state.btn1}</Text>
-        }
+        title = {this.state.btn1}
     />
 
-    <PushButton
+    <CustomButton
         size = {this.state.waitingSize}
+        flex = {0.85}
         opacity = {this.state.waitingOpacity}
         depth = {10}
         color = {colors.pushbutton}
         radius = {50}
+        fontSize = {25}
         disabled = {this.state.disabled}
         onPress = {()=>{ 
             this._resetOptionPress()
         }}
-        component = {<Animatable.View animation={{
-                0: {opacity:1},
-                0.25:{opacity:0.5},
-                0.5:{opacity:0},
-                0.75:{opacity:0.5},
-                1:{opacity:1},
-            }} iterationCount="infinite" duration={2000}>
-            <Text style = {styles.bconcerto}>WAITING</Text>
-            </Animatable.View>
-        }
+        title = 'WAITING'
     />
 
-    <PushButton
+    <CustomButton
         size = {this.state.voteSize}
+        flex = {0.85}
         opacity = {this.state.voteOpacity}
         depth = {8}
         color = {colors.pushbutton}
         radius = {30}
+        fontSize = {25}
         disabled = {this.state.disabled}
         onPress = {()=>{ 
             this._optionTwoPress()
         }}
-        component = {
-            <Text style = {styles.bconcerto}>{this.state.btn2}</Text>
-        }
+        title = {this.state.btn2}
     />
 
     <Animated.View style = {{ flex:this.state.listSize,  opacity:this.state.listOpacity,
