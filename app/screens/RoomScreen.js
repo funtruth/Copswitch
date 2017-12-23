@@ -335,8 +335,8 @@ const styles = StyleSheet.create({
         color:colors.font,
     },
     bconcerto: {
-        fontSize:30,
-        fontFamily:'ConcertOne-Regular',
+        fontSize:24,
+        fontFamily:'LuckiestGuy-Regular',
         color:colors.font,
         alignSelf: 'center',
     },

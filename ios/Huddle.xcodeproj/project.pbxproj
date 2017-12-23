@@ -56,6 +56,14 @@
 		F9D47ABA92EE4C3996FE90B0 /* ConcertOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E1ED7EFDCF034ADCB23D2850 /* ConcertOne-Regular.ttf */; };
 		A4B149AB4BDB4E0FBFEF9F97 /* VollkornSC-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9547B739B8D14841AEBF763B /* VollkornSC-Regular.ttf */; };
 		EA70AE630A6745DCA4070FD7 /* GloriaHallelujah.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6AA641F489024C45B7F1D3A9 /* GloriaHallelujah.ttf */; };
+		A3C24511928747958F19416B /* Bungee-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F028BDB9BE9C45F9ADAC55AA /* Bungee-Regular.ttf */; };
+		88AEA5F3F50947C98A166786 /* Kalam-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CAE4646B393B43C8A5CAC090 /* Kalam-Bold.ttf */; };
+		1F1BAD47D2D54F62999131F3 /* Kalam-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FF95DEFAF4694B7BB8990D2A /* Kalam-Light.ttf */; };
+		A626E8F3CBD345E9A21AFEDC /* Kalam-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 72B66C2505234438A0B51D5E /* Kalam-Regular.ttf */; };
+		8921CB8DFD034DABAE243A9B /* PermanentMarker-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1F9524DD0D674436AAA74806 /* PermanentMarker-Regular.ttf */; };
+		836166246E454AA4867ECAEB /* Bangers-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B2DD6C4A3A7F402E9041A2F4 /* Bangers-Regular.ttf */; };
+		DD6256C43BA64CFEA6D7047F /* LuckiestGuy-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33CB2AD8700844EF961C19F2 /* LuckiestGuy-Regular.ttf */; };
+		725BEBCC3EC640E6AB754951 /* SigmarOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 364024F1E21246B5AA9DC88F /* SigmarOne-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -348,6 +356,14 @@
 		E1ED7EFDCF034ADCB23D2850 /* ConcertOne-Regular.ttf */ = {isa = PBXFileReference; name = "ConcertOne-Regular.ttf"; path = "../assets/fonts/ConcertOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		9547B739B8D14841AEBF763B /* VollkornSC-Regular.ttf */ = {isa = PBXFileReference; name = "VollkornSC-Regular.ttf"; path = "../assets/fonts/VollkornSC-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		6AA641F489024C45B7F1D3A9 /* GloriaHallelujah.ttf */ = {isa = PBXFileReference; name = "GloriaHallelujah.ttf"; path = "../assets/fonts/GloriaHallelujah.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		F028BDB9BE9C45F9ADAC55AA /* Bungee-Regular.ttf */ = {isa = PBXFileReference; name = "Bungee-Regular.ttf"; path = "../assets/fonts/Bungee-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		CAE4646B393B43C8A5CAC090 /* Kalam-Bold.ttf */ = {isa = PBXFileReference; name = "Kalam-Bold.ttf"; path = "../assets/fonts/Kalam-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		FF95DEFAF4694B7BB8990D2A /* Kalam-Light.ttf */ = {isa = PBXFileReference; name = "Kalam-Light.ttf"; path = "../assets/fonts/Kalam-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		72B66C2505234438A0B51D5E /* Kalam-Regular.ttf */ = {isa = PBXFileReference; name = "Kalam-Regular.ttf"; path = "../assets/fonts/Kalam-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		1F9524DD0D674436AAA74806 /* PermanentMarker-Regular.ttf */ = {isa = PBXFileReference; name = "PermanentMarker-Regular.ttf"; path = "../assets/fonts/PermanentMarker-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B2DD6C4A3A7F402E9041A2F4 /* Bangers-Regular.ttf */ = {isa = PBXFileReference; name = "Bangers-Regular.ttf"; path = "../assets/fonts/Bangers-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		33CB2AD8700844EF961C19F2 /* LuckiestGuy-Regular.ttf */ = {isa = PBXFileReference; name = "LuckiestGuy-Regular.ttf"; path = "../assets/fonts/LuckiestGuy-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		364024F1E21246B5AA9DC88F /* SigmarOne-Regular.ttf */ = {isa = PBXFileReference; name = "SigmarOne-Regular.ttf"; path = "../assets/fonts/SigmarOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -560,6 +576,14 @@
 				E1ED7EFDCF034ADCB23D2850 /* ConcertOne-Regular.ttf */,
 				9547B739B8D14841AEBF763B /* VollkornSC-Regular.ttf */,
 				6AA641F489024C45B7F1D3A9 /* GloriaHallelujah.ttf */,
+				F028BDB9BE9C45F9ADAC55AA /* Bungee-Regular.ttf */,
+				CAE4646B393B43C8A5CAC090 /* Kalam-Bold.ttf */,
+				FF95DEFAF4694B7BB8990D2A /* Kalam-Light.ttf */,
+				72B66C2505234438A0B51D5E /* Kalam-Regular.ttf */,
+				1F9524DD0D674436AAA74806 /* PermanentMarker-Regular.ttf */,
+				B2DD6C4A3A7F402E9041A2F4 /* Bangers-Regular.ttf */,
+				33CB2AD8700844EF961C19F2 /* LuckiestGuy-Regular.ttf */,
+				364024F1E21246B5AA9DC88F /* SigmarOne-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1106,6 +1130,14 @@
 				F9D47ABA92EE4C3996FE90B0 /* ConcertOne-Regular.ttf in Resources */,
 				A4B149AB4BDB4E0FBFEF9F97 /* VollkornSC-Regular.ttf in Resources */,
 				EA70AE630A6745DCA4070FD7 /* GloriaHallelujah.ttf in Resources */,
+				A3C24511928747958F19416B /* Bungee-Regular.ttf in Resources */,
+				88AEA5F3F50947C98A166786 /* Kalam-Bold.ttf in Resources */,
+				1F1BAD47D2D54F62999131F3 /* Kalam-Light.ttf in Resources */,
+				A626E8F3CBD345E9A21AFEDC /* Kalam-Regular.ttf in Resources */,
+				8921CB8DFD034DABAE243A9B /* PermanentMarker-Regular.ttf in Resources */,
+				836166246E454AA4867ECAEB /* Bangers-Regular.ttf in Resources */,
+				DD6256C43BA64CFEA6D7047F /* LuckiestGuy-Regular.ttf in Resources */,
+				725BEBCC3EC640E6AB754951 /* SigmarOne-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

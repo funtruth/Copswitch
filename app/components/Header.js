@@ -27,7 +27,7 @@ render() {
             </View>
             <View style = {{flex:0.5, justifyContent:'center', alignItems:'center'}}>
                 <Text style = {{
-                    fontFamily:'ConcertOne-Regular',
+                    fontFamily:'Bungee-Regular',
                     fontSize: 25,
                     color: colors.dshadow,
                 }}>{this.props.title}</Text>
