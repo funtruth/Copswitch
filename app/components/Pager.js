@@ -34,16 +34,13 @@ render() {
                     depth = {6}
                     color = {colors.lightbutton}
                     shadow = {colors.lightshadow}
-                    radius = {15}
+                    radius = {15} fontSize = {20}
                     onPress = {this.props.goBack}
-                    component = {
-                        <MaterialCommunityIcons name='page-first' 
-                            style={{ color:colors.main, fontSize: 30, alignSelf:'center'}}/>
-                    }
+                    title = 'I<'
                 />}
             </View>
             <View style = {{flex:0.25, justifyContent:'center',
-                borderRadius:15, backgroundColor:colors.menubtn}}>
+                borderRadius:15, backgroundColor:colors.shadow}}>
                 <Text style = {{
                     fontFamily:'ConcertOne-Regular',
                     fontSize: 25,
@@ -58,15 +55,11 @@ render() {
                     depth = {6}
                     color = {colors.lightbutton}
                     shadow = {colors.lightshadow}
-                    radius = {15}
+                    radius = {15} fontSize = {20}
                     onPress = {this.props.goForward}
                     disabled = {this.forwardDisabled}
                     opacity = {this.forwardDisabled?0.5:1}
-                    component = {
-                        <MaterialCommunityIcons name='page-last'
-                            style={{ color:colors.main, fontSize: 30, alignSelf:'center' 
-                        }}/>
-                    }
+                    title = '>I'
                 />}
             </View>
         </View>

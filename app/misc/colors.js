@@ -61,6 +61,11 @@ export default colors = {
     shadow:     '#5f5374',
     font:       'white',
 
+    lightbutton: '#94a3cc',
+    lightshadow: '#6177b3',
+    
+    digit:       '#9285a8',
+
 //COMPONENTS
 
     //Tab Navigator
