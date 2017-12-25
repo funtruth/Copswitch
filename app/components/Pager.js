@@ -40,9 +40,9 @@ render() {
                 />}
             </View>
             <View style = {{flex:0.25, justifyContent:'center',
-                borderRadius:15, backgroundColor:colors.shadow}}>
+                borderRadius:15, backgroundColor:colors.menubtn}}>
                 <Text style = {{
-                    fontFamily:'ConcertOne-Regular',
+                    fontFamily:'LuckiestGuy-Regular',
                     fontSize: 25,
                     color: colors.font,
                     alignSelf:'center'

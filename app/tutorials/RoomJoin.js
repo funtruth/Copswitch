@@ -24,6 +24,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { CustomButton } from '../components/CustomButton.js';
 import { ListItem } from '../components/ListItem.js';
 import { Pager } from '../components/Pager.js';
+import { NumPad } from '../components/NumPad.js';
 import { Alert } from '../components/Alert.js';
 
 import { NavigationActions } from 'react-navigation';
@@ -149,69 +150,16 @@ export class Join1 extends Component {
                         value={this.state.roomname}/>
                 </View>
 
-                <View style = {{flex:0.5, justifyContent:'center', alignItems:'center',
-                 marginLeft:10, marginRight:10, borderRadius:2, paddingTop:5, paddingBottom:5}}>
-                    <Animatable.Text style = {styles.sconcerto}ref='error'>
+                <Animatable.Text style = {styles.sconcerto}ref='error'>
                         {this.state.errormessage}</Animatable.Text>
-                    <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.digit} radius = {25} title = '1' fontSize = {20}
-                            onPress = {()=>{ this._digit(1) }}
-                        />
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.digit} radius = {25} title = '2' fontSize = {20}
-                            onPress = {()=>{ this._digit(2) }}
-                        />
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.digit} radius = {25} title = '3' fontSize = {20}
-                            onPress = {()=>{ this._digit(3) }}
-                        />
-                    </View>
-                    <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.digit} radius = {25} title = '4' fontSize = {20}
-                            onPress = {()=>{ this._digit(4) }}
-                        />
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.digit} radius = {25} title = '5' fontSize = {20}
-                            onPress = {()=>{ this._digit(5) }}
-                        />
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.digit} radius = {25} title = '6' fontSize = {20}
-                            onPress = {()=>{ this._digit(6) }}
-                        />
-                    </View>
-                    <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.digit} radius = {25} title = '7' fontSize = {20}
-                            onPress = {()=>{ this._digit(7) }}
-                        />
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.digit} radius = {25} title = '8' fontSize = {20}
-                            onPress = {()=>{ this._digit(8) }}
-                        />
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.digit} radius = {25} title = '9' fontSize = {20}
-                            onPress = {()=>{ this._digit(9) }}
-                        />
-                    </View>
-                    <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {25}
-                            title = 'CLEAR'
-                            onPress = {()=>{ this._backspace() }}
-                        />
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.digit} radius = {25} title = '0' fontSize = {20}
-                            onPress = {()=>{ this._digit(0) }}
-                        />
-                        <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                            color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {25}
-                            title = 'DONE'
-                            onPress = {()=>{ this._continue(this.state.roomname) }}
-                        />
-                    </View>
-                </View>
+
+                <NumPad
+                    flex = {0.5}
+                    number = {this.state.roomname}
+                    digit = {val => this._digit(val)}
+                    setNumber = {val => this.setState({roomname:val})}
+                    _done = {()=>this._continue(this.state.roomname)}
+                />
 
                 <View style = {{flex:0.1}}/>
             </View>

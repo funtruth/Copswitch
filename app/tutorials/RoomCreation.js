@@ -24,6 +24,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { CustomButton } from '../components/CustomButton.js';
 import { ListItem } from '../components/ListItem.js';
 import { Pager } from '../components/Pager.js';
+import { NumPad } from '../components/NumPad.js';
 import { Alert } from '../components/Alert.js';
 
 import { NavigationActions } from 'react-navigation';
@@ -602,6 +603,8 @@ export class Creation2 extends Component {
         return <View style = {{flex:0.7,backgroundColor:colors.background, 
             width:this.props.width}}>
 
+            <View style = {{flex:0.05}}/>
+
             <View style = {{flex:0.1, justifyContent:'center', alignItems:'center'}}>
                 <Text style = {styles.subtitle}>{'How many people' + '\n' +  'are playing?'}</Text>
             </View>
@@ -622,69 +625,21 @@ export class Creation2 extends Component {
                 </View>
             </View>
 
-            <View style = {{flex:0.65, justifyContent:'center', alignItems:'center',
-                marginLeft:10, marginRight:10, borderRadius:2, paddingTop:5, paddingBottom:5}}>
-                <Animatable.Text style = {styles.error}ref='error'>
-                    {this.state.errormessage}</Animatable.Text>
-                <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8} fontSize = {20}
-                        color = {colors.digit} radius = {25} title = '1'
-                        onPress = {()=>{ this._digit(1) }}
-                    />
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8} fontSize = {20}
-                        color = {colors.digit} radius = {25} title = '2'
-                        onPress = {()=>{ this._digit(2) }}
-                    />
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8} fontSize = {20}
-                        color = {colors.digit} radius = {25} title = '3'
-                        onPress = {()=>{ this._digit(3) }}
-                    />
-                </View>
-                <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8} fontSize = {20}
-                        color = {colors.digit} radius = {25}  title = '4'
-                        onPress = {()=>{ this._digit(4) }}
-                    />
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8} fontSize = {20}
-                        color = {colors.digit} radius = {25} title = '5'
-                        onPress = {()=>{ this._digit(5) }}
-                    />
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8} fontSize = {20}
-                        color = {colors.digit} radius = {25} title = '6'
-                        onPress = {()=>{ this._digit(6) }}
-                    />
-                </View>
-                <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8} fontSize = {20}
-                        color = {colors.digit} radius = {25}  title = '7'
-                        onPress = {()=>{ this._digit(7) }}
-                    />
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8} fontSize = {20}
-                        color = {colors.digit} radius = {25} title = '8'
-                        onPress = {()=>{ this._digit(8) }}
-                    />
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8} fontSize = {20}
-                        color = {colors.digit} radius = {25}  title = '9'
-                        onPress = {()=>{ this._digit(9) }}
-                    />
-                </View>
-                <View style = {{flex:0.25, flexDirection:'row', marginTop:10}}>
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                        color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {25}
-                        title = 'CLEAR'
-                        onPress = {()=>{ this._clear() }}
-                    />
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8} fontSize = {20}
-                        color = {colors.digit} radius = {25}  title = '0'
-                        onPress = {()=>{ this._digit(0) }}
-                    />
-                    <CustomButton size = {0.3} flex = {0.9} opacity = {1} depth = {8}
-                        color = {colors.lightbutton} shadow = {colors.lightshadow} radius = {25}
-                        title = 'DONE'
-                        onPress = {()=>{ this._done() }}
-                    />
-                </View>
-            </View>
+            <Animatable.Text style = {{
+                    fontSize: 15,
+                    fontFamily: 'LuckiestGuy-Regular',
+                    textAlign:'center',
+                    color: colors.shadow,
+                }}ref='error'>{this.state.errormessage}
+            </Animatable.Text>
+
+            <NumPad
+                flex = {0.6}
+                number = {this.state.playernum}
+                digit = {val => this._digit(val)}
+                setNumber = {val => this.setState({playernum:val})}
+                _done = {()=>{this._done()}}
+            />
 
         </View>
     }
