@@ -105,13 +105,13 @@ export class Messages extends Component {
         return <View style = {{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
 
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
-                borderRadius:2, backgroundColor:this.state.publicchat?colors.details:colors.gameback}}
+                borderRadius:2, backgroundColor:this.state.publicchat?colors.shadow:colors.gameback}}
                 onPress = {()=>{this.setState({publicchat:true})}}>
                 <Text style = {this.state.publicchat?styles.dchat:styles.chat}>Public</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
-                borderRadius:2, backgroundColor:this.state.publicchat?colors.gameback:colors.details}}
+                borderRadius:2, backgroundColor:this.state.publicchat?colors.gameback:colors.shadow}}
                 onPress = {()=>{this.setState({publicchat:false})}}>
                 <Text style = {this.state.publicchat?styles.chat:styles.dchat}>Private</Text>
             </TouchableOpacity>
@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.details,
+        color: colors.shadow,
         marginLeft: 40,
         marginRight:40,
     },
@@ -327,20 +327,20 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.details,
+        color: colors.shadow,
     },
     chat:{
-        fontSize:20,
-        fontFamily:'ConcertOne-Regular',
+        fontSize:15,
+        fontFamily:'Bungee-Regular',
         color:colors.details,
         alignSelf: 'center',
         marginTop:5,
         marginBottom:5,
     },
     dchat:{
-        fontSize:20,
-        fontFamily:'ConcertOne-Regular',
-        color:colors.gameback,
+        fontSize:15,
+        fontFamily:'Bungee-Regular',
+        color:colors.details,
         alignSelf: 'center',
         marginTop:5,
         marginBottom:5,
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     leftconcerto:{
         fontSize:17,
         fontFamily:'ConcertOne-Regular',
-        color:colors.details,
+        color:colors.shadow,
         marginTop:5,
     },
     

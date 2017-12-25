@@ -58,6 +58,8 @@ export default colors = {
     //PIgeons
     background: '#acaec6',
     menubtn:    '#9285a8',
+    namebtn:    '#9285a8',
+    pushbutton: '#9285a8',
     shadow:     '#5f5374',
     font:       'white',
 
@@ -66,6 +68,11 @@ export default colors = {
     
     digit:       '#9285a8',
 
+    gameback:   '#acaec6',
+    details:    'white',
+    tab:        '#5f5374',
+    titlefont:  '#5f5374',
+
 //COMPONENTS
 
     //Tab Navigator
@@ -73,7 +80,6 @@ export default colors = {
     indicatorcolor:         '#873c3d',
     iconcolor:              '#873c3d',
     
-
     //Pigeons
     tabbackground:          '#e9e2ca',
     indicatorcolor:         '#5f5374',

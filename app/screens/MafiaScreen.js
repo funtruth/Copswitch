@@ -716,7 +716,9 @@ _optionOnePress() {
 //Day Phase - ABSTAIN
 _optionTwoPress() {
     
-    this._buttonPress();
+    if(this.state.phase != 6 && this.state.phase != 7){
+        this._buttonPress();
+    }
 
     if(this.state.phase == 2){
         this._readyValue(true);
@@ -779,12 +781,12 @@ _resetOptionPress() {
 _renderPhaseName() {
     if(this.state.phase == 2 || this.state.phase == 5){
         return <Text style = {{color:colors.titlefont, alignSelf:'center', 
-        fontFamily: 'ConcertOne-Regular', fontSize:35}}>
+        fontFamily: 'Bungee-Regular', fontSize:35}}>
         {this.state.phasename + ' ' + this.state.daycounter}
     </Text>
     } else {
         return <Text style = {{color:colors.titlefont, alignSelf:'center', 
-        fontFamily: 'ConcertOne-Regular', fontSize:35}}>
+        fontFamily: 'LuckiestGuy-Regular', fontSize:35}}>
         {this.state.phasename}
     </Text>
     }
