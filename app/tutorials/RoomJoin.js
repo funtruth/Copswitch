@@ -127,17 +127,11 @@ export class Join1 extends Component {
                     </TouchableOpacity>
                 </View>
 
-                <View style = {{flex:0.02}}/>
 
-                <View style = {{flexDirection:'row', flex:0.1, 
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.7}}> 
-                        <Text style = {[styles.concerto,{color:colors.shadow}]}>Enter the</Text>
-                        <Text style = {[styles.roomcode,{color:colors.shadow}]}>ROOM CODE</Text>
-                    </View>
+                <View style = {{flex:0.18, justifyContent:'center'}}>
+                    <Text style = {styles.roomcode}>{'Enter' + '\n' + 'ROOM CODE'}</Text>
                 </View>
 
-                <View style = {{flex:0.03}}/>
 
                 <View style = {{flex:0.12, justifyContent:'center', 
                 alignItems:'center', flexDirection:'row'}}>
@@ -154,8 +148,6 @@ export class Join1 extends Component {
                         editable={false}
                         value={this.state.roomname}/>
                 </View>
-
-                <View style = {{flex:0.03}}/>
 
                 <View style = {{flex:0.5, justifyContent:'center', alignItems:'center',
                  marginLeft:10, marginRight:10, borderRadius:2, paddingTop:5, paddingBottom:5}}>
@@ -377,7 +369,7 @@ export class LobbyPager extends Component {
                 <TouchableOpacity
                     style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
                     onPress = {()=>{ this.setState({alertVisible:true}) }}>
-                    <MaterialCommunityIcons name='close' style={{color:colors.shadow,fontSize:30}}/>
+                    <MaterialCommunityIcons name='close-circle' style={{color:colors.shadow,fontSize:30}}/>
                 </TouchableOpacity>
                 
             </View>
@@ -583,7 +575,7 @@ export class Lobby2 extends Component {
 const styles = StyleSheet.create({
     roomcode: {
         fontSize: 40,
-        fontFamily: 'Bungee-Regular',
+        fontFamily: 'LuckiestGuy-Regular',
         textAlign:'center',
         color: colors.shadow,
     },
@@ -631,7 +623,7 @@ const styles = StyleSheet.create({
     },
     concerto: {
         fontSize: 20,
-        fontFamily: 'ConcertOne-Regular',
+        fontFamily: 'Bungee-Regular',
         textAlign:'center',
         color: colors.font,
     },

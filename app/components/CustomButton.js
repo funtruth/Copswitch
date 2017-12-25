@@ -69,13 +69,13 @@ render() {
                     }}
                     activeOpacity = {0.6}
                     disabled = {this.props.disabled}>
-                    <Text style = {{
+                    {this.props.component?this.props.component:<Text style = {{
                         fontSize:this.props.fontSize,
                         fontFamily:'LuckiestGuy-Regular',
                         color:colors.font,
                         alignSelf: 'center',
                         margin: this.props.textMargin,
-                    }}>{this.props.title}</Text>
+                    }}>{this.props.title}</Text>}
                 </TouchableOpacity>
             </View>
         </Animated.View>

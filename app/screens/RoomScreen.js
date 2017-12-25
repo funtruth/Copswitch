@@ -253,6 +253,8 @@ export class Loading extends React.Component {
             }
         ).start()
 
+        this.refs.continue.stopAnimation()
+        this.refs.duh.stopAnimation()
         this.setState({message:'LOADING ...', disabled:true})
         setTimeout(()=>{this._continueGame()},1500)
     }
@@ -265,15 +267,15 @@ export class Loading extends React.Component {
                     <View style ={{flex:1,justifyContent:'center', 
                         alignItems:'center', position:'absolute',top:0,bottom:0,left:0,right:0}}>
                         <AnimatableIcon ref='duh' animation="swing" iterationCount='infinite' direction="alternate"
-                            name='user-secret' style={{ color:colors.background, fontSize: 60 }}/>
+                            name='user-secret' style={{ color:colors.font, fontSize: 60 }}/>
                     </View>
                     <View style = {{position:'absolute', bottom:40, left:0, right:0, alignItems:'center',}}>
                         <Animatable.Text ref='continue' animation={{
                             0: {opacity:0},
-                            0.25:{opacity:0.5},
+                            0.15:{opacity:0.8},
                             0.5:{opacity:1},
-                            0.75:{opacity:0.5},
-                            4:{opacity:0},
+                            0.85:{opacity:0.8},
+                            1:{opacity:0},
                         }}
                         iterationCount="infinite" duration={2000}
                         style={styles.continue}>{this.state.message}</Animatable.Text>
@@ -325,7 +327,7 @@ const styles = StyleSheet.create({
     },
     continue: {
         fontSize:20,
-        fontFamily:'GloriaHallelujah',
+        fontFamily:'Bungee-Regular',
         color:colors.background,
         alignSelf: 'center',
         marginTop:5

@@ -50,16 +50,16 @@ render() {
         <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
             backgroundColor:'rgba(0, 0, 0, 0.5)', opacity:this.state.opacity,
             justifyContent:'center', alignItems:'center'}}>
-            <View style = {{height:this.height*0.3, width:this.width*0.9,
+            <View style = {{height:this.height*0.35, width:this.width*0.9,
                 backgroundColor:colors.shadow, borderRadius:20, borderWidth:2, borderColor:'white'}}>
-                <View style = {{flex:0.3, justifyContent:'center', alignItems:'center'}}>
+                <View style = {{flex:0.325, justifyContent:'center', alignItems:'center'}}>
                     <Text style = {{
                         fontSize:25,
                         fontFamily:'Bungee-Regular',
                         color:colors.font
                     }}>{this.props.title}</Text>
                 </View>
-                <View style = {{flex:0.35, justifyContent:'center', alignItems:'center',
+                <View style = {{flex:0.4, justifyContent:'center', alignItems:'center',
                     backgroundColor:colors.background}}>
                     <Text style = {{
                         fontSize:20,
@@ -67,7 +67,7 @@ render() {
                         color:colors.shadow
                     }}>{this.props.subtitle}</Text>
                 </View>
-                <View style = {{flex:0.35, flexDirection:'row',
+                <View style = {{flex:0.375, flexDirection:'row',
                     justifyContent:'center', alignItems:'center'}}>
                     <View style = {{flex:0.4}}><CustomButton
                         size = {0.7}
