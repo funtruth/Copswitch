@@ -18,6 +18,7 @@ import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
 import colors from '../misc/colors.js';
+import styles from '../misc/styles.js';
 import Rolesheet from '../misc/roles.json';
 import Images from '../../assets/images/index.js';
 import Phases from '../misc/phases.json';
@@ -1177,36 +1178,3 @@ return <View style = {{flex:1,backgroundColor:colors.background, justifyContent:
 }
 //</Image>
 }
-
-const styles = StyleSheet.create({
-    headerFont: {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 30,
-        color: colors.background,
-        alignSelf:'center',
-    },
-    continueFont: {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 25,
-        color: colors.background,
-        alignSelf:'center',
-    },
-    concerto: {
-        fontSize:17,
-        fontFamily:'ConcertOne-Regular',
-        color:colors.font,
-        alignSelf: 'center',
-    },
-    bconcerto: {
-        fontSize:30,
-        fontFamily:'ConcertOne-Regular',
-        color:colors.main,
-        alignSelf: 'center',
-    },
-    dconcerto: {
-        fontSize:17,
-        fontFamily:'ConcertOne-Regular',
-        color:colors.background,
-        alignSelf: 'center',
-    },
-});

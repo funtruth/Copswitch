@@ -30,6 +30,7 @@ import Menus from '../misc/menus.json';
 import firebase from '../firebase/FirebaseController.js';
 
 import colors from '../misc/colors.js';
+import styles from '../misc/styles.js';
 import { onSignOut } from "../auth";
 import * as Animatable from 'react-native-animatable';
 
@@ -344,7 +345,7 @@ class Roles extends Component {
                                     <CustomButton size = {0.2} flex = {0.4} opacity = {1} depth = {6} radius = {40}
                                         color = {colors.menubtn}
                                         onPress = {()=>{this.setState({modalVisible:false})}}
-                                        component = {<Text style={styles.concerto}>CLOSE</Text>}/>
+                                        component = {<Text style={styles.font}>CLOSE</Text>}/>
                                     <View style = {{flex:0.05}}/>
                                 </View>
                             </View>
@@ -635,100 +636,3 @@ export default RuleBook = StackNavigator(
       headerMode: 'none',
     }
   );
-
-  const styles = StyleSheet.create({
-    normalFont: {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 18,
-        color: colors.font,
-    },
-    centeredBtn: {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 18,
-        color: colors.font,
-        alignSelf:'center',
-    },
-    centeredBtnPressed: {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 18,
-        color: colors.font,
-        alignSelf:'center',
-    },
-    concerto: {
-        fontSize: 20,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.font,
-    },
-    menuBtn : {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 25,
-        color: colors.font,
-        alignSelf:'center'
-    },
-    flatListBtn : {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 25,
-        color: colors.font,
-        alignSelf:'center',
-        marginTop:10,
-        marginBottom:10
-    },
-    titleFont: {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 25,
-        color: colors.main,
-    },
-    detail: {
-        color:colors.shadow,
-        fontFamily: 'ConcertOne-Regular',
-        fontSize:17,
-        lineHeight: 25,
-        alignSelf:'center',
-        marginBottom:5,
-        marginLeft:10,
-        marginRight:10,
-    },
-    detailContainer: {
-        borderRadius:2,
-        justifyContent:'center',
-        alignItems:'center',
-        marginTop:10,
-        marginLeft:10,
-        marginRight:10,
-    },
-    comment: {
-        color:colors.shadow,
-        fontFamily: 'ConcertOne-Regular',
-        fontSize:17,
-        lineHeight: 25,
-        alignSelf:'center',
-        marginBottom:5,
-        marginLeft:10,
-        marginRight:10,
-    },
-    commentContainer: {
-        justifyContent:'center',
-        alignItems:'center',
-        marginTop:10,
-        marginLeft:10,
-        marginRight:10,
-    },
-    link: {
-        color:colors.font,
-        fontFamily: 'ConcertOne-Regular',
-        fontSize:17,
-        lineHeight: 25,
-        alignSelf:'center',
-        marginBottom:5,
-        marginLeft:10,
-        marginRight:10,
-    },
-    linkContainer: {
-        justifyContent:'center',
-        alignItems:'center',
-        marginTop:10,
-        marginLeft:10,
-        marginRight:10,
-    }
-});

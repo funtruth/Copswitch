@@ -34,6 +34,7 @@ const SLOW_ANIM     = 1000;
 import { CustomButton } from '../components/CustomButton.js';
 
 import colors from '../misc/colors.js';
+import styles from '../misc/styles.js';
 import Rolesheet from '../misc/roles.json';
 
 //Firebase
@@ -306,42 +307,3 @@ export class Loading extends React.Component {
             </TouchableWithoutFeedback>
         }
 }
-
-const styles = StyleSheet.create({
-    actionButtonItem: {
-        fontSize: 20,
-        height: 22,
-        color: colors.font,
-    },
-    concerto: {
-        fontSize:17,
-        fontFamily:'ConcertOne-Regular',
-        color:colors.font,
-        alignSelf: 'center',
-    },
-    dconcerto: {
-        fontSize:17,
-        fontFamily:'ConcertOne-Regular',
-        color:colors.font,
-        alignSelf: 'center',
-    },
-    continue: {
-        fontSize:20,
-        fontFamily:'Bungee-Regular',
-        color:colors.background,
-        alignSelf: 'center',
-        marginTop:5
-    },
-    headerStyle: {
-        fontSize:20,
-        fontFamily: 'ConcertOne-Regular',
-        color:colors.font,
-    },
-    bconcerto: {
-        fontSize:24,
-        fontFamily:'LuckiestGuy-Regular',
-        color:colors.font,
-        alignSelf: 'center',
-    },
-
-});

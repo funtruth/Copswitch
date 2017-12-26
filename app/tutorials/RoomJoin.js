@@ -7,7 +7,6 @@ import {
     ScrollView,
     Image,
     FlatList,
-    StyleSheet,
     AsyncStorage,
     ActivityIndicator,
     Keyboard,
@@ -32,6 +31,7 @@ import { NavigationActions } from 'react-navigation';
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
+import styles from '../misc/styles.js';
 
 import * as Animatable from 'react-native-animatable';
 const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons);
@@ -137,20 +137,12 @@ export class Join1 extends Component {
                 <View style = {{flex:0.12, justifyContent:'center', 
                 alignItems:'center', flexDirection:'row'}}>
                     <TextInput
-                        style={{
-                            backgroundColor: colors.main,
-                            flex:0.7,
-                            fontFamily:'ConcertOne-Regular',
-                            fontSize: 40,
-                            color:colors.menubtn,
-                            textAlign:'center',
-                            borderRadius:2,
-                        }}
+                        style={[styles.textInput,{flex:0.7}]}
                         editable={false}
                         value={this.state.roomname}/>
                 </View>
 
-                <Animatable.Text style = {styles.sconcerto}ref='error'>
+                <Animatable.Text style = {[styles.sfont,{marginTop:10}]}ref='error'>
                         {this.state.errormessage}</Animatable.Text>
 
                 <NumPad
@@ -308,8 +300,8 @@ export class LobbyPager extends Component {
 
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
-            <View style = {{flexDirection:'row', height:this.height*0.15, 
-            justifyContent:'center', alignItems:'center'}}>
+            <View style = {{flexDirection:'row', height:this.height*0.1, 
+            justifyContent:'center', alignItems:'center', marginTop:10}}>
                 <View style = {{flex:0.2}}/>
                 <View style = {{flex:0.6, justifyContent:'center', borderRadius:30}}> 
                     <Text style = {styles.roomcode}>{this.state.roomname}</Text>
@@ -321,7 +313,7 @@ export class LobbyPager extends Component {
                 </TouchableOpacity>
                 
             </View>
-            <View style = {{height:this.height*0.7}}>
+            <View style = {{height:this.height*0.73}}>
                 <ScrollView style = {{flex:1,backgroundColor:colors.background}}
                     horizontal showsHorizontalScrollIndicator={false} ref='scrollView' 
                     scrollEnabled = {false}>
@@ -409,21 +401,12 @@ export class Lobby1 extends Component {
             width:this.props.width}}>
 
             <View style = {{height:this.height*0.13, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.mconcerto}>You joined the Room!</Text>
-                <Text style = {styles.subtitle}>What is your name?</Text>
+                <Text style = {styles.mfont}>You joined the Room!</Text>
+                <Text style = {styles.subfont}>What is your name?</Text>
             </View>
             <View style = {{height:this.height*0.1,flexDirection:'row'}}>
                 <TextInput
-                    style={{
-                        backgroundColor: colors.main,
-                        flex:0.6,
-                        fontFamily:'ConcertOne-Regular',
-                        fontSize: 20,
-                        color:colors.dshadow,
-                        textAlign:'center',
-                        borderTopLeftRadius:25,
-                        borderBottomLeftRadius:25,
-                    }}
+                    style={[styles.nameInput,{flex:0.6}]}
                     value={this.state.alias}
                     onChangeText = {(text) => {this.setState({alias: text})}}
                     onEndEditing = {()=>{
@@ -440,10 +423,10 @@ export class Lobby1 extends Component {
                     onPress = {()=>{
                         this._continue(this.state.alias);
                     }}
-                    component = {<Text style = {styles.concerto}>GO</Text>}
+                    component = {<Text style = {styles.lfont}>GO</Text>}
                 />
             </View>
-            <Animatable.Text style = {[styles.sconcerto,{height:this.height*0.05}]} 
+            <Animatable.Text style = {[styles.sfont,{height:this.height*0.05}]} 
                 ref = 'nameerror'>{this.state.errormessage}</Animatable.Text>
             <View style = {{flex:0.5}}/>
         </View>
@@ -490,13 +473,7 @@ export class Lobby2 extends Component {
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
-                <Text style = {{
-                    fontSize: 25,
-                    fontFamily: 'ConcertOne-Regular',
-                    textAlign:'center',
-                    color: colors.shadow,
-                    margin:5,
-                }}>{item.name}</Text>
+                <Text style = {styles.playerList}>{item.name}</Text>
             )}
             contentContainerStyle = {{marginTop:10, marginBottom:10}}
             numColumns={1}
@@ -508,8 +485,8 @@ export class Lobby2 extends Component {
         return <View style = {{flex:0.7,backgroundColor:colors.background, width:this.props.width,
             alignItems:'center'}}>
             <View style = {{height:this.height*0.1, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.mconcerto}>You are in the Lobby</Text>
-                <Text style = {[styles.concerto,{color:colors.shadow}]}>Wait for Owner to start game.</Text>
+                <Text style = {styles.mfont}>You are in the Lobby!</Text>
+                <Text style = {styles.subfont}>Wait for Owner to start game.</Text>
             </View>
             
             <View style = {{height:this.height*0.65, width:this.width*0.7, justifyContent:'center'}}>
@@ -518,99 +495,3 @@ export class Lobby2 extends Component {
         </View>
     }
 }
-
-
-const styles = StyleSheet.create({
-    roomcode: {
-        fontSize: 40,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-    },
-    options: {
-        fontSize: 25,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-        marginTop:10,
-        marginBottom:10
-    },
-    optionBox: {
-        width:Dimensions.get('window').width*0.7, 
-        borderRadius:30, 
-        backgroundColor:colors.background,
-        marginTop:5,
-        marginBottom:5
-    },
-    disabledBox: {
-        width:Dimensions.get('window').width*0.7, 
-        borderRadius:30, 
-        backgroundColor:colors.background,
-        opacity:0.5,
-        marginTop:5,
-        marginBottom:5
-    },
-    subtitle : {
-        fontSize: 20,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-    },
-    mconcerto: {
-        fontSize: 30,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-    },
-    sconcerto: {
-        fontSize: 15,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-        marginTop:10,
-    },
-    concerto: {
-        fontSize: 20,
-        fontFamily: 'Bungee-Regular',
-        textAlign:'center',
-        color: colors.font,
-    },
-    bigdarkconcerto: {
-        fontSize: 40,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.background,
-    },
-    dconcerto: {
-        fontSize: 30,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.font,
-    },
-    digit: {
-        flex:0.3,
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:colors.font, 
-        borderRadius:2,
-        margin:5
-    },
-    digitBox: {
-        flex:0.3,
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:colors.font, 
-        borderRadius:2,
-        margin:5
-    },
-    symbol: {
-        flex:0.3,
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:colors.color2, 
-        borderRadius:10,
-        margin:5
-    },
-    
-
-});

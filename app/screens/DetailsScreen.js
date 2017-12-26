@@ -5,7 +5,6 @@ import {
     TextInput,
     View,
     Image,
-    StyleSheet,
     FlatList,
     AsyncStorage,
     Keyboard,
@@ -25,6 +24,7 @@ import { NavigationActions } from 'react-navigation';
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
+import styles from '../misc/styles.js';
 
 import * as Animatable from 'react-native-animatable';
 const AnimatedIcon = Animated.createAnimatedComponent(FontAwesome)
@@ -285,8 +285,8 @@ export class Profile extends Component {
                         position: 'absolute', bottom: 0, left: 0, right: 0, top: this.state.descVertical, 
                         justifyContent: 'center', alignItems: 'center' }}>
                         <Text style = {styles.concerto}>{this.state.myrole}</Text>
-                        <Text style = {styles.sconcerto}>{this.state.roledesc}</Text>
-                        <Text style = {styles.sconcerto}>{this.state.rolerules}</Text>
+                        <Text style = {styles.roleDesc}>{this.state.roledesc}</Text>
+                        <Text style = {styles.roleDesc}>{this.state.rolerules}</Text>
                         {this.state.amimafia?<View style = {{flex:0.2}}><FlatList
                             data={this.state.mafialist}
                             renderItem={({item}) => (
@@ -305,52 +305,3 @@ export class Profile extends Component {
         </TouchableWithoutFeedback>
     }
 }
-
-const styles = StyleSheet.create({
-    sconcerto: {
-        fontSize: 15,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-        marginLeft: 40,
-        marginRight:40,
-    },
-    hidden: {
-        fontSize: 15,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.gameback,
-        marginLeft: 40,
-        marginRight:40,
-    },
-    concerto: {
-        fontSize: 20,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-    },
-    chat:{
-        fontSize:15,
-        fontFamily:'Bungee-Regular',
-        color:colors.details,
-        alignSelf: 'center',
-        marginTop:5,
-        marginBottom:5,
-    },
-    dchat:{
-        fontSize:15,
-        fontFamily:'Bungee-Regular',
-        color:colors.details,
-        alignSelf: 'center',
-        marginTop:5,
-        marginBottom:5,
-    },
-    leftconcerto:{
-        fontSize:17,
-        fontFamily:'ConcertOne-Regular',
-        color:colors.shadow,
-        marginTop:5,
-    },
-    
-
-});

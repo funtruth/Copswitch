@@ -48,7 +48,7 @@ render() {
 
     return ( 
         <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-            backgroundColor:'rgba(255, 255, 255, 0.5)', opacity:this.state.opacity,
+            backgroundColor:'rgba(0, 0, 0, 0.3)', opacity:this.state.opacity,
             justifyContent:'center', alignItems:'center'}}>
             <View style = {{height:this.height*0.35, width:this.width*0.9,
                 backgroundColor:colors.shadow, borderRadius:20}}>

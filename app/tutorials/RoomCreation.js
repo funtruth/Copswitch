@@ -6,7 +6,6 @@ import {
     View,
     ScrollView,
     Image,
-    StyleSheet,
     FlatList,
     AsyncStorage,
     Keyboard,
@@ -32,6 +31,7 @@ import { NavigationActions } from 'react-navigation';
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
+import styles from '../misc/styles.js';
 
 import * as Animatable from 'react-native-animatable';
 const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons)
@@ -324,7 +324,7 @@ export class CreationPager extends Component {
                 </TouchableOpacity>
             </View>
 
-            <View style = {{height:this.height*0.75}}>
+            <View style = {{height:this.height*0.73}}>
                 <ScrollView style = {{flex:1,backgroundColor:colors.background}}
                     horizontal showsHorizontalScrollIndicator={false} ref='scrollView'
                     scrollEnabled = {false}>
@@ -612,9 +612,9 @@ export class Creation2 extends Component {
             <View style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}>
                 <View style = {{flex:0.7, flexDirection:'row'}}>
                     <View style = {{flex:0.8, justifyContent:'center', alignItems:'center',
-                        backgroundColor:colors.font, borderRadius:5, flexDirection:'row'}}>
+                        backgroundColor:colors.font, borderRadius:30, flexDirection:'row'}}>
                         <View style = {{flex:0.3}}/>
-                        <Text style = {[styles.bigconcerto, {color:colors.menubtn, flex:0.4}]}>
+                        <Text style = {styles.textOutput}>
                             {this.state.playernum?this.state.playernum:'?'}</Text>
                         <TouchableOpacity style = {{flex:0.3}} onPress = {()=>{this._backspace()}}>
                             <MaterialCommunityIcons name = 'backspace'
@@ -681,8 +681,8 @@ export class Creation3 extends Component {
                     shadow = {this.state.difficulty==1?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(1) }}
                     component = {<View style = {{justifyContent:'center', alignItems:'center'}}>
-                        <Text style = {styles.concerto}>New</Text>
-                        <Text style = {styles.sconcerto}>
+                        <Text style = {styles.lfont}>New</Text>
+                        <Text style = {styles.lsfont}>
                             {'We are just trying out' + '\n' + 'Mafia for the first time!'}</Text>
                     </View>}
                 />
@@ -692,8 +692,8 @@ export class Creation3 extends Component {
                     shadow = {this.state.difficulty==2?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(2) }}
                     component = {<View style = {{justifyContent:'center', alignItems:'center'}}>
-                        <Text style = {styles.concerto}>Average</Text>
-                        <Text style = {styles.sconcerto}>
+                        <Text style = {styles.lfont}>Average</Text>
+                        <Text style = {styles.lsfont}>
                             {'We play once and a while' + '\n' + 'and know most of the roles.'}</Text>
                     </View>}
                 />
@@ -703,12 +703,12 @@ export class Creation3 extends Component {
                     shadow = {this.state.difficulty==3?colors.shadow:colors.lightshadow}
                     onPress = {()=>{ this._selectDifficulty(3) }}
                     component = {<View style = {{justifyContent:'center', alignItems:'center'}}>
-                        <Text style = {styles.concerto}>Experts</Text>
-                        <Text style = {styles.sconcerto}>
-                            {'We play very frequently' + '\n' + 'and enjoy complicated gameplay.'}</Text>
+                        <Text style = {styles.lfont}>Experts</Text>
+                        <Text style = {styles.lsfont}>
+                            {'We play very frequently' + '\n' + 'and enjoy lying games.'}</Text>
                     </View>}
                 />
-                <View style = {{flex:0.15}}/>
+                <View style = {{flex:0.05}}/>
 
 
         </View>
@@ -1000,11 +1000,7 @@ export class Creation5 extends Component {
         return <FlatList
             data={this.state.namelist}
             renderItem={({item}) => (
-                <Text style = {{
-                    fontSize: 20,
-                    fontFamily: 'LuckiestGuy-Regular',
-                    textAlign:'center',
-                    color: colors.shadow }}>{item.name}</Text>
+                <Text style = {styles.playerList}>{item.name}</Text>
             )}
             numColumns={1}
             keyExtractor={item => item.key}/>
@@ -1014,149 +1010,26 @@ export class Creation5 extends Component {
         return <CustomButton size = {1} flex = {1} opacity = {1} depth = {6}
             color = {colors.menubtn} radius = {40}
             onPress = {()=>{ this._startGame() }}
-            component = {<Text style={styles.mconcerto}>START GAME</Text>}
+            component = {<Text style={styles.lfont}>START GAME</Text>}
         />
     }
 
     render() {
-        return <View style = {{flex:0.7,backgroundColor:colors.background,width:this.props.width,
-            alignItems:'center'}}>
+        return <View style = {{flex:0.7,backgroundColor:colors.background,width:this.props.width,alignItems:'center'}}>
 
             <View style = {{height:this.height*0.15, justifyContent:'center', alignItems:'center'}}>
                 <Text style = {styles.title}>Game Lobby</Text>
                 <Text style = {styles.subtitle}>Players:</Text>
             </View>
 
-            <View style = {{height:this.height*0.48, width:this.width*0.7, justifyContent:'center'}}>
+            <View style = {{height:this.height*0.47, width:this.width*0.7, justifyContent:'center'}}>
                 {this._renderListComponent()}
             </View>
 
-            <View style = {{height:this.height*0.1, width:this.width*0.7}}>
+            <View style = {{height:this.height*0.08, width:this.width*0.5}}>
                 {this._renderOptions()}
             </View>
 
         </View>
     }
 }
-
-const styles = StyleSheet.create({
-    roomcode: {
-        fontSize: 40,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-    },
-    warningTitle: {
-        fontSize: 22,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.font,
-    },
-    warningText: {
-        fontSize: 17,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.font,
-    },
-    options: {
-        fontSize: 20,
-        fontFamily: 'ConcertOne-Regular',
-        marginLeft:20,
-        color: colors.font,
-    },
-    title : {
-        fontSize: 30,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-    },
-    subtitle : {
-        fontSize: 20,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-    },
-    mconcerto: {
-        fontSize: 30,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.font,
-    },
-    mdconcerto: {
-        fontSize: 30,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-    },
-    menuBtn : {
-        fontFamily:'LuckiestGuy-Regular',
-        fontSize: 25,
-        color: colors.font,
-        alignSelf:'center'
-    },
-    sconcerto: {
-        fontSize: 15,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.font,
-    },
-    error: {
-        fontSize: 15,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-    },
-    concerto: {
-        fontSize: 20,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.font,
-    },
-    bigconcerto: {
-        fontSize: 40,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-    },
-    //digit concerto
-    dconcerto: {
-        fontSize: 25,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.font,
-    },
-    dsconcerto: {
-        fontSize: 15,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.shadow,
-    },
-    digit: {
-        flex:0.3,
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:colors.font, 
-        borderRadius:30,
-        margin:5
-    },
-    symbol: {
-        flex:0.3,
-        justifyContent:'center',
-        alignItems:'center',
-        backgroundColor:colors.color2, 
-        borderRadius:10,
-        margin:5
-    },
-    centeredBtn: {
-        fontFamily:'LuckiestGuy-Regular',
-        fontSize: 18,
-        color: colors.font,
-        alignSelf:'center',
-    },
-    centeredBtnPressed: {
-        fontFamily:'LuckiestGuy-Regular',
-        fontSize: 18,
-        color: colors.font,
-        alignSelf:'center',
-    },
-
-});

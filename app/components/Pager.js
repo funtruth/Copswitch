@@ -26,7 +26,7 @@ render() {
     this.forwardDisabled = this.props.page<=this.props.currentpage;
 
     return ( 
-        <View style = {{height:this.props.height, flexDirection:'row', justifyContent:'center'}}>
+        <View style = {{height:this.props.height, flexDirection:'row', justifyContent:'center', marginBottom:10}}>
             <View style = {{flex:0.25, justifyContent:'center'}}>
                 {this.firstpage?null:<CustomButton
                     size = {1}
