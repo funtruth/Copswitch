@@ -156,8 +156,8 @@ export class Profile extends Component {
 
             myrole:             '',
             amimafia:           false,
-            roledesc:           '',
             rolerules:          '',
+            win:                '',
             mafialist:          [],
 
             size:               30,
@@ -165,7 +165,7 @@ export class Profile extends Component {
             opacity:            0,
 
             pressOpacity:        new Animated.Value(0),
-            iconSize:            new Animated.Value(70),
+            iconSize:            new Animated.Value(60),
             iconVertical:        new Animated.Value(this.height*0.4),
             descVertical:        new Animated.Value(this.height*0.5),
         };
@@ -228,13 +228,13 @@ export class Profile extends Component {
             Animated.timing(
                 this.state.iconVertical, {
                     duration: QUICK_ANIM,
-                    toValue: this.height*0.23
+                    toValue: this.height*0.35
                 }
             ).start(),
             Animated.timing(
                 this.state.descVertical, {
                     duration: QUICK_ANIM,
-                    toValue: this.height*0.3
+                    toValue: this.height*0.42
                 }
             ).start(),
             Animated.timing(
@@ -265,7 +265,7 @@ export class Profile extends Component {
             Animated.timing(
                 this.state.iconSize, {
                     duration: QUICK_ANIM,
-                    toValue: 70
+                    toValue: 60
                 }
             ).start(),
         )
@@ -288,24 +288,23 @@ export class Profile extends Component {
                     <Animated.View style = {{ opacity:this.state.pressOpacity || 0,
                         position: 'absolute', left: 0, right: 0, top: this.state.descVertical, 
                         justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style = {styles.font}>you are a:</Text>
+                        <Text style = {styles.lfont}>you are a:</Text>
                         <Text style = {styles.mfont}>{this.state.myrole}</Text>
-                        <Text style = {styles.font}>At night you:</Text>
+                        <Text style = {styles.lfont}>At night you:</Text>
                         <Text style = {styles.roleDesc}>{this.state.rolerules}</Text>
-                        <Text style = {styles.font}>you win when:</Text>
+                        <Text style = {styles.lfont}>you win when:</Text>
+                        <Text style = {styles.roleDesc}>{this.state.win}</Text>
+                        <Text style = {styles.lfont}>Your teammates:</Text>
                         {this.state.amimafia?<View style = {{flex:0.2}}><FlatList
                             data={this.state.mafialist}
                             renderItem={({item}) => (
-                                <Text style={{fontSize:17,
-                                    fontFamily:'ConcertOne-Regular',
-                                    color:colors.shadow,
-                                    justifyContent:'center',
-                                    alignSelf:'center',
-                                    textDecorationLine:item.alive?'none':'line-through'}}>
+                                <Text style={[styles.roleDesc,{textDecorationLine:item.alive?'none':'line-through'}]}>
                                     {'[ ' + item.name + ' ] ' + item.rolename}</Text>
                             )}
                             keyExtractor={item => item.key}
-                        /></View>:<View/>}
+                        /></View>:
+                        <Text style={styles.roleDesc}>{'' + '\n' + '[ unknown ] unknown'
+                        + '\n' + '[ unknown ] unknown'}</Text>}
                     </Animated.View>
             </View>
         </TouchableWithoutFeedback>

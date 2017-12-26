@@ -112,8 +112,8 @@ export default styles = StyleSheet.create({
 
     //Details Screen
     roleDesc: {
-        fontSize: 15,
-        fontFamily: 'ConcertOne-Regular',
+        fontSize: 18,
+        fontFamily: 'LuckiestGuy-Regular',
         textAlign:'center',
         color: colors.shadow,
         marginLeft: 40,
