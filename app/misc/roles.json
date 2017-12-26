@@ -1,6 +1,6 @@
 {
   "a" : {
-    "desc" : "Highly Trained Assassin.",
+    "win" : "Highly Trained Assassin.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/23469028_10213599295992460_1678128706_o.png?alt=media&token=4c32102c-59e5-48a0-b765-241a80656ff4",
     "index" : 0,
     "name" : "Assassin",
@@ -10,7 +10,7 @@
     "visits" : true
   },
   "b" : {
-    "desc" : "Murderer of the Mafia.",
+    "win" : "Murderer of the Mafia.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 1,
     "name" : "Murderer",
@@ -21,7 +21,7 @@
     "visits" : true
   },
   "c" : {
-    "desc" : "A low-level mafia recruit.",
+    "win" : "A low-level mafia recruit.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 2,
     "name" : "Thug",
@@ -30,7 +30,7 @@
     "type" : 1
   },
   "d" : {
-    "desc" : "Skilled framer of the Mafia.",
+    "win" : "Skilled framer of the Mafia.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 3,
     "name" : "Schemer",
@@ -41,7 +41,7 @@
     "visits" : true
   },
   "e" : {
-    "desc" : "Informant of the Mafia.",
+    "win" : "Informant of the Mafia.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 4,
     "name" : "Spy",
@@ -52,7 +52,7 @@
     "visits" : true
   },
   "ed" : {
-    "desc" : "Random Mafia between Schemer / Spy",
+    "win" : "Random Mafia between Schemer / Spy",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 5,
     "name" : "Schemer / Spy",
@@ -61,7 +61,7 @@
     "type" : 1
   },
   "f" : {
-    "desc" : "Memory worker of the Mafia.",
+    "win" : "Memory worker of the Mafia.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 6,
     "name" : "Mystic",
@@ -72,7 +72,7 @@
     "visits" : true
   },
   "g" : {
-    "desc" : "Extortionist of the Mafia.",
+    "win" : "Extortionist of the Mafia.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 7,
     "name" : "Silencer",
@@ -82,7 +82,7 @@
     "visits" : true
   },
   "gf" : {
-    "desc" : "Random Mafia between Silencer / Mystic",
+    "win" : "Random Mafia between Silencer / Mystic",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 8,
     "name" : "Mystic / Silencer",
@@ -92,7 +92,7 @@
   },
   
   "A" : {
-    "desc" : "On the case.",
+    "win" : "On the case.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 0,
     "name" : "Detective",
@@ -101,7 +101,7 @@
     "visits" : true
   },
   "B" : {
-    "desc" : "Investigates houses for clues.",
+    "win" : "Investigates houses for clues.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 1,
     "name" : "Investigator",
@@ -110,7 +110,7 @@
     "visits" : true
   },
   "C" : {
-    "desc" : "Normal Town member.",
+    "win" : "Normal Town member.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 2,
     "name" : "Villager",
@@ -118,7 +118,7 @@
     "type" : 2
   },
   "D" : {
-    "desc" : "PHD in Stab wounds.",
+    "win" : "PHD in Stab wounds.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 3,
     "name" : "Doctor",
@@ -127,7 +127,7 @@
     "visits" : true
   },
   "E" : {
-    "desc" : "Distracts a player for the Night.",
+    "win" : "Distracts a player for the Night.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 4,
     "name" : "Escort",
@@ -136,7 +136,7 @@
     "visits" : true
   },
   "G" : {
-    "desc" : "Watches over the town.",
+    "win" : "Watches over the town.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 5,
     "name" : "Warden",
@@ -145,7 +145,7 @@
     "visits" : true
   },
   "H" : {
-    "desc" : "Examines dead bodies.",
+    "win" : "Examines dead bodies.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 6,
     "name" : "Forensic",
@@ -155,7 +155,7 @@
     "visits" : true
   },
   "I" : {
-    "desc" : "Watches over a certain player.",
+    "win" : "Watches over a certain player.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 7,
     "name" : "Overseer",
@@ -164,7 +164,7 @@
     "visits" : true
   },
   "J" : {
-    "desc" : "Hunter of the Town.",
+    "win" : "Hunter of the Town.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 8,
     "name" : "Hunter",
@@ -174,7 +174,7 @@
     "visits" : true
   },
   "K" : {
-    "desc" : "Master of Disguise.",
+    "win" : "Master of Disguise.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 9,
     "name" : "Disguiser",
@@ -185,7 +185,7 @@
     "visits" : true
   },
   "KJIHGEDBA" : {
-    "desc" : "A Random Town member.",
+    "win" : "A Random Town member.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 10,
     "name" : "Random Town",
@@ -193,7 +193,7 @@
     "type" : 2
   },
   "W" : {
-    "desc" : "A mischief maker trying to get hung.",
+    "win" : "A mischief maker trying to get hung.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 0,
     "name" : "Gremlin",

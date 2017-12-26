@@ -135,14 +135,6 @@ export default styles = StyleSheet.create({
         marginTop:5,
         marginBottom:5,
     },
-    dchat:{
-        fontSize:15,
-        fontFamily:'Bungee-Regular',
-        color:colors.details,
-        alignSelf: 'center',
-        marginTop:5,
-        marginBottom:5,
-    },
     leftfont:{
         fontSize:17,
         fontFamily:'ConcertOne-Regular',

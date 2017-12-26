@@ -12,6 +12,7 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     Animated,
+    Dimensions,
 }   from 'react-native';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -107,13 +108,13 @@ export class Messages extends Component {
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
                 borderRadius:2, backgroundColor:this.state.publicchat?colors.shadow:colors.gameback}}
                 onPress = {()=>{this.setState({publicchat:true})}}>
-                <Text style = {this.state.publicchat?styles.dchat:styles.chat}>Public</Text>
+                <Text style = {styles.chat}>Public</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
                 borderRadius:2, backgroundColor:this.state.publicchat?colors.gameback:colors.shadow}}
                 onPress = {()=>{this.setState({publicchat:false})}}>
-                <Text style = {this.state.publicchat?styles.chat:styles.dchat}>Private</Text>
+                <Text style = {styles.chat}>Private</Text>
             </TouchableOpacity>
 
         </View>
@@ -148,6 +149,8 @@ export class Profile extends Component {
     constructor(props) {
         super(props);
 
+        this.height = Dimensions.get('window').height;
+
         this.state = {
             roomname: '',
 
@@ -162,10 +165,11 @@ export class Profile extends Component {
             opacity:            0,
 
             pressOpacity:        new Animated.Value(0),
-            iconSize:            new Animated.Value(40),
-            iconVertical:        new Animated.Value(30),
-            descVertical:        new Animated.Value(10),
+            iconSize:            new Animated.Value(70),
+            iconVertical:        new Animated.Value(this.height*0.4),
+            descVertical:        new Animated.Value(this.height*0.5),
         };
+
         
     }
 
@@ -178,8 +182,8 @@ export class Profile extends Component {
                 if(snap.exists()){
                     this.setState({
                         myrole: Rolesheet[snap.val().roleid].name,
-                        roledesc: Rolesheet[snap.val().roleid].desc,
                         rolerules: Rolesheet[snap.val().roleid].rules,
+                        win: Rolesheet[snap.val().roleid].win,
                         amimafia: snap.val().roleid.toLowerCase()==snap.val().roleid,
                         roomname: result,
                     })
@@ -224,19 +228,19 @@ export class Profile extends Component {
             Animated.timing(
                 this.state.iconVertical, {
                     duration: QUICK_ANIM,
-                    toValue: 120
+                    toValue: this.height*0.23
                 }
             ).start(),
             Animated.timing(
                 this.state.descVertical, {
                     duration: QUICK_ANIM,
-                    toValue: 120
+                    toValue: this.height*0.3
                 }
             ).start(),
             Animated.timing(
                 this.state.iconSize, {
                     duration: QUICK_ANIM,
-                    toValue: 60
+                    toValue: 40
                 }
             ).start(),
         )
@@ -251,17 +255,17 @@ export class Profile extends Component {
             Animated.timing(
                 this.state.iconVertical, {
                     duration: QUICK_ANIM,
-                    toValue: 0
+                    toValue: this.height*0.4
             }).start(),
             Animated.timing(
                 this.state.descVertical, {
                     duration: QUICK_ANIM,
-                    toValue: 10
+                    toValue: this.height*0.5
             }).start(),
             Animated.timing(
                 this.state.iconSize, {
                     duration: QUICK_ANIM,
-                    toValue: 40
+                    toValue: 70
                 }
             ).start(),
         )
@@ -276,17 +280,19 @@ export class Profile extends Component {
             <View style = {{flex:1, backgroundColor:colors.gameback,
                 justifyContent:'center', alignItems:'center'}}>
                     
-                    <Animated.View style={{position: 'absolute', top: 0, left: 0, right: 0, bottom: this.state.iconVertical, 
-                        justifyContent: 'center', alignItems: 'center'}}>
-                        <AnimatedIcon name='user-secret' style={{ color:colors.details, fontSize: this.state.iconSize }}/>
-                    </Animated.View>
+                    <AnimatedIcon name='user-secret' style={{ 
+                        position: 'absolute', top:this.state.iconVertical, alignSelf:'center',
+                        color:colors.details, fontSize: this.state.iconSize 
+                    }}/>
                 
                     <Animated.View style = {{ opacity:this.state.pressOpacity || 0,
-                        position: 'absolute', bottom: 0, left: 0, right: 0, top: this.state.descVertical, 
+                        position: 'absolute', left: 0, right: 0, top: this.state.descVertical, 
                         justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style = {styles.concerto}>{this.state.myrole}</Text>
-                        <Text style = {styles.roleDesc}>{this.state.roledesc}</Text>
+                        <Text style = {styles.font}>you are a:</Text>
+                        <Text style = {styles.mfont}>{this.state.myrole}</Text>
+                        <Text style = {styles.font}>At night you:</Text>
                         <Text style = {styles.roleDesc}>{this.state.rolerules}</Text>
+                        <Text style = {styles.font}>you win when:</Text>
                         {this.state.amimafia?<View style = {{flex:0.2}}><FlatList
                             data={this.state.mafialist}
                             renderItem={({item}) => (
