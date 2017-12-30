@@ -25,6 +25,7 @@ import { ListItem } from '../components/ListItem.js';
 import { Pager } from '../components/Pager.js';
 import { NumPad } from '../components/NumPad.js';
 import { Alert } from '../components/Alert.js';
+import { Desc } from '../components/Desc.js';
 
 import { NavigationActions } from 'react-navigation';
 
@@ -524,7 +525,7 @@ export class Creation1 extends Component {
             </View>
 
             <View style = {{justifyContent:'center',alignItems:'center', flex:0.07}}>
-                <Animatable.Text style = {styles.sconcerto} ref = 'nameerror'>
+                <Animatable.Text style = {styles.sfont} ref = 'nameerror'>
                     {this.state.errormessage}</Animatable.Text>
             </View>
         </View>
@@ -733,6 +734,9 @@ export class Creation4 extends Component {
             showmafia:   false,
             showneutral: false,
 
+            roleid: 'a',
+            descVisible: false,
+
             listOpacity: new Animated.Value(1),
         }  
     }
@@ -813,11 +817,17 @@ export class Creation4 extends Component {
     }
 
     _roleBtnPress(key,index,count,rolecount) {
+        this.setState({
+            roleid: key,
+            descVisible: true
+        })
+    }
+
+    _addRole(key){
         this.listOfRoles.child(key).transaction((count)=>{
             return count + 1;
         })
-
-        if(rolecount + 1 == this.props.playernum){
+        if(this.state.rolecount + 1 >= this.props.playernum){
             this._selectionDone()
         }
     }
@@ -943,6 +953,21 @@ export class Creation4 extends Component {
                     keyExtractor={item => item.key}/>
             </Animated.View>
             <View style = {{flex:0.05}}/>
+
+            <Desc
+                marginBottom = {20}
+                roleid = {this.state.roleid}
+                optionOneName = 'Add'
+                optionTwoName = 'Remove'
+                optionOnePress = {()=>{
+                    this._addRole(this.state.roleid)
+                }}
+                optionTwoPress = {()=>{ 
+                    this._removeRole(this.state.roleid)
+                }}
+                visible = {this.state.descVisible}
+                onClose = {()=>{this.setState({descVisible:false})}}
+            />
         </View>
     }
 }

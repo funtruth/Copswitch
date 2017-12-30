@@ -26,23 +26,24 @@ export default styles = StyleSheet.create({
         fontSize: 18,
         color: colors.font,
     },
-    centeredBtn: {
+    descFont: {
         fontFamily:'ConcertOne-Regular',
+        fontSize: 18,
+        color: colors.font,
+        alignSelf:'center',
+        lineHeight: 20
+    },
+    centeredBtn: {
+        fontFamily:'LuckiestGuy-Regular',
         fontSize: 18,
         color: colors.font,
         alignSelf:'center',
     },
     centeredBtnPressed: {
-        fontFamily:'ConcertOne-Regular',
+        fontFamily:'LuckiestGuy-Regular',
         fontSize: 18,
         color: colors.font,
         alignSelf:'center',
-    },
-    menuBtn : {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 25,
-        color: colors.font,
-        alignSelf:'center'
     },
     flatListBtn : {
         fontFamily:'ConcertOne-Regular',

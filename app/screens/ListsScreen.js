@@ -10,7 +10,6 @@ import {
     FlatList,
     TouchableOpacity,
     TouchableWithoutFeedback,
-    Modal,
     Animated,
     Dimensions,
 }   from 'react-native';
@@ -20,6 +19,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { CustomButton } from '../components/CustomButton.js';
 import { Header } from '../components/Header.js';
 import { Pager } from '../components/Pager.js';
+import { Desc } from '../components/Desc.js';
 
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
@@ -189,13 +189,12 @@ class Roles extends Component {
             mafialist: [],
             neutrallist: [],
             roleid:   'a',
-            modalVisible: false,
+            index: 0,
+            descVisible: false,
 
             showtown:    true,
             showmafia:   false,
             showneutral: false,
-
-            listOpacity:    new Animated.Value(1),
         }
 
     }
@@ -280,85 +279,17 @@ class Roles extends Component {
     }
 
     _roleBtnPress(key) {
-        this.setState({roleid:key, modalVisible:true})
-    }
-
-    _viewChange(town,mafia,neutral){
-        this.setState({
-            showtown:town,
-            showmafia:mafia,
-            showneutral:neutral,
-        })
-
-        Animated.sequence([
-            Animated.timing(
-                this.state.listOpacity, {
-                    duration: 300,
-                    toValue: 0
-            }),
-            Animated.timing(
-                this.state.listOpacity, {
-                    duration: 600,
-                    toValue: 1
-            })
-        ]).start()
-    }
-
-    _renderInfoBox() {
-        return 
-    }
-    _renderCloseBtn() {
-        return 
+        this.setState({roleid:key, descVisible:true})
     }
 
     render(){
         return <View style = {{flex:1, backgroundColor:colors.background}}>
 
-            <Modal
-                animationType = 'fade'
-                transparent
-                visible = {this.state.modalVisible}
-                onRequestClose = {()=>{this.setState({modalVisible:false})}} >
-                <TouchableWithoutFeedback 
-                    style = {{flex:1}}
-                    onPress = {()=>{this.setState({modalVisible:false})}}>
-                    <View style = {{flex:1, backgroundColor:'rgba(249, 242, 222, 0.34)',
-                        justifyContent:'center',alignItems:'center'}}>
-                        <TouchableWithoutFeedback>
-                            <View style = {{flex:0.5,justifyContent:'center',alignItems:'center',flexDirection:'row'}}>
-                                <View style = {{backgroundColor:colors.lightbutton,flex:0.9,borderRadius:10}}>
-                                    <View style = {{flex:0.15, flexDirection:'row',
-                                        justifyContent:'center',alignItems:'center'}}>
-                                        <Text style = {styles.titleFont}>
-                                            {Rolesheet[this.state.roleid].name}</Text>
-                                    </View>
-                                    <View style = {{flex:0.1,justifyContent:'center',alignItems:'center'}}>
-                                        <Text style = {styles.normalFont}>
-                                            {Rolesheet[this.state.roleid].desc}</Text>
-                                    </View>
-                                    <View style = {{flex:0.55,marginLeft:10,marginRight:10}}>
-                                        <Text style = {styles.normalFont}>{'Team: ' + Rolesheet[this.state.roleid].type}</Text>
-                                        <Text style = {styles.normalFont}>{'Suspicious: ' + Rolesheet[this.state.roleid].suspicious}</Text>
-                                        <Text style = {styles.normalFont}>{'Visits: ' + Rolesheet[this.state.roleid].visits}</Text>
-                                        <Text style = {styles.normalFont}>{'Rules: ' + Rolesheet[this.state.roleid].rules}</Text>
-                                    </View>
-                                    <CustomButton size = {0.2} flex = {0.4} opacity = {1} depth = {6} radius = {40}
-                                        color = {colors.menubtn}
-                                        onPress = {()=>{this.setState({modalVisible:false})}}
-                                        component = {<Text style={styles.font}>CLOSE</Text>}/>
-                                    <View style = {{flex:0.05}}/>
-                                </View>
-                            </View>
-                        </TouchableWithoutFeedback>
-                    </View>
-                </TouchableWithoutFeedback>
-            </Modal>
-
             <Header title = 'Roles' onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back())
             }}/>
 
-            <View style = {{flex:0.1, flexDirection:'row', justifyContent:'center'}}>
+            <View style = {{flex:0.1, flexDirection:'row', justifyContent:'center', marginBottom:5}}>
                 <CustomButton
                     size = {0.3}
                     flex = {1}
@@ -369,7 +300,11 @@ class Roles extends Component {
                     leftradius = {30}
                     rightradius = {0}
                     onPress = {()=>{
-                        this._viewChange(true,false,false)
+                        this.setState({
+                            showtown:true,
+                            showmafia:false,
+                            showneutral:false
+                        })
                     }}
                     component = {<Text style = {this.state.showtown?
                         styles.centeredBtn:styles.centeredBtnPressed}>Town</Text>}
@@ -384,10 +319,14 @@ class Roles extends Component {
                     shadow = {this.state.showmafia?colors.shadow:colors.lightshadow}
                     radius = {0}
                     onPress = {()=>{
-                        this._viewChange(false,true,false)
+                        this.setState({
+                            showtown:false,
+                            showmafia:true,
+                            showneutral:false
+                        })
                     }}
                     component = {<Text style = {this.state.showmafia?
-                        styles.centeredBtn:styles.centeredBtnPressed}>Mafia</Text>}
+                        styles.centeredBtn:styles.centeredBtnPressed}>Fowl</Text>}
                 />
                 <View style = {{width:4, backgroundColor:colors.background}}/>
                 <CustomButton
@@ -400,26 +339,29 @@ class Roles extends Component {
                     rightradius = {30}
                     leftradius = {0}
                     onPress = {()=>{
-                        this._viewChange(false,false,true)
+                        this.setState({
+                            showtown:false,
+                            showmafia:false,
+                            showneutral:true
+                        })
                     }}
                     component = {<Text style = {this.state.showneutral?
                         styles.centeredBtn:styles.centeredBtnPressed}>Neutral</Text>}
                 />
             </View>
 
-            <Animated.View style = {{flex:0.9, opacity:this.state.listOpacity, 
-                marginLeft:10, marginRight:10}}>
+            <View style = {{flex:0.9}}>
                 <FlatList
                     data={this.state.showtown?this.state.townlist:
                         (this.state.showmafia?this.state.mafialist:this.state.neutrallist)}
                     renderItem={({item}) => (
                         <View style = {{flex:1, flexDirection:'row',justifyContent:'center'}}>
-                            <View style = {{flex:1, backgroundColor:colors.lightbutton, 
+                            <View style = {{flex:0.8, backgroundColor:colors.lightbutton, 
                                 borderRadius:40,justifyContent:'center', margin:5}}>
                                 <TouchableOpacity
                                     style = {{ justifyContent:'center', alignItems:'center'}}
                                     onPress = {()=>{ this._roleBtnPress(item.key,item.index) }}>
-                                    <Text style = {{ color:colors.font, fontFamily: 'ConcertOne-Regular',
+                                    <Text style = {{ color:colors.font, fontFamily: 'LuckiestGuy-Regular',
                                         fontSize:20, marginTop:8, marginBottom:8}}>{item.name}</Text>
                                 </TouchableOpacity>
                             </View>
@@ -428,10 +370,19 @@ class Roles extends Component {
                     style={{margin:3}}
                     numColumns = {1}
                     keyExtractor={item => item.key}/>
-            </Animated.View>
+            </View>
 
             <View style = {{flex:0.1}}/>
+            
+            <Desc
+                marginBottom = {Dimensions.get('window').height * 0.08}
+                roleid = {this.state.roleid}
+                visible = {this.state.descVisible}
+                onClose = {() => this.setState({descVisible:false})}
+            />
+
         </View>
+
     }
 }
 

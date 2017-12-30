@@ -73,6 +73,8 @@ export default colors = {
     tab:        '#5f5374',
     titlefont:  '#5f5374',
 
+    close:      '#d65e5e',
+
 //COMPONENTS
 
     //Tab Navigator
