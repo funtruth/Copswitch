@@ -528,7 +528,7 @@ _pressedUid(uid){
 
 //1100 ms TOTAL
 _viewChange(title,back,vote,abstain,list,waiting) {
-
+    
     Animated.sequence([
         Animated.parallel([
             Animated.timing(
@@ -782,7 +782,7 @@ _resetOptionPress() {
 _renderPhaseName() {
     if(this.state.phase == 2 || this.state.phase == 5){
         return <Text style = {{color:colors.titlefont, alignSelf:'center', 
-        fontFamily: 'Bungee-Regular', fontSize:35}}>
+        fontFamily: 'LuckiestGuy-Regular', fontSize:35}}>
         {this.state.phasename + ' ' + this.state.daycounter}
     </Text>
     } else {
@@ -833,11 +833,11 @@ _renderListComponent(){
                     </View>
                     <View style = {{flex:0.7, justifyContent:'center'}}>
                         {item.dead?
-                            <Text style = {styles.concerto}>
+                            <Text style = {styles.lfont}>
                                 {item.name + ' ' + (item.type==2?'(Town)':
                                 item.type==1?'(Mafia)':'(Neutral)')}</Text>
                             :
-                            <Text style = {styles.concerto}>{item.name}</Text>
+                            <Text style = {styles.lfont}>{item.name}</Text>
                         }
                     </View>
                     <View style = {{flex:0.15}}/>

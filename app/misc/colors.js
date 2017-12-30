@@ -56,9 +56,9 @@ export default colors = {
 
     
     //PIgeons
-    background: '#acaec6',
+    background: '#c7cfdb',
     menubtn:    '#9285a8',
-    namebtn:    '#9285a8',
+    namebtn:    '#94a3cc',
     pushbutton: '#9285a8',
     shadow:     '#5f5374',
     font:       'white',
@@ -68,7 +68,7 @@ export default colors = {
     
     digit:       '#9285a8',
 
-    gameback:   '#acaec6',
+    gameback:   '#c7cfdb',
     details:    'white',
     tab:        '#5f5374',
     titlefont:  '#5f5374',

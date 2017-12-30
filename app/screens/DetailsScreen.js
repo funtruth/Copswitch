@@ -106,13 +106,13 @@ export class Messages extends Component {
         return <View style = {{flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
 
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
-                borderRadius:2, backgroundColor:this.state.publicchat?colors.shadow:colors.gameback}}
+                borderRadius:20, backgroundColor:this.state.publicchat?colors.shadow:colors.gameback}}
                 onPress = {()=>{this.setState({publicchat:true})}}>
                 <Text style = {styles.chat}>Public</Text>
             </TouchableOpacity>
 
             <TouchableOpacity style = {{flex:0.4, justifyContent:'center', alignItems:'center',
-                borderRadius:2, backgroundColor:this.state.publicchat?colors.gameback:colors.shadow}}
+                borderRadius:20, backgroundColor:this.state.publicchat?colors.gameback:colors.shadow}}
                 onPress = {()=>{this.setState({publicchat:false})}}>
                 <Text style = {styles.chat}>Private</Text>
             </TouchableOpacity>
@@ -127,7 +127,7 @@ export class Messages extends Component {
             <FlatList
             data={this.state.publicchat?this.state.globallist:this.state.msglist}
             renderItem={({item}) => (
-                <Text style={styles.leftconcerto}>
+                <Text style={styles.leftfont}>
                     {'[' + item.from + '] '+ item.message}</Text>
             )}
             keyExtractor={item => item.key}
@@ -152,7 +152,8 @@ export class Profile extends Component {
         this.height = Dimensions.get('window').height;
 
         this.state = {
-            roomname: '',
+            roomname:           '',
+            myname:             '',
 
             myrole:             '',
             amimafia:           false,
@@ -165,9 +166,10 @@ export class Profile extends Component {
             opacity:            0,
 
             pressOpacity:        new Animated.Value(0),
+            guideOpacity:        new Animated.Value(1),
             iconSize:            new Animated.Value(60),
-            iconVertical:        new Animated.Value(this.height*0.4),
-            descVertical:        new Animated.Value(this.height*0.5),
+            iconVertical:        new Animated.Value(this.height*0.1),
+            descVertical:        new Animated.Value(this.height*0.2),
         };
 
         
@@ -181,6 +183,7 @@ export class Profile extends Component {
             this.myRef.on('value',snap=>{
                 if(snap.exists()){
                     this.setState({
+                        myname: snap.val().name,
                         myrole: Rolesheet[snap.val().roleid].name,
                         rolerules: Rolesheet[snap.val().roleid].rules,
                         win: Rolesheet[snap.val().roleid].win,
@@ -218,58 +221,68 @@ export class Profile extends Component {
     }
 
     handlePressIn() {
-        Animated.sequence(
+        Animated.parallel([
             Animated.timing(
                 this.state.pressOpacity, {
                     duration: QUICK_ANIM,
                     toValue: 1
                 }
-            ).start(),
+            ),
+            Animated.timing(
+                this.state.guideOpacity, {
+                    duration: QUICK_ANIM,
+                    toValue: 0
+                }
+            ),
             Animated.timing(
                 this.state.iconVertical, {
                     duration: QUICK_ANIM,
-                    toValue: this.height*0.35
+                    toValue: this.height*0.05
                 }
-            ).start(),
+            ),
             Animated.timing(
                 this.state.descVertical, {
                     duration: QUICK_ANIM,
-                    toValue: this.height*0.42
+                    toValue: this.height*0.12
                 }
-            ).start(),
+            ),
             Animated.timing(
                 this.state.iconSize, {
                     duration: QUICK_ANIM,
                     toValue: 40
                 }
-            ).start(),
-        )
+            )
+        ]).start()
     }
     handlePressOut() {
-        Animated.sequence(
+        Animated.parallel([
             Animated.timing(
                 this.state.pressOpacity, {
                     duration: QUICK_ANIM,
                     toValue: 0
-            }).start(),
+            }),
+            Animated.timing(
+                this.state.guideOpacity, {
+                    duration: QUICK_ANIM,
+                    toValue: 1
+            }),
             Animated.timing(
                 this.state.iconVertical, {
                     duration: QUICK_ANIM,
-                    toValue: this.height*0.4
-            }).start(),
+                    toValue: this.height*0.1
+            }),
             Animated.timing(
                 this.state.descVertical, {
                     duration: QUICK_ANIM,
-                    toValue: this.height*0.5
-            }).start(),
+                    toValue: this.height*0.2
+            }),
             Animated.timing(
                 this.state.iconSize, {
                     duration: QUICK_ANIM,
                     toValue: 60
                 }
-            ).start(),
-        )
-        
+            )
+        ]).start()
     }
 
     render() {
@@ -277,16 +290,27 @@ export class Profile extends Component {
         return <TouchableWithoutFeedback style = {{flex:1}}
         onPressOut = {()=>{ this.handlePressOut()}}
         onPressIn={() =>  {this.handlePressIn()}}>
-            <View style = {{flex:1, backgroundColor:colors.gameback,
-                justifyContent:'center', alignItems:'center'}}>
+        
+            <View style = {{flex:1, backgroundColor:colors.gameback}}>
                     
-                    <AnimatedIcon name='user-secret' style={{ 
+                <View style = {{flex:0.3, justifyContent:'center'}}>
+                    <Text style = {styles.lfont}>hey ther'</Text>
+                    <Text style = {styles.mfont}>{this.state.myname + '!'}</Text>
+                </View>
+
+                <View style = {{flex:0.7}}>
+                    <Animated.View style = {{opacity:this.state.guideOpacity}}>
+                        <Text style = {styles.lfont}>press and hold the screen</Text>
+                        <Text style = {styles.mfont}>to view your role!</Text>
+                    </Animated.View>
+
+                    {/*<AnimatedIcon name='user-secret' style={{ 
                         position: 'absolute', top:this.state.iconVertical, alignSelf:'center',
                         color:colors.details, fontSize: this.state.iconSize 
-                    }}/>
+                    }}/>*/}
                 
                     <Animated.View style = {{ opacity:this.state.pressOpacity || 0,
-                        position: 'absolute', left: 0, right: 0, top: this.state.descVertical, 
+                        position: 'absolute', left: 0, right: 0, top: this.state.descVertical,
                         justifyContent: 'center', alignItems: 'center' }}>
                         <Text style = {styles.lfont}>you are a:</Text>
                         <Text style = {styles.mfont}>{this.state.myrole}</Text>
@@ -303,9 +327,10 @@ export class Profile extends Component {
                             )}
                             keyExtractor={item => item.key}
                         /></View>:
-                        <Text style={styles.roleDesc}>{'' + '\n' + '[ unknown ] unknown'
+                        <Text style={styles.roleDesc}>{'[ unknown ] unknown' + '\n' + '[ unknown ] unknown'
                         + '\n' + '[ unknown ] unknown'}</Text>}
                     </Animated.View>
+                </View>
             </View>
         </TouchableWithoutFeedback>
     }
