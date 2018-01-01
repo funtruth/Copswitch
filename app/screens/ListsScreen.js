@@ -378,7 +378,7 @@ class Roles extends Component {
                 marginBottom = {Dimensions.get('window').height * 0.08}
                 roleid = {this.state.roleid}
                 visible = {this.state.descVisible}
-                onClose = {() => this.setState({descVisible:false})}
+                onClose = {val => this.setState({descVisible:val})}
             />
 
         </View>

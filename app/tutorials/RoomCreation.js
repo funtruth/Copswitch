@@ -834,7 +834,11 @@ export class Creation4 extends Component {
 
     _removeRole(key, index) {
         this.listOfRoles.child(key).transaction((count)=>{
-            return count - 1;
+            if(count>0){
+                return count - 1;
+            } else {
+                return count
+            }
         })
     }
 
@@ -844,19 +848,6 @@ export class Creation4 extends Component {
             showmafia:mafia,
             showneutral:neutral,
         })
-
-        Animated.sequence([
-            Animated.timing(
-                this.state.listOpacity, {
-                    duration: 300,
-                    toValue: 0
-            }),
-            Animated.timing(
-                this.state.listOpacity, {
-                    duration: 600,
-                    toValue: 1
-            })
-        ]).start()
     }
 
     render() {
@@ -925,7 +916,7 @@ export class Creation4 extends Component {
                     renderItem={({item}) => (
                         <View style = {{marginBottom:3, flexDirection:'row',justifyContent:'center'}}>
                             <View style = {{flex:0.75, backgroundColor:colors.lightbutton, marginBottom:5,
-                                borderRadius:40, flexDirection:'row',justifyContent:'center'}}>
+                                borderRadius:40, flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
                                 <TouchableOpacity
                                     style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
                                     onPress = {()=>{ this._removeRole(item.key,item.index) }}
@@ -940,11 +931,11 @@ export class Creation4 extends Component {
                                     <Text style = {{ color:colors.font, fontFamily: 'LuckiestGuy-Regular',
                                         fontSize:18, marginTop:8, marginBottom:8}}>{item.name}</Text>
                                 </TouchableOpacity>
-                                <Text style = {{ flex:0.2, color:colors.font,
-                                    fontFamily: 'LuckiestGuy-Regular', fontSize:18, 
-                                    alignSelf:'center'}}>
-                                    {item.count?item.count:null}
-                                </Text>
+                                <View style = {{flex:0.2, alignItems:'center'}}>
+                                    <Text style = {{ color:colors.font,fontFamily: 'LuckiestGuy-Regular', fontSize:18}}>
+                                        {item.count?item.count:null}
+                                    </Text>
+                                </View>
                             </View>
                         </View>
                     )}
@@ -957,13 +948,14 @@ export class Creation4 extends Component {
             <Desc
                 marginBottom = {20}
                 roleid = {this.state.roleid}
-                optionOneName = 'Add'
-                optionTwoName = 'Remove'
+                count = {this.state.townlist[Rolesheet[this.state.roleid].index]['count']}
+                optionOneName = '-'
+                optionTwoName = '+'
                 optionOnePress = {()=>{
-                    this._addRole(this.state.roleid)
+                    this._removeRole(this.state.roleid)
                 }}
                 optionTwoPress = {()=>{ 
-                    this._removeRole(this.state.roleid)
+                    this._addRole(this.state.roleid)
                 }}
                 visible = {this.state.descVisible}
                 onClose = {()=>{this.setState({descVisible:false})}}

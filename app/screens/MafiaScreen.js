@@ -206,6 +206,7 @@ componentWillMount() {
                     status:         child.val().status?true:false,
                     statusname:     child.val().status,
                     type:           child.val().type,
+                    roleid:         child.val().roleid,
     
                     key:            child.key,
                 })
@@ -834,8 +835,7 @@ _renderListComponent(){
                     <View style = {{flex:0.7, justifyContent:'center'}}>
                         {item.dead?
                             <Text style = {styles.lfont}>
-                                {item.name + ' ' + (item.type==2?'(Town)':
-                                item.type==1?'(Mafia)':'(Neutral)')}</Text>
+                                {item.name + ' (' + Rolesheet[item.roleid].name + ') '}</Text>
                             :
                             <Text style = {styles.lfont}>{item.name}</Text>
                         }

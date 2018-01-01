@@ -15,7 +15,7 @@ export default styles = StyleSheet.create({
 
     //Lists Header
     header: {
-        fontFamily:'Bungee-Regular',
+        fontFamily:'LuckiestGuy-Regular',
         fontSize: 25,
         color: colors.shadow,
     },
@@ -227,11 +227,23 @@ export default styles = StyleSheet.create({
         color:colors.menubtn,
         textAlign:'center',
     },
+    warningTitle: {
+        fontFamily:'LuckiestGuy-Regular',
+        fontSize: 30,
+        color:colors.font,
+        textAlign:'center',
+    },
+    warningText: {
+        fontFamily:'LuckiestGuy-Regular',
+        fontSize: 20,
+        color:colors.font,
+        textAlign:'center',
+    },
 
     //General
     dfont: {
         fontSize:17,
-        fontFamily:'ConcertOne-Regular',
+        fontFamily:'LuckiestGuy-Regular',
         color:colors.background,
         alignSelf: 'center',
     },
