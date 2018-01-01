@@ -12,9 +12,7 @@ export class Alert extends React.Component {
 constructor(props) {
     super(props);
 
-    this.state = {
-        opacity: new Animated.Value(1),
-    }
+    this.opacity = new Animated.Value(0);
 
     this.width = Dimensions.get('window').width;
     this.height = Dimensions.get('window').height;
@@ -23,7 +21,7 @@ constructor(props) {
 
 _cancel() {
     Animated.timing(
-        this.state.opacity,{
+        this.opacity,{
             toValue:0,
             duration:200
         }
@@ -31,13 +29,22 @@ _cancel() {
 
     setTimeout(()=>{
         this.props.onCancel()
-        Animated.timing(
-            this.state.opacity,{
-                toValue:1,
-                duration:50
-            }
-        ).start()
     },250)
+}
+
+_show() {
+    Animated.timing(
+        this.opacity,{
+            toValue:1,
+            duration:300
+        }
+    ).start()
+}
+
+componentWillReceiveProps(newProps){
+    if(newProps.visible){
+        this._show()
+    }
 }
 
 render() {
@@ -48,7 +55,7 @@ render() {
 
     return ( 
         <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-            backgroundColor:'rgba(0, 0, 0, 0.3)', opacity:this.state.opacity,
+            backgroundColor:'rgba(0, 0, 0, 0.3)', opacity:this.opacity,
             justifyContent:'center', alignItems:'center'}}>
             <View style = {{height:this.height*0.35, width:this.width*0.9,
                 backgroundColor:colors.shadow, borderRadius:20}}>
