@@ -158,7 +158,7 @@ class General extends Component {
                     this.props.navigation.navigate('InfoPage',{section:'about'})
                 }}
                 disabled = {this.state.disabled}
-                title = 'About App'
+                title = 'About'
             />
             <View style = {{flex:0.02}}/>
             <CustomButton
@@ -170,10 +170,10 @@ class General extends Component {
                 radius = {50}
                 fontSize = {24}
                 onPress = {()=>{ 
-                    this._deleteRoom()
+                    this._deleteRoom();
                 }}
                 disabled = {this.state.disabled}
-                title = 'Quit'
+                title = 'Leave Game'
             />
         </View>
     }
@@ -425,7 +425,7 @@ class Menu extends Component {
     }
 
     _renderMenuButton(item) {
-        return <View style={{marginTop:5,marginBottom:5, height:55}}><CustomButton
+        return <View style={{marginTop:5,marginBottom:5, height:60}}><CustomButton
             size = {1}
             flex = {0.85}
             opacity = {1}
