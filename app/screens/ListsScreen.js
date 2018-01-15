@@ -294,7 +294,7 @@ class Roles extends Component {
                     size = {0.3}
                     flex = {1}
                     opacity = {1}
-                    depth = {6}
+                    depth = {4}
                     color = {this.state.showtown?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.showtown?colors.shadow:colors.lightshadow}
                     leftradius = {30}
@@ -314,7 +314,7 @@ class Roles extends Component {
                     size = {0.3}
                     flex = {1}
                     opacity = {1}
-                    depth = {6}
+                    depth = {4}
                     color = {this.state.showmafia?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.showmafia?colors.shadow:colors.lightshadow}
                     radius = {0}
@@ -333,7 +333,7 @@ class Roles extends Component {
                     size = {0.3}
                     flex = {1}
                     opacity = {1}
-                    depth = {6}
+                    depth = {4}
                     color = {this.state.showneutral?colors.menubtn:colors.lightbutton}
                     shadow = {this.state.showneutral?colors.shadow:colors.lightshadow}
                     rightradius = {30}
@@ -350,25 +350,24 @@ class Roles extends Component {
                 />
             </View>
 
-            <View style = {{flex:0.9}}>
+            <View style = {{flex:0.9,paddingLeft:20,paddingRight:20}}>
                 <FlatList
                     data={this.state.showtown?this.state.townlist:
                         (this.state.showmafia?this.state.mafialist:this.state.neutrallist)}
                     renderItem={({item}) => (
-                        <View style = {{flex:1, flexDirection:'row',justifyContent:'center'}}>
-                            <View style = {{flex:0.8, backgroundColor:colors.lightbutton, 
+                        <View style = {{flex:0.5, flexDirection:'row',justifyContent:'center'}}>
+                            <View style = {{flex:0.9, backgroundColor:colors.lightbutton, 
                                 borderRadius:40,justifyContent:'center', margin:5}}>
                                 <TouchableOpacity
                                     style = {{ justifyContent:'center', alignItems:'center'}}
                                     onPress = {()=>{ this._roleBtnPress(item.key,item.index) }}>
                                     <Text style = {{ color:colors.font, fontFamily: 'LuckiestGuy-Regular',
-                                        fontSize:20, marginTop:8, marginBottom:8}}>{item.name}</Text>
+                                        fontSize:15, marginTop:8, marginBottom:8}}>{item.name}</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
                     )}
-                    style={{margin:3}}
-                    numColumns = {1}
+                    numColumns = {2}
                     keyExtractor={item => item.key}/>
             </View>
 

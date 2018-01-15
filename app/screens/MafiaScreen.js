@@ -400,7 +400,7 @@ componentWillMount() {
             snap.forEach((child)=>{
                 if(child.numChildren() + 1 > this.state.triggernum){
                     if(Phases[this.state.phase].trigger){
-                        actionRef.remove();
+                        this.actionRef.remove();
 
                         this.roomRef.update({nominate:child.key});
                         this.listRef.child(child.key).child('name').once('value',getname=>{

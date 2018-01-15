@@ -89,6 +89,14 @@ render() {
     }
 
     return ( 
+        <Animatable.View ref='continue' animation={{
+            0: {marginBottom:0},
+            0.25:{marginBottom:3},
+            0.5:{marginBottom:6},
+            0.75:{marginBottom:3},
+            1:{marginBottom:0},
+        }}
+        iterationCount="infinite" duration={2000}>
         <Animated.View style = {{height:this.height*0.25 + 35, width:this.width, opacity:this.opacity,
             position:'absolute', left:0, right:0, bottom:this.props.marginBottom, 
             borderRadius:5, flexDirection:'row', justifyContent:'center'}}>
@@ -100,26 +108,6 @@ render() {
                     <Text style = {styles.lfont}>{Rolesheet[this.props.roleid].name}</Text>
                     <Text style = {styles.descFont}>{Rolesheet[this.props.roleid].rules}</Text>
                 </Animated.View>
-
-                <TouchableOpacity style = {{position:'absolute', left:5, bottom:5,
-                    backgroundColor:colors.menubtn,width:25,height:this.height*0.25 - 10,borderRadius:2,
-                    justifyContent:'center', alignItems:'center'}}
-                    activeOpacity = {0.5}
-                    onPress = {this.props.onPressLeft}
-                >
-                    <MaterialCommunityIcons name='chevron-left'
-                            style={{color:colors.font, fontSize:26}}/>
-                </TouchableOpacity>
-
-                <TouchableOpacity style = {{position:'absolute', right:5, bottom:5,
-                    backgroundColor:colors.menubtn,width:25,height:this.height*0.25 - 10,borderRadius:2,
-                    justifyContent:'center', alignItems:'center'}}
-                    activeOpacity = {0.5}
-                    onPress = {this.props.onPressRight}
-                >
-                    <MaterialCommunityIcons name='chevron-right'
-                            style={{color:colors.font, fontSize:26}}/>
-                </TouchableOpacity>
 
             </Animated.View>
 
@@ -164,6 +152,7 @@ render() {
             </Animated.View>
             :null}
         </Animated.View>
+        </Animatable.View>
     )
 }
 }
