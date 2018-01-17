@@ -167,7 +167,7 @@ export const Mafia = TabNavigator(
   }
 );
 
-export const createRootNavigator = (item,_function) => {
+export const createRootNavigator = (_function) => {
 
     return StackNavigator(
       {
