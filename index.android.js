@@ -7,9 +7,12 @@ export default class App extends React.Component {
         super(props);
       }
     
+    _transition(){
+        alert('hi')
+    }
 
     render(){
-        const Layout = createRootNavigator(true, true);
+        const Layout = createRootNavigator(this.props,this._transition);
         return <Layout />;
     }
 }

@@ -254,6 +254,11 @@ export class Loading extends React.Component {
             }
         ).start()
 
+        const { params } = this.props.navigation.state;
+        const _function = params._function;
+
+        _function();
+
         this.refs.continue.stopAnimation()
         this.refs.duh.stopAnimation()
         this.setState({message:'LOADING ...', disabled:true})

@@ -167,8 +167,8 @@ export const Mafia = TabNavigator(
   }
 );
 
-export const createRootNavigator = (signedIn, inGame) => {
-    
+export const createRootNavigator = (item,_function) => {
+
     return StackNavigator(
       {
         Loading: {
@@ -212,6 +212,7 @@ export const createRootNavigator = (signedIn, inGame) => {
         headerMode: "none",
         mode: "modal",
         initialRouteName: "Loading",
+        initialRouteParams: {_function:_function}
       }
     );
 };
