@@ -46,11 +46,6 @@ class General extends Component {
         this.state = {
             disabled:false,
         }
-
-        this.messageRef         = firebase.database().ref('messages')
-                                .child(firebase.auth().currentUser.uid);
-        this.listOfRolesRef     = firebase.database().ref('listofroles')
-                                .child(firebase.auth().currentUser.uid);
     }
 
     _buttonPress() {
@@ -111,7 +106,7 @@ class General extends Component {
     }
 
     render(){
-        return <View style = {{flex:1,backgroundColor:colors.background}}>
+        return <View style = {{flex:1,backgroundColor:colors.menuBackground}}>
             <View style = {{flex:0.1}}/>
             <CustomButton
                 size = {0.1}
@@ -283,7 +278,7 @@ class Roles extends Component {
     }
 
     render(){
-        return <View style = {{flex:1, backgroundColor:colors.background}}>
+        return <View style = {{flex:1, backgroundColor:colors.menuBackground}}>
 
             <Header title = 'Roles' onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back())
@@ -445,7 +440,7 @@ class Menu extends Component {
     }
 
     render(){
-        return <View style = {{flex:1,backgroundColor:colors.background}}>
+        return <View style = {{flex:1,backgroundColor:colors.menuBackground}}>
             
             <Header title = {this.state.title} onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back())
@@ -534,7 +529,7 @@ class InfoPage extends Component {
     }
 
     render(){
-        return <View style = {{ flex:1,backgroundColor:colors.background }}>
+        return <View style = {{ flex:1,backgroundColor:colors.menuBackground }}>
 
             <Header title = {this.state.title} onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back());

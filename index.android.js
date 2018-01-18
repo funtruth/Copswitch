@@ -11,6 +11,7 @@ export default class App extends React.Component {
             loading:true,
             destination:null,
         }
+
       }
     
     _transition(cover){
@@ -25,17 +26,23 @@ export default class App extends React.Component {
         })
     }
 
+    _receiveNav(navigation){
+        this.navigation = navigation
+    }
+
     render(){
         return <View style = {{flex:1}}>
             <Layout 
                 screenProps={{
                     showCover:val=>{this._transition(val)},
+                    passNavigation:val=>{this._receiveNav(val)},
                     destination:this.state.destination
                 }}
             />
             <Helper 
                 loading = {this.state.loading}
                 onClick = {val => {this._onClick(val)}}
+                navigation = {this.navigation}
             />
         </View>;
     }

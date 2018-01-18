@@ -80,5 +80,6 @@ export default colors = {
     helper:                 'white',
     background:             '#403e3b',
     beige:                  '#D3ECE9',
+    menuBackground:         '#a7a9a9',
 
 }
