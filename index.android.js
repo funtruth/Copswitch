@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { AppRegistry, View } from 'react-native';
-import { createRootNavigator } from "./router";
+import { Layout } from "./router";
 import { Helper } from './app/components/Helper.js';
 
 export default class App extends React.Component {
@@ -8,7 +8,8 @@ export default class App extends React.Component {
         super(props);
 
         this.state = {
-            loading:true
+            loading:true,
+            destination:null,
         }
       }
     
@@ -18,12 +19,23 @@ export default class App extends React.Component {
         })
     }
 
+    _onClick(val){
+        this.setState({
+            destination:val
+        })
+    }
+
     render(){
-        const Layout = createRootNavigator(this._transition);
         return <View style = {{flex:1}}>
-            <Layout />
+            <Layout 
+                screenProps={{
+                    showCover:val=>{this._transition(val)},
+                    destination:this.state.destination
+                }}
+            />
             <Helper 
                 loading = {this.state.loading}
+                onClick = {val => {this._onClick(val)}}
             />
         </View>;
     }

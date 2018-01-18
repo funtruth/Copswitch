@@ -32,6 +32,7 @@ const MED_ANIM      = 600;
 const SLOW_ANIM     = 1000;
 
 import { CustomButton } from '../components/CustomButton.js';
+import { HelperButton } from '../components/HelperButton.js';
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
@@ -49,6 +50,8 @@ export class Home extends React.Component {
             connected:  true,
             disabled:   false,
             loading:    false,
+
+            showOptions: false,
         };
         
         this.width = 180,
@@ -67,6 +70,14 @@ export class Home extends React.Component {
                 this.setState({connected:true})
             }
         })   
+    }
+
+    componentDidMount() {
+        setTimeout(()=>{
+            this.setState({
+                showOptions:true
+            })
+        },1000)
     }
 
     componentWillUnmount() {
@@ -116,17 +127,13 @@ export class Home extends React.Component {
             owner: firebase.auth().currentUser.uid,
             daycounter:1,
         }).then(()=>{
+            this.props.navigation.navigate('CreationTutorial',{roomname:roomname})
             
-            this.props.navigation.dispatch(
-                NavigationActions.navigate({
-                    routeName: 'CreationTutorial',
-                    action: NavigationActions.navigate({ 
-                        routeName: 'CreationPager',
-                        params: {roomname:roomname}
-                    })
-                })
-            );
-            setTimeout(() => {this.setState({disabled: false})}, 600);
+            setTimeout(() => {
+                this.props.screenProps.showCover(false)
+                
+                this.setState({disabled: false})
+            }, 600);
         })
     }
 
@@ -135,15 +142,10 @@ export class Home extends React.Component {
         setTimeout(() => {
 
             this.setState({disabled: false})
-            this.props.navigation.dispatch(
-                NavigationActions.navigate({
-                    routeName: 'JoinTutorial',
-                    action: NavigationActions.navigate({ 
-                        routeName: 'Join1'
-                    })
-                })
-            );
+            this.props.navigation.navigate('JoinTutorial')
         
+            this.props.screenProps.showCover(false)
+
         }, 600);
 
         
@@ -151,7 +153,37 @@ export class Home extends React.Component {
 
     render() {
 
-        return <View style = {{ flex:1, backgroundColor:colors.background }}>
+        return <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
+            justifyContent:'center', alignItems:'center', backgroundColor:colors.background}}>
+
+                <HelperButton
+                    title = {'Join' + '\n' + 'Room'}
+                    icon = 'key'
+                    color = {colors.lightbutton}
+                    degrees = {340}
+                    order = {2}
+                    showOptions = {this.state.showOptions}
+                    onPress = {() => {
+                        this.props.screenProps.showCover(true)
+                        this._joinRoom()
+                    }}
+                />
+                <HelperButton
+                    title = {'Create' + '\n' + 'Room'}
+                    icon = 'crown'
+                    color = {colors.menubtn}
+                    degrees = {200}
+                    order = {1}
+                    showOptions = {this.state.showOptions}
+                    onPress = {() => {
+                        this.props.screenProps.showCover(true)
+                        this._createRoom()
+                    }}
+                />
+
+        </View>
+
+        return <View style = {{ flex:1, backgroundColor:colors.beige }}>
 
             <View style = {{flex:0.7}}/>
             
@@ -166,6 +198,7 @@ export class Home extends React.Component {
                 fontSize = {24}
                 title = 'Create Room'
                 onPress = {()=>{ 
+                    this.props.screenProps.showCover(true)
                     this._createRoom()
                 }}
                 disabled = {this.state.disabled}
@@ -181,6 +214,7 @@ export class Home extends React.Component {
                 fontSize = {24}
                 title = 'Join Room'
                 onPress = {()=>{
+                    this.props.screenProps.showCover(true)
                     this._joinRoom()
                 }}
                 disabled = {this.state.disabled}
@@ -195,70 +229,26 @@ export class Loading extends React.Component {
     
     constructor(props) {
         super(props);
-
-        this.state = {
-            message: 'Tap to Start!',
-            disabled: false,
-        }
-
-        const { params } = this.props.navigation.state;
-        this._function = params._function;
-
-        this.scale = new Animated.Value(0.4);
     }
     
     componentWillMount() {
         AsyncStorage.getItem('GAME-KEY',(error,result)=>{
             if(result != null){
-                this.props.navigation.dispatch(
-                    NavigationActions.navigate({
-                        routeName: 'Mafia',
-                        action: NavigationActions.navigate({ 
-                            routeName: 'MafiaRoom',
-                            params: {
-                                roomname:result,
-                                _function:this._function
-                            }
-                        })
-                    })
-                )
+                this.props.navigation.navigate('MafiaRoom',{roomname:result})
             } else {
                 if(firebase.auth().currentUser){
-                    this.props.navigation.dispatch(
-                        NavigationActions.reset({
-                            index: 0,
-                            key: null,
-                            actions: [
-                                NavigationActions.navigate({ 
-                                    routeName: 'SignedIn',
-                                    params: {
-                                        _function:this._function
-                                    }
-                                })
-                            ]
-                        })
-                    )
+                    this.props.navigation.navigate('Home')
                 } else {
                     firebase.auth().signInAnonymously().then(() => {
-                        this.props.navigation.dispatch(
-                            NavigationActions.reset({
-                                index: 0,
-                                key: null,
-                                actions: [
-                                    NavigationActions.navigate({ 
-                                        routeName: 'SignedIn',
-                                        params: {
-                                            _function:this._function
-                                        }
-                                    })
-                                ]
-                            })
-                        )
+                        this.props.navigation.navigate('Home')
                     }).catch(function(error){alert(error)})
-                    
                 }
             }
         })
+    }
+
+    componentDidMount() {
+        this.props.screenProps.showCover(false)
     }
 
     render() {

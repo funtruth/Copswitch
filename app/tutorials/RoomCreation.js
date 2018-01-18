@@ -214,15 +214,7 @@ export class CreationPager extends Component {
 
         setTimeout(()=>{
             firebase.database().ref('rooms').child(roomname).child('phase').set(2).then(()=>{
-                this.props.navigation.dispatch(
-                    NavigationActions.navigate({
-                        routeName: 'Mafia',
-                        action: NavigationActions.navigate({ 
-                            routeName: 'MafiaRoom',
-                            params: {roomname:roomname}
-                        })
-                    })
-                )
+                this.props.navigation.navigate('MafiaRoom',{roomname:roomname})
             })
         },2000)
     }

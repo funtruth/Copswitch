@@ -10,16 +10,6 @@ export default colors = {
     doneshadow: '#249447',
     alive:      '#3FD0A9',
 
-    //Blue Palette
-    background: '#e9e2ca',
-    title:      '#231715',
-    icon:       'white',  
-
-    //Colors
-    color1:     '#1F476E',
-    color2:     '#6D849C',
-    color3:     '#99A4BA',
-
     beige:      '#F9F2DE',
     lightbutton:'#F0B483',
     lightshadow:'#b77138',
@@ -86,5 +76,9 @@ export default colors = {
     tabbackground:          '#e9e2ca',
     indicatorcolor:         '#5f5374',
     iconcolor:              '#5f5374',
+
+    helper:                 'white',
+    background:             '#403e3b',
+    beige:                  '#D3ECE9',
 
 }

@@ -1086,15 +1086,7 @@ _gameOver() {
         }
     })
     
-    this.props.navigation.dispatch(
-        NavigationActions.reset({
-            index: 0,
-            key: null,
-            actions: [
-                NavigationActions.navigate({ routeName: 'SignedIn'})
-            ]
-        })
-    )
+    this.props.navigation.navigate('Home')
 }
 /*<Image source = {require('../../assets/images/night.png')} 
 style = {{flex:1, alignSelf:'stretch', width:null}}>*/

@@ -96,16 +96,8 @@ export class Join1 extends Component {
             + '/listofplayers/' + firebase.auth().currentUser.uid).update({
                 presseduid:         'foo',
         }).then(()=>{
-            this.props.navigation.dispatch(
-                NavigationActions.navigate({
-                    routeName: 'LobbyTutorial',
-                    action: NavigationActions.navigate({ 
-                        routeName: 'LobbyPager',
-                        params: {roomname:roomname}
-                    })
-                })
-            )
-        })   
+            this.props.navigation.navigate('LobbyTutorial',{roomname:roomname})
+        })
     }
 
     render() {
@@ -121,7 +113,11 @@ export class Join1 extends Component {
                     <TouchableOpacity
                         style = {{flex:0.15}}
                         onPress = {()=>{
-                            this.props.navigation.dispatch(NavigationActions.back());
+                            this.props.screenProps.showCover(true)
+                            setTimeout(()=>{
+                                this.props.navigation.dispatch(NavigationActions.back());
+                                this.props.screenProps.showCover(false)
+                            },1000)
                         }} >
                         <MaterialCommunityIcons name='close-circle'
                             style={{color:colors.shadow,fontSize:30}}/>
@@ -201,16 +197,7 @@ export class LobbyPager extends Component {
                 } else if(snap.val()>1){
                     AsyncStorage.setItem('GAME-KEY',this.state.roomname);
 
-                    this.props.navigation.dispatch(
-                        NavigationActions.navigate({
-                            routeName: 'Mafia',
-                            action: NavigationActions.navigate({ 
-                                routeName: 'MafiaRoom',
-                                params: {roomname:this.state.roomname}
-                            })
-                        })
-                    )
-                    this._transition(false);
+                    this.props.navigation.navigate('MafiaRoom',{roomname:this.state.roomname})
                 }
             }
         })
@@ -243,15 +230,7 @@ export class LobbyPager extends Component {
                     this.roomRef.remove();
                 }
             }).then(()=>{
-                this.props.navigation.dispatch(
-                    NavigationActions.reset({
-                        index: 0,
-                        key: null,
-                        actions: [
-                            NavigationActions.navigate({ routeName: 'SignedIn'})
-                        ]
-                    })
-                )
+                this.props.navigation.navigate('Home')
             })
         })
         

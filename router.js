@@ -7,7 +7,6 @@ import { StackNavigator, TabNavigator } from "react-navigation";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { Splash } from "./app/screens/LogIn";
 import colors from './app/misc/colors.js';
 
 import { Home, Loading } from "./app/screens/RoomScreen";
@@ -20,16 +19,6 @@ import { CreationPager, Creation1, Creation2, Creation3, Creation4, Creation5 } 
 import { Join1 } from './app/tutorials/RoomJoin.js';
 import { LobbyPager, Lobby1, Lobby2 } from './app/tutorials/RoomJoin.js';
 
-export const SignedOut = StackNavigator(
-  {
-    Splash: {
-        screen: Splash,
-      },
-  },
-    {
-    headerMode: 'none',
-    }
-  );
   
 export const SignedIn = TabNavigator(
     {
@@ -68,47 +57,6 @@ export const SignedIn = TabNavigator(
       },
       initialRouteName: 'Home',
     }
-);
-
-export const CreationTutorial = StackNavigator(
-  {
-    CreationPager: {
-      screen: CreationPager,
-    }
-  },
-  {
-    backBehavior: 'none',
-    headerMode: 'none',
-    initialRouteName: 'CreationPager',
-  }
-);
-
-export const JoinTutorial = StackNavigator(
-  {
-    Join1: {
-      screen: Join1,
-    },
-  },
-  {
-    backBehavior: 'none',
-    headerMode: 'none',
-    initialRouteName: 'Join1',
-  }
-);
-
-export const LobbyTutorial = TabNavigator(
-  {
-    LobbyPager: {
-      screen: LobbyPager,
-      navigationOptions : {
-        tabBarVisible: false,
-      }
-    },
-  },
-  {
-    backBehavior: 'none',
-    initialRouteName: 'LobbyPager',
-  }
 );
 
 export const Mafia = TabNavigator(
@@ -167,9 +115,7 @@ export const Mafia = TabNavigator(
   }
 );
 
-export const createRootNavigator = (_function) => {
-
-    return StackNavigator(
+export const Layout = StackNavigator(
       {
         Loading: {
           screen: Loading,
@@ -177,32 +123,32 @@ export const createRootNavigator = (_function) => {
             gesturesEnabled: false,
           }
         },
-        SignedIn: {
-          screen: SignedIn,
+        Home: {
+          screen: Home,
           navigationOptions: {
             gesturesEnabled: false
           }
         },
         CreationTutorial: {
-          screen: CreationTutorial,
+          screen: CreationPager,
           navigationOptions: {
             gesturesEnabled: false,
           }
         },
         JoinTutorial: {
-          screen: JoinTutorial,
+          screen: Join1,
           navigationOptions: {
             gesturesEnabled: false,
           }
         },
         LobbyTutorial: {
-          screen: LobbyTutorial,
+          screen: LobbyPager,
           navigationOptions: {
             gesturesEnabled: false,
           }
         },
-        Mafia: {
-          screen: Mafia,
+        MafiaRoom: {
+          screen: MafiaRoom,
           navigationOptions: {
             gesturesEnabled: false,
           }
@@ -210,12 +156,9 @@ export const createRootNavigator = (_function) => {
       },
       {
         headerMode: "none",
-        mode: "modal",
         initialRouteName: "Loading",
-        initialRouteParams: {_function:_function}
       }
-    );
-};
+);
 
 
 const styles = StyleSheet.create({
