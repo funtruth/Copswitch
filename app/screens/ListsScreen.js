@@ -16,6 +16,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CustomButton } from '../components/CustomButton.js';
+import { ListIcon } from '../components/ListIcon.js';
 import { Header } from '../components/Header.js';
 import { Pager } from '../components/Pager.js';
 import { Desc } from '../components/Desc.js';
@@ -389,6 +390,7 @@ class Menu extends Component {
         }
 
         this.height = Dimensions.get('window').height;
+        this.width = Dimensions.get('window').width;
     }
 
     _buttonPress() {
@@ -418,14 +420,9 @@ class Menu extends Component {
     }
 
     _renderMenuButton(item) {
-        return <View style={{marginTop:5,marginBottom:5, height:this.height*0.1}}><CustomButton
-            size = {1}
-            flex = {0.85}
-            opacity = {1}
-            depth = {0}
+        return <ListIcon
             color = {colors.menubtn}
-            radius = {50}
-            fontSize = {24}
+            icon = {'menu'}
             onPress = {()=>{
                 this._buttonPress();
                 item.type==1?
@@ -434,22 +431,22 @@ class Menu extends Component {
             }}
             disabled = {this.state.disabled}
             title = {item.desc}
-        /></View>
+        />
         
     }
 
     render(){
-        return <View style = {{flex:1,backgroundColor:colors.menuBackground}}>
+        return <View style = {{flex:1,backgroundColor:colors.menuBackground, alignItems:'center'}}>
             
             <Header title = {this.state.title} onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back())
             }}/>
 
-            <View style = {{flex:0.9, justifyContent:'center'}}>
+            <View style = {{flex:0.9, width:this.width*0.7}}>
                 <FlatList
                     data={this.state.menulist}
                     renderItem={({item}) => this._renderMenuButton(item) }
-                    numColumns = {1}
+                    numColumns = {2}
                     keyExtractor={item => item.key}
                 />
             </View>
@@ -554,7 +551,6 @@ class InfoPage extends Component {
                 finish = {() => { this.props.navigation.goBack() }}
             /> 
 
-            <View style = {{height:50}}/>
         </View>
     }
 }

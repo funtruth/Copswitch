@@ -43,13 +43,12 @@ componentDidMount(){
     },1000)
 }
 
-componentWillMount(){
-    BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
-    alert('wtf')
+componentDidMount(){
+    BackHandler.addEventListener("hardwareBackPress", this._onBackPress.bind(this));
 }
 
 componentWillUnmount(){
-    BackHandler.removeEventListener("hardwareBackPress", this._onBackPress);
+    BackHandler.removeEventListener("hardwareBackPress");
 }
 
 componentWillReceiveProps(nextProps) {
@@ -57,7 +56,9 @@ componentWillReceiveProps(nextProps) {
 }
 
 _onBackPress(){
-    alert('hello')
+    if(this.state.showMenu){
+        this._menuPress(false)
+    }
     return true
 }
 

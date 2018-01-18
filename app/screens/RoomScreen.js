@@ -15,7 +15,8 @@ import {
     ActivityIndicator,
     Animated,
     Modal,
-    Dimensions
+    Dimensions,
+    BackHandler
 }   from 'react-native';
 
 import { StackNavigator } from 'react-navigation';
@@ -230,9 +231,8 @@ export class Loading extends React.Component {
     constructor(props) {
         super(props);
     }
-    
-    componentWillMount() {
 
+    componentWillMount() {
         this.props.screenProps.passNavigation(this.props.navigation)
 
         AsyncStorage.getItem('GAME-KEY',(error,result)=>{

@@ -20,7 +20,6 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { CustomButton } from '../components/CustomButton.js';
-import { ListItem } from '../components/ListItem.js';
 import { Pager } from '../components/Pager.js';
 import { NumPad } from '../components/NumPad.js';
 import { Alert } from '../components/Alert.js';

@@ -13,7 +13,7 @@ export default class App extends React.Component {
         }
 
       }
-    
+
     _transition(cover){
         this.setState({
             loading:cover
