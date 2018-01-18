@@ -166,6 +166,7 @@ export class Home extends React.Component {
                     showOptions = {this.state.showOptions}
                     onPress = {() => {
                         this.props.screenProps.showCover(true)
+                        this.props.screenProps.changeScreen('JoinTutorial')
                         this._joinRoom()
                     }}
                 />

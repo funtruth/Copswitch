@@ -8,6 +8,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import { HelperButton } from './HelperButton.js';
 import List from '../screens/ListsScreen.js';
+import Screens from '../misc/screens.json';
 
 const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 const FAST_ANIM = 100;
@@ -18,13 +19,8 @@ export class Helper extends React.Component {
 constructor(props) {
     super(props);
 
-    this.state = {
-        showOptions:false,
-        showMenu:false,
-    }
-
     this.radiusScale = new Animated.Value(5)
-
+    
     this.width = Dimensions.get('window').width;
     this.height = Dimensions.get('window').height;
     
@@ -33,7 +29,13 @@ constructor(props) {
     this.menuTopMargin = new Animated.Value(this.height/2 - 10);
     this.menuBottomMargin = new Animated.Value(this.height/2 - 10);
 
-    this.helperX = new Animated.Value((this.height - this.icon)/2);
+    this.state = {
+        showOptions:false,
+        showMenu:false,
+
+        helperX: new Animated.Value((this.height - this.icon)/2),
+    }
+
     
 }
 
@@ -52,7 +54,7 @@ componentWillUnmount(){
 }
 
 componentWillReceiveProps(nextProps) {
-    this._transition(nextProps.loading)
+    this._transition(nextProps)
 }
 
 _onBackPress(){
@@ -62,11 +64,21 @@ _onBackPress(){
     return true
 }
 
-_transition(cover){
+_transition(nextProps){
     Animated.timing(
         this.radiusScale,{
-            toValue:cover?5:0.25,
+            toValue:nextProps.loading?5:0.25,
             duration:1000
+        }
+    ).start()
+
+    
+    Animated.timing(
+        this.state.helperX,{
+            toValue:Screens[nextProps.screen].position==1?
+            this.height-this.icon-35:(this.height - this.icon)/2,
+            duration:400,
+            delay:500
         }
     ).start()
 }
@@ -101,7 +113,7 @@ _menuPress(show) {
             }
         ),
         Animated.timing(
-            this.helperX,{
+            this.state.helperX,{
                 toValue:show?this.height-this.icon-35:(this.height-this.icon)/2,
                 duration:200
             }
@@ -114,8 +126,8 @@ render() {
     return ( 
         <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
             justifyContent:'center', alignItems:'center'}}>
-                <Animated.View style = {{position:'absolute', elevation:0,
-                    height:this.icon*4, width:this.icon*4, borderRadius:this.icon*2, backgroundColor: colors.helper,
+                <Animated.View style = {{position:'absolute', elevation:0, top:0,
+                    height:this.icon*4, width:this.icon*4, borderRadius:this.icon*2, backgroundColor: colors.menuBackground,
                     justifyContent:'center', alignItems:'center',
                     transform: [
                         {scale:this.radiusScale}
@@ -135,7 +147,7 @@ render() {
 
                 </Animated.View>
 
-                <Animated.View style = {{position:'absolute', elevation:0, bottom:this.state.showMenu?this.helperX:null,
+                <Animated.View style = {{position:'absolute', elevation:0, bottom:this.state.helperX,
                     height:this.icon, width:this.icon, borderRadius:this.icon/2, backgroundColor: colors.helper,
                     justifyContent:'center', alignItems:'center',
                 }}>

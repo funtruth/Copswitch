@@ -113,6 +113,7 @@ export class Join1 extends Component {
                         onPress = {()=>{
                             this.props.screenProps.showCover(true)
                             setTimeout(()=>{
+                                this.props.screenProps.changeScreen('Home')
                                 this.props.navigation.dispatch(NavigationActions.back());
                                 this.props.screenProps.showCover(false)
                             },1000)

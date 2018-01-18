@@ -1,0 +1,18 @@
+{
+    "Home" : {
+        "position" : 2
+    },
+    "CreationTutorial" : {
+        "position" : 1
+    },
+    "JoinTutorial" : {
+        "position" : 1
+    },
+    "LobbyTutorial" : {
+        "position" : 1
+    },
+    "MafiaRoom" : {
+        "position" : 2
+    }
+  }
+  

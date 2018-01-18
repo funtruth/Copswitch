@@ -10,6 +10,7 @@ export default class App extends React.Component {
         this.state = {
             loading:true,
             destination:null,
+            screen:'Home'
         }
 
       }
@@ -30,19 +31,26 @@ export default class App extends React.Component {
         this.navigation = navigation
     }
 
+    _changeScreen(screen){
+        this.setState({
+            screen:screen
+        })
+    }
+
     render(){
         return <View style = {{flex:1}}>
             <Layout 
                 screenProps={{
                     showCover:val=>{this._transition(val)},
                     passNavigation:val=>{this._receiveNav(val)},
-                    destination:this.state.destination
+                    changeScreen:val=>{this._changeScreen(val)}
                 }}
             />
             <Helper 
                 loading = {this.state.loading}
                 onClick = {val => {this._onClick(val)}}
                 navigation = {this.navigation}
+                screen = {this.state.screen}
             />
         </View>;
     }
