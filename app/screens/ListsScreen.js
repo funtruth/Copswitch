@@ -4,7 +4,6 @@ import {
     Text,
     View,
     Image,
-    BackHandler,
     AsyncStorage,
     StyleSheet,
     FlatList,
@@ -139,7 +138,7 @@ class General extends Component {
                 disabled = {this.state.disabled}
                 title = 'Rulebook'
             />
-            <View style = {{flex:0.35}}/>
+            <View style = {{flex:0.02}}/>
             <CustomButton
                 size = {0.1}
                 flex = {0.85}
@@ -365,8 +364,6 @@ class Roles extends Component {
                     numColumns = {2}
                     keyExtractor={item => item.key}/>
             </View>
-
-            <View style = {{flex:0.1}}/>
             
             <Desc
                 marginBottom = {Dimensions.get('window').height * 0.08}
@@ -390,6 +387,8 @@ class Menu extends Component {
             title:null,
             disabled:false,
         }
+
+        this.height = Dimensions.get('window').height;
     }
 
     _buttonPress() {
@@ -419,11 +418,11 @@ class Menu extends Component {
     }
 
     _renderMenuButton(item) {
-        return <View style={{marginTop:5,marginBottom:5, height:60}}><CustomButton
+        return <View style={{marginTop:5,marginBottom:5, height:this.height*0.1}}><CustomButton
             size = {1}
             flex = {0.85}
             opacity = {1}
-            depth = {8}
+            depth = {0}
             color = {colors.menubtn}
             radius = {50}
             fontSize = {24}

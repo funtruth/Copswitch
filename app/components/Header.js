@@ -19,7 +19,7 @@ constructor(props) {
 render() {
 
     return ( 
-        <View style = {{height:this.height*0.1, flexDirection:'row', marginTop:10}}>
+        <View style = {{height:this.height*0.1, flexDirection:'row'}}>
             <View style = {{flex:0.15, justifyContent:'center'}}>
                 <TouchableOpacity onPress = {this.props.onPress}>
                     <MaterialCommunityIcons name='chevron-left' 

@@ -9,7 +9,6 @@ import {
     FlatList,
     AsyncStorage,
     Keyboard,
-    BackHandler,
     ActivityIndicator,
     TouchableOpacity,
     TouchableWithoutFeedback,
@@ -91,24 +90,12 @@ export class CreationPager extends Component {
                 }
             }
         })
-
-        BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
     }
 
     componentWillUnmount() {
         if(this.phaseRef){
             this.phaseRef.off();
         }
-        BackHandler.removeEventListener("hardwareBackPress", this._onBackPress);
-    }
-
-    _onBackPress = () => {
-        if(this.state.modal){
-            this._menuPress()
-        } else if(this.state.currentpage > 1){
-            this._changePage(this.state.currentpage - 1)
-        }
-        return true
     }
 
     _deleteRoom() {

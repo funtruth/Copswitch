@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Animated, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, Animated, Dimensions, TouchableOpacity, BackHandler } from 'react-native';
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
@@ -43,8 +43,22 @@ componentDidMount(){
     },1000)
 }
 
+componentWillMount(){
+    BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
+    alert('wtf')
+}
+
+componentWillUnmount(){
+    BackHandler.removeEventListener("hardwareBackPress", this._onBackPress);
+}
+
 componentWillReceiveProps(nextProps) {
     this._transition(nextProps.loading)
+}
+
+_onBackPress(){
+    alert('hello')
+    return true
 }
 
 _transition(cover){
@@ -57,8 +71,6 @@ _transition(cover){
 }
 
 _menuPress(show) {
-
-    this.props.navigation.navigate('JoinTutorial')
 
     if(show){
         this.setState({showMenu:true})

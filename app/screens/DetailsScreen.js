@@ -8,7 +8,6 @@ import {
     FlatList,
     AsyncStorage,
     Keyboard,
-    BackHandler,
     TouchableOpacity,
     TouchableWithoutFeedback,
     Animated,

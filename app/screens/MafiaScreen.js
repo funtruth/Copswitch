@@ -4,7 +4,6 @@ import {
     View,
     Image,
     AsyncStorage,
-    BackHandler,
     Text,
     StyleSheet,
     FlatList,
@@ -436,8 +435,6 @@ componentWillMount() {
             }
         }
     })
-
-    BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
 }
 
 componentWillUnmount() {
@@ -482,17 +479,6 @@ componentWillUnmount() {
     if(this.dayCounterRef){
         this.dayCounterRef.off();
     }
-
-    BackHandler.removeEventListener("hardwareBackPress", this._onBackPress);
-
-}
-
-//FIX
-_onBackPress = () => {
-    if(this.props.route == 2){
-        return false
-    }
-    return true
 }
 
 _buttonPress() {

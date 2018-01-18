@@ -10,7 +10,6 @@ import {
     AsyncStorage,
     ActivityIndicator,
     Keyboard,
-    BackHandler,
     TouchableOpacity,
     TouchableWithoutFeedback,
     Animated,
@@ -201,15 +200,12 @@ export class LobbyPager extends Component {
                 }
             }
         })
-
-        BackHandler.addEventListener("hardwareBackPress", this._onBackPress);
     }
 
     componentWillUnmount() {
         if(this.phaseRef){
             this.phaseRef.off();
         }
-        BackHandler.removeEventListener("hardwareBackPress", this._onBackPress);
     }
 
     _onBackPress = () => {
