@@ -21,7 +21,7 @@ constructor(props) {
         showOptions:false
     }
 
-    this.radiusScale = new Animated.Value(20)
+    this.radiusScale = new Animated.Value(5)
 
     this.width = Dimensions.get('window').width;
     this.height = Dimensions.get('window').height;
@@ -43,7 +43,7 @@ componentWillReceiveProps(nextProps) {
 _transition(cover){
     Animated.timing(
         this.radiusScale,{
-            toValue:cover?20:1,
+            toValue:cover?5:0.25,
             duration:1000
         }
     ).start()
@@ -58,15 +58,15 @@ render() {
     return ( 
         <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
             justifyContent:'center', alignItems:'center'}}>
-                <Animated.View style = {{position:'absolute', elevation:0, left:(this.width-this.icon)/2, bottom:(this.height-this.icon)/1.9,
-                    height:this.icon, width:this.icon, borderRadius:this.icon/2, backgroundColor: colors.helper,
+                <Animated.View style = {{position:'absolute', elevation:0, left:(this.width-this.icon*4)/2, bottom:(this.height-this.icon*4)/2,
+                    height:this.icon*4, width:this.icon*4, borderRadius:this.icon*2, backgroundColor: colors.helper,
                     justifyContent:'center', alignItems:'center',
                     transform: [
                         {scale:this.radiusScale}
                     ],
                 }}/>
 
-                <Animated.View style = {{position:'absolute', elevation:0, left:(this.width-this.icon)/2, bottom:(this.height-this.icon)/1.9,
+                <Animated.View style = {{position:'absolute', elevation:0, left:(this.width-this.icon)/2, bottom:(this.height-this.icon)/2,
                     height:this.icon, width:this.icon, borderRadius:this.icon/2, backgroundColor: colors.helper,
                     justifyContent:'center', alignItems:'center',
                 }}>

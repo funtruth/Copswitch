@@ -44,8 +44,8 @@ _viewChange(show){
         ),
         Animated.timing(
             this.y,{
-                toValue:show?(this.height - this.icon)/1.9 + this.radius*Math.sin(this.props.degrees*2*Math.PI/360) - 15
-                :(this.height - this.icon)/1.9 - 15,
+                toValue:show?(this.height - this.icon)/2 + this.radius*Math.sin(this.props.degrees*2*Math.PI/360) - 15
+                :(this.height - this.icon)/2 - 15,
                 duration:500
             }
         )
