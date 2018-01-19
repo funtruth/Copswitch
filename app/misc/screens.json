@@ -1,18 +1,18 @@
 {
     "Home" : {
-        "position" : 2
+        "yFactor" : 0.5
     },
     "CreationTutorial" : {
-        "position" : 1
+        "yFactor" : 0.75
     },
     "JoinTutorial" : {
-        "position" : 1
+        "yFactor" : 0.84
     },
     "LobbyTutorial" : {
-        "position" : 1
+        "yFactor" : 0.8
     },
     "MafiaRoom" : {
-        "position" : 2
+        "yFactor" : 0.1
     }
   }
   

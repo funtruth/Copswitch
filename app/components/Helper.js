@@ -24,7 +24,7 @@ constructor(props) {
     this.width = Dimensions.get('window').width;
     this.height = Dimensions.get('window').height;
     
-    this.icon = this.width/5;
+    this.icon = this.height/9;
     this.menuSideMargins = new Animated.Value(this.width/2 - 10);
     this.menuTopMargin = new Animated.Value(this.height/2 - 10);
     this.menuBottomMargin = new Animated.Value(this.height/2 - 10);
@@ -34,8 +34,8 @@ constructor(props) {
         showOptions:false,
         showMenu:false,
 
-        helperX: new Animated.Value((this.height - this.icon)/2),
-        shadowX: new Animated.Value((this.height - 4*this.icon)/2),
+        helperY: new Animated.Value(this.height*4/9),
+        shadowY: new Animated.Value(this.height*5/18),
 
         menuOpacity: new Animated.Value(0),
     }
@@ -44,12 +44,11 @@ constructor(props) {
 }
 
 componentDidMount(){
+
     setTimeout(()=>{
         this.setState({showOptions:true})
     },1000)
-}
 
-componentDidMount(){
     BackHandler.addEventListener("hardwareBackPress", this._onBackPress.bind(this));
 }
 
@@ -117,20 +116,14 @@ _quit(){
 _moveHelper(nextProps){
     Animated.parallel([
         Animated.timing(
-            this.state.helperX,{
-                toValue:Screens[nextProps.state.screen].position==1?
-                this.height-this.icon-35
-                :
-                (this.height - this.icon)/2,
+            this.state.helperY,{
+                toValue:Screens[nextProps.state.screen].yFactor*this.height,
                 duration:1500
             }
         ),
         Animated.timing(
-            this.state.shadowX,{
-                toValue:Screens[nextProps.state.screen].position==1?
-                this.height-2.5*this.icon-35
-                :
-                (this.height - 4*this.icon)/2,
+            this.state.shadowY,{
+                toValue:Screens[nextProps.state.screen].yFactor*this.height - this.height/6,
                 duration:1500
             }
         )
@@ -169,9 +162,8 @@ _menuPress(show) {
             }
         ),
         Animated.timing(
-            this.state.helperX,{
-                toValue:show || Screens[this.props.state.screen].position==1?this.height-this.icon-35
-                :(this.height-this.icon)/2,
+            this.state.helperY,{
+                toValue:this.height*(show?0.84:Screens[this.props.state.screen].yFactor),
                 duration:200
             }
         )
@@ -183,7 +175,7 @@ render() {
     return ( 
         <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
             justifyContent:'center', alignItems:'center'}}>
-                <Animated.View style = {{position:'absolute', elevation:0, bottom:this.state.shadowX,
+                <Animated.View style = {{position:'absolute', elevation:0, bottom:this.state.shadowY,
                     height:this.icon*4, width:this.icon*4, borderRadius:this.icon*2, backgroundColor: colors.immune,
                     justifyContent:'center', alignItems:'center',
                     transform: [
@@ -208,7 +200,7 @@ render() {
 
                 </Animated.View>
 
-                <Animated.View style = {{position:'absolute', elevation:5, bottom:this.state.helperX,
+                <Animated.View style = {{position:'absolute', elevation:5, bottom:this.state.helperY,
                     height:this.icon, width:this.icon, borderRadius:this.icon/2, backgroundColor: colors.helper,
                     justifyContent:'center', alignItems:'center',
                 }}>

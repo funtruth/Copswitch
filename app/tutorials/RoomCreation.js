@@ -64,9 +64,6 @@ export class CreationPager extends Component {
 
             warning:false,
             warningOpacity: new Animated.Value(0),
-
-            transition:false,
-            transitionOpacity: new Animated.Value(0),
             
             alertVisible: false,
             modalOpacity: new Animated.Value(0),
@@ -141,17 +138,6 @@ export class CreationPager extends Component {
         }
     }
 
-    _transition() {
-        
-        this.setState({transition:true})
-        Animated.timing(
-            this.state.transitionOpacity,{
-                toValue:1,
-                duration:2000
-            }
-        ).start()
-    }
-
     _warning(boolean) {
         if(boolean){
             this.setState({warning:true})
@@ -197,13 +183,10 @@ export class CreationPager extends Component {
         AsyncStorage.setItem('GAME-KEY',roomname);
         
         this._handOutRoles(roomname);
-        this._transition();
 
-        setTimeout(()=>{
-            firebase.database().ref('rooms').child(roomname).child('phase').set(2).then(()=>{
-                this.props.screenProps.navigateP('MafiaRoom',roomname)
-            })
-        },2000)
+        firebase.database().ref('rooms').child(roomname).child('phase').set(2).then(()=>{
+            this.props.screenProps.navigateP('MafiaRoom',roomname)
+        })
     }
 
     _handOutRoles(roomname){
@@ -416,12 +399,6 @@ export class CreationPager extends Component {
 
             {this._renderModal()}
 
-            {this.state.transition?<Animated.View
-                style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-                backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
-                <ActivityIndicator size='large' color={colors.font} 
-                    style = {{position:'absolute',bottom:25,right:25}}/>
-            </Animated.View>:null}
         </View>
     }
 }

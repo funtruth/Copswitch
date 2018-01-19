@@ -19,6 +19,7 @@ import { NavigationActions } from 'react-navigation';
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
 import Rolesheet from '../misc/roles.json';
+import Screens from '../misc/screens.json';
 import Images from '../../assets/images/index.js';
 import Phases from '../misc/phases.json';
 
@@ -1075,7 +1076,7 @@ _gameOver() {
         }
     })
     
-    this.props.navigation.navigate('Home')
+    this.props.screenProps.navigate('Home')
 }
 /*<Image source = {require('../../assets/images/night.png')} 
 style = {{flex:1, alignSelf:'stretch', width:null}}>*/
