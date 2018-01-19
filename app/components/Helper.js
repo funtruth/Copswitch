@@ -30,10 +30,14 @@ constructor(props) {
     this.menuBottomMargin = new Animated.Value(this.height/2 - 10);
 
     this.state = {
+        disabled:true,
         showOptions:false,
         showMenu:false,
 
         helperX: new Animated.Value((this.height - this.icon)/2),
+        shadowX: new Animated.Value((this.height - 4*this.icon)/2),
+
+        menuOpacity: new Animated.Value(0),
     }
 
     
@@ -54,7 +58,9 @@ componentWillUnmount(){
 }
 
 componentWillReceiveProps(nextProps) {
-    this._transition(nextProps)
+    console.log('Receiving Props')
+    this._navTransition(nextProps)
+    this._moveHelper(nextProps)
 }
 
 _onBackPress(){
@@ -64,34 +70,78 @@ _onBackPress(){
     return true
 }
 
-_transition(nextProps){
+_navTransition(props){
+
+    this.setState({
+        disabled:true
+    })
+    setTimeout(()=>{
+        this.setState({
+            disabled:false
+        })
+    },2500)
+
+    console.log('Starting Animation')
     Animated.timing(
         this.radiusScale,{
-            toValue:nextProps.loading?5:0.25,
-            duration:1000
+            toValue:5,
+            duration:200
         }
     ).start()
 
-    
-    Animated.timing(
-        this.state.helperX,{
-            toValue:Screens[nextProps.screen].position==1?
-            this.height-this.icon-35:(this.height - this.icon)/2,
-            duration:400,
-            delay:500
+    setTimeout(()=>{
+        if(props.state.roomname){
+            props.navigation.navigate(props.state.screen,{roomname:props.state.roomname})
+        } else {
+            props.navigation.navigate(props.state.screen)
         }
-    ).start()
+        console.log("Navigating Screens");
+    },1000)
+
+    setTimeout(()=>{
+        Animated.timing(
+            this.radiusScale,{
+                toValue:0.25,
+                duration:500
+            }
+        ).start()
+        console.log('Uncovering Screen')
+    },2000)  
+}
+
+//Needs rework
+_quit(){
+    this.props.navigation.navigate('Home')
+}
+
+_moveHelper(nextProps){
+    Animated.parallel([
+        Animated.timing(
+            this.state.helperX,{
+                toValue:Screens[nextProps.state.screen].position==1?
+                this.height-this.icon-35
+                :
+                (this.height - this.icon)/2,
+                duration:1500
+            }
+        ),
+        Animated.timing(
+            this.state.shadowX,{
+                toValue:Screens[nextProps.state.screen].position==1?
+                this.height-2.5*this.icon-35
+                :
+                (this.height - 4*this.icon)/2,
+                duration:1500
+            }
+        )
+    ]).start()     
 }
 
 _menuPress(show) {
 
-    if(show){
-        this.setState({showMenu:true})
-    } else {
-        setTimeout(()=>{
-            this.setState({showMenu:false})
-        },200)
-    }
+    this.setState({
+        showMenu:show
+    })
 
     Animated.parallel([
         Animated.timing(
@@ -113,8 +163,15 @@ _menuPress(show) {
             }
         ),
         Animated.timing(
+            this.state.menuOpacity,{
+                toValue:show?1:0,
+                duration:20
+            }
+        ),
+        Animated.timing(
             this.state.helperX,{
-                toValue:show?this.height-this.icon-35:(this.height-this.icon)/2,
+                toValue:show || Screens[this.props.state.screen].position==1?this.height-this.icon-35
+                :(this.height-this.icon)/2,
                 duration:200
             }
         )
@@ -126,8 +183,8 @@ render() {
     return ( 
         <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
             justifyContent:'center', alignItems:'center'}}>
-                <Animated.View style = {{position:'absolute', elevation:0, top:0,
-                    height:this.icon*4, width:this.icon*4, borderRadius:this.icon*2, backgroundColor: colors.menuBackground,
+                <Animated.View style = {{position:'absolute', elevation:0, bottom:this.state.shadowX,
+                    height:this.icon*4, width:this.icon*4, borderRadius:this.icon*2, backgroundColor: colors.immune,
                     justifyContent:'center', alignItems:'center',
                     transform: [
                         {scale:this.radiusScale}
@@ -140,22 +197,25 @@ render() {
                     borderRadius:30, backgroundColor:colors.immune}}>
 
                     <View style = {{flex:0.07}}/>
-                    <View style = {{flex:0.86, backgroundColor:colors.font}}>
-                        <List />
-                    </View>
+                    <Animated.View style = {{flex:0.86, backgroundColor:colors.font, opacity:this.state.menuOpacity}}>
+                        <List 
+                            screenProps = {{
+                                quit: ()=>{this._quit()}
+                            }}
+                        />
+                    </Animated.View>
                     <View style = {{flex:0.07}}/>
 
                 </Animated.View>
 
-                <Animated.View style = {{position:'absolute', elevation:0, bottom:this.state.helperX,
+                <Animated.View style = {{position:'absolute', elevation:5, bottom:this.state.helperX,
                     height:this.icon, width:this.icon, borderRadius:this.icon/2, backgroundColor: colors.helper,
                     justifyContent:'center', alignItems:'center',
                 }}>
                     <TouchableOpacity
                         style = {{flex:1, justifyContent:'center',alignItems:'center'}}
-                        onPress = {()=>{
-                            this._menuPress(!this.state.showMenu)
-                        }}
+                        onPress = {()=>{ this._menuPress(!this.state.showMenu) }}
+                        disabled = {this.state.disabled}
                     >
                         <FontAwesome name='user-secret' style={{ color:colors.background, fontSize: this.icon/1.8 }}/>
                     </TouchableOpacity>

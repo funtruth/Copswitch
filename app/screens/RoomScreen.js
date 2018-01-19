@@ -114,8 +114,17 @@ export class Home extends React.Component {
         })   
     }
 
+    _optionPress(id){
+        this.setState({
+            showOptions:false
+        })
+    }
+
+    _joinRoom() {
+        this.props.screenProps.navigate('JoinTutorial')
+    }
+
     _createRoom() {
-        
         this.setState({disabled:true});
 
         const roomname = randomize('0',4);
@@ -128,28 +137,8 @@ export class Home extends React.Component {
             owner: firebase.auth().currentUser.uid,
             daycounter:1,
         }).then(()=>{
-            this.props.navigation.navigate('CreationTutorial',{roomname:roomname})
-            
-            setTimeout(() => {
-                this.props.screenProps.showCover(false)
-                
-                this.setState({disabled: false})
-            }, 600);
+            this.props.screenProps.navigateP('CreationTutorial',roomname)
         })
-    }
-
-    _joinRoom() {
-        this.setState({disabled:true});
-        setTimeout(() => {
-
-            this.setState({disabled: false})
-            this.props.navigation.navigate('JoinTutorial')
-        
-            this.props.screenProps.showCover(false)
-
-        }, 600);
-
-        
     }
 
     render() {
@@ -161,67 +150,27 @@ export class Home extends React.Component {
                     title = {'Join' + '\n' + 'Room'}
                     icon = 'key'
                     color = {colors.lightbutton}
-                    degrees = {340}
+                    degrees = {350}
                     order = {2}
                     showOptions = {this.state.showOptions}
                     onPress = {() => {
-                        this.props.screenProps.showCover(true)
-                        this.props.screenProps.changeScreen('JoinTutorial')
+                        this._optionPress(2)
                         this._joinRoom()
+                        
                     }}
                 />
                 <HelperButton
                     title = {'Create' + '\n' + 'Room'}
                     icon = 'crown'
                     color = {colors.menubtn}
-                    degrees = {200}
+                    degrees = {190}
                     order = {1}
                     showOptions = {this.state.showOptions}
                     onPress = {() => {
-                        this.props.screenProps.showCover(true)
+                        this._optionPress(1)
                         this._createRoom()
                     }}
                 />
-
-        </View>
-
-        return <View style = {{ flex:1, backgroundColor:colors.beige }}>
-
-            <View style = {{flex:0.7}}/>
-            
-            <View style = {{flex:0.02}}/>
-            <CustomButton
-                size = {0.12}
-                flex = {0.85}
-                opacity = {1}
-                depth = {8}
-                color = {colors.menubtn}
-                radius = {50}
-                fontSize = {24}
-                title = 'Create Room'
-                onPress = {()=>{ 
-                    this.props.screenProps.showCover(true)
-                    this._createRoom()
-                }}
-                disabled = {this.state.disabled}
-            />
-            <View style = {{flex:0.02}}/>
-            <CustomButton
-                size = {0.12}
-                flex = {0.85}
-                opacity = {1}
-                depth = {8}
-                color = {colors.menubtn}
-                radius = {50}
-                fontSize = {24}
-                title = 'Join Room'
-                onPress = {()=>{
-                    this.props.screenProps.showCover(true)
-                    this._joinRoom()
-                }}
-                disabled = {this.state.disabled}
-            />
-            <View style = {{flex:0.12}}/>
 
         </View>
     }
@@ -238,7 +187,7 @@ export class Loading extends React.Component {
 
         AsyncStorage.getItem('GAME-KEY',(error,result)=>{
             if(result != null){
-                this.props.navigation.navigate('MafiaRoom',{roomname:result})
+                this.props.screenProps.navigateP('MafiaRoom',result)
             } else {
                 if(firebase.auth().currentUser){
                     this.props.navigation.navigate('Home')
@@ -252,7 +201,7 @@ export class Loading extends React.Component {
     }
 
     componentDidMount() {
-        this.props.screenProps.showCover(false)
+        this.props.screenProps.navigate('Home')
     }
 
     render() {

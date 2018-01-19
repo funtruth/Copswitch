@@ -17,7 +17,7 @@ export default styles = StyleSheet.create({
     header: {
         fontFamily:'LuckiestGuy-Regular',
         fontSize: 25,
-        color: colors.shadow,
+        color: colors.background,
     },
 
     //Lists Screen
@@ -148,7 +148,7 @@ export default styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'LuckiestGuy-Regular',
         textAlign:'center',
-        color: colors.shadow,
+        color: colors.shadow
     },
     subtitle : {
         fontSize: 20,
@@ -177,9 +177,9 @@ export default styles = StyleSheet.create({
         backgroundColor: colors.main,
         fontFamily:'LuckiestGuy-Regular',
         fontSize: 40,
-        color:colors.menubtn,
+        color:colors.background,
         textAlign:'center',
-        borderRadius:30,
+        borderRadius:10,
     },
     playerList: {
         fontSize: 25,

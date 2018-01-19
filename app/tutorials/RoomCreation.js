@@ -101,7 +101,7 @@ export class CreationPager extends Component {
     _deleteRoom() {
         this.roomRef.remove()
         .then(()=>{
-            this.props.navigation.dispatch(NavigationActions.back());
+            this.props.screenProps.navigate('Home')
         })
     }
 
@@ -201,7 +201,7 @@ export class CreationPager extends Component {
 
         setTimeout(()=>{
             firebase.database().ref('rooms').child(roomname).child('phase').set(2).then(()=>{
-                this.props.navigation.navigate('MafiaRoom',{roomname:roomname})
+                this.props.screenProps.navigateP('MafiaRoom',roomname)
             })
         },2000)
     }

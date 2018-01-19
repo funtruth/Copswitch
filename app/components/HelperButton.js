@@ -23,9 +23,10 @@ constructor(props) {
     this.radius = this.width/3.5;
 
     this.icon = this.width/5 - 5;
+    this.textHeight = 20;
     
     this.x = new Animated.Value((this.width - this.icon)/2);
-    this.y = new Animated.Value((this.height - this.icon)/1.9-15);
+    this.y = new Animated.Value((this.height - this.icon)/2 - 20);
     this.textOpacity = new Animated.Value(0);
 }
 
@@ -39,23 +40,23 @@ _viewChange(show){
             this.x,{
                 toValue:show?(this.width - this.icon)/2 + this.radius*Math.cos(this.props.degrees*2*Math.PI/360)
                 :(this.width - this.icon)/2,
-                duration:500
+                duration:200
             }
         ),
         Animated.timing(
             this.y,{
                 toValue:show?(this.height - this.icon)/2 + this.radius*Math.sin(this.props.degrees*2*Math.PI/360) - 15
-                :(this.height - this.icon)/2 - 15,
-                duration:500
+                :(this.height - this.icon)/2 - this.textHeight,
+                duration:200
             }
         )
     ]).start()
 
     Animated.timing(
         this.textOpacity,{
-            toValue:1,
+            toValue:show?1:0,
             duration:200,
-            delay:1000
+            delay:show?200:0
         }
     ).start()
 }
@@ -67,10 +68,10 @@ render() {
             left:this.x,
             bottom:this.y,
             alignItems:'center', justifyContent:'center',
-            height:this.icon + 15, width:this.icon, borderRadius:this.icon/2,alignItems:'center'
+            height:this.icon + this.textHeight, width:this.icon, borderRadius:this.icon/2,alignItems:'center'
         }}>
             <TouchableOpacity
-                style = {{flex:1, justifyContent:'center',alignItems:'center',
+                style = {{justifyContent:'center',alignItems:'center',
                     height:this.icon, width:this.icon, borderRadius:this.icon/2, backgroundColor: this.props.color}}
                 onPress = {this.props.onPress}
             >
@@ -79,8 +80,9 @@ render() {
                 }}/>
             </TouchableOpacity>
 
-            <Animated.Text style = {{height:15, fontSize:13, opacity:this.textOpacity,
-                textAlign:'center', color:colors.font}}>{this.props.title}</Animated.Text>
+            <Animated.Text style = {{height:this.textHeight, fontSize:16, opacity:this.textOpacity,
+                textAlign:'center', color:colors.font, fontFamily:'LuckiestGuy-Regular'}}>{this.props.title}</Animated.Text>
+    
         </Animated.View>
     )
 }

@@ -89,20 +89,7 @@ class General extends Component {
     _deleteRoom() {
         AsyncStorage.removeItem('ROOM-KEY');
         AsyncStorage.removeItem('GAME-KEY');
-    
-        this.messageRef.remove().then(()=>{
-            this.listOfRolesRef.remove().then(()=>{
-                this.props.navigation.dispatch(
-                    NavigationActions.reset({
-                        index: 0,
-                        key: null,
-                        actions: [
-                            NavigationActions.navigate({ routeName: 'SignedIn'})
-                        ]
-                    })
-                )
-            })
-        })
+        this.props.screenProps.quit();
     }
 
     render(){

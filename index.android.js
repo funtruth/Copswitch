@@ -8,49 +8,43 @@ export default class App extends React.Component {
         super(props);
 
         this.state = {
-            loading:true,
-            destination:null,
-            screen:'Home'
+            screen:'Home',
+            roomname:null,
         }
 
       }
-
-    _transition(cover){
-        this.setState({
-            loading:cover
-        })
-    }
-
-    _onClick(val){
-        this.setState({
-            destination:val
-        })
-    }
 
     _receiveNav(navigation){
         this.navigation = navigation
     }
 
-    _changeScreen(screen){
+    _navigate(screen){
         this.setState({
             screen:screen
         })
+        console.log('Setting screen state in index')
+    }
+    _navigateP(screen,roomname){
+        this.setState({
+            screen:screen,
+            roomname:roomname
+        })
+        console.log('Setting screen state in index')
     }
 
     render(){
         return <View style = {{flex:1}}>
             <Layout 
                 screenProps={{
-                    showCover:val=>{this._transition(val)},
                     passNavigation:val=>{this._receiveNav(val)},
-                    changeScreen:val=>{this._changeScreen(val)}
+                    navigate:val=>{this._navigate(val)},
+                    navigateP:(val,roomname)=>{this._navigateP(val,roomname)}
                 }}
             />
             <Helper 
-                loading = {this.state.loading}
                 onClick = {val => {this._onClick(val)}}
                 navigation = {this.navigation}
-                screen = {this.state.screen}
+                state = {this.state}
             />
         </View>;
     }

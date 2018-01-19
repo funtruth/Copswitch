@@ -23,6 +23,7 @@ import Images from '../../assets/images/index.js';
 import Phases from '../misc/phases.json';
 
 import { CustomButton } from '../components/CustomButton.js';
+import { HelperButton } from '../components/HelperButton.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -80,8 +81,8 @@ constructor(props) {
         nominee:            '',
 
         gameover:           false,
+        showOptions:        true,
 
-        titleSize:          new Animated.Value(0.13),
         backSize:           new Animated.Value(0.01),
         voteSize:           new Animated.Value(0.12),
         abstainSize:        new Animated.Value(0.12),
@@ -96,6 +97,8 @@ constructor(props) {
         waitingOpacity:     new Animated.Value(0),
     };
 
+    this.height             = Dimensions.get('window').height;
+    this.width              = Dimensions.get('window').width;
     this.user               = firebase.auth().currentUser.uid;
 
     this.roomRef            = firebase.database().ref('rooms/' + roomname);
@@ -1078,14 +1081,14 @@ _gameOver() {
 style = {{flex:1, alignSelf:'stretch', width:null}}>*/
 render() {
 
-return <View style = {{flex:1,backgroundColor:colors.background, justifyContent:'center'}}>
+return <View style = {{flex:1,backgroundColor:colors.background, 
+     alignItems:'center'}}>
 
-    <Animated.View style = {{flex:this.state.titleSize, opacity:this.state.titleOpacity,
+    <Animated.View style = {{position:'absolute',top:this.height*0.1, opacity:this.state.titleOpacity,
         justifyContent:'center', borderRadius:2, marginBottom:10}}>
             {this._renderPhaseName()}
             {this._renderTopMessage()}
     </Animated.View>
-
 
     <CustomButton
         size = {this.state.backSize}
@@ -1102,19 +1105,17 @@ return <View style = {{flex:1,backgroundColor:colors.background, justifyContent:
         title = 'RETURN'
     />
 
-    <CustomButton
-        size = {this.state.voteSize}
-        flex = {0.85}
-        opacity = {this.state.voteOpacity}
-        depth = {8}
+    <HelperButton
+        title = {this.state.btn1}
+        icon = 'crown'
         color = {colors.pushbutton}
-        radius = {30}
-        fontSize = {25}
-        disabled = {this.state.disabled}
+        order = {1}
         onPress = {()=>{ 
             this._optionOnePress()
         }}
-        title = {this.state.btn1}
+        showOptions = {this.state.showOptions}
+        disabled = {this.state.disabled}
+        degrees = {190}
     />
 
     <CustomButton
@@ -1132,22 +1133,20 @@ return <View style = {{flex:1,backgroundColor:colors.background, justifyContent:
         title = 'WAITING'
     />
 
-    <CustomButton
-        size = {this.state.voteSize}
-        flex = {0.85}
-        opacity = {this.state.voteOpacity}
-        depth = {8}
+    <HelperButton
+        title = {this.state.btn2}
+        icon = 'crown'
         color = {colors.pushbutton}
-        radius = {30}
-        fontSize = {25}
-        disabled = {this.state.disabled}
+        order = {1}
         onPress = {()=>{ 
             this._optionTwoPress()
         }}
-        title = {this.state.btn2}
+        showOptions = {this.state.showOptions}
+        disabled = {this.state.disabled}
+        degrees = {350}
     />
 
-    <Animated.View style = {{ flex:this.state.listSize,  opacity:this.state.listOpacity,
+    <Animated.View style = {{ flex:this.state.listSize,  opacity:1,
         justifyContent:'center'}}>
         {this._renderListComponent()}
     </Animated.View>

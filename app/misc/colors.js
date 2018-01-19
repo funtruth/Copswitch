@@ -62,6 +62,7 @@ export default colors = {
     details:    'white',
     tab:        '#5f5374',
     titlefont:  '#5f5374',
+    titlefont:  'white',
 
     close:      '#d65e5e',
 
@@ -81,5 +82,6 @@ export default colors = {
     background:             '#403e3b',
     beige:                  '#D3ECE9',
     menuBackground:         '#a7a9a9',
+    shadow:                 '#e3c382',
 
 }

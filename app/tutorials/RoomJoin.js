@@ -94,7 +94,7 @@ export class Join1 extends Component {
             + '/listofplayers/' + firebase.auth().currentUser.uid).update({
                 presseduid:         'foo',
         }).then(()=>{
-            this.props.navigation.navigate('LobbyTutorial',{roomname:roomname})
+            this.props.screenProps.navigateP('LobbyTutorial',roomname)
         })
     }
 
@@ -105,18 +105,13 @@ export class Join1 extends Component {
         onPress={()=>{ Keyboard.dismiss() }}>
             <View style = {{flex:1,backgroundColor:colors.background}}>
 
-                <View style = {{flexDirection:'row', flex:0.1, marginTop:10, 
+                <View style = {{flexDirection:'row', flex:0.15, marginTop:10, 
                     justifyContent:'center',alignItems:'center'}}>
                     <View style = {{flex:0.85}}/>
                     <TouchableOpacity
                         style = {{flex:0.15}}
                         onPress = {()=>{
-                            this.props.screenProps.showCover(true)
-                            setTimeout(()=>{
-                                this.props.screenProps.changeScreen('Home')
-                                this.props.navigation.dispatch(NavigationActions.back());
-                                this.props.screenProps.showCover(false)
-                            },1000)
+                            this.props.screenProps.navigate('Home')
                         }} >
                         <MaterialCommunityIcons name='close-circle'
                             style={{color:colors.shadow,fontSize:30}}/>
@@ -124,8 +119,8 @@ export class Join1 extends Component {
                 </View>
 
 
-                <View style = {{flex:0.18, justifyContent:'center'}}>
-                    <Text style = {styles.roomcode}>{'Enter' + '\n' + 'ROOM CODE'}</Text>
+                <View style = {{flex:0.1, justifyContent:'center'}}>
+                    <Text style = {styles.roomcode}>Enter code</Text>
                 </View>
 
 
@@ -148,7 +143,6 @@ export class Join1 extends Component {
                     _done = {()=>this._continue(this.state.roomname)}
                 />
 
-                <View style = {{flex:0.1}}/>
             </View>
         </TouchableWithoutFeedback>
     }
@@ -196,7 +190,7 @@ export class LobbyPager extends Component {
                 } else if(snap.val()>1){
                     AsyncStorage.setItem('GAME-KEY',this.state.roomname);
 
-                    this.props.navigation.navigate('MafiaRoom',{roomname:this.state.roomname})
+                    this.props.screenProps.navigate('MafiaRoom',this.state.roomname)
                 }
             }
         })
@@ -226,7 +220,7 @@ export class LobbyPager extends Component {
                     this.roomRef.remove();
                 }
             }).then(()=>{
-                this.props.navigation.navigate('Home')
+                this.props.screenProps.navigate('Home')
             })
         })
         
