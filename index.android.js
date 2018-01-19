@@ -22,19 +22,17 @@ export default class App extends React.Component {
         this.setState({
             screen:screen
         })
-        console.log('Setting screen state in index')
     }
     _navigateP(screen,roomname){
         this.setState({
             screen:screen,
             roomname:roomname
         })
-        console.log('Setting screen state in index')
     }
 
     render(){
         return <View style = {{flex:1}}>
-            <Layout 
+            <Layout
                 screenProps={{
                     passNavigation:val=>{this._receiveNav(val)},
                     navigate:val=>{this._navigate(val)},

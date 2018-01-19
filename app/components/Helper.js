@@ -118,13 +118,13 @@ _moveHelper(nextProps){
         Animated.timing(
             this.state.helperY,{
                 toValue:Screens[nextProps.state.screen].yFactor*this.height,
-                duration:1500
+                duration:200
             }
         ),
         Animated.timing(
             this.state.shadowY,{
                 toValue:Screens[nextProps.state.screen].yFactor*this.height - this.height/6,
-                duration:1500
+                duration:200
             }
         )
     ]).start()     
