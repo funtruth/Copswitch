@@ -408,7 +408,7 @@ class Menu extends Component {
 
     _renderMenuButton(item) {
         return <ListIcon
-            color = {colors.menubtn}
+            color = {colors.background}
             icon = {'menu'}
             onPress = {()=>{
                 this._buttonPress();

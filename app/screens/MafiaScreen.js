@@ -1109,6 +1109,7 @@ return <View style = {{flex:1,backgroundColor:colors.background,
     <HelperButton
         title = {this.state.btn1}
         icon = 'crown'
+        screen = {this.props.navigation.state.routeName}
         color = {colors.pushbutton}
         order = {1}
         onPress = {()=>{ 
@@ -1116,7 +1117,7 @@ return <View style = {{flex:1,backgroundColor:colors.background,
         }}
         showOptions = {this.state.showOptions}
         disabled = {this.state.disabled}
-        degrees = {190}
+        degrees = {170}
     />
 
     <CustomButton
@@ -1137,6 +1138,7 @@ return <View style = {{flex:1,backgroundColor:colors.background,
     <HelperButton
         title = {this.state.btn2}
         icon = 'crown'
+        screen = {this.props.navigation.state.routeName}
         color = {colors.pushbutton}
         order = {1}
         onPress = {()=>{ 
@@ -1144,7 +1146,7 @@ return <View style = {{flex:1,backgroundColor:colors.background,
         }}
         showOptions = {this.state.showOptions}
         disabled = {this.state.disabled}
-        degrees = {350}
+        degrees = {10}
     />
 
     <Animated.View style = {{ flex:this.state.listSize,  opacity:1,

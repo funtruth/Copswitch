@@ -6,13 +6,13 @@
         "yFactor" : 0.75
     },
     "JoinTutorial" : {
-        "yFactor" : 0.84
+        "yFactor" : 0.82
     },
     "LobbyTutorial" : {
-        "yFactor" : 0.8
+        "yFactor" : 0.74
     },
     "MafiaRoom" : {
-        "yFactor" : 0.1
+        "yFactor" : 0.05
     }
   }
   

@@ -453,12 +453,15 @@ export class Lobby2 extends Component {
     render() {
         return <View style = {{flex:0.7,backgroundColor:colors.background, width:this.props.width,
             alignItems:'center'}}>
+
+            <View style = {{height:this.height*0.14}}/>
+
             <View style = {{height:this.height*0.1, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.mfont}>You are in the Lobby!</Text>
-                <Text style = {styles.subfont}>Wait for Owner to start game.</Text>
+                <Text style = {styles.mfont}>Welcome!</Text>
+                <Text style = {styles.subfont}>Wait for Owner to start.</Text>
             </View>
             
-            <View style = {{height:this.height*0.65, width:this.width*0.7, justifyContent:'center'}}>
+            <View style = {{height:this.height*0.55, width:this.width*0.7, justifyContent:'center'}}>
                 {this._renderListComponent()}
             </View>
         </View>

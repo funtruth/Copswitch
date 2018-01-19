@@ -64,6 +64,7 @@ export class Home extends React.Component {
     }
 
     componentWillMount() {
+
         this.connectedRef.on('value',snap=>{
             if(snap.val()==true){
                 this.setState({connected:true})
@@ -149,6 +150,7 @@ export class Home extends React.Component {
                 <HelperButton
                     title = {'Join' + '\n' + 'Room'}
                     icon = 'key'
+                    screen = {this.props.navigation.state.routeName}
                     color = {colors.lightbutton}
                     degrees = {350}
                     order = {2}
@@ -156,12 +158,12 @@ export class Home extends React.Component {
                     onPress = {() => {
                         this._optionPress(2)
                         this._joinRoom()
-                        
                     }}
                 />
                 <HelperButton
                     title = {'Create' + '\n' + 'Room'}
                     icon = 'crown'
+                    screen = {this.props.navigation.state.routeName}
                     color = {colors.menubtn}
                     degrees = {190}
                     order = {1}

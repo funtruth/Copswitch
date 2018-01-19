@@ -3,6 +3,7 @@ import { Button } from 'react-native-elements';
 import { View, Text, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import Screens from '../misc/screens.json';
 import colors from '../misc/colors.js';
 
 export class HelperButton extends React.Component {
@@ -26,7 +27,7 @@ constructor(props) {
     this.textHeight = 20;
     
     this.x = new Animated.Value((this.width - this.icon)/2);
-    this.y = new Animated.Value((this.height - this.icon)/2 - 20);
+    this.y = new Animated.Value(Screens[this.props.screen].yFactor*this.height - 20);
     this.textOpacity = new Animated.Value(0);
 }
 
@@ -45,8 +46,8 @@ _viewChange(show){
         ),
         Animated.timing(
             this.y,{
-                toValue:show?(this.height - this.icon)/2 + this.radius*Math.sin(this.props.degrees*2*Math.PI/360) - 15
-                :(this.height - this.icon)/2 - this.textHeight,
+                toValue:show?Screens[this.props.screen].yFactor*this.height + this.radius*Math.sin(this.props.degrees*2*Math.PI/360) - this.textHeight
+                :Screens[this.props.screen].yFactor*this.height - this.textHeight,
                 duration:200
             }
         )
