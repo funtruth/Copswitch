@@ -21,7 +21,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import { CustomButton } from '../components/CustomButton.js';
 import { Pager } from '../components/Pager.js';
 import { NumPad } from '../components/NumPad.js';
-import { Alert } from '../components/Alert.js';
 
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
@@ -147,8 +146,6 @@ export class LobbyPager extends Component {
             alias:'',
             loading:true,
 
-            alertVisible: false,
-
             transition: false,
             transitionOpacity: new Animated.Value(0),
         };
@@ -182,14 +179,6 @@ export class LobbyPager extends Component {
         if(this.phaseRef){
             this.phaseRef.off();
         }
-    }
-
-    _onBackPress = () => {
-        if(this.state.currentpage > 1){
-            this.refs.scrollView.scrollTo({x:(this.state.currentpage - 2)*this.width,animated:true})
-            this.setState({currentpage:this.state.currentpage - 1})
-        }
-        return true
     }
 
     _leaveRoom() {
@@ -280,17 +269,6 @@ export class LobbyPager extends Component {
                 lastpage = {2}
                 goBack = {() => this._changePage(this.state.currentpage - 1)}
                 goForward = {() => this._changePage(this.state.currentpage + 1)}
-            />
-
-            <Alert
-                title = 'Leave Room?'
-                subtitle = {'Are you sure you want' + '\n' + 'to leave the room?'}
-                okay = 'OK'
-                cancel = 'Cancel'
-                visible = {this.state.alertVisible}
-                onClose = {() => this.setState({alertVisible:false})}
-                onOkay = {() => this._leaveRoom()}
-                onCancel = {() => this.setState({alertVisible:false})}
             />
 
             {this.state.transition?<Animated.View

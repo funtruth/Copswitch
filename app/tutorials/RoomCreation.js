@@ -22,7 +22,6 @@ import { CustomButton } from '../components/CustomButton.js';
 import { ListItem } from '../components/ListItem.js';
 import { Pager } from '../components/Pager.js';
 import { NumPad } from '../components/NumPad.js';
-import { Alert } from '../components/Alert.js';
 import { Desc } from '../components/Desc.js';
 
 import Rolesheet from '../misc/roles.json';
@@ -61,8 +60,6 @@ export class CreationPager extends Component {
 
             warning:false,
             warningOpacity: new Animated.Value(0),
-            
-            alertVisible: false,
             modalOpacity: new Animated.Value(0),
         };
 
@@ -331,17 +328,6 @@ export class CreationPager extends Component {
                 goBack = {() => this._changePage(this.state.currentpage - 1)}
                 goForward = {() => this._changePage(this.state.currentpage + 1)}
                 finish = {() => this._startGame(this.state.roomname)}
-            />
-
-            <Alert 
-                title = 'Delete Room?'
-                subtitle = {'Are you sure you want' + '\n' + 'to delete the room?'}
-                okay = 'OK'
-                cancel = 'Cancel'
-                visible = {this.state.alertVisible}
-                onClose = {() => this.setState({alertVisible:false})}
-                onOkay = {() => this._deleteRoom()}
-                onCancel = {() => this.setState({alertVisible:false})}
             />
 
             {this.state.modal?
