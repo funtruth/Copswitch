@@ -93,7 +93,8 @@ class General extends Component {
 
     render(){
         return <View style = {{flex:1,backgroundColor:colors.menuBackground}}>
-            <View style = {{flex:0.1}}/>
+
+            <View style = {{flex:0.05}}/>
             <CustomButton
                 size = {0.1}
                 flex = {0.85}
@@ -353,7 +354,6 @@ class Roles extends Component {
             </View>
             
             <Desc
-                marginBottom = {Dimensions.get('window').height * 0.08}
                 roleid = {this.state.roleid}
                 visible = {this.state.descVisible}
                 onClose = {val => this.setState({descVisible:val})}

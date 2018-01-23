@@ -79,15 +79,11 @@ constructor(props) {
         showOptions:        true,
 
         backSize:           new Animated.Value(0.01),
-        voteSize:           new Animated.Value(0.12),
-        abstainSize:        new Animated.Value(0.12),
         listSize:           new Animated.Value(0.01),
         waitingSize:        new Animated.Value(0.01),
         
         titleOpacity:       new Animated.Value(0),
         backOpacity:        new Animated.Value(0),
-        voteOpacity:        new Animated.Value(0),
-        abstainOpacity:     new Animated.Value(0),
         listOpacity:        new Animated.Value(0),
         waitingOpacity:     new Animated.Value(0),
     };
@@ -522,16 +518,6 @@ _viewChange(title,back,vote,abstain,list,waiting) {
                     toValue: 0
             }),
             Animated.timing(
-                this.state.voteOpacity, {
-                    duration: FADEOUT_ANIM,
-                    toValue: 0
-            }),
-            Animated.timing(
-                this.state.abstainOpacity, {
-                    duration: FADEOUT_ANIM,
-                    toValue: 0
-            }),
-            Animated.timing(
                 this.state.listOpacity, {
                     duration: FADEOUT_ANIM,
                     toValue: 0
@@ -549,16 +535,6 @@ _viewChange(title,back,vote,abstain,list,waiting) {
                     toValue: back?0.12:0.01
             }),
             Animated.timing(
-                this.state.voteSize, {
-                    duration: SIZE_ANIM,
-                    toValue: vote?0.12:0.01
-            }),
-            Animated.timing(
-                this.state.abstainSize, {
-                    duration: SIZE_ANIM,
-                    toValue: abstain?0.12:0.01
-            }),
-            Animated.timing(
                 this.state.listSize, {
                     duration: SIZE_ANIM,
                     toValue: list?0.75:0.01
@@ -574,16 +550,6 @@ _viewChange(title,back,vote,abstain,list,waiting) {
                 this.state.backOpacity, {
                     duration: FADEIN_ANIM,
                     toValue: back?1:0
-            }),
-            Animated.timing(
-                this.state.voteOpacity, {
-                    duration: FADEIN_ANIM,
-                    toValue: vote?1:0
-            }),
-            Animated.timing(
-                this.state.abstainOpacity, {
-                    duration: FADEIN_ANIM,
-                    toValue: abstain?1:0
             }),
             Animated.timing(
                 this.state.listOpacity, {
@@ -799,7 +765,7 @@ _renderListComponent(){
     return <FlatList
         data={this.state.namelist}
         renderItem={({item}) => (
-            <View style = {{marginBottom:10}}><CustomButton
+            <View style = {{marginBottom:10, height:50}}><CustomButton
                 flex = {0.8}    
                 onPress         = {() => { this._nameBtnPress(item) }}
                 onLongPress     = {() => { this._nameBtnLongPress(item) }}

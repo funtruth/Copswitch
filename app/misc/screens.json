@@ -1,23 +1,28 @@
 {
     "Home" : {
         "yFactor" : 0.5,
-        "close" : false
+        "close" : false,
+        "alert" : true
     },
     "CreationTutorial" : {
         "yFactor" : 0.75,
-        "close" : true
+        "close" : true,
+        "alert" : true
     },
     "JoinTutorial" : {
         "yFactor" : 0.8,
-        "close" : true
+        "close" : true,
+        "alert" : true
     },
     "LobbyTutorial" : {
         "yFactor" : 0.74,
-        "close" : true
+        "close" : true,
+        "alert" : true
     },
     "MafiaRoom" : {
         "yFactor" : 0.05,
-        "close" : false
+        "close" : false,
+        "alert" : false
     }
   }
   

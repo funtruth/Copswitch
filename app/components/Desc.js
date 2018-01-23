@@ -89,16 +89,8 @@ render() {
     }
 
     return ( 
-        <Animatable.View ref='continue' animation={{
-            0: {marginBottom:0},
-            0.25:{marginBottom:3},
-            0.5:{marginBottom:6},
-            0.75:{marginBottom:3},
-            1:{marginBottom:0},
-        }}
-        iterationCount="infinite" duration={2000}>
-        <Animated.View style = {{height:this.height*0.25 + 35, width:this.width, opacity:this.opacity,
-            position:'absolute', left:0, right:0, bottom:this.props.marginBottom, 
+        <Animated.View style = {{height:this.height*0.25 + 35, opacity:this.opacity,
+            position:'absolute', left:0, right:0, bottom:0, 
             borderRadius:5, flexDirection:'row', justifyContent:'center'}}>
 
             <Animated.View style = {{height:this.height*0.25, width:this.descWidth, marginTop:35,
@@ -152,7 +144,6 @@ render() {
             </Animated.View>
             :null}
         </Animated.View>
-        </Animatable.View>
     )
 }
 }

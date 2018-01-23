@@ -36,7 +36,7 @@ render() {
             flex:this.props.size,
             flexDirection:'row',
             justifyContent:'center',
-            opacity:this.props.opacity,
+            opacity:1,
         }}>
             <View style = {{
                 flex:this.props.flex,

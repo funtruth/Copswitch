@@ -60,6 +60,12 @@ _onBackPress(){
     if(this.state.showMenu){
         this._menuPress(false)
     }
+    else if(this.state.alertVisible){
+        this._viewAlert(false)
+    }
+    else if(Screens[this.screen].alert){
+        this._viewAlert(true)
+    }
     return true
 }
 
@@ -163,7 +169,23 @@ _navigateP(screen,roomname){
     ]).start()
 
     setTimeout(()=>{
-        this.navigation.navigate(screen,{roomname:roomname})
+
+        if(screen == 'MafiaRoom'){
+            this.navigation.dispatch(
+              NavigationActions.reset({
+                  index: 0,
+                  actions: [
+                    NavigationActions.navigate({ 
+                        routeName: 'MafiaRoom',
+                        params: { roomname:roomname }
+                    })
+                  ]
+                })
+            )
+        } else {
+            this.navigation.navigate(screen,{ roomname:roomname })
+        }
+
         this.screen = screen
         console.log("Navigating Screens");
     },400)
@@ -181,14 +203,22 @@ _navigateP(screen,roomname){
 
 //Needs rework
 _quit(){
-    this._navigate('Home')
+    this._menuPress(false)
+    setTimeout(()=>{
+        this._viewAlert(true)
+    },200)
+        
 }
 
 _alertOkay(){
     this.setState({
         alertVisible:false
     })
-    this._navigate('Home')
+    if(this.screen == 'Home'){
+        BackHandler.exitApp()
+    } else {
+        this._navigate('Home')        
+    }
 }
 _viewAlert(bool){
 
