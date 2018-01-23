@@ -6,6 +6,7 @@ import styles from '../misc/styles.js';
 import * as Animatable from 'react-native-animatable';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { NavigationActions } from 'react-navigation';
 
 import { Layout } from "../../router";
 import { Alert } from './Alert.js';
@@ -101,7 +102,19 @@ _navigate(screen){
         
 
     setTimeout(()=>{
-        this.navigation.navigate(screen)
+        if(screen == 'Home'){
+              this.navigation.dispatch(
+                NavigationActions.reset({
+                    index: 0,
+                    actions: [
+                      NavigationActions.navigate({ routeName: 'Home'})
+                    ]
+                  })
+              )
+        } else {
+            this.navigation.navigate(screen)
+        }
+
         this.screen = screen
         console.log("Navigating Screens");
     },400)

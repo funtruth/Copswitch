@@ -8,7 +8,6 @@ import {
     Image,
     FlatList,
     AsyncStorage,
-    ActivityIndicator,
     Keyboard,
     TouchableOpacity,
     TouchableWithoutFeedback,
@@ -24,15 +23,12 @@ import { Pager } from '../components/Pager.js';
 import { NumPad } from '../components/NumPad.js';
 import { Alert } from '../components/Alert.js';
 
-import { NavigationActions } from 'react-navigation';
-
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
 
 import * as Animatable from 'react-native-animatable';
-const AnimatedDot = Animated.createAnimatedComponent(MaterialCommunityIcons);
 const MENU_ANIM = 200;
 const GAME_ANIM = 1000;
 

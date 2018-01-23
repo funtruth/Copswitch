@@ -5,7 +5,6 @@ import {
     View,
     Image,
     AsyncStorage,
-    StyleSheet,
     FlatList,
     TouchableOpacity,
     TouchableWithoutFeedback,

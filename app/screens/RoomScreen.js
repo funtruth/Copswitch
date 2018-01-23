@@ -1,26 +1,14 @@
 
 import React from 'react';
-import { Button } from 'react-native-elements';
 import {
     View,
     Image,
     AsyncStorage,
     Text,
-    StyleSheet,
-    TextInput,
     Keyboard,
-    FlatList,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
-    ActivityIndicator,
     Animated,
-    Modal,
-    Dimensions,
-    BackHandler
+    Dimensions
 }   from 'react-native';
-
-import { StackNavigator } from 'react-navigation';
-import { NavigationActions } from 'react-navigation';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';

@@ -9,7 +9,6 @@ import {
     FlatList,
     AsyncStorage,
     Keyboard,
-    ActivityIndicator,
     TouchableOpacity,
     TouchableWithoutFeedback,
     Animated,
@@ -25,8 +24,6 @@ import { Pager } from '../components/Pager.js';
 import { NumPad } from '../components/NumPad.js';
 import { Alert } from '../components/Alert.js';
 import { Desc } from '../components/Desc.js';
-
-import { NavigationActions } from 'react-navigation';
 
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';

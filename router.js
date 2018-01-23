@@ -15,9 +15,9 @@ import Lists from "./app/screens/ListsScreen";
 import MafiaRoom from "./app/screens/MafiaScreen";
 import { Messages, Profile } from "./app/screens/DetailsScreen";
 
-import { CreationPager, Creation1, Creation2, Creation3, Creation4, Creation5 } from './app/tutorials/RoomCreation.js';
+import { CreationPager } from './app/tutorials/RoomCreation.js';
 import { Join1 } from './app/tutorials/RoomJoin.js';
-import { LobbyPager, Lobby1, Lobby2 } from './app/tutorials/RoomJoin.js';
+import { LobbyPager } from './app/tutorials/RoomJoin.js';
 
   
 export const SignedIn = TabNavigator(

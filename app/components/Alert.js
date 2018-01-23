@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { View, Text, Animated, Dimensions, TouchableWithoutFeedback } from 'react-native';
+import { View, Text, Animated, Dimensions } from 'react-native';
 
 import colors from '../misc/colors.js';
-import * as Animatable from 'react-native-animatable';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CustomButton } from './CustomButton';
 

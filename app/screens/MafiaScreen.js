@@ -5,16 +5,10 @@ import {
     Image,
     AsyncStorage,
     Text,
-    StyleSheet,
     FlatList,
-    TouchableOpacity,
-    TouchableWithoutFeedback,
     Animated,
     Dimensions
 }   from 'react-native';
-
-import { StackNavigator } from 'react-navigation';
-import { NavigationActions } from 'react-navigation';
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
