@@ -10,7 +10,7 @@
         "alert" : true
     },
     "JoinTutorial" : {
-        "yFactor" : 0.8,
+        "yFactor" : 0.72,
         "close" : true,
         "alert" : true
     },

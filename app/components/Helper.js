@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, Animated, Dimensions, TouchableOpacity, BackHandler } from 'react-native';
+import { View, Text, Animated, Dimensions, TouchableOpacity, BackHandler, Keyboard } from 'react-native';
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
@@ -222,6 +222,10 @@ _alertOkay(){
 }
 _viewAlert(bool){
 
+    if(bool){
+        Keyboard.dismiss()
+    }
+
     const helperHeight = 0.58
 
     this.setState({
@@ -246,6 +250,10 @@ _viewAlert(bool){
 }
 
 _menuPress(show) {
+
+    if(show){
+        Keyboard.dismiss()
+    }
 
     if(!this.state.alertVisible){
         this.setState({
@@ -309,7 +317,7 @@ render() {
             
                 <TouchableOpacity
                     style = {{position:'absolute', top:this.height*0.05, right:this.height*0.05}}
-                    onPress = {()=> this._viewAlert(true) }>
+                    onPress = {()=>{this._viewAlert(true)}}>
                     <MaterialCommunityIcons name='close-circle' style={{color:colors.shadow,fontSize:30}}/>
                 </TouchableOpacity>
 

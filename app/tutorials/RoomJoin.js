@@ -16,11 +16,11 @@ import {
 }   from 'react-native';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { CustomButton } from '../components/CustomButton.js';
 import { Pager } from '../components/Pager.js';
-import { NumPad } from '../components/NumPad.js';
 
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
@@ -37,9 +37,12 @@ export class Join1 extends Component {
         super(props);
 
         this.state = {
-            roomname:'',
+            roomname:null,
             errormessage:'Code must be 4 Digits long',
         };
+
+        this.height = Dimensions.get('window').height;
+        this.width = Dimensions.get('window').width;
         
     }
 
@@ -49,36 +52,27 @@ export class Join1 extends Component {
                 if(snap.exists() && (snap.val().phase == 0)){
                     this._joinRoom(roomname)
                 } else if (snap.exists() && (snap.val().phase > 0)) {
-                    this.setState({errormessage:'Game has already started'})
-                    this.refs.error.shake(800)
+                    setTimeout(()=>{
+                        this.setState({errormessage:'Game has already started'})
+                        this.refs.error.shake(800)
+                        this.refs.textInput.focus()
+                    },800)
                 } else {
-                    this.setState({errormessage:'Invalid Room Code'})
-                    this.refs.error.shake(800)
+                    setTimeout(()=>{
+                        this.setState({errormessage:'Invalid Room Code'})
+                        this.refs.error.shake(800)
+                        this.refs.textInput.focus()
+                    },800)
+                        
                 }
             })
                 
         } else {
-            this.setState({errormessage:'Code must be 4 Digits long'})
-            this.refs.error.shake(800)
-        }
-    }
-    _backspace() {
-        this.setState({ roomname: null })
-    }
-    _digit(digit) {
-        if(this.state.roomname){
-            if(this.state.roomname.length > 3 ){
+            setTimeout(()=>{
                 this.setState({errormessage:'Code must be 4 Digits long'})
                 this.refs.error.shake(800)
-            } else {
-                this.setState({
-                    roomname: this.state.roomname + digit.toString()
-                })
-            }
-        } else {
-            this.setState({
-                roomname: digit.toString()
-            })
+                this.refs.textInput.focus()
+            },800)
         }
     }
 
@@ -95,37 +89,38 @@ export class Join1 extends Component {
 
     render() {
 
-        return <TouchableWithoutFeedback 
-        style = {{ flex:1 }}
-        onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.background, justifyContent:'center'}}>
+        return <View style = {{flex:1,backgroundColor:colors.background}}>
 
-                <View style = {{flex:0.1}}/>
-                <View style = {{flex:0.1, justifyContent:'center'}}>
-                    <Text style = {styles.roomcode}>Enter code</Text>
-                </View>
-
-                <View style = {{flex:0.12, justifyContent:'center', 
-                alignItems:'center', flexDirection:'row'}}>
-                    <TextInput
-                        style={[styles.textInput,{flex:0.7}]}
-                        editable={false}
-                        value={this.state.roomname}/>
-                </View>
-
-                <Animatable.Text style = {[styles.sfont,{marginTop:10}]}ref='error'>
-                        {this.state.errormessage}</Animatable.Text>
-
-                <NumPad
-                    flex = {0.5}
-                    number = {this.state.roomname}
-                    digit = {val => this._digit(val)}
-                    setNumber = {val => this.setState({roomname:val})}
-                    _done = {()=>this._continue(this.state.roomname)}
-                />
-
+            <View style = {{height:this.height*0.26}}/>
+            <View style = {{height:this.height*0.1, justifyContent:'center'}}>
+                <Text style = {styles.roomcode}>Enter code</Text>
             </View>
-        </TouchableWithoutFeedback>
+
+            <View style = {{height:this.height*0.1, justifyContent:'center', 
+            alignItems:'center', flexDirection:'row'}}>
+                <TextInput
+                    autoFocus
+                    ref='textInput'
+                    keyboardType='numeric' 
+                    maxLength={4}   
+                    value={this.state.roomname}
+                    style={[styles.textInput,{flex:0.7}]}
+                    onChangeText={val=>this.setState({roomname:val})}
+                    onSubmitEditing={event=>this._continue(event.nativeEvent.text)}
+                />
+            </View>
+
+            <Animatable.Text style = {[styles.sfont,{marginTop:10}]}ref='error'>
+                    {this.state.errormessage}</Animatable.Text>
+
+            <TouchableOpacity
+                style = {{position:'absolute', bottom:this.height*0.04, left:0, right:0, 
+                    justifyContent:'center', alignItems:'center'}}
+                onPress = {()=> this.refs.textInput.focus() }>
+                <Entypo name='dial-pad' style={{color:colors.shadow,fontSize:this.height*0.08}}/>
+            </TouchableOpacity>
+
+        </View>
     }
 }
 
@@ -287,10 +282,11 @@ export class Lobby1 extends Component {
 
         this.state = {
             alias:null,
-            errormessage:null,
+            errormessage:'Your name must be 1 - 10 Characters',
         };
 
         this.height = Dimensions.get('window').height;
+        this.width = Dimensions.get('window').width;
     }
 
     _continue(name) {
@@ -310,45 +306,47 @@ export class Lobby1 extends Component {
                 })
             })
         } else {
-            this.setState({ errormessage:'Your name must be 1 - 10 Characters' })
             this.refs.nameerror.shake(800)
         }
         
     }
 
     render() {
-        return <View style = {{flex:0.7, justifyContent:'center', alignItems:'center',
-            width:this.props.width}}>
+        return <View style = {{flex:0.7, alignItems:'center', width:this.props.width}}>
 
-            <View style = {{height:this.height*0.13, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.mfont}>You joined the Room!</Text>
-                <Text style = {styles.subfont}>What is your name?</Text>
+            <View style = {{height:this.height*0.12}}/>
+            <View style = {{height:this.height*0.07, justifyContent:'center', alignItems:'center'}}>
+                <Text style = {styles.subtitle}>choose your name!</Text>
             </View>
-            <View style = {{height:this.height*0.1,flexDirection:'row'}}>
-                <TextInput
-                    style={[styles.nameInput,{flex:0.6}]}
-                    value={this.state.alias}
-                    onChangeText = {(text) => {this.setState({alias: text})}}
-                    onEndEditing = {()=>{
-                        this._continue(this.state.alias);
-                    }}
-                />
-                <CustomButton
-                    size = {0.2}
-                    flex = {1}
-                    depth = {6}
-                    leftradius = {0}
-                    rightradius = {25}
-                    color = {colors.menubtn}
-                    onPress = {()=>{
-                        this._continue(this.state.alias);
-                    }}
-                    component = {<Text style = {styles.lfont}>GO</Text>}
-                />
-            </View>
-            <Animatable.Text style = {[styles.sfont,{height:this.height*0.05}]} 
+            <TextInput
+                autoFocus
+                keyboardType='default'
+                maxLength={10}
+                style={[styles.nameInput,{height:this.height*0.1, width:this.width*0.6}]}
+                value={this.state.alias}
+                onChangeText = {(text) => {this.setState({alias: text})}}
+                onSubmitEditing = {(event)=>{
+                    this._continue(event.nativeEvent.text);
+                }}
+            />
+
+            <View style = {{height:this.height*0.1}}/>
+
+            <CustomButton
+                size = {0.2}
+                flex = {0.5}
+                depth = {6}
+                radius = {10}
+                color = {colors.menubtn}
+                onPress = {()=>{
+                    this._continue(this.state.alias);
+                }}
+                title = 'GO'
+            />
+            
+            <Animatable.Text style = {[styles.sfont,{height:this.height*0.1, justifyContent:'center'}]} 
                 ref = 'nameerror'>{this.state.errormessage}</Animatable.Text>
-            <View style = {{flex:0.5}}/>
+
         </View>
     }
 }
