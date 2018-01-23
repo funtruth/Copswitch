@@ -486,45 +486,17 @@ export class Creation2 extends Component {
         })
     }
 
-    _digit(digit) {
-        if(this.state.playernum){
-            if(this.state.playernum.length > 1){
-                this.refs.error.shake(800)
-            } else if (Number(this.state.playernum + digit.toString()>15)) {
-                this.refs.error.shake(800)
-            } else {
-                this.setState({
-                    playernum: this.state.playernum + digit.toString()
-                })
-            }
-        } else {
-            this.setState({
-                playernum: digit
-            })
-        }
-    }
-    _backspace() {
-        if(this.state.playernum && this.state.playernum.toString().length == 1){
-            this.setState({ playernum: null })
-        } else if (this.state.playernum && this.state.playernum.length == 2){
-            this.setState({ playernum: this.state.playernum.slice(0,1)})
-        }
-        
-    }
-    _clear() {
-        this.setState({ playernum: null })
-    }
-    _done() {
-        if(!this.state.playernum || this.state.playernum < 0 || this.state.playernum > 15){
+    _continue(val) {
+        if(!val || val < 0 || val > 15){
             this.refs.error.shake(800)
             this.setState({playernum:null})
         } else {
 
             this.props.updatePage(3)
-            this.props.updatePlayernum(this.state.playernum)
+            this.props.updatePlayernum(val)
 
             firebase.database().ref('rooms').child(this.props.roomname).update({
-                playernum: Number(this.state.playernum)
+                playernum: Number(val)
             }).then(()=>{
                 this.props.refs.scrollView.scrollTo({x:this.props.width*2,y:0,animated:true})
             })
@@ -535,25 +507,25 @@ export class Creation2 extends Component {
         return <View style = {{flex:0.7,backgroundColor:colors.background, 
             width:this.props.width}}>
 
-            <View style = {{flex:0.05}}/>
+            <View style = {{flex:0.2}}/>
 
             <View style = {{flex:0.1, justifyContent:'center', alignItems:'center'}}>
                 <Text style = {styles.subtitle}>{'How many people' + '\n' +  'are playing?'}</Text>
             </View>
 
-            <View style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}>
+            <View style = {{flex:0.22, justifyContent:'center', alignItems:'center'}}>
                 <View style = {{flex:0.7, flexDirection:'row'}}>
-                    <View style = {{flex:0.8, justifyContent:'center', alignItems:'center',
-                        backgroundColor:colors.font, borderRadius:30, flexDirection:'row'}}>
-                        <View style = {{flex:0.3}}/>
-                        <Text style = {styles.textOutput}>
-                            {this.state.playernum?this.state.playernum:'?'}</Text>
-                        <TouchableOpacity style = {{flex:0.3}} onPress = {()=>{this._backspace()}}>
-                            <MaterialCommunityIcons name = 'backspace'
-                                style={{ color:colors.menubtn, fontSize: 40, alignSelf:'center'}}
-                            />
-                        </TouchableOpacity>
-                    </View>
+                    <TextInput 
+                        ret = 'stepTwo'
+                        keyboardType='numeric'
+                        maxLength = {2}
+                        value = {this.state.playernum}
+                        style = {styles.textOutput}
+                        onChangeText = {(text) => {this.setState({playernum: text})}}
+                        onSubmitEditing = {(event)=>{
+                            this._continue(event.nativeEvent.text);
+                        }}
+                    />
                 </View>
             </View>
 
@@ -564,14 +536,6 @@ export class Creation2 extends Component {
                     color: colors.shadow,
                 }}ref='error'>{this.state.errormessage}
             </Animatable.Text>
-
-            <NumPad
-                flex = {0.6}
-                number = {this.state.playernum}
-                digit = {val => this._digit(val)}
-                setNumber = {val => this.setState({playernum:val})}
-                _done = {()=>{this._done()}}
-            />
 
         </View>
     }
@@ -600,9 +564,10 @@ export class Creation3 extends Component {
     }
 
     render() {
-        return <View style = {{flex:0.7,backgroundColor:colors.background, alignItems:'center',
-            width: this.props.width, justifyContent:'center'}}>
+        return <View style = {{flex:0.7,backgroundColor:colors.background, alignItems:'center', width: this.props.width }}>
 
+                <View style = {{flex:0.1}}/>
+                
                 <View style = {{flex:0.1, justifyContent:'center', alignItems:'center'}}>
                     <Text style = {styles.subtitle}>{'How experienced' + '\n' + 'is your Group?'}</Text>
                 </View>

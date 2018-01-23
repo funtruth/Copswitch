@@ -220,11 +220,13 @@ export default styles = StyleSheet.create({
         color: colors.shadow,
     },
     textOutput: {
-        flex:0.4,
+        flex:0.6,
+        backgroundColor:colors.font,
         fontFamily:'LuckiestGuy-Regular',
         fontSize: 40,
-        color:colors.menubtn,
+        color:colors.background,
         textAlign:'center',
+        borderRadius:10,
     },
     warningTitle: {
         fontFamily:'LuckiestGuy-Regular',
