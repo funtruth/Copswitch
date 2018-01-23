@@ -274,17 +274,9 @@ export class CreationPager extends Component {
 
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
-            <View style = {{flexDirection:'row', height:this.height*0.1, 
+            <View style = {{height:this.height*0.1, 
             justifyContent:'center', alignItems:'center', marginTop:10}}>
-                <View style = {{flex:0.2}}/>
-                <View style = {{flex:0.6, justifyContent:'center'}}> 
                     <Text style = {styles.roomcode}>{this.state.roomname}</Text>
-                </View>
-                <TouchableOpacity
-                    style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
-                    onPress = {()=>{ this.setState({alertVisible:true}) }}>
-                    <MaterialCommunityIcons name='close-circle' style={{color:colors.shadow,fontSize:30}}/>
-                </TouchableOpacity>
             </View>
 
             <View style = {{height:this.height*0.73}}>

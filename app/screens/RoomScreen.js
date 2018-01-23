@@ -192,7 +192,7 @@ export class Loading extends React.Component {
                 this.props.screenProps.navigateP('MafiaRoom',result)
             } else {
                 if(firebase.auth().currentUser){
-                    this.props.navigation.navigate('Home')
+                    this.props.screenProps.navigate('Home')
                 } else {
                     firebase.auth().signInAnonymously().then(() => {
                         this.props.navigation.navigate('Home')
@@ -200,10 +200,6 @@ export class Loading extends React.Component {
                 }
             }
         })
-    }
-
-    componentDidMount() {
-        this.props.screenProps.navigate('Home')
     }
 
     render() {

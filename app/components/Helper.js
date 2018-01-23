@@ -5,6 +5,10 @@ import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
 import * as Animatable from 'react-native-animatable';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import { Layout } from "../../router";
+import { Alert } from './Alert.js';
 
 import { HelperButton } from './HelperButton.js';
 import List from '../screens/ListsScreen.js';
@@ -19,6 +23,7 @@ export class Helper extends React.Component {
 constructor(props) {
     super(props);
 
+    this.screen = 'Loading'
     this.radiusScale = new Animated.Value(5)
     
     this.width = Dimensions.get('window').width;
@@ -30,36 +35,24 @@ constructor(props) {
     this.menuBottomMargin = new Animated.Value(this.height/2 - 10);
 
     this.state = {
+
         disabled:true,
-        showOptions:false,
         showMenu:false,
+        alertVisible:false,
 
         helperY: new Animated.Value(this.height*4/9),
         shadowY: new Animated.Value(this.height*5/18),
 
         menuOpacity: new Animated.Value(0),
     }
-
-    
 }
 
 componentDidMount(){
-
-    setTimeout(()=>{
-        this.setState({showOptions:true})
-    },1000)
-
     BackHandler.addEventListener("hardwareBackPress", this._onBackPress.bind(this));
 }
 
 componentWillUnmount(){
     BackHandler.removeEventListener("hardwareBackPress");
-}
-
-componentWillReceiveProps(nextProps) {
-    console.log('Receiving Props')
-    this._navTransition(nextProps)
-    this._moveHelper(nextProps)
 }
 
 _onBackPress(){
@@ -69,8 +62,12 @@ _onBackPress(){
     return true
 }
 
-_navTransition(props){
+//Prop Functions
+_receiveNav(navigation){
+    this.navigation = navigation
+}
 
+_navigate(screen){
     this.setState({
         disabled:true
     })
@@ -81,21 +78,33 @@ _navTransition(props){
     },2500)
 
     console.log('Starting Animation')
-    Animated.timing(
-        this.radiusScale,{
-            toValue:5,
-            duration:200
-        }
-    ).start()
+    Animated.parallel([
+        Animated.timing(
+            this.radiusScale,{
+                toValue:5,
+                duration:400
+            }
+        ),
+        Animated.timing(
+            this.state.helperY,{
+                toValue:Screens[screen].yFactor*this.height,
+                duration:400
+            }
+        ),
+        Animated.timing(
+            this.state.shadowY,{
+                toValue:Screens[screen].yFactor*this.height - this.height/6,
+                duration:400
+            }
+        )
+    ]).start()
+        
 
     setTimeout(()=>{
-        if(props.state.roomname){
-            props.navigation.navigate(props.state.screen,{roomname:props.state.roomname})
-        } else {
-            props.navigation.navigate(props.state.screen)
-        }
+        this.navigation.navigate(screen)
+        this.screen = screen
         console.log("Navigating Screens");
-    },1000)
+    },400)
 
     setTimeout(()=>{
         Animated.timing(
@@ -105,76 +114,162 @@ _navTransition(props){
             }
         ).start()
         console.log('Uncovering Screen')
-    },2000)  
+    },1500) 
 }
 
-//Needs rework
-_quit(){
-    this.props.navigation.navigate('Home')
-}
+_navigateP(screen,roomname){
+    this.setState({
+        disabled:true
+    })
+    setTimeout(()=>{
+        this.setState({
+            disabled:false
+        })
+    },2500)
 
-_moveHelper(nextProps){
+    console.log('Starting Animation')
     Animated.parallel([
         Animated.timing(
+            this.radiusScale,{
+                toValue:5,
+                duration:400
+            }
+        ),
+        Animated.timing(
             this.state.helperY,{
-                toValue:Screens[nextProps.state.screen].yFactor*this.height,
-                duration:200
+                toValue:Screens[screen].yFactor*this.height,
+                duration:400
             }
         ),
         Animated.timing(
             this.state.shadowY,{
-                toValue:Screens[nextProps.state.screen].yFactor*this.height - this.height/6,
-                duration:200
+                toValue:Screens[screen].yFactor*this.height - this.height/6,
+                duration:400
             }
         )
-    ]).start()     
+    ]).start()
+
+    setTimeout(()=>{
+        this.navigation.navigate(screen,{roomname:roomname})
+        this.screen = screen
+        console.log("Navigating Screens");
+    },400)
+
+    setTimeout(()=>{
+        Animated.timing(
+            this.radiusScale,{
+                toValue:0.25,
+                duration:500
+            }
+        ).start()
+        console.log('Uncovering Screen')
+    },1500) 
 }
 
-_menuPress(show) {
+//Needs rework
+_quit(){
+    this._navigate('Home')
+}
+
+_alertOkay(){
+    this.setState({
+        alertVisible:false
+    })
+    this._navigate('Home')
+}
+_viewAlert(bool){
+
+    const helperHeight = 0.58
 
     this.setState({
-        showMenu:show
+        alertVisible:bool
     })
 
     Animated.parallel([
         Animated.timing(
-            this.menuSideMargins,{
-                toValue:show?15:this.width/2 - 10,
-                duration:200
-            }
-        ),
-        Animated.timing(
-            this.menuTopMargin,{
-                toValue:show?30:this.height/2 - 10,
-                duration:200
-            }
-        ),
-        Animated.timing(
-            this.menuBottomMargin,{
-                toValue:show?15:this.height/2 - 10,
-                duration:200
-            }
-        ),
-        Animated.timing(
-            this.state.menuOpacity,{
-                toValue:show?1:0,
-                duration:20
-            }
-        ),
-        Animated.timing(
             this.state.helperY,{
-                toValue:this.height*(show?0.84:Screens[this.props.state.screen].yFactor),
-                duration:200
+                toValue:bool?helperHeight*this.height:Screens[this.screen].yFactor*this.height,
+                duration:400
+            }
+        ),
+        Animated.timing(
+            this.state.shadowY,{
+                toValue:bool?helperHeight*this.height-this.height/6:Screens[this.screen].yFactor*this.height-this.height/6,
+                duration:400
             }
         )
     ]).start()
+        
+}
+
+_menuPress(show) {
+
+    if(!this.state.alertVisible){
+        this.setState({
+            showMenu:show
+        })
+
+        Animated.parallel([
+            Animated.timing(
+                this.menuSideMargins,{
+                    toValue:show?15:this.width/2 - 10,
+                    duration:200
+                }
+            ),
+            Animated.timing(
+                this.menuTopMargin,{
+                    toValue:show?30:this.height/2 - 10,
+                    duration:200
+                }
+            ),
+            Animated.timing(
+                this.menuBottomMargin,{
+                    toValue:show?15:this.height/2 - 10,
+                    duration:200
+                }
+            ),
+            Animated.timing(
+                this.state.menuOpacity,{
+                    toValue:show?1:0,
+                    duration:20
+                }
+            ),
+            Animated.timing(
+                this.state.helperY,{
+                    toValue:this.height*(show?0.84:Screens[this.screen].yFactor),
+                    duration:200
+                }
+            )
+        ]).start()
+    }
 }
 
 render() {
 
     return ( 
         <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
-            justifyContent:'center', alignItems:'center'}}>
+            justifyContent:'center', alignItems:'center', backgroundColor:'transparent'}}>
+
+                <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,}}>
+                    <Layout
+                        screenProps={{
+                            passNavigation:val=>{this._receiveNav(val)},
+                            navigate:val=>{
+                                this._navigate(val)
+                            },
+                            navigateP:(val,roomname)=>{
+                                this._navigateP(val,roomname)
+                            }
+                        }}
+                    />
+                </View>
+            
+                <TouchableOpacity
+                    style = {{position:'absolute', top:this.height*0.05, right:this.height*0.05}}
+                    onPress = {()=> this._viewAlert(true) }>
+                    <MaterialCommunityIcons name='close-circle' style={{color:colors.shadow,fontSize:30}}/>
+                </TouchableOpacity>
+
                 <Animated.View style = {{position:'absolute', elevation:0, bottom:this.state.shadowY,
                     height:this.icon*4, width:this.icon*4, borderRadius:this.icon*2, backgroundColor: colors.immune,
                     justifyContent:'center', alignItems:'center',
@@ -199,6 +294,16 @@ render() {
                     <View style = {{flex:0.07}}/>
 
                 </Animated.View>
+
+                <Alert
+                    subtitle = {'Are you sure you' + '\n' + 'want to leave?'}
+                    okay = 'OK'
+                    cancel = 'Cancel'
+                    visible = {this.state.alertVisible}
+                    onClose = {() => this._viewAlert(false)}
+                    onOkay = {() => this._alertOkay()}
+                    onCancel = {() => this._viewAlert(false)}
+                />
 
                 <Animated.View style = {{position:'absolute', elevation:5, bottom:this.state.helperY,
                     height:this.icon, width:this.icon, borderRadius:this.icon/2, backgroundColor: colors.helper,

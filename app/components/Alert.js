@@ -27,9 +27,7 @@ _cancel() {
         }
     ).start()
 
-    setTimeout(()=>{
-        this.props.onCancel()
-    },250)
+    this.props.onCancel()
 }
 
 _show() {
@@ -59,14 +57,10 @@ render() {
             justifyContent:'center', alignItems:'center'}}>
             <View style = {{height:this.height*0.35, width:this.width*0.9,
                 backgroundColor:colors.shadow, borderRadius:20}}>
-                <View style = {{flex:0.325, justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {{
-                        fontSize:25,
-                        fontFamily:'Bungee-Regular',
-                        color:colors.font
-                    }}>{this.props.title}</Text>
-                </View>
-                <View style = {{flex:0.4, justifyContent:'center', alignItems:'center',
+                
+                <View style = {{flex:0.3, justifyContent:'center', alignItems:'center'}}/>
+                
+                <View style = {{flex:0.425, justifyContent:'center', alignItems:'center',
                     backgroundColor:colors.background}}>
                     <Text style = {{
                         fontSize:20,

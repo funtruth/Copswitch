@@ -103,26 +103,12 @@ export class Join1 extends Component {
         return <TouchableWithoutFeedback 
         style = {{ flex:1 }}
         onPress={()=>{ Keyboard.dismiss() }}>
-            <View style = {{flex:1,backgroundColor:colors.background}}>
+            <View style = {{flex:1,backgroundColor:colors.background, justifyContent:'center'}}>
 
-                <View style = {{flexDirection:'row', flex:0.15, marginTop:10, 
-                    justifyContent:'center',alignItems:'center'}}>
-                    <View style = {{flex:0.85}}/>
-                    <TouchableOpacity
-                        style = {{flex:0.15}}
-                        onPress = {()=>{
-                            this.props.screenProps.navigate('Home')
-                        }} >
-                        <MaterialCommunityIcons name='close-circle'
-                            style={{color:colors.shadow,fontSize:30}}/>
-                    </TouchableOpacity>
-                </View>
-
-
+                <View style = {{flex:0.1}}/>
                 <View style = {{flex:0.1, justifyContent:'center'}}>
                     <Text style = {styles.roomcode}>Enter code</Text>
                 </View>
-
 
                 <View style = {{flex:0.12, justifyContent:'center', 
                 alignItems:'center', flexDirection:'row'}}>
@@ -269,19 +255,10 @@ export class LobbyPager extends Component {
 
     render() {
         return <View style = {{flex:1, backgroundColor:colors.background}}>
-            <View style = {{flexDirection:'row', height:this.height*0.1, 
-            justifyContent:'center', alignItems:'center', marginTop:10}}>
-                <View style = {{flex:0.2}}/>
-                <View style = {{flex:0.6, justifyContent:'center', borderRadius:30}}> 
+            <View style = {{ height:this.height*0.1, justifyContent:'center', alignItems:'center', marginTop:10}}>
                     <Text style = {styles.roomcode}>{this.state.roomname}</Text>
-                </View>
-                <TouchableOpacity
-                    style = {{flex:0.2, justifyContent:'center', alignItems:'center'}}
-                    onPress = {()=>{ this.setState({alertVisible:true}) }}>
-                    <MaterialCommunityIcons name='close-circle' style={{color:colors.shadow,fontSize:30}}/>
-                </TouchableOpacity>
-                
             </View>
+            
             <View style = {{height:this.height*0.73}}>
                 <ScrollView style = {{flex:1,backgroundColor:colors.background}}
                     horizontal showsHorizontalScrollIndicator={false} ref='scrollView' 
