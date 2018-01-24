@@ -114,7 +114,7 @@ export class Join1 extends Component {
                     {this.state.errormessage}</Animatable.Text>
 
             <TouchableOpacity
-                style = {{position:'absolute', bottom:this.height*0.04, left:0, right:0, 
+                style = {{position:'absolute', bottom:this.height*0.12, left:0, right:0, 
                     justifyContent:'center', alignItems:'center'}}
                 onPress = {()=> this.refs.textInput.focus() }>
                 <Entypo name='dial-pad' style={{color:colors.shadow,fontSize:this.height*0.08}}/>
