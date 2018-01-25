@@ -30,7 +30,6 @@ import firebase from '../firebase/FirebaseController.js';
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
-import { onSignOut } from "../auth";
 import * as Animatable from 'react-native-animatable';
 
 const FADEOUT_ANIM = 300;
@@ -50,39 +49,6 @@ class General extends Component {
     _buttonPress() {
         this.setState({disabled:true});
         setTimeout(() => {this.setState({disabled: false})}, 600);
-    }
-
-    _logOut() {
-        if(firebase.auth().currentUser.isAnonymous){
-            onSignOut().then(() => { 
-                firebase.auth().currentUser.delete().then(()=>{
-                    this.props.navigation.dispatch(
-                        NavigationActions.reset({
-                            index: 0,
-                            key: null,
-                            actions: [
-                                NavigationActions.navigate({ routeName: 'SignedOut'})
-                            ]
-                        })
-                    )
-                })
-            })
-            
-        } else {
-            onSignOut().then(() => { 
-                firebase.auth().signOut()
-                this.props.navigation.dispatch(
-                    NavigationActions.reset({
-                        index: 0,
-                        key: null,
-                        actions: [
-                            NavigationActions.navigate({ routeName: 'SignedOut'})
-                        ]
-                    })
-                )
-            }) 
-            
-        }
     }
 
     _deleteRoom() {
@@ -529,8 +495,8 @@ class InfoPage extends Component {
                 </View>
             </View>
 
-            <Pager height={this.height*0.08} 
-                currentpage={this.state.page} 
+            <Pager height={this.height*0.08}
+                currentpage={this.state.page}
                 lastpage = {this.state.lastpage}
                 goBack = {() => this._pageBack()}
                 goForward = {() => this._pageForward()}

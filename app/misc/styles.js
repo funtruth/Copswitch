@@ -220,10 +220,10 @@ export default styles = StyleSheet.create({
         color: colors.shadow,
     },
     textOutput: {
-        flex:0.6,
+        flex:0.7,
         backgroundColor:colors.font,
         fontFamily:'LuckiestGuy-Regular',
-        fontSize: 40,
+        fontSize: 30,
         color:colors.background,
         textAlign:'center',
         borderRadius:10,

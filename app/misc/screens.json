@@ -5,7 +5,7 @@
         "alert" : true
     },
     "CreationTutorial" : {
-        "yFactor" : 0.75,
+        "yFactor" : 0.73,
         "close" : true,
         "alert" : true
     },

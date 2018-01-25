@@ -19,6 +19,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { CustomButton } from '../components/CustomButton.js';
+import { HelperButton } from '../components/HelperButton.js';
 import { ListItem } from '../components/ListItem.js';
 import { Pager } from '../components/Pager.js';
 import { NumPad } from '../components/NumPad.js';
@@ -273,7 +274,9 @@ export class CreationPager extends Component {
                     <Text style = {styles.roomcode}>{this.state.roomname}</Text>
             </View>
 
-            <View style = {{height:this.height*0.73}}>
+            <View style = {{height:this.height*0.12}}/>
+
+            <View style = {{height:this.height*0.63}}>
                 <ScrollView style = {{flex:1,backgroundColor:colors.background}}
                     horizontal showsHorizontalScrollIndicator={false} ref='scrollView'
                     scrollEnabled = {false}>
@@ -504,13 +507,13 @@ export class Creation2 extends Component {
     }
 
     render() {
-        return <View style = {{flex:0.7,backgroundColor:colors.background, 
+        return <View style = {{flex:1,backgroundColor:colors.background, 
             width:this.props.width}}>
 
-            <View style = {{flex:0.2}}/>
+            <View style = {{flex:0.09}}/>
 
             <View style = {{flex:0.1, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.subtitle}>{'How many people' + '\n' +  'are playing?'}</Text>
+                <Text style = {styles.roomcode}># of players:</Text>
             </View>
 
             <View style = {{flex:0.22, justifyContent:'center', alignItems:'center'}}>
@@ -928,14 +931,14 @@ export class Creation5 extends Component {
     }
 
     render() {
-        return <View style = {{flex:0.7,backgroundColor:colors.background,width:this.props.width,alignItems:'center'}}>
+        return <View style = {{flex:1,backgroundColor:colors.background,width:this.props.width,alignItems:'center'}}>
 
             <View style = {{height:this.height*0.15, justifyContent:'center', alignItems:'center'}}>
                 <Text style = {styles.title}>Game Lobby</Text>
                 <Text style = {styles.subtitle}>Players:</Text>
             </View>
 
-            <View style = {{height:this.height*0.47, width:this.width*0.7, justifyContent:'center'}}>
+            <View style = {{height:this.height*0.35, width:this.width*0.7, justifyContent:'center'}}>
                 {this._renderListComponent()}
             </View>
 
