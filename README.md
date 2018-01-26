@@ -35,10 +35,3 @@ and
 Control Panel -> System and Security -> System -> Change Settings -> Advanced -> ENV Variables
 Add to System Variables -> Path -> New
 C:\Users\YOUR_USER_NAME\AppData\Local\Android\Sdk\platform-tools
-
-
-SETTING UP CLOUD FUNCTIONS
-
-1. npm install -g firebase-tools (Run as Administrator)
-
-2.
