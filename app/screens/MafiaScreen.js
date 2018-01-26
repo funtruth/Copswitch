@@ -19,6 +19,7 @@ import Images from '../../assets/images/index.js';
 import Phases from '../misc/phases.json';
 
 import { CustomButton } from '../components/CustomButton.js';
+import { OptionButton } from '../components/OptionButton.js';
 import { HelperButton } from '../components/HelperButton.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -960,10 +961,34 @@ _renderPhaseName() {
 
 _renderOptionBar() {
     return <Animated.View style = {{
-        position:'absolute', right:MARGIN, top:0, bottom:MARGIN,
+        position:'absolute', right:MARGIN, top:0, bottom:0,
         justifyContent:'center'
     }}>
-        
+        <OptionButton
+            title = 'News'
+            icon = 'alert-circle'
+            backgroundColor = {colors.color9}
+        />
+        <OptionButton
+            title = 'Notes'
+            icon = 'clipboard'
+            backgroundColor = {colors.color6}
+        />
+        <OptionButton
+            title = 'ME'
+            icon = 'account'
+            backgroundColor = {colors.color1}
+        />
+        <OptionButton
+            title = 'Alive'
+            icon = 'account-multiple'
+            backgroundColor = {colors.color8}
+        />
+        <OptionButton
+            title = 'Dead'
+            icon = 'skull'
+            backgroundColor = {colors.dead}
+        />
         
     </Animated.View>
 }
@@ -989,35 +1014,19 @@ _renderListComponent(){
     return <View style = {{
         position:'absolute', left:MARGIN, top:0, bottom:MARGIN, right:MARGIN,
         borderRadius:5,
-        backgroundColor:colors.list
-    }}>
-        <View style = {{
-            position:'absolute', top:this.width*0.04, left:this.width*0.04, right:this.width*0.04, height:this.height*0.04,
-            borderRadius:20, 
-            backgroundColor:colors.listd
-        }}>
-
-        </View>
-    </View>
-
-    return <View style = {{
-        position:'absolute', left:0, top:0, right:0, width:this.width*0.75,
     }}>
         <FlatList
         data={this.state.namelist}
         renderItem={({item}) => (
-            <View style = {{marginBottom:10, height:50}}><CustomButton
-                flex = {0.8}    
+            <TouchableOpacity
+                style = {{flexDirection:'row',alignItems:'center',
+                justifyContent:'center', height:40, marginBottom:MARGIN, borderRadius:5,
+                backgroundColor: item.dead ? colors.dead : (item.immune? colors.immune : 
+                    (item.status?colors.status:colors.namebtn))
+                }}   
                 onPress         = {() => { this._nameBtnPress(item) }}
                 onLongPress     = {() => { this._nameBtnLongPress(item) }}
-                color           = {item.dead ? colors.dead : (item.immune? colors.immune : 
-                                  (item.status?colors.status:colors.namebtn))}
-                shadow          = {item.dead ? colors.deadshadow : (item.immune? colors.lightshadow : 
-                                  (item.status?colors.statusshadow:colors.lightshadow))}
-                depth           = {6}
-                radius          = {40}
-                component = {<View style = {{flexDirection:'row',alignItems:'center',
-                    justifyContent:'center', height:40}}>
+            >
                     <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
                     <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
                         'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
@@ -1032,8 +1041,8 @@ _renderListComponent(){
                         }
                     </View>
                     <View style = {{flex:0.15}}/>
-                </View>}
-            /></View>
+                
+            </TouchableOpacity>
         )}
         keyExtractor={item => item.key}
     />
@@ -1100,10 +1109,10 @@ return <View style = {{flex:1,backgroundColor:colors.gameback}}>
     </Animated.View>
 
     <View style = {{flex:0.55, flexDirection:'row'}}>
-        <View style = {{flex:0.75}}>
+        <View style = {{flex:0.78}}>
             {this._renderListComponent()}
         </View>
-        <View style = {{flex:0.25}}>
+        <View style = {{flex:0.22}}>
             {this._renderOptionBar()}
         </View>
     </View>

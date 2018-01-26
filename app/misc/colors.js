@@ -46,8 +46,13 @@ export default colors = {
     close:      '#d65e5e',
 
 //GAME
+
+    //black
+    color1:                 '#403e3b',
+
     //yellow
     gameback:               '#e3c382',
+    color2:                 '#e3c382',
 
     //Red
     title:                  '#e44c41',
@@ -64,11 +69,15 @@ export default colors = {
 
     //Light Blue
     desc:                   '#4ed8f2',
+    color6:                 '#6BBB9C',
     descd:                  '#1dbadb',
 
     //Blue/Green
     desc:                   '#8e5d9f',
     descd:                  '#7c5189',
+
+    color8:                 '#2B4F6B',
+    color9:                 '#A38666',
 
 
 

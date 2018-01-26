@@ -6,7 +6,19 @@ const functions = require('firebase-functions');
 
  exports.roomCreated = functions.database.ref('rooms/{roomid}/daycounter').onCreate(event => {
     return (
-        event.data.ref.set(event.data.val()+1),
-        event.data.ref.parent.child('wtf').set(2)
+        event.data.ref.set(event.data.val()+1).then(()=>{
+            event.data.ref.parent.child('wtf').set(2)
+        })   
     )
  });
+
+ exports.testFunction = functions.database.ref('rooms/{roomid}/wtf').onCreate(event =>{
+
+    const testRef = event.data.ref
+    const numRef = testRef.parent.child('phase');
+
+    return numRef.once('value').then(playernum=>{
+        testRef.set(playernum.val())
+    })
+        
+ })
