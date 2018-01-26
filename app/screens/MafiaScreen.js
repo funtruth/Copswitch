@@ -7,7 +7,8 @@ import {
     Text,
     FlatList,
     Animated,
-    Dimensions
+    Dimensions,
+    TouchableOpacity
 }   from 'react-native';
 
 import colors from '../misc/colors.js';
@@ -34,6 +35,8 @@ import firebase from '../firebase/FirebaseController.js';
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;
 const FADEIN_ANIM = 300;
+
+const MARGIN = 10;
 
 export default class Mafia_Screen extends React.Component {
 
@@ -66,6 +69,7 @@ constructor(props) {
         ready:              false,
         presseduid:         '',
         disabled:           false,
+        nReady:             5,
 
         amidead:            true,
         amimafia:           false,
@@ -79,12 +83,9 @@ constructor(props) {
         showOptions:        true,
 
         backSize:           new Animated.Value(0.01),
-        listSize:           new Animated.Value(0.01),
         waitingSize:        new Animated.Value(0.01),
         
-        titleOpacity:       new Animated.Value(0),
         backOpacity:        new Animated.Value(0),
-        listOpacity:        new Animated.Value(0),
         waitingOpacity:     new Animated.Value(0),
     };
 
@@ -241,12 +242,6 @@ componentWillMount() {
 
     this.phaseRef.on('value',snap=>{
         if(snap.exists()){
-            Animated.timing(
-                this.state.titleOpacity,{
-                    toValue:0,
-                    duration:1000
-                }
-            ).start()
 
             setTimeout(()=>{
                 this.setState({
@@ -257,13 +252,8 @@ componentWillMount() {
                     btn2: (Phases[snap.val()]).btn2,
                     phasecolor: (Phases[snap.val()]).phasecolor,
                 })
-                Animated.timing(
-                    this.state.titleOpacity,{
-                        toValue:1,
-                        duration:1000
-                    }
-                ).start()
             },1000)
+
         }
     })
 
@@ -518,11 +508,6 @@ _viewChange(title,back,vote,abstain,list,waiting) {
                     toValue: 0
             }),
             Animated.timing(
-                this.state.listOpacity, {
-                    duration: FADEOUT_ANIM,
-                    toValue: 0
-            }),
-            Animated.timing(
                 this.state.waitingOpacity, {
                     duration: FADEOUT_ANIM,
                     toValue: 0
@@ -535,11 +520,6 @@ _viewChange(title,back,vote,abstain,list,waiting) {
                     toValue: back?0.12:0.01
             }),
             Animated.timing(
-                this.state.listSize, {
-                    duration: SIZE_ANIM,
-                    toValue: list?0.75:0.01
-            }),
-            Animated.timing(
                 this.state.waitingSize, {
                     duration: SIZE_ANIM,
                     toValue: waiting?0.15:0.01
@@ -550,11 +530,6 @@ _viewChange(title,back,vote,abstain,list,waiting) {
                 this.state.backOpacity, {
                     duration: FADEIN_ANIM,
                     toValue: back?1:0
-            }),
-            Animated.timing(
-                this.state.listOpacity, {
-                    duration: FADEIN_ANIM,
-                    toValue: list?1:0
             }),
             Animated.timing(
                 this.state.waitingOpacity, {
@@ -728,87 +703,6 @@ _resetOptionPress() {
                 this._pressedUid('foo');
             })
     }
-}
-
-_renderPhaseName() {
-    if(this.state.phase == 2 || this.state.phase == 5){
-        return <Text style = {{color:colors.titlefont, alignSelf:'center', 
-        fontFamily: 'LuckiestGuy-Regular', fontSize:35}}>
-        {this.state.phasename + ' ' + this.state.daycounter}
-    </Text>
-    } else {
-        return <Text style = {{color:colors.titlefont, alignSelf:'center', 
-        fontFamily: 'LuckiestGuy-Regular', fontSize:35}}>
-        {this.state.phasename}
-    </Text>
-    }
-}
-
-_renderTopMessage(){
-    
-    if(this.state.phase == 3 || (this.state.phase == 4 && this.state.nominate != this.user)){
-        return <Text style = {{color:colors.titlefont, alignSelf:'center', 
-            fontFamily: 'ConcertOne-Regular', fontSize:14}}>
-            {this.state.nominee + ' ' + this.state.topmessage}
-        </Text>
-    } else {
-        return <Text style = {{color:colors.titlefont, alignSelf:'center',
-            fontFamily: 'ConcertOne-Regular', fontSize:14}}>
-            {this.state.topmessage}
-        </Text>
-    }
-}
-
-//Rendering Main Visuals of Game Board
-_renderListComponent(){
-
-    return <FlatList
-        data={this.state.namelist}
-        renderItem={({item}) => (
-            <View style = {{marginBottom:10, height:50}}><CustomButton
-                flex = {0.8}    
-                onPress         = {() => { this._nameBtnPress(item) }}
-                onLongPress     = {() => { this._nameBtnLongPress(item) }}
-                color           = {item.dead ? colors.dead : (item.immune? colors.immune : 
-                                  (item.status?colors.status:colors.namebtn))}
-                shadow          = {item.dead ? colors.deadshadow : (item.immune? colors.lightshadow : 
-                                  (item.status?colors.statusshadow:colors.lightshadow))}
-                depth           = {6}
-                radius          = {40}
-                component = {<View style = {{flexDirection:'row',alignItems:'center',
-                    justifyContent:'center', height:40}}>
-                    <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
-                    <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
-                        'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
-                        style={{color:colors.font, fontSize:26}}/>
-                    </View>
-                    <View style = {{flex:0.7, justifyContent:'center'}}>
-                        {item.dead?
-                            <Text style = {styles.lfont}>
-                                {item.name + ' (' + Rolesheet[item.roleid].name + ') '}</Text>
-                            :
-                            <Text style = {styles.lfont}>{item.name}</Text>
-                        }
-                    </View>
-                    <View style = {{flex:0.15}}/>
-                </View>}
-            /></View>
-        )}
-        keyExtractor={item => item.key}
-    />
-    
-}
-
-_renderWaitingComponent() {
-    return <FlatList
-        data={this.state.namelist}
-        renderItem={({item}) => (
-            <Text style = {styles.concerto}>
-                {item.name}
-            </Text>
-        )}
-        keyExtractor={item => item.key}
-    />
 }
 
 //true  -> increase player count by 1
@@ -1038,19 +932,190 @@ _gameOver() {
     
     this.props.screenProps.navigate('Home')
 }
+
+_renderPhaseName() {
+    return <Animated.View style = {{
+        position:'absolute', right:MARGIN, left:MARGIN, top:MARGIN*2, bottom:MARGIN,
+        borderRadius:5,
+        justifyContent:'center', backgroundColor:colors.title
+    }}>
+
+        <TouchableOpacity
+            style = {{position:'absolute', left:this.width*0.04}}
+            onPress = {()=>{
+                
+            }}
+        >
+            <MaterialCommunityIcons name='menu' style={{color:colors.titled,fontSize:30}}/>
+        </TouchableOpacity>
+
+        <Text style = {{color:colors.titlefont, alignSelf:'center', 
+            fontFamily: 'LuckiestGuy-Regular', fontSize:35}}>
+            {(this.state.phase == 2 || this.state.phase == 5)?
+                this.state.phasename + ' ' + this.state.daycounter:this.state.phasename}
+        </Text>
+        
+    </Animated.View>
+}
+
+_renderOptionBar() {
+    return <Animated.View style = {{
+        position:'absolute', right:MARGIN, top:0, bottom:MARGIN,
+        justifyContent:'center'
+    }}>
+        
+        
+    </Animated.View>
+}
+
+_renderTopMessage(){
+    
+    if(this.state.phase == 3 || (this.state.phase == 4 && this.state.nominate != this.user)){
+        return <Text style = {{color:colors.titlefont, alignSelf:'center', 
+            fontFamily: 'ConcertOne-Regular', fontSize:14}}>
+            {this.state.nominee + ' ' + this.state.topmessage}
+        </Text>
+    } else {
+        return <Text style = {{color:colors.titlefont, alignSelf:'center',
+            fontFamily: 'ConcertOne-Regular', fontSize:14}}>
+            {this.state.topmessage}
+        </Text>
+    }
+}
+
+//Rendering Main Visuals of Game Board
+_renderListComponent(){
+
+    return <View style = {{
+        position:'absolute', left:MARGIN, top:0, bottom:MARGIN, right:MARGIN,
+        borderRadius:5,
+        backgroundColor:colors.list
+    }}>
+        <View style = {{
+            position:'absolute', top:this.width*0.04, left:this.width*0.04, right:this.width*0.04, height:this.height*0.04,
+            borderRadius:20, 
+            backgroundColor:colors.listd
+        }}>
+
+        </View>
+    </View>
+
+    return <View style = {{
+        position:'absolute', left:0, top:0, right:0, width:this.width*0.75,
+    }}>
+        <FlatList
+        data={this.state.namelist}
+        renderItem={({item}) => (
+            <View style = {{marginBottom:10, height:50}}><CustomButton
+                flex = {0.8}    
+                onPress         = {() => { this._nameBtnPress(item) }}
+                onLongPress     = {() => { this._nameBtnLongPress(item) }}
+                color           = {item.dead ? colors.dead : (item.immune? colors.immune : 
+                                  (item.status?colors.status:colors.namebtn))}
+                shadow          = {item.dead ? colors.deadshadow : (item.immune? colors.lightshadow : 
+                                  (item.status?colors.statusshadow:colors.lightshadow))}
+                depth           = {6}
+                radius          = {40}
+                component = {<View style = {{flexDirection:'row',alignItems:'center',
+                    justifyContent:'center', height:40}}>
+                    <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
+                    <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
+                        'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
+                        style={{color:colors.font, fontSize:26}}/>
+                    </View>
+                    <View style = {{flex:0.7, justifyContent:'center'}}>
+                        {item.dead?
+                            <Text style = {styles.lfont}>
+                                {item.name + ' (' + Rolesheet[item.roleid].name + ') '}</Text>
+                            :
+                            <Text style = {styles.lfont}>{item.name}</Text>
+                        }
+                    </View>
+                    <View style = {{flex:0.15}}/>
+                </View>}
+            /></View>
+        )}
+        keyExtractor={item => item.key}
+    />
+    </View>
+    
+}
+
+_renderWaitingComponent() {
+    return <View style = {{
+        position:'absolute', left:MARGIN, right:MARGIN, top:0, bottom:MARGIN,
+        borderRadius:5,
+        backgroundColor:colors.progress, justifyContent:'center'
+    }}>
+
+        <View style = {{
+            position:'absolute', left:this.width*0.04, height:this.height*0.05, width:this.width*0.15,
+            borderRadius:3,
+            backgroundColor:colors.progressd, justifyContent:'center', alignItems:'center'
+        }}> 
+            <Text style = {{
+                color: 'white'
+            }}>6/10</Text>
+        </View>
+        
+        <View style = {{
+            position:'absolute', right:this.width*0.04, height:this.height*0.02, width:this.width*0.7,
+            borderRadius:10,
+            backgroundColor:colors.progressd
+        }}>
+            <View style = {{
+                position:'absolute', left:0,
+                height:this.height*0.02, width:this.width*0.5*5/7,
+                borderRadius:10,
+                backgroundColor:colors.progressbar
+            }}/>
+        </View>
+    </View>
+}
+
+_renderDesc() {
+    return <View style = {{
+        position:'absolute', left:MARGIN, right:MARGIN, top:0, bottom:MARGIN,
+        borderRadius:5,
+        backgroundColor:colors.desc
+    }}>
+        <View style = {{
+            position:'absolute', top:this.width*0.04, left:this.width*0.04, right:this.width*0.04, height:this.height*0.04,
+            borderRadius:20, 
+            backgroundColor:colors.descd
+        }}>
+
+        </View>
+    </View>
+}
+
 /*<Image source = {require('../../assets/images/night.png')} 
 style = {{flex:1, alignSelf:'stretch', width:null}}>*/
 render() {
 
-return <View style = {{flex:1,backgroundColor:colors.background, 
-     alignItems:'center'}}>
+return <View style = {{flex:1,backgroundColor:colors.gameback}}>
 
-    <Animated.View style = {{position:'absolute',top:this.height*0.1, opacity:this.state.titleOpacity,
-        justifyContent:'center', borderRadius:2, marginBottom:10}}>
-            {this._renderPhaseName()}
-            {this._renderTopMessage()}
+    <Animated.View style = {{flex:0.15, justifyContent:'center'}}>
+        {this._renderPhaseName()}
     </Animated.View>
 
+    <View style = {{flex:0.55, flexDirection:'row'}}>
+        <View style = {{flex:0.75}}>
+            {this._renderListComponent()}
+        </View>
+        <View style = {{flex:0.25}}>
+            {this._renderOptionBar()}
+        </View>
+    </View>
+
+    <View style = {{flex:0.1}}>
+        {this._renderWaitingComponent()}
+    </View>
+    
+    <View style = {{flex:0.2}}>
+        {this._renderDesc()}
+    </View>
+{/*
     <CustomButton
         size = {this.state.backSize}
         flex = {0.85}
@@ -1107,12 +1172,7 @@ return <View style = {{flex:1,backgroundColor:colors.background,
         showOptions = {this.state.showOptions}
         disabled = {this.state.disabled}
         degrees = {10}
-    />
-
-    <Animated.View style = {{ flex:this.state.listSize,  opacity:1,
-        justifyContent:'center'}}>
-        {this._renderListComponent()}
-    </Animated.View>
+    />*/}
 
 </View>
 }

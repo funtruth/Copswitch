@@ -5,7 +5,6 @@ export default colors = {
     status:     '#9695b7',
     statusshadow:'#7e7da6',
     dead:       '#919191',
-    deadshadow: '#666666',
     done:       '#57C77A',
     doneshadow: '#249447',
     alive:      '#3FD0A9',
@@ -21,29 +20,11 @@ export default colors = {
     font:       'white',
     dfont:      '#454a4a',
     main:       'white',
-    titlefont:  '#873c3d',
-    shadow:     '#873c3d',
-    dshadow:    '#876657',
 
-    gamecolor:  '#a9e0ef',
-    day:        '#a9e0ef',
-    night:      '#375469',
-
-    pushbutton: '#D86059',
-    namebtn:    '#F0B483',
-    menubtn:    '#d65e5e',
-    digit:      '#d65e5e',
-    dots:       '#d65e5e',
-
-    //Game Palette
-    details:    '#454a4a',
-    gameback:   '#e9e2ca',
-    tab:        '#454a4a',
     //Game Palette
     details:    '#873c3d',
     gameback:   '#e9e2ca',
     tab:        '#873c3d',
-
     
     //PIgeons
     background: '#c7cfdb',
@@ -58,13 +39,39 @@ export default colors = {
     
     digit:       '#9285a8',
 
-    gameback:   '#c7cfdb',
     details:    'white',
     tab:        '#5f5374',
-    titlefont:  '#5f5374',
     titlefont:  'white',
 
     close:      '#d65e5e',
+
+//GAME
+    //yellow
+    gameback:               '#e3c382',
+
+    //Red
+    title:                  '#e44c41',
+    titled:                 '#c74239',
+
+    //Orange
+    list:                   '#f17d4e',
+    listd:                  '#dc551d',
+
+    //blue/green
+    progress:               '#2cb299',
+    progressd:              '#269c86',
+    progressbar:            'white',
+
+    //Light Blue
+    desc:                   '#4ed8f2',
+    descd:                  '#1dbadb',
+
+    //Blue/Green
+    desc:                   '#8e5d9f',
+    descd:                  '#7c5189',
+
+
+
 
 //COMPONENTS
 
