@@ -1,31 +1,23 @@
 {
-    "2" : {
+    "1" : {
         "name" : "DAY",
         "topmessage" : null,
         "btn1" : "VOTE",
         "btn2" : "ABSTAIN",
         "phasecolor" : "#F9F2DE",
-        "continue" : 5,
+        "continue" : 4,
         "trigger" : 3
     },
-    "3" : {
+    "2" : {
         "name" : "LYNCHING",
         "topmessage" : "has been nominated",
         "btn1" : "INNOCENT",
         "btn2" : "GUILTY",
         "phasecolor" : "#F9F2DE",
         "continue" : 2,
-        "trigger" : 5
+        "trigger" : 4
     },
-    "4" : {
-        "name" : "...",
-        "topmessage" : "is choosing the new killer",
-        "btn1" : "PICK",
-        "btn2" : "READY",
-        "phasecolor" : "#F9F2DE",
-        "continue" : 5
-    },
-    "5" : {
+    "3" : {
         "name" : "NIGHT",
         "topmessage" : null,
         "btn1" : "VISIT",

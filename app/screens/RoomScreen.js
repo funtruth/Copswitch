@@ -124,7 +124,7 @@ export class Home extends React.Component {
         firebase.database().ref('rooms/' + roomname).set({
             phase: 0,
             owner: firebase.auth().currentUser.uid,
-            daycounter:1,
+            counter:1,
         }).then(()=>{
             this.props.screenProps.navigateP('CreationTutorial',roomname)
         })
