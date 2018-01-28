@@ -22,3 +22,18 @@ const functions = require('firebase-functions');
     })
         
  })
+
+ exports.countPlayers = functions.database.ref('rooms/{roomid}/ready').onWrite(event=>{
+
+    const readyRef = event.data.ref
+    const children = event.data.numChildren()
+
+    const testRef = readyRef.parent.child('test')
+
+    return testRef.set(children)
+
+ })
+
+exports.updatePlayerNum = functions.database.ref('rooms/{roomid}/listofplayers').onWrite(event=>{
+    //Listens to new dead players to update the player number
+})
