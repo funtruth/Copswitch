@@ -54,20 +54,19 @@ render() {
         <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
             backgroundColor:'rgba(0, 0, 0, 0.3)', opacity:this.opacity,
             justifyContent:'center', alignItems:'center'}}>
-            <View style = {{height:this.height*0.35, width:this.width*0.9,
-                backgroundColor:colors.shadow, borderRadius:20}}>
+            <View style = {{height:this.height*0.25, width:this.width*0.9,
+                backgroundColor:colors.background, borderRadius:20}}>
                 
                 <View style = {{flex:0.3, justifyContent:'center', alignItems:'center'}}/>
                 
-                <View style = {{flex:0.425, justifyContent:'center', alignItems:'center',
-                    backgroundColor:colors.background}}>
+                <View style = {{flex:0.35, justifyContent:'center', alignItems:'center'}}>
                     <Text style = {{
                         fontSize:20,
                         fontFamily:'LuckiestGuy-Regular',
-                        color:colors.shadow
+                        color:colors.font
                     }}>{this.props.subtitle}</Text>
                 </View>
-                <View style = {{flex:0.375, flexDirection:'row',
+                <View style = {{flex:0.35, flexDirection:'row',
                     justifyContent:'center', alignItems:'center'}}>
                     <View style = {{flex:0.4}}><CustomButton
                         size = {0.7}
@@ -75,7 +74,7 @@ render() {
                         depth = {3}
                         radius = {15}
                         fontSize = {20}
-                        color = {colors.menubtn}
+                        color = {colors.shadow}
                         onPress = {()=>{ this.props.onOkay() }}
                         title = {this.props.okay}
                     /></View>
@@ -87,6 +86,7 @@ render() {
                         radius = {15}
                         fontSize = {20}
                         color = {colors.background}
+                        shadow = {colors.background}
                         onPress = {()=>this._cancel()}
                         title = {this.props.cancel}
                     /></View>

@@ -226,7 +226,7 @@ _viewAlert(bool){
         Keyboard.dismiss()
     }
 
-    const helperHeight = 0.58
+    const helperHeight = 0.54
 
     this.setState({
         alertVisible:bool
