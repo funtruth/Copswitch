@@ -290,5 +290,11 @@ export default styles = StyleSheet.create({
         textAlign:'center',
         color: colors.font,
     },
+    plainfont: {
+        color: colors.font
+    },
+    plaindfont: {
+        color: colors.background
+    }
 
 })

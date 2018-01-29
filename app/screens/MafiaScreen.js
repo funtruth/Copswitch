@@ -81,14 +81,9 @@ constructor(props) {
 
         gameover:           false,
         showOptions:        true,
-
-        backSize:           new Animated.Value(0.01),
-        waitingSize:        new Animated.Value(0.01),
-        descFlex:           new Animated.Value(0.1),
         
-        backOpacity:        new Animated.Value(0),
-        waitingOpacity:     new Animated.Value(0),
-        descOpacity:        new Animated.Value(0),
+        contOpacity:        new Animated.Value(0),
+        cancelOpacity:     new Animated.Value(0),
     };
 
     this.height             = Dimensions.get('window').height;
@@ -149,19 +144,19 @@ componentWillMount() {
     this.readyValueRef.on('value',snap=>{
         if(snap.exists()){
             if(this.state.amidead){
-                this._viewChange(false,false,false,false,true,false)
+                this._viewChange(false,false)
             } else if(snap.val() == true){
                 this.setState({disabled:true})
-                this._viewChange(true,false,false,false,false,true)
+                this._viewChange(false,true)
             } else {
                 this.setState({disabled:false})
-                this._viewChange(true,false,true,true,false,false)
+                this._viewChange(true,false)
             }
         } else {
             if(this.state.amidead){
-                this._viewChange(true,false,false,false,false,false)
+                this._viewChange(false,false)
             } else {
-                this._viewChange(true,false,false,false,false,false)
+                this._viewChange(false,false)
                 setTimeout(()=>{
                     this.readyValueRef.once('value',snap=>{
                         if(snap.exists()){
@@ -482,60 +477,19 @@ _pressedUid(uid){
 
 //1100 ms TOTAL
 //DEPRECATED: title, vote, abstain, list
-_viewChange(desc,back,vote,abstain,list,waiting) {
+_viewChange(cont,cancel) {
     
-    Animated.sequence([
-        Animated.parallel([
-            Animated.timing(
-                this.state.backOpacity, {
-                    duration: FADEOUT_ANIM,
-                    toValue: 0
-            }),
-            Animated.timing(
-                this.state.waitingOpacity, {
-                    duration: FADEOUT_ANIM,
-                    toValue: 0
-            }),
-            Animated.timing(
-                this.state.descOpacity, {
-                    duration: FADEOUT_ANIM,
-                    toValue: 0
-            })
-        ]),
-        Animated.parallel([
-            Animated.timing(
-                this.state.backSize, {
-                    duration: SIZE_ANIM,
-                    toValue: back?0.12:0.01
-            }),
-            Animated.timing(
-                this.state.waitingSize, {
-                    duration: SIZE_ANIM,
-                    toValue: waiting?0.15:0.01
-            }),
-            Animated.timing(
-                this.state.descFlex, {
-                    duration: SIZE_ANIM,
-                    toValue: desc?2:0.1
-            }),
-        ]),
-        Animated.parallel([
-            Animated.timing(
-                this.state.backOpacity, {
-                    duration: FADEIN_ANIM,
-                    toValue: back?1:0
-            }),
-            Animated.timing(
-                this.state.waitingOpacity, {
-                    duration: FADEIN_ANIM,
-                    toValue: waiting?1:0
-            }),
-            Animated.timing(
-                this.state.descOpacity, {
-                    duration: FADEOUT_ANIM,
-                    toValue: desc?1:0
-            })
-        ])
+    Animated.parallel([
+        Animated.timing(
+            this.state.cancelOpacity, {
+                duration: FADEIN_ANIM,
+                toValue: cancel?1:0
+        }),
+        Animated.timing(
+            this.state.continueOpacity, {
+                duration: FADEIN_ANIM,
+                toValue: cont?1:0
+        })
     ]).start()
 }
 
@@ -646,7 +600,7 @@ _resetOptionPress() {
     this._buttonPress();
 
     if(this.state.phase != 3){
-        this._viewChange(true,false,true,true,false,false)
+        this._viewChange(true,false)
         this.setState({topmessage:null})
     }
 
@@ -1020,33 +974,63 @@ _renderDesc() {
         backgroundColor:colors.desc
     }}>
 
-        <View style = {{flex:0.6}}>
+        <View style = {{flex:0.6, justifyContent:'center'}}>
+            <Animated.View style = {{opacity:this.state.contOpacity}}>
+                <TouchableOpacity
+                    style = {{
+                        position:'absolute',left:MARGIN*2, width:this.width*0.3,
+                        backgroundColor:colors.font, borderRadius:20,
+                    }}
+                    onPress = {()=>{ 
+                        this._optionTwoPress()
+                    }}
+                    disabled = {this.state.disabled}
+                >
+                    <Text style = {styles.plaindfont}>{this.state.btn2}</Text>
+                </TouchableOpacity>
+            </Animated.View>
 
+            <Animated.View style = {{opacity:this.state.cancelOpacity}}>
+                <TouchableOpacity
+                    style = {{
+                        position:'absolute',right:MARGIN*2, width:this.width*0.3,
+                        backgroundColor:colors.font, borderRadius:20,
+                    }}
+                    disabled = {this.state.disabled}
+                    onPress = {()=>{ 
+                        this._resetOptionPress()
+                    }}
+                >
+                    <Text style = {styles.plaindfont}>Cancel</Text>
+                </TouchableOpacity>
+            </Animated.View>
         </View>
 
-        <View style = {{flex:0.4, justifyContent:'center'}}>
+        {this._renderWaiting(0.4)}
+    </View>
+}
+
+_renderWaiting(flex){
+    return <View style = {{flex:flex, justifyContent:'center'}}>
+        <View style = {{
+            position:'absolute', left:this.width*0.04, height:this.height*0.04, width:this.width*0.15,
+            borderRadius:15,
+            backgroundColor:colors.progressd, justifyContent:'center', alignItems:'center'
+        }}> 
+            <Text style = {styles.plainfont}>6/10</Text>
+        </View>
+        
+        <View style = {{
+            position:'absolute', right:this.width*0.04, height:this.height*0.02, width:this.width*0.7,
+            borderRadius:10,
+            backgroundColor:colors.progressd
+        }}>
             <View style = {{
-                position:'absolute', left:this.width*0.04, height:this.height*0.04, width:this.width*0.15,
-                borderRadius:15,
-                backgroundColor:colors.progressd, justifyContent:'center', alignItems:'center'
-            }}> 
-                <Text style = {{
-                    color: 'white'
-                }}>6/10</Text>
-            </View>
-            
-            <View style = {{
-                position:'absolute', right:this.width*0.04, height:this.height*0.02, width:this.width*0.7,
+                position:'absolute', left:0,
+                height:this.height*0.02, width:this.width*0.5*5/7,
                 borderRadius:10,
-                backgroundColor:colors.progressd
-            }}>
-                <View style = {{
-                    position:'absolute', left:0,
-                    height:this.height*0.02, width:this.width*0.5*5/7,
-                    borderRadius:10,
-                    backgroundColor:colors.progressbar
-                }}/>
-            </View>
+                backgroundColor:colors.progressbar
+            }}/>
         </View>
     </View>
 }
@@ -1070,67 +1054,9 @@ return <View style = {{flex:1,backgroundColor:colors.gameback}}>
         </View>
     </View>
     
-    <Animated.View style = {{flex:this.state.descFlex, opacity:this.state.descOpacity}}>
+    <View style = {{flex:2}}>
         {this._renderDesc()}
-    </Animated.View>
-{/*
-    <CustomButton
-        size = {this.state.backSize}
-        flex = {0.85}
-        opacity = {this.state.backOpacity}
-        depth = {8}
-        color = {colors.pushbutton}
-        radius = {30}
-        fontSize = {25}
-        disabled = {this.state.disabled}
-        onPress = {()=>{ 
-            this._viewChange(true,false,true,true,false,false) 
-        }}
-        title = 'RETURN'
-    />
-
-    <HelperButton
-        title = {this.state.btn1}
-        icon = 'crown'
-        screen = {this.props.navigation.state.routeName}
-        color = {colors.pushbutton}
-        order = {1}
-        onPress = {()=>{ 
-            this._optionOnePress()
-        }}
-        showOptions = {this.state.showOptions}
-        disabled = {this.state.disabled}
-        degrees = {170}
-    />
-
-    <CustomButton
-        size = {this.state.waitingSize}
-        flex = {0.85}
-        opacity = {this.state.waitingOpacity}
-        depth = {10}
-        color = {colors.pushbutton}
-        radius = {50}
-        fontSize = {25}
-        disabled = {this.state.disabled}
-        onPress = {()=>{ 
-            this._resetOptionPress()
-        }}
-        title = 'WAITING'
-    />
-
-    <HelperButton
-        title = {this.state.btn2}
-        icon = 'crown'
-        screen = {this.props.navigation.state.routeName}
-        color = {colors.pushbutton}
-        order = {1}
-        onPress = {()=>{ 
-            this._optionTwoPress()
-        }}
-        showOptions = {this.state.showOptions}
-        disabled = {this.state.disabled}
-        degrees = {10}
-    />*/}
+    </View>
 
 </View>
 }
