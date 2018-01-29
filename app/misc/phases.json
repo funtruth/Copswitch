@@ -1,7 +1,7 @@
 {
     "1" : {
         "name" : "DAY",
-        "topmessage" : null,
+        "message" : "Choose an Option",
         "btn1" : "VOTE",
         "btn2" : "ABSTAIN",
         "phasecolor" : "#F9F2DE",
@@ -10,7 +10,7 @@
     },
     "2" : {
         "name" : "LYNCHING",
-        "topmessage" : "has been nominated",
+        "message" : "has been nominated",
         "btn1" : "INNOCENT",
         "btn2" : "GUILTY",
         "phasecolor" : "#F9F2DE",
@@ -19,7 +19,7 @@
     },
     "3" : {
         "name" : "NIGHT",
-        "topmessage" : null,
+        "message" : "Visit another Player or stay home.",
         "btn1" : "VISIT",
         "btn2" : "STAY HOME",
         "phasecolor" : "#F9F2DE",
@@ -27,14 +27,14 @@
     },
     "6" : {
         "name" : "TOWN WIN",
-        "topmessage" : null,
+        "message" : null,
         "btn1" : "PLAY AGAIN",
         "btn2" : "QUIT",
         "phasecolor" : "#F9F2DE"
     },
     "7" : {
         "name" : "MAFIA WIN",
-        "topmessage" : null,
+        "message" : null,
         "btn1" : "PLAY AGAIN",
         "btn2" : "QUIT",
         "phasecolor" : "#F9F2DE"

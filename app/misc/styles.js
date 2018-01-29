@@ -291,10 +291,12 @@ export default styles = StyleSheet.create({
         color: colors.font,
     },
     plainfont: {
-        color: colors.font
+        color: colors.font,
+        fontFamily: 'LuckiestGuy-Regular',
     },
     plaindfont: {
-        color: colors.background
+        color: colors.background,
+        fontFamily: 'LuckiestGuy-Regular',
     }
 
 })

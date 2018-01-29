@@ -35,7 +35,7 @@ import firebase from '../firebase/FirebaseController.js';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;
-const FADEIN_ANIM = 300;
+const FADEIN_ANIM = 600;
 
 const MARGIN = 10;
 
@@ -52,7 +52,7 @@ constructor(props) {
         phase:              '',
         counter:            '',
         phasename:          '',
-        topmessage:         '',
+        message:         '',
         phasebackground:    'night',
         nextphase:          null,
 
@@ -72,7 +72,7 @@ constructor(props) {
         disabled:           false,
         nReady:             5,
 
-        amidead:            true,
+        amidead:            false,
         amimafia:           false,
         amiowner:           false,
 
@@ -82,8 +82,9 @@ constructor(props) {
         gameover:           false,
         showOptions:        true,
         
+        messageOpacity:     new Animated.Value(1),
         contOpacity:        new Animated.Value(0),
-        cancelOpacity:     new Animated.Value(0),
+        cancelOpacity:      new Animated.Value(0),
     };
 
     this.height             = Dimensions.get('window').height;
@@ -145,6 +146,7 @@ componentWillMount() {
         if(snap.exists()){
             if(this.state.amidead){
                 this._viewChange(false,false)
+                this.setState({message:'You are dead'})
             } else if(snap.val() == true){
                 this.setState({disabled:true})
                 this._viewChange(false,true)
@@ -236,7 +238,7 @@ componentWillMount() {
 
                 phase:phase,
                 phasename: (Phases[phase]).name,
-                topmessage: (Phases[phase]).topmessage,
+                message: (Phases[phase]).message,
                 btn1: (Phases[phase]).btn1,
                 btn2: (Phases[phase]).btn2,
                 phasecolor: (Phases[phase]).phasecolor,
@@ -478,7 +480,6 @@ _pressedUid(uid){
 //1100 ms TOTAL
 //DEPRECATED: title, vote, abstain, list
 _viewChange(cont,cancel) {
-    
     Animated.parallel([
         Animated.timing(
             this.state.cancelOpacity, {
@@ -486,7 +487,7 @@ _viewChange(cont,cancel) {
                 toValue: cancel?1:0
         }),
         Animated.timing(
-            this.state.continueOpacity, {
+            this.state.contOpacity, {
                 duration: FADEIN_ANIM,
                 toValue: cont?1:0
         })
@@ -502,13 +503,13 @@ _nameBtnPress(item){
 
         if(this.state.phase == 1){ 
             if(this.state.amidead){
-                this.setState({topmessage:'You are Dead.'})
+                this.setState({message:'You are Dead.'})
             } else if (item.dead){
-                this.setState({topmessage:'That player is Dead.'})
+                this.setState({message:'That player is Dead.'})
             } else if (item.immune){
-                this.setState({topmessage:'That player is Immune'})
+                this.setState({message:'That player is Immune'})
             } else {
-                this.setState({topmessage:'You have selected ' + item.name + '.'})
+                this.setState({message:'You have selected ' + item.name + '.'})
                 this._pressedUid(item.key);
                 this._readyValue(true);
                 this.voteRef.child(item.key).child(this.user).set(this.state.myname);
@@ -516,13 +517,13 @@ _nameBtnPress(item){
         } else if (this.state.phase == 3) {
 
             if(this.state.amidead){
-                this.setState({topmessage:'You are Dead.'})
+                this.setState({message:'You are Dead.'})
             } else if (this.state.targettown && item.type != 2){
-                this.setState({topmessage:'Select a Town Player.'})
+                this.setState({message:'Select a Town Player.'})
             } else if (this.state.targetdead && !item.dead){
-                this.setState({topmessage:'Select a Dead player.'})
+                this.setState({message:'Select a Dead player.'})
             } else {
-                this.setState({topmessage:'You have selected ' + item.name + '.'})
+                this.setState({message:'You have selected ' + item.name + '.'})
                 
                 this.actionRef.child(this.user).update({
                         target:     item.key,
@@ -560,7 +561,7 @@ _optionOnePress() {
     if(this.state.phase == 1){
         this._viewChange(false,true,false,false,true,false)
     } else if (this.state.phase == 2){
-        this.setState({topmessage:'You voted INNOCENT.'})
+        this.setState({message:'You voted INNOCENT.'})
         this.guiltyVotesRef.child(this.user).set(null).then(()=>{
             this._readyValue(true);
         })
@@ -580,15 +581,15 @@ _optionTwoPress() {
 
     if(this.state.phase == 1){
         this._readyValue(true);
-        this.setState({topmessage:'You abstained.'})
+        this.setState({message:'You abstained.'})
     } else if (this.state.phase == 2){
-        this.setState({topmessage:'You voted GUILTY.'})
+        this.setState({message:'You voted GUILTY.'})
         this.guiltyVotesRef.child(this.user).set(this.state.myname).then(()=>{
             this._readyValue(true);
         })
     } else if (this.state.phase == 3){
         this._readyValue(true);
-        this.setState({topmessage:'You stayed home.'})
+        this.setState({message:'You stayed home.'})
     } else if (this.state.phase == 6 || this.state.phase == 7){
         this._gameOver();
     }
@@ -598,10 +599,11 @@ _optionTwoPress() {
 _resetOptionPress() {
 
     this._buttonPress();
+    this.setState({message:Phases[this.state.phase].message})
 
     if(this.state.phase != 3){
         this._viewChange(true,false)
-        this.setState({topmessage:null})
+        this.setState({message:null})
     }
 
     if(this.state.phase == 1){
@@ -866,7 +868,7 @@ _gameOver() {
 
 _renderPhaseName() {
     return <View style = {{
-        position:'absolute', right:MARGIN, left:MARGIN, top:MARGIN*2, bottom:MARGIN,
+        position:'absolute', right:MARGIN, left:MARGIN, top:MARGIN*2, bottom:0,
         borderRadius:5,
         justifyContent:'center', backgroundColor:colors.color1
     }}>
@@ -892,30 +894,30 @@ _renderPhaseName() {
 
 _renderOptionBar() {
     return <Animated.View style = {{
-        position:'absolute', right:MARGIN, top:0, bottom:0,
+        position:'absolute', right:MARGIN, top:MARGIN, bottom:0
     }}>
         <OptionButton
             title = 'News'
             icon = 'alert-circle'
-            color = {colors.color3}
+            color = {colors.dead}
             backgroundColor = {colors.color1}
         />
         <OptionButton
             title = 'Notes'
             icon = 'clipboard'
-            color = {colors.color4}
+            color = {colors.dead}
             backgroundColor = {colors.color1}
         />
         <OptionButton
             title = 'ME'
             icon = 'account'
-            color = {colors.font}
+            color = {colors.dead}
             backgroundColor = {colors.color1}
         />
         <OptionButton
             title = 'Alive'
             icon = 'account-multiple'
-            color = {colors.color5}
+            color = {colors.font}
             backgroundColor = {colors.color1}
         />
         <OptionButton
@@ -967,46 +969,66 @@ _renderListComponent(){
     
 }
 
-_renderDesc() {
+_renderDesc(flex) {
     return <View style = {{
         position:'absolute', left:MARGIN, right:MARGIN, top:0, bottom:MARGIN,
-        borderRadius:5,
+        borderRadius:5, flex:flex,
         backgroundColor:colors.desc
     }}>
+        <View style = {{flex:0.15}}/>
+        {this._renderMessage(0.25)}
+        {this._renderChoices(0.3)}
+        {this._renderWaiting(0.3)}
+    </View>
+}
 
-        <View style = {{flex:0.6, justifyContent:'center'}}>
-            <Animated.View style = {{opacity:this.state.contOpacity}}>
-                <TouchableOpacity
-                    style = {{
-                        position:'absolute',left:MARGIN*2, width:this.width*0.3,
-                        backgroundColor:colors.font, borderRadius:20,
-                    }}
-                    onPress = {()=>{ 
-                        this._optionTwoPress()
-                    }}
-                    disabled = {this.state.disabled}
-                >
-                    <Text style = {styles.plaindfont}>{this.state.btn2}</Text>
-                </TouchableOpacity>
-            </Animated.View>
+_renderMessage(flex){
+    return <View style = {{flex:flex}}>
+        <Animated.View style = {{
+            opacity:this.state.messageOpacity,
+            position:'absolute',left:0, right:0, height:this.height*0.05,
+            justifyContent:'center', alignItems:'center'
+            }}>
+            <Text style = {styles.plainfont}>{this.state.message}</Text>
+        </Animated.View>
+    </View>    
+}
 
-            <Animated.View style = {{opacity:this.state.cancelOpacity}}>
-                <TouchableOpacity
-                    style = {{
-                        position:'absolute',right:MARGIN*2, width:this.width*0.3,
-                        backgroundColor:colors.font, borderRadius:20,
-                    }}
-                    disabled = {this.state.disabled}
-                    onPress = {()=>{ 
-                        this._resetOptionPress()
-                    }}
-                >
-                    <Text style = {styles.plaindfont}>Cancel</Text>
-                </TouchableOpacity>
-            </Animated.View>
-        </View>
+_renderChoices(flex){
+    return <View style = {{flex:flex, justifyContent:'center'}}>
+        <Animated.View style = {{
+            opacity:this.state.contOpacity,
+            position:'absolute',left:this.width*0.1, height:this.height*0.05, width:this.width*0.3,
+            backgroundColor:colors.font, borderRadius:20,
+            }}>
+            <TouchableOpacity
+                style = {{
+                    flex:1, justifyContent:'center', alignItems:'center'
+                }}
+                onPress = {()=>{ 
+                    this._optionTwoPress()
+                }}
+            >
+                <Text style = {styles.plaindfont}>{this.state.btn2}</Text>
+            </TouchableOpacity>
+        </Animated.View>
 
-        {this._renderWaiting(0.4)}
+        <Animated.View style = {{
+            opacity:this.state.cancelOpacity,
+            position:'absolute',right:this.width*0.1, height:this.height*0.05, width:this.width*0.3,
+            backgroundColor:colors.font, borderRadius:20,
+            }}>
+            <TouchableOpacity
+                style = {{
+                    flex:1, justifyContent:'center', alignItems:'center'
+                }}
+                onPress = {()=>{ 
+                    this._resetOptionPress()
+                }}
+            >
+                <Text style = {styles.plaindfont}>Cancel</Text>
+            </TouchableOpacity>
+        </Animated.View>
     </View>
 }
 
@@ -1055,7 +1077,7 @@ return <View style = {{flex:1,backgroundColor:colors.gameback}}>
     </View>
     
     <View style = {{flex:2}}>
-        {this._renderDesc()}
+        {this._renderDesc(2)}
     </View>
 
 </View>
