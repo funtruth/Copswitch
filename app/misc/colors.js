@@ -52,19 +52,24 @@ export default colors = {
 
     //yellow
     gameback:               '#e3c382',
+    gameback:               '#403e3b',
     color2:                 '#e3c382',
 
     //Red
     title:                  '#e44c41',
+    color3:                 '#e44c41',
     titled:                 '#c74239',
 
     //Orange
     list:                   '#f17d4e',
+    color4:                 '#f17d4e',
     listd:                  '#dc551d',
 
     //blue/green
     progress:               '#2cb299',
+    color5:                 '#2cb299',
     progressd:              '#269c86',
+    progressd:              '#919191',
     progressbar:            'white',
 
     //Light Blue
@@ -74,8 +79,10 @@ export default colors = {
 
     //Blue/Green
     desc:                   '#8e5d9f',
+    desc:                   '#2B4F6B',
     descd:                  '#7c5189',
 
+    //darkblue
     color8:                 '#2B4F6B',
     color9:                 '#A38666',
 

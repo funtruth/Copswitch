@@ -20,7 +20,7 @@
         "alert" : true
     },
     "MafiaRoom" : {
-        "yFactor" : 0.05,
+        "yFactor" : 0.11,
         "close" : false,
         "alert" : false
     }

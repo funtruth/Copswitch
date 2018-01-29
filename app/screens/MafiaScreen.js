@@ -151,17 +151,16 @@ componentWillMount() {
             if(this.state.amidead){
                 this._viewChange(false,false,false,false,true,false)
             } else if(snap.val() == true){
-                this.setState({ready:true})
+                this.setState({disabled:true})
                 this._viewChange(true,false,false,false,false,true)
             } else {
+                this.setState({disabled:false})
                 this._viewChange(true,false,true,true,false,false)
             }
         } else {
             if(this.state.amidead){
-                this.setState({ready:false})
                 this._viewChange(true,false,false,false,false,false)
             } else {
-                this.setState({ready:false})
                 this._viewChange(true,false,false,false,false,false)
                 setTimeout(()=>{
                     this.readyValueRef.once('value',snap=>{
@@ -454,9 +453,9 @@ _buttonPress() {
     setTimeout(() => {this.setState({disabled: false})}, 1100);
 }
 
-_changePhase(newphase){
-    this.setState({nextphase:newphase})
-    this.roomRef.child('nextphase').set(newphase).then(()=>{
+_changePhase(change){
+    this.setState({nextphase:this.state.counter + change})
+    this.roomRef.child('nextphase').set(this.state.counter + change).then(()=>{
         this.roomRef.child('ready').remove().then(()=>{
             this.voteRef.remove()
         })
@@ -915,24 +914,24 @@ _renderPhaseName() {
     return <View style = {{
         position:'absolute', right:MARGIN, left:MARGIN, top:MARGIN*2, bottom:MARGIN,
         borderRadius:5,
-        justifyContent:'center', backgroundColor:colors.title
+        justifyContent:'center', backgroundColor:colors.color1
     }}>
 
-        <TouchableOpacity
-            style = {{position:'absolute', left:this.width*0.04}}
-            onPress = {()=>{
-                
-            }}
-        >
-            <MaterialCommunityIcons name='menu' style={{color:colors.titled,fontSize:30}}/>
-        </TouchableOpacity>
+            <TouchableOpacity
+                style = {{position:'absolute', left:this.width*0.04}}
+                onPress = {()=>{
+                    
+                }}
+            >
+                <MaterialCommunityIcons name='menu' style={{color:colors.font,fontSize:30}}/>
+            </TouchableOpacity>
 
-        <Text style = {{color:colors.titlefont, alignSelf:'center', 
-            fontFamily: 'LuckiestGuy-Regular', fontSize:35}}>
-            {(this.state.phase == 1 || this.state.phase == 3)?
-                this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
-                :this.state.phasename}
-        </Text>
+            <Text style = {{color:colors.titlefont, alignSelf:'center', 
+                fontFamily: 'LuckiestGuy-Regular', fontSize:35}}>
+                {(this.state.phase == 1 || this.state.phase == 3)?
+                    this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
+                    :this.state.phasename}
+            </Text>
         
     </View>
 }
@@ -940,32 +939,36 @@ _renderPhaseName() {
 _renderOptionBar() {
     return <Animated.View style = {{
         position:'absolute', right:MARGIN, top:0, bottom:0,
-        justifyContent:'center'
     }}>
         <OptionButton
             title = 'News'
             icon = 'alert-circle'
-            backgroundColor = {colors.color9}
+            color = {colors.color3}
+            backgroundColor = {colors.color1}
         />
         <OptionButton
             title = 'Notes'
             icon = 'clipboard'
-            backgroundColor = {colors.color6}
+            color = {colors.color4}
+            backgroundColor = {colors.color1}
         />
         <OptionButton
             title = 'ME'
             icon = 'account'
+            color = {colors.font}
             backgroundColor = {colors.color1}
         />
         <OptionButton
             title = 'Alive'
             icon = 'account-multiple'
-            backgroundColor = {colors.color8}
+            color = {colors.color5}
+            backgroundColor = {colors.color1}
         />
         <OptionButton
             title = 'Dead'
             icon = 'skull'
-            backgroundColor = {colors.dead}
+            color = {colors.dead}
+            backgroundColor = {colors.color1}
         />
         
     </Animated.View>
@@ -989,6 +992,7 @@ _renderListComponent(){
                 }}   
                 onPress         = {() => { this._nameBtnPress(item) }}
                 onLongPress     = {() => { this._nameBtnLongPress(item) }}
+                disabled        = {this.state.disabled}
             >
                     <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
                     <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
@@ -1009,50 +1013,40 @@ _renderListComponent(){
     
 }
 
-_renderWaitingComponent() {
-    return <View style = {{
-        position:'absolute', left:MARGIN, right:MARGIN, top:0, bottom:MARGIN,
-        borderRadius:5,
-        backgroundColor:colors.progress, justifyContent:'center'
-    }}>
-
-        <View style = {{
-            position:'absolute', left:this.width*0.04, height:this.height*0.05, width:this.width*0.15,
-            borderRadius:3,
-            backgroundColor:colors.progressd, justifyContent:'center', alignItems:'center'
-        }}> 
-            <Text style = {{
-                color: 'white'
-            }}>6/10</Text>
-        </View>
-        
-        <View style = {{
-            position:'absolute', right:this.width*0.04, height:this.height*0.02, width:this.width*0.7,
-            borderRadius:10,
-            backgroundColor:colors.progressd
-        }}>
-            <View style = {{
-                position:'absolute', left:0,
-                height:this.height*0.02, width:this.width*0.5*5/7,
-                borderRadius:10,
-                backgroundColor:colors.progressbar
-            }}/>
-        </View>
-    </View>
-}
-
 _renderDesc() {
     return <View style = {{
         position:'absolute', left:MARGIN, right:MARGIN, top:0, bottom:MARGIN,
         borderRadius:5,
         backgroundColor:colors.desc
     }}>
-        <View style = {{
-            position:'absolute', top:this.width*0.04, left:this.width*0.04, right:this.width*0.04, height:this.height*0.04,
-            borderRadius:20, 
-            backgroundColor:colors.descd
-        }}>
 
+        <View style = {{flex:0.6}}>
+
+        </View>
+
+        <View style = {{flex:0.4, justifyContent:'center'}}>
+            <View style = {{
+                position:'absolute', left:this.width*0.04, height:this.height*0.04, width:this.width*0.15,
+                borderRadius:15,
+                backgroundColor:colors.progressd, justifyContent:'center', alignItems:'center'
+            }}> 
+                <Text style = {{
+                    color: 'white'
+                }}>6/10</Text>
+            </View>
+            
+            <View style = {{
+                position:'absolute', right:this.width*0.04, height:this.height*0.02, width:this.width*0.7,
+                borderRadius:10,
+                backgroundColor:colors.progressd
+            }}>
+                <View style = {{
+                    position:'absolute', left:0,
+                    height:this.height*0.02, width:this.width*0.5*5/7,
+                    borderRadius:10,
+                    backgroundColor:colors.progressbar
+                }}/>
+            </View>
         </View>
     </View>
 }
@@ -1067,17 +1061,13 @@ return <View style = {{flex:1,backgroundColor:colors.gameback}}>
         {this._renderPhaseName()}
     </View>
 
-    <View style = {{flex:5.5, flexDirection:'row'}}>
+    <View style = {{flex:6.5, flexDirection:'row'}}>
         <View style = {{flex:0.78}}>
             {this._renderListComponent()}
         </View>
         <View style = {{flex:0.22}}>
             {this._renderOptionBar()}
         </View>
-    </View>
-
-    <View style = {{flex:1}}>
-        {this._renderWaitingComponent()}
     </View>
     
     <Animated.View style = {{flex:this.state.descFlex, opacity:this.state.descOpacity}}>
