@@ -68,16 +68,16 @@ export class CreationPager extends Component {
         this.width          = Dimensions.get('window').width;
 
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
-        this.phaseRef       = this.roomRef.child('phase');
+        this.counterRef     = this.roomRef.child('counter');
         this.listPlayerRef  = this.roomRef.child('listofplayers')
         
     }
 
     
     componentWillMount() {
-        this.phaseRef.on('value',snap=>{
+        this.counterRef.on('value',snap=>{
             if(snap.exists()){
-                if(snap.val()==1){
+                if(snap.val()==2){
                     this._startGame(this.state.roomname)
                 }
             }
@@ -85,8 +85,8 @@ export class CreationPager extends Component {
     }
 
     componentWillUnmount() {
-        if(this.phaseRef){
-            this.phaseRef.off();
+        if(this.counterRef){
+            this.counterRef.off();
         }
     }
 
@@ -179,7 +179,7 @@ export class CreationPager extends Component {
         
         this._handOutRoles(roomname);
 
-        firebase.database().ref('rooms').child(roomname).child('phase').set(2).then(()=>{
+        this.counterRef.set(3).then(()=>{
             this.props.screenProps.navigateP('MafiaRoom',roomname)
         })
     }
@@ -223,7 +223,8 @@ export class CreationPager extends Component {
                         })
                     }
                     
-                    max = max - 1;
+                    max--;
+                    
                     randomstring = randomstring.slice(0,randomnumber-1) 
                         + randomstring.slice(randomnumber);
                 })
@@ -908,7 +909,7 @@ export class Creation5 extends Component {
         } else if (this.state.playercount != this.props.rolecount){
             this.props.warningOn(true)
         } else {
-            firebase.database().ref('rooms').child(this.props.roomname).child('phase').set(1)
+            firebase.database().ref('rooms').child(this.props.roomname).child('counter').set(2)
         }
     }
 

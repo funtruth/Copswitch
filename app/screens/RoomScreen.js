@@ -122,7 +122,6 @@ export class Home extends React.Component {
 
 
         firebase.database().ref('rooms/' + roomname).set({
-            phase: 0,
             owner: firebase.auth().currentUser.uid,
             counter:1,
         }).then(()=>{
@@ -183,7 +182,7 @@ export class Loading extends React.Component {
                     this.props.screenProps.navigate('Home')
                 } else {
                     firebase.auth().signInAnonymously().then(() => {
-                        this.props.navigation.navigate('Home')
+                        this.props.screenProps.navigate('Home')
                     }).catch(function(error){alert(error)})
                 }
             }

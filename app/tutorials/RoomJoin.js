@@ -49,9 +49,9 @@ export class Join1 extends Component {
     _continue(roomname) {
         if(roomname.length==4){
             firebase.database().ref('rooms/' + roomname).once('value', snap => {
-                if(snap.exists() && (snap.val().phase == 0)){
+                if(snap.exists() && (snap.val().counter == 0)){
                     this._joinRoom(roomname)
-                } else if (snap.exists() && (snap.val().phase > 0)) {
+                } else if (snap.exists() && (snap.val().counter > 0)) {
                     setTimeout(()=>{
                         this.setState({errormessage:'Game has already started'})
                         this.refs.error.shake(800)
@@ -151,15 +151,15 @@ export class LobbyPager extends Component {
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
         this.listPlayerRef  = this.roomRef.child('listofplayers');
         this.myInfoRef      = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid);
-        this.phaseRef       = this.roomRef.child('phase');
+        this.counterRef     = this.roomRef.child('counter');
         
     }
 
     
     componentWillMount() {
-        this.phaseRef.on('value',snap=>{
+        this.counterRef.on('value',snap=>{
             if(snap.exists()){
-                if(snap.val() == 1){
+                if(snap.val() == 2){
                     this._transition(true);
                 } else if(snap.val()>1){
                     AsyncStorage.setItem('GAME-KEY',this.state.roomname);
@@ -171,8 +171,8 @@ export class LobbyPager extends Component {
     }
 
     componentWillUnmount() {
-        if(this.phaseRef){
-            this.phaseRef.off();
+        if(this.counterRef){
+            this.counterRef.off();
         }
     }
 

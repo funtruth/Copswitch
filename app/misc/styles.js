@@ -254,6 +254,12 @@ export default styles = StyleSheet.create({
         color:colors.font,
         alignSelf: 'center',
     },
+    counterfont: {
+        fontSize:17,
+        fontFamily:'LuckiestGuy-Regular',
+        color:colors.font,
+        marginLeft:15,
+    },
     lsfont: {
         fontSize:12,
         fontFamily:'LuckiestGuy-Regular',

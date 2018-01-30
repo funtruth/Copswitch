@@ -33,10 +33,9 @@ render() {
 
     return ( <View style = {{height:this.height*0.1, width:this.width*0.22}}>
                 <TouchableOpacity style = {{
-                        position:'absolute', left:10, right:0, top:0, bottom:10, borderRadius:5,
+                        position:'absolute', left:0, right:0, top:0, bottom:10, borderRadius:5,
                         justifyContent:'center',
                         alignItems:'center',
-                        backgroundColor:this.props.backgroundColor,
                     }}
                     onPress = {this.props.onPress}
                     onLongPress = {this.props.onLongPress}

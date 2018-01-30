@@ -49,20 +49,23 @@ constructor(props) {
 
     this.state = {
         roomname:           params.roomname,
-        phase:              '',
         counter:            '',
         phasename:          '',
-        message:         '',
-        phasebackground:    'night',
-        nextphase:          null,
+        message:            '',
+        nextcounter:        null,
 
         myname:             '',
-        myrole:             '',
         myroleid:           '',
         targetdead:         '',
         targettown:         '',
 
         namelist:           [],
+        deadlist:           [],
+        newslist:           [],
+        noteslist:          [],
+        profilelist:        [],
+        mafialist:          [],
+        section:            'alive',
 
         triggernum:         1000,
         playernum:          1000,
@@ -97,10 +100,11 @@ constructor(props) {
     this.mafiaRef           = this.roomRef.child('mafia');
     
     this.listRef            = this.roomRef.child('listofplayers');
+    this.mafiaRef           = this.roomRef.child('mafia');
     this.playernumRef       = this.roomRef.child('playernum');
     this.nominationRef      = this.roomRef.child('nominate');
     this.ownerRef           = this.roomRef.child('owner');
-    this.phaseRef           = this.roomRef.child('phase');
+    this.counterRef         = this.roomRef.child('counter');
     this.actionRef          = this.roomRef.child('actions');
 
     //Owner Listening
@@ -108,9 +112,6 @@ constructor(props) {
     this.voteRef            = this.roomRef.child('votes');
     this.readyRef           = this.roomRef.child('ready').orderByValue().equalTo(true);
     this.loadedRef          = this.roomRef.child('loaded');
-
-    //Transition Screen
-    this.counterRef         = this.roomRef.child('counter');
 
     this.msgRef             = firebase.database().ref('messages').child(this.user);
     this.globalMsgRef       = firebase.database().ref('globalmsgs').child(roomname);
@@ -123,14 +124,27 @@ componentWillMount() {
             
             if(snap.val().roleid){
                 //Role information
-                this.setState({
-                    myroleid:       snap.val().roleid,
+
+                var profilelist = [];
+
+                profilelist.push({
                     myrole:         Rolesheet[snap.val().roleid].name,
                     rolerules:      Rolesheet[snap.val().roleid].rules,
+                    win:            Rolesheet[snap.val().roleid].win,
+                    fl:             5,
+
+                    key:            snap.val().roleid,
+                })
+
+                this.setState({
+                    myroleid:       snap.val().roleid,
                     amimafia:       Rolesheet[snap.val().roleid].type == 1,
                     targetdead:     Rolesheet[snap.val().roleid].targetdead?true:false,
                     targettown:     Rolesheet[snap.val().roleid].targettown?true:false,
+                    profilelist:    profilelist
                 })
+
+                
             }
 
             //Button press states and Living state
@@ -179,22 +193,57 @@ componentWillMount() {
     this.listRef.on('value',snap=>{
         if(snap.exists()){
             //Update colors + options for Player Name Buttons
-            var list = [];
+            var namelist = [];
+            var deadlist = [];
             snap.forEach((child)=> {
-                list.push({
-                    name:           child.val().name,
-                    dead:           child.val().dead?true:false,
-                    immune:         child.val().immune?true:false,
-                    status:         child.val().status?true:false,
-                    statusname:     child.val().status,
-                    type:           child.val().type,
-                    roleid:         child.val().roleid,
-    
-                    key:            child.key,
-                })
+                if(child.val().dead){
+                    deadlist.push({
+                        name:           child.val().name,
+                        dead:           child.val().dead?true:false,
+                        immune:         child.val().immune?true:false,
+                        status:         child.val().status?true:false,
+                        statusname:     child.val().status,
+                        type:           child.val().type,
+                        roleid:         child.val().roleid,
+                        fl:             1,
+        
+                        key:            child.key,
+                    })
+                } else {
+                    namelist.push({
+                        name:           child.val().name,
+                        dead:           child.val().dead?true:false,
+                        immune:         child.val().immune?true:false,
+                        status:         child.val().status?true:false,
+                        statusname:     child.val().status,
+                        type:           child.val().type,
+                        roleid:         child.val().roleid,
+                        fl:             1,
+        
+                        key:            child.key,
+                    })
+                }
             })
     
-            this.setState({namelist:list})
+            this.setState({
+                namelist:namelist,
+                deadlist:deadlist,
+            })
+        }
+    })
+
+    this.mafiaRef.on('value',snap=>{
+        if(snap.exists()){
+            var mafialist = [];
+            snap.forEach((child)=>{
+                mafialist.push({
+                    name:       child.val().name,
+                    rolename:   Rolesheet[child.val().roleid].name,
+                    alive:      child.val().alive,
+                    key:        child.key,
+                })
+            })
+            this.setState({mafialist:mafialist})
         }
     })
 
@@ -210,11 +259,9 @@ componentWillMount() {
             this.mafiaRef.orderByChild('alive').equalTo(true).once('value',mafia=>{
                 if(mafia.numChildren() == 0){
                     //TODO
-                    this.phaseRef.set(6)
                 }
                 else if(mafia.numChildren()*2+1 > snap.val()){
                     //TODO
-                    this.phaseRef.set(7)
                 }
             })
         }
@@ -228,10 +275,12 @@ componentWillMount() {
         }
     })
 
+    //Phases are 1-Day, 2-Lynching, 3-Night
+    //Day counter starts at 3
     this.counterRef.on('value',snap=>{
         if(snap.exists()){
 
-            const phase = (snap.val()) % 3 + 1
+            const phase = snap.val() % 3 + 1
 
             this.setState({
                 counter: snap.val(),
@@ -248,6 +297,42 @@ componentWillMount() {
         }
     })
     
+    this.globalMsgRef.on('value',snap=>{
+        if(snap.exists()){
+            var msg = [];
+            snap.forEach((child)=>{   
+                msg.push({
+                    counter:    child.val().counter,
+                    desc:       child.val().message,
+                    fl:         2,
+
+                    key:        child.key,
+                })
+            })
+            this.setState({newslist:msg.reverse()})
+        } else {
+            this.setState({newslist:[]})
+        }
+    })
+
+    this.msgRef.on('value',snap=>{
+        if(snap.exists()){
+            var msg = [];
+            snap.forEach((child)=>{   
+                msg.push({
+                    counter:    child.val().counter,
+                    desc:       child.val().message,
+                    fl:         2,
+
+                    key:        child.key,
+                })
+            })
+            this.setState({notes:msg.reverse()})
+        } else {
+            this.setState({noteslist:[]})
+        }
+    })
+
     //Count listeners for the room owner
     this.readyRef.on('value',snap=>{
         if(snap.exists() && this.state.amiowner && ((snap.numChildren()+1)>this.state.playernum)
@@ -384,8 +469,8 @@ componentWillMount() {
     this.loadedRef.on('value',snap=>{
         if(snap.exists() && this.state.amiowner){
             if(snap.numChildren() == this.state.playernum){
-                this.roomRef.child('nextphase').once('value',nextphase=>{
-                    this.roomRef.update({ phase:nextphase.val() })
+                this.roomRef.child('nextcounter').once('value',nextcounter=>{
+                    this.roomRef.update({ counter:nextcounter.val() })
                     .then(()=>{
                         this.listRef.once('value',snap=>{
                             snap.forEach((child)=>{
@@ -393,7 +478,7 @@ componentWillMount() {
                                 this.listRef.child(child.key).update({presseduid:'foo'})
                                 this.roomRef.child('ready').child(child.key).set(false).then(()=>{
                                     this.loadedRef.remove();
-                                    this.roomRef.child('nextphase').remove();
+                                    this.roomRef.child('nextcounter').remove();
                                 })
                             })
                         })
@@ -417,6 +502,9 @@ componentWillUnmount() {
     }
     if(this.listRef){
         this.listRef.off();
+    }
+    if(this.mafiaRef){
+        this.mafiaRef.off();
     }
     if(this.playernumRef){
         this.playernumRef.off();
@@ -451,8 +539,8 @@ _buttonPress() {
 }
 
 _changePhase(change){
-    this.setState({nextphase:this.state.counter + change})
-    this.roomRef.child('nextphase').set(this.state.counter + change).then(()=>{
+    this.setState({nextcounter:this.state.counter + change})
+    this.roomRef.child('nextcounter').set(this.state.counter + change).then(()=>{
         this.roomRef.child('ready').remove().then(()=>{
             this.voteRef.remove()
         })
@@ -650,13 +738,12 @@ _changePlayerCount(bool){
 
 //Sends a private notice message
 _noticeMsg(target,message){
-    firebase.database().ref('messages/' + target).push({from: 'Private', message: message})
+    firebase.database().ref('messages/' + target).push({counter: this.state.counter, message: message})
 }
 
 //Creates a public notice message
-_noticeMsgGlobal(roomname,color,message){
-    firebase.database().ref('globalmsgs/' + roomname)
-        .push({from: 'Public', color: color, message: message})
+_noticeMsgGlobal(roomname,message){
+    this.globalMsgRef.push({counter: this.state.counter, message: message})
 }
 
 //Action Roles that adjust
@@ -869,8 +956,8 @@ _gameOver() {
 _renderPhaseName() {
     return <View style = {{
         position:'absolute', right:MARGIN, left:MARGIN, top:MARGIN*2, bottom:0,
-        borderRadius:5,
-        justifyContent:'center', backgroundColor:colors.color1
+        borderRadius:30, borderBottomRightRadius:0,
+        justifyContent:'center', backgroundColor:colors.color8
     }}>
 
             <TouchableOpacity
@@ -894,37 +981,57 @@ _renderPhaseName() {
 
 _renderOptionBar() {
     return <Animated.View style = {{
-        position:'absolute', right:MARGIN, top:MARGIN, bottom:0
+        position:'absolute', right:MARGIN, top:0, bottom:0, 
+        backgroundColor:colors.color8, justifyContent:'center'
     }}>
         <OptionButton
             title = 'News'
             icon = 'alert-circle'
-            color = {colors.dead}
-            backgroundColor = {colors.color1}
+            color = {this.state.section=='news'?colors.font:colors.dead}
+            onPress = {()=>{this.setState({
+                list:this.state.newslist,
+                section:'news'
+            })}}
         />
         <OptionButton
             title = 'Notes'
             icon = 'clipboard'
-            color = {colors.dead}
+            color = {this.state.section=='notes'?colors.font:colors.dead}
             backgroundColor = {colors.color1}
+            onPress = {()=>{this.setState({
+                list:this.state.notelist,
+                section:'notes'
+            })}}
         />
         <OptionButton
             title = 'ME'
             icon = 'account'
-            color = {colors.dead}
+            color = {this.state.section=='profile'?colors.font:colors.dead}
             backgroundColor = {colors.color1}
+            onPress = {()=>{this.setState({
+                list:this.state.profilelist,
+                section:'profile'
+            })}}
         />
         <OptionButton
             title = 'Alive'
             icon = 'account-multiple'
-            color = {colors.font}
+            color = {this.state.section=='alive'?colors.font:colors.dead}
             backgroundColor = {colors.color1}
+            onPress = {()=>{this.setState({
+                list:this.state.namelist,
+                section:'alive'
+            })}}
         />
         <OptionButton
             title = 'Dead'
             icon = 'skull'
-            color = {colors.dead}
+            color = {this.state.section=='dead'?colors.font:colors.dead}
             backgroundColor = {colors.color1}
+            onPress = {()=>{this.setState({
+                list:this.state.deadlist,
+                section:'dead'
+            })}}
         />
         
     </Animated.View>
@@ -934,51 +1041,83 @@ _renderOptionBar() {
 _renderListComponent(){
 
     return <View style = {{
-        position:'absolute', left:MARGIN, top:0, bottom:MARGIN, right:MARGIN,
+        position:'absolute', left:MARGIN*4, top:MARGIN, bottom:MARGIN, right:MARGIN*2,
         borderRadius:5,
     }}>
         <FlatList
-        data={this.state.namelist}
-        renderItem={({item}) => (
-            <TouchableOpacity
-                style = {{flexDirection:'row',alignItems:'center',
-                justifyContent:'center', height:40, marginBottom:MARGIN, borderRadius:5,
-                backgroundColor: item.dead ? colors.dead : (item.immune? colors.immune : 
-                    (item.status?colors.status:colors.namebtn))
-                }}   
-                onPress         = {() => { this._nameBtnPress(item) }}
-                onLongPress     = {() => { this._nameBtnLongPress(item) }}
-                disabled        = {this.state.disabled}
-            >
-                    <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
-                    <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
-                        'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
-                        style={{color:colors.font, fontSize:26}}/>
-                    </View>
-                    <View style = {{flex:0.7, justifyContent:'center'}}>
-                        <Text style = {styles.lfont}>{false?item.name + ' (' + Rolesheet[item.roleid].name + ') ':
-                            item.name}</Text>
-                    </View>
-                    <View style = {{flex:0.15}}/>
-                
-            </TouchableOpacity>
-        )}
+        data={this.state.list?this.state.list:this.state.namelist}
+        renderItem={({item}) => (this._renderItem(item))}
         keyExtractor={item => item.key}
     />
     </View>
     
 }
 
+_renderItem(item){
+    if(item.fl == 1){
+        return <TouchableOpacity
+            style = {{flexDirection:'row',alignItems:'center',
+            justifyContent:'center', height:40, marginBottom:MARGIN, borderRadius:5,
+            backgroundColor: item.dead ? colors.dead : (item.immune? colors.immune : 
+                (item.status?colors.status:colors.namebtn))
+            }}   
+            onPress         = {() => { this._nameBtnPress(item) }}
+            onLongPress     = {() => { this._nameBtnLongPress(item) }}
+            disabled        = {this.state.disabled}
+        >
+                <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
+                <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
+                    'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
+                    style={{color:colors.font, fontSize:26}}/>
+                </View>
+                <View style = {{flex:0.7, justifyContent:'center'}}>
+                    <Text style = {styles.lfont}>{false?item.name + ' (' + Rolesheet[item.roleid].name + ') ':
+                        item.name}</Text>
+                </View>
+                <View style = {{flex:0.15}}/>
+            
+        </TouchableOpacity>
+    } else if (item.fl == 2){
+        return <View>
+            <Text style = {styles.counterfont}>{
+                Phases[item.counter%3 + 1].name + ' ' + (item.counter - item.counter%3)/3
+            }</Text>
+            <Text style = {styles.roleDesc}>{item.desc}</Text>
+        </View>
+    } else if (item.fl == 4){
+        return <Text style = {styles.lfont}>{item.counter}</Text>
+    } else if(item.fl == 5){
+        return <View style = {{height:this.height*0.55, justifyContent: 'center', alignItems: 'center' }}>
+            <Text style = {styles.lfont}>you are a:</Text>
+            <Text style = {styles.mfont}>{item.myrole}</Text>
+            <Text style = {styles.lfont}>At night you:</Text>
+            <Text style = {styles.roleDesc}>{item.rolerules}</Text>
+            {this.state.amimafia?<View>
+                <Text style = {styles.lfont}>Your teammates:</Text>
+                <FlatList
+                    data={this.state.mafialist}
+                    renderItem={({item}) => (
+                        <Text style={[styles.roleDesc,{textDecorationLine:item.alive?'none':'line-through'}]}>
+                            {'[ ' + item.name + ' ] ' + item.rolename}</Text>
+                    )}
+                    keyExtractor={item => item.key}
+                /></View>:<View><Text style = {styles.lfont}>you win when:</Text>
+                <Text style = {styles.roleDesc}>{item.win}</Text></View>}
+        </View>
+    }
+}
+
 _renderDesc(flex) {
     return <View style = {{
         position:'absolute', left:MARGIN, right:MARGIN, top:0, bottom:MARGIN,
-        borderRadius:5, flex:flex,
+        borderRadius:30, borderTopRightRadius:0, flex:flex,
         backgroundColor:colors.desc
     }}>
         <View style = {{flex:0.15}}/>
         {this._renderMessage(0.25)}
         {this._renderChoices(0.3)}
-        {this._renderWaiting(0.3)}
+        {this._renderWaiting(0.25)}
+        <View style = {{flex:0.05}}/>
     </View>
 }
 
