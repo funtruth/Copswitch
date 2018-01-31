@@ -51,7 +51,7 @@ render() {
                     <MaterialCommunityIcons name={this.props.icon} style={{
                         color:this.props.color, fontSize:26}}/>
                     <Text style = {{
-                        fontSize:16,
+                        fontSize:12,
                         fontFamily:'LuckiestGuy-Regular',
                         color:this.props.color,
                         alignSelf: 'center',

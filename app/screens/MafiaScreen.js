@@ -54,7 +54,6 @@ constructor(props) {
         message:            '',
         nextcounter:        null,
 
-        myname:             '',
         myroleid:           '',
         targetdead:         '',
         targettown:         '',
@@ -71,7 +70,6 @@ constructor(props) {
         playernum:          1000,
 
         ready:              false,
-        presseduid:         '',
         disabled:           false,
         nReady:             5,
 
@@ -89,13 +87,14 @@ constructor(props) {
         contOpacity:        new Animated.Value(0),
         cancelOpacity:      new Animated.Value(0),
     };
-
+    
     this.height             = Dimensions.get('window').height;
     this.width              = Dimensions.get('window').width;
     this.user               = firebase.auth().currentUser.uid;
 
     this.roomRef            = firebase.database().ref('rooms/' + roomname);
-    this.myInfoRef          = this.roomRef.child('listofplayers').child(this.user);
+    this.placeRef           = this.roomRef.child('place').child(this.user);
+    this.deadRef            = this.roomRef.child('dead').child(this.user);
     this.readyValueRef      = this.roomRef.child('ready').child(this.user);
     this.mafiaRef           = this.roomRef.child('mafia');
     
@@ -108,7 +107,7 @@ constructor(props) {
     this.actionRef          = this.roomRef.child('actions');
 
     //Owner Listening
-    this.guiltyVotesRef     = this.roomRef.child('guiltyvotes');
+    this.ballotsRef         = this.roomRef.child('ballots');
     this.voteRef            = this.roomRef.child('votes');
     this.readyRef           = this.roomRef.child('ready').orderByValue().equalTo(true);
     this.loadedRef          = this.roomRef.child('loaded');
@@ -119,40 +118,36 @@ constructor(props) {
 
 componentWillMount() {
 
-    this.myInfoRef.on('value',snap=>{
+    this.placeRef.once('value',snap=>{
         if(snap.exists()){
-            
-            if(snap.val().roleid){
-                //Role information
+            this.setState({place:snap.val()})
 
-                var profilelist = [];
-
-                profilelist.push({
-                    myrole:         Rolesheet[snap.val().roleid].name,
-                    rolerules:      Rolesheet[snap.val().roleid].rules,
-                    win:            Rolesheet[snap.val().roleid].win,
-                    fl:             5,
-
-                    key:            snap.val().roleid,
-                })
-
-                this.setState({
-                    myroleid:       snap.val().roleid,
-                    amimafia:       Rolesheet[snap.val().roleid].type == 1,
-                    targetdead:     Rolesheet[snap.val().roleid].targetdead?true:false,
-                    targettown:     Rolesheet[snap.val().roleid].targettown?true:false,
-                    profilelist:    profilelist
-                })
-
-                
-            }
-
-            //Button press states and Living state
-            this.setState({
-                presseduid:         snap.val().presseduid,
-                amidead:            snap.val().dead,
-                myname:             snap.val().name,
+            this.listRef.child(snap.val()).once('value',info=>{
+                if(snap.exists() && snap.val().roleid){
+                    profilelist.push({
+                        myrole:         Rolesheet[snap.val().roleid].name,
+                        rolerules:      Rolesheet[snap.val().roleid].rules,
+                        win:            Rolesheet[snap.val().roleid].win,
+                        fl:             5,
+    
+                        key:            snap.val().roleid,
+                    })
+    
+                    this.setState({
+                        myroleid:       snap.val().roleid,
+                        amimafia:       Rolesheet[snap.val().roleid].type == 1,
+                        targetdead:     Rolesheet[snap.val().roleid].targetdead?true:false,
+                        targettown:     Rolesheet[snap.val().roleid].targettown?true:false,
+                        profilelist:    profilelist
+                    })
+                }
             })
+        }
+    })
+
+    this.deadRef.on('value',snap=>{
+        if(snap.exists()){
+            this.setState({amidead:true})
         }
     })
 
@@ -195,39 +190,10 @@ componentWillMount() {
             //Update colors + options for Player Name Buttons
             var namelist = [];
             var deadlist = [];
-            snap.forEach((child)=> {
-                if(child.val().dead){
-                    deadlist.push({
-                        name:           child.val().name,
-                        dead:           child.val().dead?true:false,
-                        immune:         child.val().immune?true:false,
-                        status:         child.val().status?true:false,
-                        statusname:     child.val().status,
-                        type:           child.val().type,
-                        roleid:         child.val().roleid,
-                        fl:             1,
-        
-                        key:            child.key,
-                    })
-                } else {
-                    namelist.push({
-                        name:           child.val().name,
-                        dead:           child.val().dead?true:false,
-                        immune:         child.val().immune?true:false,
-                        status:         child.val().status?true:false,
-                        statusname:     child.val().status,
-                        type:           child.val().type,
-                        roleid:         child.val().roleid,
-                        fl:             1,
-        
-                        key:            child.key,
-                    })
-                }
-            })
     
             this.setState({
-                namelist:namelist,
-                deadlist:deadlist,
+                namelist:snap.val(),
+                deadlist:snap.val(),
             })
         }
     })
@@ -363,12 +329,12 @@ componentWillMount() {
                 //Phase 3 Handling both CONTINUE and TRIGGER
                 else if(this.state.phase == 2){
                     
-                    this.guiltyVotesRef.once('value',guiltyvotes=>{
+                    this.ballotsRef.once('value',ballots=>{
 
                         var counter = 0;
                         var names = 'Nobody';
 
-                        guiltyvotes.forEach((votechild)=>{ 
+                        ballots.forEach((votechild)=>{ 
                             counter++;
                             if(counter==1){names=votechild.val()}
                             else if(counter>1){names=names+', '+votechild.val()}
@@ -377,7 +343,7 @@ componentWillMount() {
                         this._noticeMsgGlobal(this.state.roomname,'#d31d1d', names + ' voted against ' 
                             + this.state.nominee + '.') 
 
-                        if((guiltyvotes.numChildren()+1)>this.state.triggernum){
+                        if((ballots.numChildren()+1)>this.state.triggernum){
 
                             firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                                 + this.state.nominate).update({dead:true}).then(()=>{
@@ -398,7 +364,7 @@ componentWillMount() {
                                         this._changePhase(Phases[this.state.phase].trigger)
                                     }
                                 } else if (dead.val().roleid == 'W'){
-                                    guiltyvotes.forEach((jester)=>{ 
+                                    ballots.forEach((jester)=>{ 
                                         firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
                                         + jester.key).update({bloody:true,suspicious:true})
                                     })
@@ -430,7 +396,7 @@ componentWillMount() {
                     new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
                         new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
                             
-                            this.guiltyVotesRef.remove();
+                            this.ballotsRef.remove();
                             this._resetDayStatuses();
                             
                             this._changePhase(Phases[this.state.phase].continue);
@@ -475,7 +441,6 @@ componentWillMount() {
                         this.listRef.once('value',snap=>{
                             snap.forEach((child)=>{
                                 //Set all votes to 0 and RESET Buttons
-                                this.listRef.child(child.key).update({presseduid:'foo'})
                                 this.roomRef.child('ready').child(child.key).set(false).then(()=>{
                                     this.loadedRef.remove();
                                     this.roomRef.child('nextcounter').remove();
@@ -491,8 +456,8 @@ componentWillMount() {
 
 componentWillUnmount() {
 
-    if(this.myInfoRef){
-        this.myInfoRef.off();
+    if(this.deadRef){
+        this.deadRef.off();
     }
     if(this.readyValueRef){
         this.readyValueRef.off();
@@ -561,9 +526,6 @@ _resetDayStatuses() {
 _readyValue(status){
     this.readyValueRef.set(status)
 }
-_pressedUid(uid){
-    this.myInfoRef.update({presseduid: uid})
-}
 
 //1100 ms TOTAL
 //DEPRECATED: title, vote, abstain, list
@@ -598,9 +560,8 @@ _nameBtnPress(item){
                 this.setState({message:'That player is Immune'})
             } else {
                 this.setState({message:'You have selected ' + item.name + '.'})
-                this._pressedUid(item.key);
-                this._readyValue(true);
-                this.voteRef.child(item.key).child(this.user).set(this.state.myname);
+                this._readyValue(true); 
+                this.voteRef.child(this.state.place).set(item.place);
             }
         } else if (this.state.phase == 3) {
 
@@ -620,7 +581,6 @@ _nameBtnPress(item){
                 }).then(()=>{
                     this.actionRef.child(item.key).child(this.state.myroleid).child(this.user)
                         .set(this.state.myname).then(()=>{
-                            this._pressedUid(item.key);
                             this._readyValue(true);
                         })
                 })
@@ -650,7 +610,7 @@ _optionOnePress() {
         this._viewChange(false,true,false,false,true,false)
     } else if (this.state.phase == 2){
         this.setState({message:'You voted INNOCENT.'})
-        this.guiltyVotesRef.child(this.user).set(null).then(()=>{
+        this.ballotsRef.child(this.state.place).set(false).then(()=>{
             this._readyValue(true);
         })
     } else if (this.state.phase == 3){
@@ -672,7 +632,7 @@ _optionTwoPress() {
         this.setState({message:'You abstained.'})
     } else if (this.state.phase == 2){
         this.setState({message:'You voted GUILTY.'})
-        this.guiltyVotesRef.child(this.user).set(this.state.myname).then(()=>{
+        this.ballotsRef.child(this.user).set(this.state.myname).then(()=>{
             this._readyValue(true);
         })
     } else if (this.state.phase == 3){
@@ -691,23 +651,19 @@ _resetOptionPress() {
 
     if(this.state.phase != 3){
         this._viewChange(true,false)
-        this.setState({message:null})
+        this.setState({message:null, disabled:false})
     }
 
     if(this.state.phase == 1){
 
         this._readyValue(false);
-
-        if(this.state.presseduid != 'foo'){
-            this._pressedUid('foo');
-            this.voteRef.child(this.state.presseduid).child(this.user).remove()
-        }
+        this.voteRef.child(this.state.place).remove()
+        
 
     } else if (this.state.phase == 2){
 
-        this.guiltyVotesRef.child(this.user).set(null).then(()=>{
-            this._readyValue(false);
-        })
+        this._readyValue(false);
+        this.ballotsRef.child(this.state.place).remove()
 
     } else if (this.state.phase == 3){
 
@@ -717,12 +673,8 @@ _resetOptionPress() {
                 targetname: null,
             });
 
-        this.actionRef.child(this.state.presseduid).child(this.state.myroleid)
-        .child(this.user).set(null)
-            .then(()=>{
-                this._readyValue(false);
-                this._pressedUid('foo');
-            })
+        this._readyValue(false);
+        this.actionRef.child(this.state.place).remove()
     }
 }
 
@@ -1028,10 +980,12 @@ _renderOptionBar() {
             icon = 'skull'
             color = {this.state.section=='dead'?colors.font:colors.dead}
             backgroundColor = {colors.color1}
-            onPress = {()=>{this.setState({
-                list:this.state.deadlist,
-                section:'dead'
-            })}}
+            onPress = {()=>{
+                this.roomRef.child('list').once('value',snap=>{
+                    this.array = snap.val()
+                    alert(this.array)
+                })
+            }}
         />
         
     </Animated.View>
@@ -1047,7 +1001,7 @@ _renderListComponent(){
         <FlatList
         data={this.state.list?this.state.list:this.state.namelist}
         renderItem={({item}) => (this._renderItem(item))}
-        keyExtractor={item => item.key}
+        keyExtractor={item => item.uid}
     />
     </View>
     
