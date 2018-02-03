@@ -21,6 +21,7 @@ import Phases from '../misc/phases.json';
 import { CustomButton } from '../components/CustomButton.js';
 import { OptionButton } from '../components/OptionButton.js';
 import { HelperButton } from '../components/HelperButton.js';
+import { Console } from '../components/Console.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -88,6 +89,8 @@ constructor(props) {
         cancelOpacity:      new Animated.Value(0),
     };
     
+    this.namelist           = [];
+
     this.height             = Dimensions.get('window').height;
     this.width              = Dimensions.get('window').width;
     this.user               = firebase.auth().currentUser.uid;
@@ -95,7 +98,7 @@ constructor(props) {
     this.roomRef            = firebase.database().ref('rooms/' + roomname);
     this.placeRef           = this.roomRef.child('place').child(this.user);
     this.deadRef            = this.roomRef.child('dead').child(this.user);
-    this.readyValueRef      = this.roomRef.child('ready').child(this.user);
+    this.myReadyRef         = this.roomRef.child('ready').child(this.user);
     this.mafiaRef           = this.roomRef.child('mafia');
     
     this.listRef            = this.roomRef.child('listofplayers');
@@ -151,7 +154,7 @@ componentWillMount() {
         }
     })
 
-    this.readyValueRef.on('value',snap=>{
+    this.myReadyRef.on('value',snap=>{
         if(snap.exists()){
             if(this.state.amidead){
                 this._viewChange(false,false)
@@ -169,9 +172,9 @@ componentWillMount() {
             } else {
                 this._viewChange(false,false)
                 setTimeout(()=>{
-                    this.readyValueRef.once('value',snap=>{
+                    this.myReadyRef.once('value',snap=>{
                         if(snap.exists()){
-                            this.readyValueRef.remove();
+                            this.myReadyRef.remove();
                         } else {
                             this.loadedRef.child(this.user).set(true)
                         }
@@ -188,11 +191,10 @@ componentWillMount() {
     this.listRef.on('value',snap=>{
         if(snap.exists()){
             //Update colors + options for Player Name Buttons
-            var namelist = [];
-            var deadlist = [];
+            
+            this.namelist = snap.val();
     
             this.setState({
-                namelist:snap.val(),
                 deadlist:snap.val(),
             })
         }
@@ -215,13 +217,16 @@ componentWillMount() {
 
     this.playernumRef.on('value',snap=>{
         if(snap.exists()){
+
             const minusone = snap.val() - 1;
             const mod = minusone%2;
+
             this.setState({ 
                 triggernum:     (((minusone - mod)/2)+1),
                 playernum:      snap.val(),
             })
 
+            //MOVE THIS CRAP
             this.mafiaRef.orderByChild('alive').equalTo(true).once('value',mafia=>{
                 if(mafia.numChildren() == 0){
                     //TODO
@@ -233,6 +238,7 @@ componentWillMount() {
         }
     })
 
+    //TODO
     this.nominationRef.on('value',snap=>{
         if(snap.exists()){
             this.listRef.child(snap.val()).once('value',sp=>{
@@ -293,7 +299,7 @@ componentWillMount() {
                     key:        child.key,
                 })
             })
-            this.setState({notes:msg.reverse()})
+            this.setState({noteslist:msg.reverse()})
         } else {
             this.setState({noteslist:[]})
         }
@@ -459,8 +465,8 @@ componentWillUnmount() {
     if(this.deadRef){
         this.deadRef.off();
     }
-    if(this.readyValueRef){
-        this.readyValueRef.off();
+    if(this.myReadyRef){
+        this.myReadyRef.off();
     }
     if(this.ownerRef){
         this.ownerRef.off();
@@ -523,10 +529,6 @@ _resetDayStatuses() {
     })
 }
 
-_readyValue(status){
-    this.readyValueRef.set(status)
-}
-
 //1100 ms TOTAL
 //DEPRECATED: title, vote, abstain, list
 _viewChange(cont,cancel) {
@@ -560,8 +562,7 @@ _nameBtnPress(item){
                 this.setState({message:'That player is Immune'})
             } else {
                 this.setState({message:'You have selected ' + item.name + '.'})
-                this._readyValue(true); 
-                this.voteRef.child(this.state.place).set(item.place);
+                this.voteRef.child(this.state.place).set(item.place).then(()=>{this.myReadyRef.set(true)})
             }
         } else if (this.state.phase == 3) {
 
@@ -573,17 +574,7 @@ _nameBtnPress(item){
                 this.setState({message:'Select a Dead player.'})
             } else {
                 this.setState({message:'You have selected ' + item.name + '.'})
-                
-                this.actionRef.child(this.user).update({
-                        target:     item.key,
-                        targetname: item.name,
-                        roleid:     this.state.myroleid,
-                }).then(()=>{
-                    this.actionRef.child(item.key).child(this.state.myroleid).child(this.user)
-                        .set(this.state.myname).then(()=>{
-                            this._readyValue(true);
-                        })
-                })
+                this.actionRef.child(this.state.place).set(item.place).then(()=>{this.myReadyRef.set(true)})
             }
         }
     }
@@ -607,14 +598,12 @@ _optionOnePress() {
     this._buttonPress();
     
     if(this.state.phase == 1){
-        this._viewChange(false,true,false,false,true,false)
+        this._viewChange(false,true)
     } else if (this.state.phase == 2){
         this.setState({message:'You voted INNOCENT.'})
-        this.ballotsRef.child(this.state.place).set(false).then(()=>{
-            this._readyValue(true);
-        })
+        this.ballotsRef.child(this.state.place).set(false).then(()=>{this.myReadyRef.set(true)})
     } else if (this.state.phase == 3){
-        this._viewChange(false,true,false,false,true,false)
+        this._viewChange(false,true)
     } else if (this.state.phase == 6 || this.state.phase == 7){
         alert('feature not available yet')
     }
@@ -628,15 +617,13 @@ _optionTwoPress() {
     }
 
     if(this.state.phase == 1){
-        this._readyValue(true);
+        this.myReadyRef.set(true);
         this.setState({message:'You abstained.'})
     } else if (this.state.phase == 2){
         this.setState({message:'You voted GUILTY.'})
-        this.ballotsRef.child(this.user).set(this.state.myname).then(()=>{
-            this._readyValue(true);
-        })
+        this.ballotsRef.child(this.state.place).set(true).then(()=>{this.myReadyRef.set(true)})
     } else if (this.state.phase == 3){
-        this._readyValue(true);
+        this.myReadyRef.set(true);
         this.setState({message:'You stayed home.'})
     } else if (this.state.phase == 6 || this.state.phase == 7){
         this._gameOver();
@@ -655,26 +642,11 @@ _resetOptionPress() {
     }
 
     if(this.state.phase == 1){
-
-        this._readyValue(false);
-        this.voteRef.child(this.state.place).remove()
-        
-
+        this.voteRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
     } else if (this.state.phase == 2){
-
-        this._readyValue(false);
-        this.ballotsRef.child(this.state.place).remove()
-
+        this.ballotsRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
     } else if (this.state.phase == 3){
-
-        this.actionRef.child(this.user).update({
-                roleid:     null,
-                target:     null,
-                targetname: null,
-            });
-
-        this._readyValue(false);
-        this.actionRef.child(this.state.place).remove()
+        this.actionRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
     }
 }
 
@@ -690,11 +662,11 @@ _changePlayerCount(bool){
 
 //Sends a private notice message
 _noticeMsg(target,message){
-    firebase.database().ref('messages/' + target).push({counter: this.state.counter, message: message})
+    this.msgRef.child(target).push({counter: this.state.counter, message: message})
 }
 
 //Creates a public notice message
-_noticeMsgGlobal(roomname,message){
+_noticeMsgGlobal(message){
     this.globalMsgRef.push({counter: this.state.counter, message: message})
 }
 
@@ -907,22 +879,11 @@ _gameOver() {
 
 _renderPhaseName() {
     return <View style = {{
-        position:'absolute', right:MARGIN, left:MARGIN, top:MARGIN*2, bottom:0,
-        borderRadius:30, borderBottomRightRadius:0,
-        justifyContent:'center', backgroundColor:colors.color8
+        height:this.height*0.07, width:this.width*0.3,
+        borderBottomRightRadius:30, borderTopRightRadius:30, justifyContent:'center', backgroundColor:colors.color8
     }}>
-
-            <TouchableOpacity
-                style = {{position:'absolute', left:this.width*0.04}}
-                onPress = {()=>{
-                    
-                }}
-            >
-                <MaterialCommunityIcons name='menu' style={{color:colors.font,fontSize:30}}/>
-            </TouchableOpacity>
-
             <Text style = {{color:colors.titlefont, alignSelf:'center', 
-                fontFamily: 'LuckiestGuy-Regular', fontSize:35}}>
+                fontFamily: 'LuckiestGuy-Regular', fontSize:20}}>
                 {(this.state.phase == 1 || this.state.phase == 3)?
                     this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
                     :this.state.phasename}
@@ -971,7 +932,7 @@ _renderOptionBar() {
             color = {this.state.section=='alive'?colors.font:colors.dead}
             backgroundColor = {colors.color1}
             onPress = {()=>{this.setState({
-                list:this.state.namelist,
+                list:this.namelist,
                 section:'alive'
             })}}
         />
@@ -980,14 +941,21 @@ _renderOptionBar() {
             icon = 'skull'
             color = {this.state.section=='dead'?colors.font:colors.dead}
             backgroundColor = {colors.color1}
-            onPress = {()=>{
-                this.roomRef.child('list').once('value',snap=>{
-                    this.array = snap.val()
-                    alert(this.array)
-                })
-            }}
+            onPress = {()=>{this.setState({
+                list:this.state.deadlist,
+                section:'dead'
+            })}}
         />
         
+    </Animated.View>
+}
+
+_renderConsole(){
+    return <Animated.View style = {{
+        height:this.height*0.6, width:this.width*0.7,
+         borderRadius:30,
+    }}>
+        {this._renderListComponent()}
     </Animated.View>
 }
 
@@ -995,13 +963,13 @@ _renderOptionBar() {
 _renderListComponent(){
 
     return <View style = {{
-        position:'absolute', left:MARGIN*4, top:MARGIN, bottom:MARGIN, right:MARGIN*2,
+        position:'absolute', left:MARGIN*2, top:MARGIN*2, bottom:MARGIN*2, right:MARGIN*2,
         borderRadius:5,
     }}>
         <FlatList
-        data={this.state.list?this.state.list:this.state.namelist}
+        data={this.state.list?this.state.list:this.namelist}
         renderItem={({item}) => (this._renderItem(item))}
-        keyExtractor={item => item.uid}
+        keyExtractor={item => item.uid?item.uid:item.key}
     />
     </View>
     
@@ -1011,10 +979,10 @@ _renderItem(item){
     if(item.fl == 1){
         return <TouchableOpacity
             style = {{flexDirection:'row',alignItems:'center',
-            justifyContent:'center', height:40, marginBottom:MARGIN, borderRadius:5,
+            justifyContent:'center', height:40, marginBottom:MARGIN, borderRadius:30,
             backgroundColor: item.dead ? colors.dead : (item.immune? colors.immune : 
-                (item.status?colors.status:colors.namebtn))
-            }}   
+                (item.status?colors.status:colors.color8))
+            ,borderWidth:2,borderColor:'white'}}   
             onPress         = {() => { this._nameBtnPress(item) }}
             onLongPress     = {() => { this._nameBtnLongPress(item) }}
             disabled        = {this.state.disabled}
@@ -1150,28 +1118,44 @@ _renderWaiting(flex){
     </View>
 }
 
+_renderNav(){
+    return <View style = {{position:'absolute',bottom:10,left:this.width*0.2,right:this.width*0.2,
+        height:this.height*0.1,backgroundColor:colors.color8, borderRadius:30, borderWidth:2, borderColor:'white',
+        justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
+        <MaterialCommunityIcons name='account' style={{color:colors.font,fontSize:30,flex:0.3,textAlign:'center'}}/>
+        <MaterialCommunityIcons name='home' style={{color:colors.font,fontSize:30,flex:0.3,textAlign:'center'}}/>
+        <MaterialCommunityIcons name='clipboard' style={{color:colors.font,fontSize:30,flex:0.3,textAlign:'center'}}/>
+    </View>
+}
+
 /*<Image source = {require('../../assets/images/night.png')} 
 style = {{flex:1, alignSelf:'stretch', width:null}}>*/
 render() {
 
 return <View style = {{flex:1,backgroundColor:colors.gameback}}>
 
-    <View style = {{flex:1.5, justifyContent:'center'}}>
+    <View style = {{flex:0.1, justifyContent:'center'}}>
         {this._renderPhaseName()}
     </View>
 
-    <View style = {{flex:6.5, flexDirection:'row'}}>
-        <View style = {{flex:0.78}}>
-            {this._renderListComponent()}
-        </View>
-        <View style = {{flex:0.22}}>
-            {this._renderOptionBar()}
-        </View>
+    <View style = {{flex:0.75,alignItems:'center', justifyContent:'center', borderColor:'white', borderWidth:1}}>
+        {this._renderConsole()}
     </View>
-    
-    <View style = {{flex:2}}>
-        {this._renderDesc(2)}
-    </View>
+
+    {this._renderNav()}
+
+    <Console
+        title = {(this.state.phase == 1 || this.state.phase == 3)?
+            this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
+            :this.state.phasename}
+        subtitle = {this.state.message}
+        okay = {this.state.btn1}
+        cancel = {this.state.btn2}
+        visible = {this.state.alertVisible}
+        onClose = {() => {}}
+        onOne = {() => this._optionOnePress()}
+        onTwo = {() => this._optionOnePress()}
+    />
 
 </View>
 }

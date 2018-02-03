@@ -31,7 +31,7 @@ export default colors = {
     menubtn:    '#9285a8',
     namebtn:    '#94a3cc',
     pushbutton: '#9285a8',
-    shadow:     '#5f5374',
+    purple:     '#5f5374',
     font:       'white',
 
     lightbutton: '#94a3cc',
