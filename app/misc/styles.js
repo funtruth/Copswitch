@@ -115,10 +115,8 @@ export default styles = StyleSheet.create({
     roleDesc: {
         fontSize: 18,
         fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
         color: colors.shadow,
-        marginLeft: 40,
-        marginRight:40,
+        marginLeft:5
     },
     hidden: {
         fontSize: 15,

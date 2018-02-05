@@ -49,10 +49,10 @@ export default colors = {
 
     //black
     color1:                 '#403e3b',
+    gameback:               '#403e3b',
 
     //yellow
-    gameback:               '#e3c382',
-    gameback:               '#403e3b',
+    gamestripe:             '#e3c382',
     color2:                 '#e3c382',
 
     //Red

@@ -22,7 +22,6 @@ import { CustomButton } from '../components/CustomButton.js';
 import { HelperButton } from '../components/HelperButton.js';
 import { ListItem } from '../components/ListItem.js';
 import { Pager } from '../components/Pager.js';
-import { NumPad } from '../components/NumPad.js';
 import { Desc } from '../components/Desc.js';
 
 import Rolesheet from '../misc/roles.json';

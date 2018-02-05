@@ -19,8 +19,6 @@ import Images from '../../assets/images/index.js';
 import Phases from '../misc/phases.json';
 
 import { CustomButton } from '../components/CustomButton.js';
-import { OptionButton } from '../components/OptionButton.js';
-import { HelperButton } from '../components/HelperButton.js';
 import { Console } from '../components/Console.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -99,7 +97,6 @@ constructor(props) {
     this.placeRef           = this.roomRef.child('place').child(this.user);
     this.deadRef            = this.roomRef.child('dead').child(this.user);
     this.myReadyRef         = this.roomRef.child('ready').child(this.user);
-    this.mafiaRef           = this.roomRef.child('mafia');
     
     this.listRef            = this.roomRef.child('listofplayers');
     this.mafiaRef           = this.roomRef.child('mafia');
@@ -124,23 +121,26 @@ componentWillMount() {
     this.placeRef.once('value',snap=>{
         if(snap.exists()){
             this.setState({place:snap.val()})
-
+            
             this.listRef.child(snap.val()).once('value',info=>{
-                if(snap.exists() && snap.val().roleid){
+                if(info.exists() && info.val().roleid){
+
+                    var profilelist = [];
+                    
                     profilelist.push({
-                        myrole:         Rolesheet[snap.val().roleid].name,
-                        rolerules:      Rolesheet[snap.val().roleid].rules,
-                        win:            Rolesheet[snap.val().roleid].win,
+                        myrole:         Rolesheet[info.val().roleid].name,
+                        rolerules:      Rolesheet[info.val().roleid].rules,
+                        win:            Rolesheet[info.val().roleid].win,
                         fl:             5,
     
-                        key:            snap.val().roleid,
+                        key:            info.val().roleid,
                     })
     
                     this.setState({
-                        myroleid:       snap.val().roleid,
-                        amimafia:       Rolesheet[snap.val().roleid].type == 1,
-                        targetdead:     Rolesheet[snap.val().roleid].targetdead?true:false,
-                        targettown:     Rolesheet[snap.val().roleid].targettown?true:false,
+                        myroleid:       info.val().roleid,
+                        amimafia:       Rolesheet[info.val().roleid].type == 1,
+                        targetdead:     Rolesheet[info.val().roleid].targetdead?true:false,
+                        targettown:     Rolesheet[info.val().roleid].targettown?true:false,
                         profilelist:    profilelist
                     })
                 }
@@ -892,73 +892,6 @@ _renderPhaseName() {
     </View>
 }
 
-_renderOptionBar() {
-    return <Animated.View style = {{
-        position:'absolute', right:MARGIN, top:0, bottom:0, 
-        backgroundColor:colors.color8, justifyContent:'center'
-    }}>
-        <OptionButton
-            title = 'News'
-            icon = 'alert-circle'
-            color = {this.state.section=='news'?colors.font:colors.dead}
-            onPress = {()=>{this.setState({
-                list:this.state.newslist,
-                section:'news'
-            })}}
-        />
-        <OptionButton
-            title = 'Notes'
-            icon = 'clipboard'
-            color = {this.state.section=='notes'?colors.font:colors.dead}
-            backgroundColor = {colors.color1}
-            onPress = {()=>{this.setState({
-                list:this.state.notelist,
-                section:'notes'
-            })}}
-        />
-        <OptionButton
-            title = 'ME'
-            icon = 'account'
-            color = {this.state.section=='profile'?colors.font:colors.dead}
-            backgroundColor = {colors.color1}
-            onPress = {()=>{this.setState({
-                list:this.state.profilelist,
-                section:'profile'
-            })}}
-        />
-        <OptionButton
-            title = 'Alive'
-            icon = 'account-multiple'
-            color = {this.state.section=='alive'?colors.font:colors.dead}
-            backgroundColor = {colors.color1}
-            onPress = {()=>{this.setState({
-                list:this.namelist,
-                section:'alive'
-            })}}
-        />
-        <OptionButton
-            title = 'Dead'
-            icon = 'skull'
-            color = {this.state.section=='dead'?colors.font:colors.dead}
-            backgroundColor = {colors.color1}
-            onPress = {()=>{this.setState({
-                list:this.state.deadlist,
-                section:'dead'
-            })}}
-        />
-        
-    </Animated.View>
-}
-
-_renderConsole(){
-    return <Animated.View style = {{
-        height:this.height*0.6, width:this.width*0.7,
-         borderRadius:30,
-    }}>
-        {this._renderListComponent()}
-    </Animated.View>
-}
-
 //Rendering Main Visuals of Game Board
 _renderListComponent(){
 
@@ -975,31 +908,20 @@ _renderListComponent(){
     
 }
 
-_renderItem(item){
-    if(item.fl == 1){
-        return <TouchableOpacity
-            style = {{flexDirection:'row',alignItems:'center',
-            justifyContent:'center', height:40, marginBottom:MARGIN, borderRadius:30,
-            backgroundColor: item.dead ? colors.dead : (item.immune? colors.immune : 
-                (item.status?colors.status:colors.color8))
-            ,borderWidth:2,borderColor:'white'}}   
-            onPress         = {() => { this._nameBtnPress(item) }}
-            onLongPress     = {() => { this._nameBtnLongPress(item) }}
-            disabled        = {this.state.disabled}
-        >
-                <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
-                <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
-                    'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
-                    style={{color:colors.font, fontSize:26}}/>
-                </View>
-                <View style = {{flex:0.7, justifyContent:'center'}}>
-                    <Text style = {styles.lfont}>{false?item.name + ' (' + Rolesheet[item.roleid].name + ') ':
-                        item.name}</Text>
-                </View>
-                <View style = {{flex:0.15}}/>
-            
-        </TouchableOpacity>
-    } else if (item.fl == 2){
+_renderInfo(){
+    return <View style = {{
+        position:'absolute', left:MARGIN*2, top:MARGIN*5, bottom:MARGIN*2, right:MARGIN*2,
+    }}>
+        <FlatList
+        data={this.state.list?this.state.list:this.namelist}
+        renderItem={({item}) => (this._renderInfoItem(item))}
+        keyExtractor={item => item.uid?item.uid:item.key}
+    />
+    </View>
+}
+
+_renderInfoItem(item){
+    if (item.fl == 2){
         return <View>
             <Text style = {styles.counterfont}>{
                 Phases[item.counter%3 + 1].name + ' ' + (item.counter - item.counter%3)/3
@@ -1029,18 +951,15 @@ _renderItem(item){
     }
 }
 
-_renderDesc(flex) {
-    return <View style = {{
-        position:'absolute', left:MARGIN, right:MARGIN, top:0, bottom:MARGIN,
-        borderRadius:30, borderTopRightRadius:0, flex:flex,
-        backgroundColor:colors.desc
-    }}>
-        <View style = {{flex:0.15}}/>
-        {this._renderMessage(0.25)}
-        {this._renderChoices(0.3)}
-        {this._renderWaiting(0.25)}
-        <View style = {{flex:0.05}}/>
-    </View>
+_renderItem(item){
+    if (item.fl == 2){
+        return <View>
+            <Text style = {styles.counterfont}>{
+                Phases[item.counter%3 + 1].name + ' ' + (item.counter - item.counter%3)/3
+            }</Text>
+            <Text style = {styles.roleDesc}>{item.desc}</Text>
+        </View>
+    }
 }
 
 _renderMessage(flex){
@@ -1053,44 +972,6 @@ _renderMessage(flex){
             <Text style = {styles.plainfont}>{this.state.message}</Text>
         </Animated.View>
     </View>    
-}
-
-_renderChoices(flex){
-    return <View style = {{flex:flex, justifyContent:'center'}}>
-        <Animated.View style = {{
-            opacity:this.state.contOpacity,
-            position:'absolute',left:this.width*0.1, height:this.height*0.05, width:this.width*0.3,
-            backgroundColor:colors.font, borderRadius:20,
-            }}>
-            <TouchableOpacity
-                style = {{
-                    flex:1, justifyContent:'center', alignItems:'center'
-                }}
-                onPress = {()=>{ 
-                    this._optionTwoPress()
-                }}
-            >
-                <Text style = {styles.plaindfont}>{this.state.btn2}</Text>
-            </TouchableOpacity>
-        </Animated.View>
-
-        <Animated.View style = {{
-            opacity:this.state.cancelOpacity,
-            position:'absolute',right:this.width*0.1, height:this.height*0.05, width:this.width*0.3,
-            backgroundColor:colors.font, borderRadius:20,
-            }}>
-            <TouchableOpacity
-                style = {{
-                    flex:1, justifyContent:'center', alignItems:'center'
-                }}
-                onPress = {()=>{ 
-                    this._resetOptionPress()
-                }}
-            >
-                <Text style = {styles.plaindfont}>Cancel</Text>
-            </TouchableOpacity>
-        </Animated.View>
-    </View>
 }
 
 _renderWaiting(flex){
@@ -1119,12 +1000,28 @@ _renderWaiting(flex){
 }
 
 _renderNav(){
-    return <View style = {{position:'absolute',bottom:10,left:this.width*0.2,right:this.width*0.2,
-        height:this.height*0.1,backgroundColor:colors.color8, borderRadius:30, borderWidth:2, borderColor:'white',
-        justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
-        <MaterialCommunityIcons name='account' style={{color:colors.font,fontSize:30,flex:0.3,textAlign:'center'}}/>
-        <MaterialCommunityIcons name='home' style={{color:colors.font,fontSize:30,flex:0.3,textAlign:'center'}}/>
-        <MaterialCommunityIcons name='clipboard' style={{color:colors.font,fontSize:30,flex:0.3,textAlign:'center'}}/>
+    return <View style = {{position:'absolute',bottom:MARGIN,left:0,right:0,
+        height:this.height*0.1, flexDirection:'row', justifyContent:'center'}}>
+
+        <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15}}
+            onPress = {()=>this.setState({ list:this.state.profilelist,section:'profile'}) }>
+            <FontAwesome name='user'
+                style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
+            <Text style = {{color:colors.font,marginLeft:0}}>Profile</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style = {{alignItems:'center',flex:0.3}}
+            onPress = {()=>this.setState({ list:this.state.newslist,section:'news'}) }>
+            <FontAwesome name='gamepad'
+                style={{color:colors.font,fontSize:40,textAlign:'center'}}/>
+        </TouchableOpacity>
+
+        <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15}}
+            onPress = {()=>this.setState({ list:this.state.newslist,section:'news'}) }>
+            <FontAwesome name='globe'
+                style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
+            <Text style = {{color:colors.font,marginRight:0}}>Events</Text>
+        </TouchableOpacity>
     </View>
 }
 
@@ -1134,15 +1031,7 @@ render() {
 
 return <View style = {{flex:1,backgroundColor:colors.gameback}}>
 
-    <View style = {{flex:0.1, justifyContent:'center'}}>
-        {this._renderPhaseName()}
-    </View>
-
-    <View style = {{flex:0.75,alignItems:'center', justifyContent:'center', borderColor:'white', borderWidth:1}}>
-        {this._renderConsole()}
-    </View>
-
-    {this._renderNav()}
+    {this._renderInfo()}
 
     <Console
         title = {(this.state.phase == 1 || this.state.phase == 3)?
@@ -1151,11 +1040,13 @@ return <View style = {{flex:1,backgroundColor:colors.gameback}}>
         subtitle = {this.state.message}
         okay = {this.state.btn1}
         cancel = {this.state.btn2}
-        visible = {this.state.alertVisible}
+        visible = {true}
         onClose = {() => {}}
         onOne = {() => this._optionOnePress()}
-        onTwo = {() => this._optionOnePress()}
+        onTwo = {() => this._optionTwoPress()}
     />
+
+    {this._renderNav()}
 
 </View>
 }

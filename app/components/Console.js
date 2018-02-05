@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { View, Text, Animated, Dimensions } from 'react-native';
+import { View, Text, Animated, Dimensions, TouchableOpacity } from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import colors from '../misc/colors.js';
 import { CustomButton } from './CustomButton';
@@ -50,53 +51,54 @@ render() {
     }
 
     return ( 
-        <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-            backgroundColor:'rgba(0, 0, 0, 0.3)', opacity:this.opacity,
-            justifyContent:'center', alignItems:'center'}}>
-            <View style = {{height:this.height*0.25, width:this.width*0.9,
-                backgroundColor:colors.background, borderRadius:20}}>
+        <Animated.View style = {{position:'absolute', bottom:0, top:0, left:0, right:0,
+            backgroundColor:'rgba(0, 0, 0, 0.3)', opacity:this.opacity, justifyContent:'center', alignItems:'center'}}>
 
-                <View style = {{flex:0.3, justifyContent:'center', alignItems:'center'}}>
+            <View style = {{position:'absolute',bottom:this.height*0.14,height:this.height*0.22, width:this.width*0.8,
+                backgroundColor:colors.background, borderRadius:20, justifyContent:'center'}}>
+
+                <View style = {{justifyContent:'center', alignItems:'center'}}>
                     <Text style = {{
-                        fontSize:20,
+                        fontSize:30,
                         fontFamily:'LuckiestGuy-Regular',
                         color:colors.font
                     }}>{this.props.title}</Text>
                 </View>
                 
-                <View style = {{flex:0.35, justifyContent:'center', alignItems:'center'}}>
+                <View style = {{justifyContent:'center', alignItems:'center'}}>
                     <Text style = {{
                         fontSize:20,
                         fontFamily:'LuckiestGuy-Regular',
                         color:colors.font
                     }}>{this.props.subtitle}</Text>
                 </View>
-                <View style = {{flex:0.35, flexDirection:'row',
+                <View style = {{height:this.height*0.1, flexDirection:'row',
                     justifyContent:'center', alignItems:'center'}}>
                     <View style = {{flex:0.4}}><CustomButton
                         size = {0.7}
                         flex = {1}
-                        depth = {3}
+                        depth = {0}
                         radius = {15}
                         fontSize = {20}
                         color = {colors.shadow}
-                        onPress = {()=>{ this.props.onOkay() }}
+                        onPress = {()=>{ this.props.onOne() }}
                         title = {this.props.okay}
                     /></View>
                     <View style = {{flex:0.05}}/>
                     <View style = {{flex:0.4}}><CustomButton
                         size = {0.7}
                         flex = {1}
-                        depth = {3}
+                        depth = {0}
                         radius = {15}
                         fontSize = {20}
                         color = {colors.background}
                         shadow = {colors.background}
-                        onPress = {()=>this._cancel()}
+                        onPress = {()=>this.props.onTwo()}
                         title = {this.props.cancel}
                     /></View>
                 </View>
             </View>
+
         </Animated.View>
     )
 }
