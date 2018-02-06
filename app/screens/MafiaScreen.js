@@ -87,11 +87,9 @@ constructor(props) {
     this.user               = firebase.auth().currentUser.uid;
 
     this.roomRef            = firebase.database().ref('rooms/' + roomname);
-    this.placeRef           = this.roomRef.child('place').child(this.user);
     this.myReadyRef         = this.roomRef.child('ready').child(this.user);
     
     this.listRef            = this.roomRef.child('list');
-    this.mafiaRef           = this.roomRef.child('mafia');
     this.nominationRef      = this.roomRef.child('nominate');
     this.ownerRef           = this.roomRef.child('owner');
     this.counterRef         = this.roomRef.child('counter');
@@ -107,39 +105,6 @@ constructor(props) {
 }
 
 componentWillMount() {
-
-    this.placeRef.once('value',snap=>{
-        if(snap.exists()){
-
-            this.setState({place:snap.val()})
-
-            this.myInfoRef = this.listRef.child(snap.val());
-            this.myInfoRef.on('value',info=>{
-                if(snap.exists()){
-                    var profilelist = [];
-                    
-                    profilelist.push({
-                        myrole:         Rolesheet[info.val().roleid].name,
-                        rolerules:      Rolesheet[info.val().roleid].rules,
-                        win:            Rolesheet[info.val().roleid].win,
-                        fl:             5,
-    
-                        key:            info.val().roleid,
-                    })
-    
-                    this.setState({
-                        myroleid:       info.val().roleid,
-                        amidead:        info.val().dead,
-                        amimafia:       Rolesheet[info.val().roleid].type == 1,
-                        targetdead:     Rolesheet[info.val().roleid].targetdead?true:false,
-                        targettown:     Rolesheet[info.val().roleid].targettown?true:false,
-                        profilelist:    profilelist
-                    })
-                }
-            })
-
-        }
-    })
 
     this.myReadyRef.on('value',snap=>{
         if(snap.exists()){
@@ -181,12 +146,52 @@ componentWillMount() {
 
     this.listRef.on('value',snap=>{
         if(snap.exists()){
+
             this.namelist = snap.val();
             var playernum = 0;
             var balance = 0;
+            var mafialist = [];
 
-            //Find Playernumber
             for(i=0;i<this.namelist.length;i++){
+
+                //Generate my info
+                if(this.namelist[i].uid == this.user){
+                    this.setState({
+                        place:      i,
+                        amidead:    this.namelist[i].dead,
+                        myroleid:   this.namelist[i].roleid,
+                    })
+
+                    //TODO Remove this garbage and leave only roleid
+                    var profilelist = [];
+                    
+                    profilelist.push({
+                        myrole:         Rolesheet[this.namelist[i].roleid].name,
+                        rolerules:      Rolesheet[this.namelist[i].roleid].rules,
+                        win:            Rolesheet[this.namelist[i].roleid].win,
+                        fl:             5,
+    
+                        key:            this.namelist[i].roleid,
+                    })
+    
+                    this.setState({
+                        amimafia:       Rolesheet[this.namelist[i].roleid].type == 1,
+                        targetdead:     Rolesheet[this.namelist[i].roleid].targetdead?true:false,
+                        targettown:     Rolesheet[this.namelist[i].roleid].targettown?true:false,
+                        profilelist:    profilelist
+                    })
+                }
+
+                if(this.namelist[i].type == 1){
+                    mafialist.push({
+                        name:       this.namelist[i].name,
+                        rolename:   Rolesheet[this.namelist[i].roleid].name,
+                        dead:       this.namelist[i].dead,
+                        key:        i,
+                    })
+                }
+
+                //player number and trigger number + gamestate
                 if(!this.namelist[i].dead){
 
                     playernum++;
@@ -203,26 +208,13 @@ componentWillMount() {
                 playernum:      playernum,
                 triggernum:     ((playernum - playernum%2)/2)+1,
                 gameover:       balance == playernum || balance <= 0,
+
+                mafialist:      mafialist,
             })
         }
     })
 
-    this.mafiaRef.on('value',snap=>{
-        if(snap.exists()){
-            var mafialist = [];
-            snap.forEach((child)=>{
-                mafialist.push({
-                    name:       child.val().name,
-                    rolename:   Rolesheet[child.val().roleid].name,
-                    alive:      child.val().alive,
-                    key:        child.key,
-                })
-            })
-            this.setState({mafialist:mafialist})
-        }
-    })
-
-    //TODO
+    //TODO could improve?
     this.nominationRef.on('value',snap=>{
         if(snap.exists()){
             this.setState({nominate: snap.val()})
@@ -447,11 +439,11 @@ componentWillUnmount() {
     if(this.listRef){
         this.listRef.off();
     }
-    if(this.mafiaRef){
-        this.mafiaRef.off();
-    }
     if(this.nominationRef){
         this.nominationRef.off();
+    }
+    if(this.counterRef){
+        this.counterRef.off();
     }
 
     //Owner Listeners
@@ -463,11 +455,6 @@ componentWillUnmount() {
     }
     if(this.loadedRef){
         this.loadedRef.off();
-    }
-
-    //Transition Screen
-    if(this.counterRef){
-        this.counterRef.off();
     }
 }
 
@@ -534,11 +521,12 @@ _nameBtnPress(item){
 _nameBtnLongPress(item){
     if(this.state.phase == 3) {
         if(this.state.amimafia){
-            this.mafiaRef.once('value',snap=>{
-                snap.forEach((child)=>{
-                    this._noticeMsg(child.key, this.state.myname + ' wants to kill ' + item.name + '.')
-                })
-            })
+
+            for(i=0;i<this.mafialist.length;i++){
+                this._noticeMsg(this.namelist[this.mafialist[i].key].uid, 
+                    this.namelist[this.state.place].name + ' wants to target ' + item.name + '.')
+            }
+
         }
     }
 }
