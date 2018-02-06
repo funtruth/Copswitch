@@ -69,7 +69,8 @@ constructor(props) {
         playernum:          1000,
 
         ready:              false,
-        disabled:           false,
+        visible:            true,
+        disabled:           false, //Disabling double button presses
         nReady:             5,
 
         amidead:            false,
@@ -80,11 +81,6 @@ constructor(props) {
         nominee:            '',
 
         gameover:           false,
-        showOptions:        true,
-        
-        messageOpacity:     new Animated.Value(1),
-        contOpacity:        new Animated.Value(0),
-        cancelOpacity:      new Animated.Value(0),
     };
     
     this.namelist           = [];
@@ -156,31 +152,31 @@ componentWillMount() {
 
     this.myReadyRef.on('value',snap=>{
         if(snap.exists()){
-            if(this.state.amidead){
-                this._viewChange(false,false)
-                this.setState({message:'You are dead'})
-            } else if(snap.val() == true){
-                this.setState({disabled:true})
-                this._viewChange(false,true)
+            if(snap.val() == true){
+                this.setState({
+                    ready:true,
+                    visible:true,
+                })
             } else {
-                this.setState({disabled:false})
-                this._viewChange(true,false)
+                this.setState({
+                    ready:false,
+                    visible:true,
+                })
             }
         } else {
-            if(this.state.amidead){
-                this._viewChange(false,false)
-            } else {
-                this._viewChange(false,false)
-                setTimeout(()=>{
-                    this.myReadyRef.once('value',snap=>{
-                        if(snap.exists()){
-                            this.myReadyRef.remove();
-                        } else {
-                            this.loadedRef.child(this.user).set(true)
-                        }
-                    })
-                },1500)
-            }
+            this.setState({
+                ready:false,
+                visible:false,
+            })
+            setTimeout(()=>{
+                this.myReadyRef.once('value',snap=>{
+                    if(snap.exists()){
+                        this.myReadyRef.remove();
+                    } else {
+                        this.loadedRef.child(this.user).set(true)
+                    }
+                })
+            },1500)
         }
     })
 
@@ -529,23 +525,6 @@ _resetDayStatuses() {
     })
 }
 
-//1100 ms TOTAL
-//DEPRECATED: title, vote, abstain, list
-_viewChange(cont,cancel) {
-    Animated.parallel([
-        Animated.timing(
-            this.state.cancelOpacity, {
-                duration: FADEIN_ANIM,
-                toValue: cancel?1:0
-        }),
-        Animated.timing(
-            this.state.contOpacity, {
-                duration: FADEIN_ANIM,
-                toValue: cont?1:0
-        })
-    ]).start()
-}
-
 //Pressing any name button
 _nameBtnPress(item){
 
@@ -596,25 +575,17 @@ _nameBtnLongPress(item){
 _optionOnePress() {
 
     this._buttonPress();
-    
-    if(this.state.phase == 1){
-        this._viewChange(false,true)
-    } else if (this.state.phase == 2){
+
+    if (this.state.phase == 2){
         this.setState({message:'You voted INNOCENT.'})
         this.ballotsRef.child(this.state.place).set(false).then(()=>{this.myReadyRef.set(true)})
-    } else if (this.state.phase == 3){
-        this._viewChange(false,true)
-    } else if (this.state.phase == 6 || this.state.phase == 7){
-        alert('feature not available yet')
     }
 }
 
 //Day Phase - ABSTAIN
 _optionTwoPress() {
     
-    if(this.state.phase != 6 && this.state.phase != 7){
-        this._buttonPress();
-    }
+    this._buttonPress();
 
     if(this.state.phase == 1){
         this.myReadyRef.set(true);
@@ -625,8 +596,6 @@ _optionTwoPress() {
     } else if (this.state.phase == 3){
         this.myReadyRef.set(true);
         this.setState({message:'You stayed home.'})
-    } else if (this.state.phase == 6 || this.state.phase == 7){
-        this._gameOver();
     }
 }
 
@@ -635,11 +604,6 @@ _resetOptionPress() {
 
     this._buttonPress();
     this.setState({message:Phases[this.state.phase].message})
-
-    if(this.state.phase != 3){
-        this._viewChange(true,false)
-        this.setState({message:null, disabled:false})
-    }
 
     if(this.state.phase == 1){
         this.voteRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
@@ -877,21 +841,6 @@ _gameOver() {
     this.props.screenProps.navigate('Home')
 }
 
-_renderPhaseName() {
-    return <View style = {{
-        height:this.height*0.07, width:this.width*0.3,
-        borderBottomRightRadius:30, borderTopRightRadius:30, justifyContent:'center', backgroundColor:colors.color8
-    }}>
-            <Text style = {{color:colors.titlefont, alignSelf:'center', 
-                fontFamily: 'LuckiestGuy-Regular', fontSize:20}}>
-                {(this.state.phase == 1 || this.state.phase == 3)?
-                    this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
-                    :this.state.phasename}
-            </Text>
-        
-    </View>
-}
-
 //Rendering Main Visuals of Game Board
 _renderListComponent(){
 
@@ -900,7 +849,7 @@ _renderListComponent(){
         borderRadius:5,
     }}>
         <FlatList
-        data={this.state.list?this.state.list:this.namelist}
+        data={this.namelist}
         renderItem={({item}) => (this._renderItem(item))}
         keyExtractor={item => item.uid?item.uid:item.key}
     />
@@ -910,19 +859,19 @@ _renderListComponent(){
 
 _renderInfo(){
     return <View style = {{
-        position:'absolute', left:MARGIN*2, top:MARGIN*5, bottom:MARGIN*2, right:MARGIN*2,
+        position:'absolute', left:0, bottom:this.height*0.4, right:0,
     }}>
         <FlatList
-        data={this.state.list?this.state.list:this.namelist}
-        renderItem={({item}) => (this._renderInfoItem(item))}
-        keyExtractor={item => item.uid?item.uid:item.key}
-    />
+            data={this.state.list}
+            renderItem={({item}) => (this._renderInfoItem(item))}
+            keyExtractor={item => item.uid?item.uid:item.key}
+        />
     </View>
 }
 
 _renderInfoItem(item){
     if (item.fl == 2){
-        return <View>
+        return <View style = {{justifyContent:'center',alignItems:'center'}}>
             <Text style = {styles.counterfont}>{
                 Phases[item.counter%3 + 1].name + ' ' + (item.counter - item.counter%3)/3
             }</Text>
@@ -931,7 +880,7 @@ _renderInfoItem(item){
     } else if (item.fl == 4){
         return <Text style = {styles.lfont}>{item.counter}</Text>
     } else if(item.fl == 5){
-        return <View style = {{height:this.height*0.55, justifyContent: 'center', alignItems: 'center' }}>
+        return <View style = {{justifyContent: 'center', alignItems: 'center' }}>
             <Text style = {styles.lfont}>you are a:</Text>
             <Text style = {styles.mfont}>{item.myrole}</Text>
             <Text style = {styles.lfont}>At night you:</Text>
@@ -952,26 +901,27 @@ _renderInfoItem(item){
 }
 
 _renderItem(item){
-    if (item.fl == 2){
-        return <View>
-            <Text style = {styles.counterfont}>{
-                Phases[item.counter%3 + 1].name + ' ' + (item.counter - item.counter%3)/3
-            }</Text>
-            <Text style = {styles.roleDesc}>{item.desc}</Text>
+    return <TouchableOpacity
+        style = {{flexDirection:'row',alignItems:'center',
+                justifyContent:'center', height:40,
+        backgroundColor: item.dead ? colors.dead : (item.immune? colors.immune :
+                    (item.status?colors.status:null))}}   
+        onPress         = {() => { this._nameBtnPress(item) }}
+        onLongPress     = {() => { this._nameBtnLongPress(item) }}
+        disabled        = {this.state.disabled}
+    >
+        <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
+        <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
+            'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
+            style={{color:colors.font, fontSize:26}}/>
         </View>
-    }
-}
-
-_renderMessage(flex){
-    return <View style = {{flex:flex}}>
-        <Animated.View style = {{
-            opacity:this.state.messageOpacity,
-            position:'absolute',left:0, right:0, height:this.height*0.05,
-            justifyContent:'center', alignItems:'center'
-            }}>
-            <Text style = {styles.plainfont}>{this.state.message}</Text>
-        </Animated.View>
-    </View>    
+        <View style = {{flex:0.7, justifyContent:'center'}}>
+            <Text style = {styles.lfont}>{false?item.name + ' (' + Rolesheet[item.roleid].name + ') ':
+                item.name}</Text>
+        </View>
+        <View style = {{flex:0.15}}/>
+    
+    </TouchableOpacity>
 }
 
 _renderWaiting(flex){
@@ -1011,7 +961,7 @@ _renderNav(){
         </TouchableOpacity>
 
         <TouchableOpacity style = {{alignItems:'center',flex:0.3}}
-            onPress = {()=>this.setState({ list:this.state.newslist,section:'news'}) }>
+            onPress = {()=>this.setState({ list:null,section:null}) }>
             <FontAwesome name='gamepad'
                 style={{color:colors.font,fontSize:40,textAlign:'center'}}/>
         </TouchableOpacity>
@@ -1038,12 +988,16 @@ return <View style = {{flex:1,backgroundColor:colors.gameback}}>
             this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
             :this.state.phasename}
         subtitle = {this.state.message}
+        phase = {this.state.phase}
         okay = {this.state.btn1}
         cancel = {this.state.btn2}
-        visible = {true}
+        visible = {this.state.visible}
+        ready = {this.state.ready}
         onClose = {() => {}}
+        list = {this._renderListComponent()}
         onOne = {() => this._optionOnePress()}
         onTwo = {() => this._optionTwoPress()}
+        onBack = {() => this._resetOptionPress()}
     />
 
     {this._renderNav()}

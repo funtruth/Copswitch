@@ -52,7 +52,7 @@ export default colors = {
     gameback:               '#403e3b',
 
     //yellow
-    gamestripe:             '#e3c382',
+    striker:                '#e3c382',
     color2:                 '#e3c382',
 
     //Red
@@ -106,5 +106,6 @@ export default colors = {
     beige:                  '#D3ECE9',
     menuBackground:         '#a7a9a9',
     shadow:                 '#e3c382',
+    shadow:                 '#5f5d58',
 
 }

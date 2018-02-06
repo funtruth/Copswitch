@@ -59,7 +59,7 @@ export default styles = StyleSheet.create({
         color: colors.main,
     },
     detail: {
-        color:colors.shadow,
+        color:colors.striker,
         fontFamily: 'ConcertOne-Regular',
         fontSize:17,
         lineHeight: 25,
@@ -77,7 +77,7 @@ export default styles = StyleSheet.create({
         marginRight:10,
     },
     comment: {
-        color:colors.shadow,
+        color:colors.striker,
         fontFamily: 'ConcertOne-Regular',
         fontSize:17,
         lineHeight: 25,
@@ -115,7 +115,7 @@ export default styles = StyleSheet.create({
     roleDesc: {
         fontSize: 18,
         fontFamily: 'LuckiestGuy-Regular',
-        color: colors.shadow,
+        color: colors.striker,
         marginLeft:5
     },
     hidden: {
@@ -137,7 +137,7 @@ export default styles = StyleSheet.create({
     leftfont:{
         fontSize:17,
         fontFamily:'LuckiestGuy-Regular',
-        color:colors.shadow,
+        color:colors.striker,
         marginTop:5,
     },
 
@@ -146,13 +146,13 @@ export default styles = StyleSheet.create({
         fontSize: 40,
         fontFamily: 'LuckiestGuy-Regular',
         textAlign:'center',
-        color: colors.shadow
+        color: colors.striker
     },
     subtitle : {
         fontSize: 20,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.shadow,
+        color: colors.striker,
     },
     digit: {
         flex:0.3,
@@ -197,13 +197,13 @@ export default styles = StyleSheet.create({
         fontSize: 30,
         fontFamily: 'LuckiestGuy-Regular',
         textAlign:'center',
-        color: colors.shadow,
+        color: colors.striker,
     },
     subtitle : {
         fontSize: 20,
         fontFamily: 'LuckiestGuy-Regular',
         textAlign:'center',
-        color: colors.shadow,
+        color: colors.striker,
     },
     menuBtn : {
         fontFamily:'LuckiestGuy-Regular',
@@ -215,7 +215,7 @@ export default styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'LuckiestGuy-Regular',
         textAlign:'center',
-        color: colors.shadow,
+        color: colors.striker,
     },
     textOutput: {
         flex:0.7,
@@ -268,25 +268,25 @@ export default styles = StyleSheet.create({
         fontSize: 15,
         fontFamily: 'ConcertOne-Regular',
         textAlign:'center',
-        color: colors.shadow,
+        color: colors.striker,
     },
     font: {
         fontSize:17,
         fontFamily:'LuckiestGuy-Regular',
-        color:colors.shadow,
+        color:colors.striker,
         alignSelf: 'center',
     },
     subfont: {
         fontSize:17,
         fontFamily:'LuckiestGuy-Regular',
-        color:colors.shadow,
+        color:colors.striker,
         alignSelf: 'center',
     },
     mfont: {
         fontSize: 30,
         fontFamily: 'LuckiestGuy-Regular',
         textAlign:'center',
-        color: colors.shadow,
+        color: colors.striker,
     },
     mlfont: {
         fontSize: 30,
