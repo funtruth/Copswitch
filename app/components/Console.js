@@ -19,7 +19,7 @@ constructor(props) {
 
     this.state = {
         ready: null,
-        visible: null,
+        loading: null,
 
         listSize: new Animated.Value(2),
         listOpacity: new Animated.Value(0),
@@ -35,7 +35,7 @@ constructor(props) {
         size: new Animated.Value(2),
         opacity: new Animated.Value(0),
 
-        radiusScale: new Animated.Value(5)
+        radiusScale: new Animated.Value(0.25)
     }
 
     this.width = Dimensions.get('window').width;
@@ -134,31 +134,15 @@ _viewChange(list,option,back) {
         
 }
 
-_viewCover(cover){
-    Animated.timing(
-        this.state.radiusScale, {
-            duration: SIZE_ANIM,
-            toValue: cover?5:0.25
-        }
-    ).start()
-}
-
 componentWillReceiveProps(newProps){
     if(newProps.ready != this.state.ready){
-        this.setState({ready:newProps.ready})
-        if(newProps.ready){
+        this.setState({ready:newProps.ready, loading:newProps.loading})
+        if(newProps.loading){
+            this._viewChange(false,false,false)
+        } else if(newProps.ready){
             this._viewChange(false,false,true)
-        } else {
+        } else  {
             this._viewChange(false,true,false)
-        }
-    }
-
-    if(newProps.visible != this.state.visible){
-        this.setState({visible:newProps.visible})
-        if(newProps.visible){
-            this._viewCover(false)
-        } else {
-            this._viewCover(true)
         }
     }
 }
@@ -182,84 +166,71 @@ optionBack(){
 render() {
 
     return ( 
-        <View style = {{position:'absolute', bottom:0, top:0, left:0, right:0,
-            backgroundColor:'rgba(0, 0, 0, 0.3)', justifyContent:'center', alignItems:'center'}}>
-
-            <Animated.View style = {{position:'absolute', elevation:0, bottom:0,
-                height:this.height*4/9, width:this.height*4/9, borderRadius:this.height*2/9, backgroundColor: colors.immune,
-                justifyContent:'center', alignItems:'center',
-                transform: [
-                    {scale:this.state.radiusScale}
-                ],
-            }}/>
-
-            <Animated.View style = {{position:'absolute',bottom:this.height*0.14,height:this.state.size, width:this.width*0.8,
+        <Animated.View style = {{position:'absolute',bottom:this.height*0.14,height:this.state.size, width:this.width*0.8,
                 backgroundColor:colors.background, borderRadius:20, justifyContent:'center'}}>
                 
-                <View style = {{justifyContent:'center', alignItems:'center'}}>
-                    <Text style = {{
-                        fontSize:30,
-                        fontFamily:'LuckiestGuy-Regular',
-                        color:colors.font
-                    }}>{this.props.title}</Text>
-                    <Text style = {{
-                        fontSize:20,
-                        fontFamily:'LuckiestGuy-Regular',
-                        color:colors.striker
-                    }}>{this.props.subtitle}</Text>
-                </View>
+            <View style = {{justifyContent:'center', alignItems:'center'}}>
+                <Text style = {{
+                    fontSize:30,
+                    fontFamily:'LuckiestGuy-Regular',
+                    color:colors.font
+                }}>{this.props.title}</Text>
+                <Text style = {{
+                    fontSize:20,
+                    fontFamily:'LuckiestGuy-Regular',
+                    color:colors.striker
+                }}>{this.props.subtitle}</Text>
+            </View>
 
-                <Animated.View style = {{height:this.state.listSize, opacity:this.state.listOpacity, 
-                    justifyContent:'center', alignItems:'center'}}>
-                    {this.props.list}
-                </Animated.View>
-
-                <Animated.View style = {{height:this.state.optionSize, opacity:this.state.optionOpacity, 
-                    flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-                    <View style = {{flex:0.4}}><CustomButton
-                        size = {0.7}
-                        flex = {1}
-                        depth = {0}
-                        radius = {15}
-                        fontSize = {20}
-                        color = {colors.shadow}
-                        onPress = {()=> this.optionOne() }
-                        disabled = {this.state.optionDisabled}
-                        title = {this.props.okay}
-                    /></View>
-                    <View style = {{flex:0.05}}/>
-                    <View style = {{flex:0.4}}><CustomButton
-                        size = {0.7}
-                        flex = {1}
-                        depth = {0}
-                        radius = {15}
-                        fontSize = {20}
-                        color = {colors.background}
-                        shadow = {colors.background}
-                        onPress = {()=>this.props.onTwo()}
-                        disabled = {this.state.optionDisabled}
-                        title = {this.props.cancel}
-                    /></View>
-                </Animated.View>
-
-                <Animated.View style = {{height:this.state.backSize, opacity:this.state.backOpacity, 
-                    justifyContent:'center', alignItems:'center'}}>
-                    <CustomButton
-                        size = {0.7}
-                        flex = {0.4}
-                        depth = {0}
-                        radius = {15}
-                        fontSize = {20}
-                        color = {colors.shadow}
-                        onPress = {()=>this.optionBack()}
-                        disabled = {this.state.backDisabled}
-                        title = 'return'
-                    />
-                </Animated.View>
-
+            <Animated.View style = {{height:this.state.listSize, opacity:this.state.listOpacity, 
+                justifyContent:'center', alignItems:'center'}}>
+                {this.props.list}
             </Animated.View>
 
-        </View>
+            <Animated.View style = {{height:this.state.optionSize, opacity:this.state.optionOpacity, 
+                flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+                <View style = {{flex:0.4}}><CustomButton
+                    size = {0.7}
+                    flex = {1}
+                    depth = {0}
+                    radius = {15}
+                    fontSize = {20}
+                    color = {colors.shadow}
+                    onPress = {()=> this.optionOne() }
+                    disabled = {this.state.optionDisabled}
+                    title = {this.props.okay}
+                /></View>
+                <View style = {{flex:0.05}}/>
+                <View style = {{flex:0.4}}><CustomButton
+                    size = {0.7}
+                    flex = {1}
+                    depth = {0}
+                    radius = {15}
+                    fontSize = {20}
+                    color = {colors.background}
+                    shadow = {colors.background}
+                    onPress = {()=>this.props.onTwo()}
+                    disabled = {this.state.optionDisabled}
+                    title = {this.props.cancel}
+                /></View>
+            </Animated.View>
+
+            <Animated.View style = {{height:this.state.backSize, opacity:this.state.backOpacity, 
+                justifyContent:'center', alignItems:'center'}}>
+                <CustomButton
+                    size = {0.7}
+                    flex = {0.4}
+                    depth = {0}
+                    radius = {15}
+                    fontSize = {20}
+                    color = {colors.shadow}
+                    onPress = {()=>this.optionBack()}
+                    disabled = {this.state.backDisabled}
+                    title = 'return'
+                />
+            </Animated.View>
+
+        </Animated.View>
     )
 }
 }
