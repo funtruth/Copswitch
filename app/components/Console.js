@@ -19,6 +19,7 @@ constructor(props) {
 
     this.state = {
         ready: null,
+        visible: null,
 
         listSize: new Animated.Value(2),
         listOpacity: new Animated.Value(0),
@@ -33,6 +34,8 @@ constructor(props) {
 
         size: new Animated.Value(2),
         opacity: new Animated.Value(0),
+
+        radiusScale: new Animated.Value(5)
     }
 
     this.width = Dimensions.get('window').width;
@@ -131,6 +134,15 @@ _viewChange(list,option,back) {
         
 }
 
+_viewCover(cover){
+    Animated.timing(
+        this.state.radiusScale, {
+            duration: SIZE_ANIM,
+            toValue: cover?5:0.25
+        }
+    ).start()
+}
+
 componentWillReceiveProps(newProps){
     if(newProps.ready != this.state.ready){
         this.setState({ready:newProps.ready})
@@ -138,6 +150,15 @@ componentWillReceiveProps(newProps){
             this._viewChange(false,false,true)
         } else {
             this._viewChange(false,true,false)
+        }
+    }
+
+    if(newProps.visible != this.state.visible){
+        this.setState({visible:newProps.visible})
+        if(newProps.visible){
+            this._viewCover(false)
+        } else {
+            this._viewCover(true)
         }
     }
 }
@@ -163,6 +184,14 @@ render() {
     return ( 
         <View style = {{position:'absolute', bottom:0, top:0, left:0, right:0,
             backgroundColor:'rgba(0, 0, 0, 0.3)', justifyContent:'center', alignItems:'center'}}>
+
+            <Animated.View style = {{position:'absolute', elevation:0, bottom:0,
+                height:this.height*4/9, width:this.height*4/9, borderRadius:this.height*2/9, backgroundColor: colors.immune,
+                justifyContent:'center', alignItems:'center',
+                transform: [
+                    {scale:this.state.radiusScale}
+                ],
+            }}/>
 
             <Animated.View style = {{position:'absolute',bottom:this.height*0.14,height:this.state.size, width:this.width*0.8,
                 backgroundColor:colors.background, borderRadius:20, justifyContent:'center'}}>

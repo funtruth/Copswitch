@@ -210,11 +210,8 @@ componentWillMount() {
     this.playernumRef.on('value',snap=>{
         if(snap.exists()){
 
-            const minusone = snap.val() - 1;
-            const mod = minusone%2;
-
             this.setState({ 
-                triggernum:     (((minusone - mod)/2)+1),
+                triggernum:     (((snap.val() - snap.val()%2)/2)+1),
                 playernum:      snap.val(),
             })
 
@@ -296,7 +293,8 @@ componentWillMount() {
     })
 
     this.voteRef.on('value',snap=>{
-        if(snap.exists() && this.state.amiowner && snap.length>=this.state.triggernum){
+        
+        if(snap.exists() && this.state.amiowner && snap.val().length>=this.state.triggernum){
 
             var votesArray = snap.val();
             var flag = false;
@@ -304,6 +302,7 @@ componentWillMount() {
             for(i=0;i<this.state.triggernum;i++){
 
                 var count = 0;
+                var players = 0;
 
                 if(votesArray[i]){
                     for(j=0;j<this.state.playernum;j++){
@@ -313,10 +312,12 @@ componentWillMount() {
                     }
 
                     if(count>=this.state.triggernum){
-                        flag = true
+                        flag = true;
                         this.roomRef.update({nominate:i});
                         this._noticeMsgGlobal(this.namelist[i].name + ' has been nominated.')
                     }
+
+                    players++;
                 }
             }
 
@@ -324,7 +325,8 @@ componentWillMount() {
                 this.actionRef.remove();
                 this._changePhase(Phases[this.state.phase].trigger);
 
-            } else if(!flag && snap.length == this.state.playernum){
+            } else if(!flag && players >= this.state.playernum){
+                
                 this.actionRef.remove();
                 this._resetDayStatuses();
                 this._changePhase(Phases[this.state.phase].continue);
@@ -333,7 +335,7 @@ componentWillMount() {
     })
 
     this.ballotsRef.on('value',snap=>{
-        if(snap.exists() && this.state.amiowner && snap.length==this.state.playernum){
+        if(snap.exists() && this.state.amiowner && snap.val().length==this.state.playernum){
 
             var votesArray = snap.val();
             var count = 0;
@@ -468,6 +470,9 @@ componentWillUnmount() {
     }
     if(this.voteRef){
         this.voteRef.off();
+    }
+    if(this.ballotsRef){
+        this.ballotsRef.off();
     }
     if(this.loadedRef){
         this.loadedRef.off();
@@ -972,7 +977,6 @@ return <View style = {{flex:1,backgroundColor:colors.gameback}}>
         cancel = {this.state.btn2}
         visible = {this.state.visible}
         ready = {this.state.ready}
-        onClose = {() => {}}
         list = {this._renderListComponent()}
         onOne = {() => this._optionOnePress()}
         onTwo = {() => this._optionTwoPress()}
