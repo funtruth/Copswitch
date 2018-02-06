@@ -78,7 +78,6 @@ constructor(props) {
         amiowner:           false,
 
         nominate:           '',
-        nominee:            '',
 
         gameover:           false,
     };
@@ -190,9 +189,6 @@ componentWillMount() {
             
             this.namelist = snap.val();
     
-            this.setState({
-                deadlist:snap.val(),
-            })
         }
     })
 
@@ -237,9 +233,7 @@ componentWillMount() {
     //TODO
     this.nominationRef.on('value',snap=>{
         if(snap.exists()){
-            this.listRef.child(snap.val()).once('value',sp=>{
-                this.setState({nominate: snap.val(), nominee: sp.val().name})
-            })
+            this.setState({nominate: snap.val()})
         }
     })
 
@@ -301,99 +295,108 @@ componentWillMount() {
         }
     })
 
+    this.voteRef.on('value',snap=>{
+        if(snap.exists() && this.state.amiowner && snap.length>=this.state.triggernum){
+
+            var votesArray = snap.val();
+            var flag = false;
+            
+            for(i=0;i<this.state.triggernum;i++){
+
+                var count = 0;
+
+                if(votesArray[i]){
+                    for(j=0;j<this.state.playernum;j++){
+                        if(votesArray[i] == votesArray[j]){
+                            count++
+                        }
+                    }
+
+                    if(count>=this.state.triggernum){
+                        flag = true
+                        this.roomRef.update({nominate:i});
+                        this._noticeMsgGlobal(this.namelist[i].name + ' has been nominated.')
+                    }
+                }
+            }
+
+            if(flag){
+                this.actionRef.remove();
+                this._changePhase(Phases[this.state.phase].trigger);
+
+            } else if(!flag && snap.length == this.state.playernum){
+                this.actionRef.remove();
+                this._resetDayStatuses();
+                this._changePhase(Phases[this.state.phase].continue);
+            }
+        }
+    })
+
+    this.ballotsRef.on('value',snap=>{
+        if(snap.exists() && this.state.amiowner && snap.length==this.state.playernum){
+
+            var votesArray = snap.val();
+            var count = 0;
+            var names = '';
+
+            for(i=0;i<this.state.playernum;i++){
+                if(votesArray[i]){
+                    count++
+                    if(names==''){
+                        names=this.namelist[i].name
+                    }
+                    else{
+                        names=names+', '+this.namelist[i].name
+                    }
+                } else {
+                    count--
+                }
+            }
+
+            this._noticeMsgGlobal(names + ' voted against ' + this.namelist[this.state.nominate].name + '.')
+
+            if(count>0){
+                this.listRef.child(this.state.nominate).update({dead:true}).then(()=>{
+                    this._changePlayerCount(false);
+                })
+
+                this._noticeMsgGlobal(this.namelist[this.state.nominate].name + ' was hung.')
+                    
+                if(this.namelist[this.state.nominate].type == 1){
+
+                    this.roomRef.child('mafia').child(this.state.nominate).update({alive:false});
+
+                    if(dead.val().roleid == 'a' || dead.val().roleid == 'b'){
+                        //ADD RANDOM LOGIC
+                    } else {
+                        this._changePhase(Phases[this.state.phase].trigger)
+                    }
+                } else if (dead.val().roleid == 'W'){
+                    //JESTER LOGIC
+
+                    this._noticeMsgGlobal(names + ' have blood on their hands and look suspicious.')
+                    this._changePhase(Phases[this.state.phase].trigger)
+
+                } else {
+                    this._changePhase(Phases[this.state.phase].trigger)
+                }
+                
+            } else {
+                this._noticeMsgGlobal(this.namelist[this.state.nominate].name + ' was not hung.',1)
+                this.listRef.child(this.state.nominate).update({immune:true})
+                this._changePhase(Phases[this.state.phase].continue)
+            }
+        }
+    })
+
     //Count listeners for the room owner
     this.readyRef.on('value',snap=>{
         if(snap.exists() && this.state.amiowner && ((snap.numChildren()+1)>this.state.playernum)
             && this.state.playernum>0){
-                //Phase 2 CONTINUE
-                if(this.state.phase == 1){
-                    
-                    this.voteRef.once('value').then((votes)=>{
-                        if(votes.exists()){
-                            var counter = 0;
-                            votes.forEach((child)=>{
-                                counter ++;
-                                if(child.numChildren() + 1 > this.state.triggernum){
-                                    //Do nothing
-                                } else if (counter+1 > votes.numChildren()){
-                                    this.actionRef.remove();
-                                    this._resetDayStatuses();
-                                    this._changePhase(Phases[this.state.phase].continue);
-                                }
-                            });
-                        } else {
-                            this.actionRef.remove();
-                            this._resetDayStatuses();
-                            this._changePhase(Phases[this.state.phase].continue);
-                        }
-                    })
-                }
-                //Phase 3 Handling both CONTINUE and TRIGGER
-                else if(this.state.phase == 2){
-                    
-                    this.ballotsRef.once('value',ballots=>{
-
-                        var counter = 0;
-                        var names = 'Nobody';
-
-                        ballots.forEach((votechild)=>{ 
-                            counter++;
-                            if(counter==1){names=votechild.val()}
-                            else if(counter>1){names=names+', '+votechild.val()}
-                        })
-                        
-                        this._noticeMsgGlobal(this.state.roomname,'#d31d1d', names + ' voted against ' 
-                            + this.state.nominee + '.') 
-
-                        if((ballots.numChildren()+1)>this.state.triggernum){
-
-                            firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                                + this.state.nominate).update({dead:true}).then(()=>{
-                                    this._changePlayerCount(false);
-                                })
-
-                            firebase.database().ref('rooms/'+ this.state.roomname +'/listofplayers/'
-                            +this.state.nominate).once('value',dead=>{
-
-                                this._noticeMsgGlobal(this.state.roomname,'#d31d1d', dead.val().name + ' was hung.')
-                                
-                                if(dead.val().type == 1){
-                                    this.roomRef.child('mafia').child(this.state.nominate).update({alive:false});
-
-                                    if(dead.val().roleid == 'a' || dead.val().roleid == 'b'){
-                                        this._changePhase(4);
-                                    } else {
-                                        this._changePhase(Phases[this.state.phase].trigger)
-                                    }
-                                } else if (dead.val().roleid == 'W'){
-                                    ballots.forEach((jester)=>{ 
-                                        firebase.database().ref('rooms/' + this.state.roomname + '/listofplayers/' 
-                                        + jester.key).update({bloody:true,suspicious:true})
-                                    })
-
-                                    this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                                        names + ' have blood on their hands and look suspicious.')
-                                    this._changePhase(Phases[this.state.phase].trigger)
-
-                                } else {
-                                    this._changePhase(Phases[this.state.phase].trigger)
-                                }
-                            })
-                                
-                            
-                        } else {
-                            this._noticeMsgGlobal(this.state.roomname,'#34cd0e',this.state.nominee 
-                                + ' was not hung.',1)
-
-                            this.listRef.child(this.state.nominate).update({immune:true})
-
-                            this._changePhase(Phases[this.state.phase].continue)
-                        }
-
-                    })
-                }
+                
+                
                 //Phase 4 Handling CONTINUE
-                else if(this.state.phase == 3){
+                if(this.state.phase == 3){
                     
                     new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
                         new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
@@ -410,27 +413,6 @@ componentWillMount() {
                         });
                     });
                 };
-        }
-    })
-
-    this.voteRef.on('value', snap=>{
-        //Votes should only exist in Phase 2
-        if(snap.exists() && this.state.amiowner){
-            snap.forEach((child)=>{
-                if(child.numChildren() + 1 > this.state.triggernum){
-                    if(Phases[this.state.phase].trigger){
-                        this.actionRef.remove();
-
-                        this.roomRef.update({nominate:child.key});
-                        this.listRef.child(child.key).child('name').once('value',getname=>{
-                            this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                            getname.val() + ' has been nominated.')
-                        })
-
-                        this._changePhase(Phases[this.state.phase].trigger);
-                    }
-                }
-            })
         }
     })
 
@@ -475,9 +457,6 @@ componentWillUnmount() {
     }
     if(this.playernumRef){
         this.playernumRef.off();
-    }
-    if(this.nominationRef){
-        this.nominationRef.off();
     }
     if(this.nominationRef){
         this.nominationRef.off();
