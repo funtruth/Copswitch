@@ -114,9 +114,10 @@ export default styles = StyleSheet.create({
     //Details Screen
     roleDesc: {
         fontSize: 18,
-        fontFamily: 'LuckiestGuy-Regular',
+        fontFamily: 'ConcertOne-Regular',
         color: colors.striker,
-        marginLeft:5
+        marginTop:5,
+        marginBottom:5,
     },
     hidden: {
         fontSize: 15,

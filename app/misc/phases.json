@@ -19,7 +19,7 @@
     },
     "3" : {
         "name" : "NIGHT",
-        "message" : "Visit another Player or stay home.",
+        "message" : "Visit another Player",
         "btn1" : "VISIT",
         "btn2" : "STAY HOME",
         "phasecolor" : "#F9F2DE",

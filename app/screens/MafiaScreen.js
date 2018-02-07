@@ -15,11 +15,12 @@ import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
 import Rolesheet from '../misc/roles.json';
 import Screens from '../misc/screens.json';
-import Images from '../../assets/images/index.js';
 import Phases from '../misc/phases.json';
 
 import { CustomButton } from '../components/CustomButton.js';
 import { Console } from '../components/Console.js';
+import { Rolecard } from '../components/Rolecard.js';
+import { Events } from '../components/Events.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -49,11 +50,12 @@ constructor(props) {
     this.state = {
         roomname:           params.roomname,
         counter:            '',
+        phase:              null,
         phasename:          '',
         message:            '',
         nextcounter:        null,
 
-        myroleid:           '',
+        myroleid:           'A',
         targetdead:         '',
         targettown:         '',
 
@@ -96,8 +98,7 @@ constructor(props) {
     this.actionRef          = this.roomRef.child('actions');
 
     //Owner Listening
-    this.ballotsRef         = this.roomRef.child('ballots');
-    this.voteRef            = this.roomRef.child('votes');
+    this.choiceRef          = this.roomRef.child('choice');
     this.loadedRef          = this.roomRef.child('loaded');
 
     this.msgRef             = firebase.database().ref('messages').child(this.user);
@@ -109,7 +110,7 @@ componentWillMount() {
     this.myReadyRef.on('value',snap=>{
         if(snap.exists()){
             
-            this._viewCover(true)
+            this._viewCover(false)
 
             if(snap.val() == true){
                 this.setState({
@@ -122,7 +123,7 @@ componentWillMount() {
             }
         } else {
 
-            this._viewCover(false)
+            this._viewCover(true)
 
             //PERFORM ACTIONS HERE BEFORE SUBMITTING TRUE
             this.setState({
@@ -154,6 +155,8 @@ componentWillMount() {
 
             for(i=0;i<this.namelist.length;i++){
 
+                this.namelist[i].key = i;
+
                 //Generate my info
                 if(this.namelist[i].uid == this.user){
                     this.setState({
@@ -161,28 +164,16 @@ componentWillMount() {
                         amidead:    this.namelist[i].dead,
                         myroleid:   this.namelist[i].roleid,
                     })
-
-                    //TODO Remove this garbage and leave only roleid
-                    var profilelist = [];
-                    
-                    profilelist.push({
-                        myrole:         Rolesheet[this.namelist[i].roleid].name,
-                        rolerules:      Rolesheet[this.namelist[i].roleid].rules,
-                        win:            Rolesheet[this.namelist[i].roleid].win,
-                        fl:             5,
-    
-                        key:            this.namelist[i].roleid,
-                    })
     
                     this.setState({
                         amimafia:       Rolesheet[this.namelist[i].roleid].type == 1,
                         targetdead:     Rolesheet[this.namelist[i].roleid].targetdead?true:false,
                         targettown:     Rolesheet[this.namelist[i].roleid].targettown?true:false,
-                        profilelist:    profilelist
                     })
                 }
 
-                if(this.namelist[i].type == 1){
+                //Mafialist
+                if(Rolesheet[this.namelist[i].roleid].type == 1 && this.namelist[i].uid != this.user){
                     mafialist.push({
                         name:       this.namelist[i].name,
                         rolename:   Rolesheet[this.namelist[i].roleid].name,
@@ -196,7 +187,7 @@ componentWillMount() {
 
                     playernum++;
 
-                    if(this.namelist[i].type == 1){
+                    if(Rolesheet[this.namelist[i].roleid].type == 1){
                         balance--;
                     } else {
                         balance++;
@@ -240,15 +231,12 @@ componentWillMount() {
         }
     })
     
-    this.globalMsgRef.on('value',snap=>{
+    this.globalMsgRef.limitToLast(10).on('value',snap=>{
         if(snap.exists()){
             var msg = [];
             snap.forEach((child)=>{   
                 msg.push({
-                    counter:    child.val().counter,
                     desc:       child.val().message,
-                    fl:         2,
-
                     key:        child.key,
                 })
             })
@@ -261,12 +249,9 @@ componentWillMount() {
     this.msgRef.on('value',snap=>{
         if(snap.exists()){
             var msg = [];
-            snap.forEach((child)=>{   
+            snap.forEach((child)=>{
                 msg.push({
-                    counter:    child.val().counter,
                     desc:       child.val().message,
-                    fl:         2,
-
                     key:        child.key,
                 })
             })
@@ -276,104 +261,94 @@ componentWillMount() {
         }
     })
 
-    this.voteRef.on('value',snap=>{
-        
-        if(snap.exists() && this.state.amiowner && snap.val().length>=this.state.triggernum){
+    this.choiceRef.on('value',snap=>{
+        if(this.state.phase == 1){
+            if(snap.exists() && this.state.amiowner && snap.val().length>=this.state.triggernum){
 
-            var votesArray = snap.val();
-            var flag = false;
-            
-            for(i=0;i<this.state.triggernum;i++){
+                var votesArray = snap.val();
+                var flag = false;
+                
+                for(i=0;i<this.state.triggernum;i++){
 
-                var count = 0;
-                var players = 0;
+                    var count = 0;
+                    var players = 0;
 
-                if(votesArray[i]){
-                    for(j=0;j<this.state.playernum;j++){
-                        if(votesArray[i] == votesArray[j]){
-                            count++
+                    if(votesArray[i]){
+                        for(j=0;j<this.state.playernum;j++){
+                            if(votesArray[i] == votesArray[j]){
+                                count++
+                            }
                         }
+
+                        if(count>=this.state.triggernum){
+                            flag = true;
+                            this.roomRef.update({nominate:i});
+                            this._noticeMsgGlobal(this.namelist[i].name + ' has been nominated.')
+                        }
+
+                        players++;
                     }
 
-                    if(count>=this.state.triggernum){
-                        flag = true;
-                        this.roomRef.update({nominate:i});
-                        this._noticeMsgGlobal(this.namelist[i].name + ' has been nominated.')
-                    }
-
-                    players++;
+                    if(flag){break}
                 }
 
-                if(flag){break}
-            }
+                if(flag){
+                    this.actionRef.remove();
+                    this._changePhase(Phases[this.state.phase].trigger);
 
-            if(flag){
-                this.actionRef.remove();
-                this._changePhase(Phases[this.state.phase].trigger);
-
-            } else if(!flag && players >= this.state.playernum){
-                
-                this.actionRef.remove();
-                this._resetDayStatuses();
-                this._changePhase(Phases[this.state.phase].continue);
-            }
-        }
-    })
-
-    this.ballotsRef.on('value',snap=>{
-        if(snap.exists() && this.state.amiowner && snap.val().length>=this.state.playernum){
-
-            var votesArray = snap.val();
-            var count = 0;
-            var names = 'Nobody';
-
-            for(i=0;i<this.state.playernum;i++){
-                if(votesArray[i]){
-                    count++
-                    if(names==''){
-                        names=this.namelist[i].name
-                    }
-                    else{
-                        names+=', '+this.namelist[i].name
-                    }
-                } else {
-                    count--
-                }
-            }
-
-            this._noticeMsgGlobal(names + ' voted against ' + this.namelist[this.state.nominate].name + '.')
-
-            if(count>0){
-                this.listRef.child(this.state.nominate).update({dead:true}).then(()=>{
-                    this._changePlayerCount(false);
-                })
-
-                this._noticeMsgGlobal(this.namelist[this.state.nominate].name + ' was hung.')
+                } else if(!flag && players >= this.state.playernum){
                     
-                if(this.namelist[this.state.nominate].type == 1){
-
-                    this.roomRef.child('mafia').child(this.state.nominate).update({alive:false});
-
-                    if(dead.val().roleid == 'a' || dead.val().roleid == 'b'){
-                        //ADD RANDOM LOGIC
-                    } else {
-                        this._changePhase(Phases[this.state.phase].trigger)
-                    }
-                } else if (dead.val().roleid == 'W'){
-                    //JESTER LOGIC
-
-                    this._noticeMsgGlobal(names + ' have blood on their hands and look suspicious.')
-                    this._changePhase(Phases[this.state.phase].trigger)
-
-                } else {
-                    this._changePhase(Phases[this.state.phase].trigger)
+                    this.actionRef.remove();
+                    this._resetDayStatuses();
+                    this._changePhase(Phases[this.state.phase].continue);
                 }
-                
-            } else {
-                this._noticeMsgGlobal(this.namelist[this.state.nominate].name + ' was not hung.',1)
-                this.listRef.child(this.state.nominate).update({immune:true})
-                this._changePhase(Phases[this.state.phase].continue)
             }
+        } else if (this.state.phase == 2){
+            if(snap.exists() && this.state.amiowner && snap.val().length>=this.state.playernum-1){
+                
+                var votesArray = snap.val();
+                var count = 0;
+                var names = null;
+    
+                for(i=0;i<this.state.playernum;i++){
+                    if(votesArray[i]){
+                        count++
+                        if(!names){
+                            names=this.namelist[i].name
+                        }
+                        else{
+                            names+=', '+this.namelist[i].name
+                        }
+                    } else {
+                        count--
+                    }
+                }
+    
+                this._noticeMsgGlobal(names||'Nobody' + ' voted against ' + this.namelist[this.state.nominate].name + '.')
+    
+                if(count>0){
+                    this.listRef.child(this.state.nominate).update({dead:true}).then(()=>{
+                        this._changePlayerCount(false);
+                    })
+    
+                    this._noticeMsgGlobal(this.namelist[this.state.nominate].name + ' was hung.')
+                        
+                    if(this.namelist[this.state.nominate].roleid == 'a' || this.namelist[this.state.nominate].roleid == 'b'){
+    
+                        //TODO NEW MURDERER LOGIC
+    
+                    } 
+                    
+                    this._changePhase(Phases[this.state.phase].trigger)
+                    
+                } else {
+                    this._noticeMsgGlobal(this.namelist[this.state.nominate].name + ' was not hung.',1)
+                    this.listRef.child(this.state.nominate).update({immune:true})
+                    this._changePhase(Phases[this.state.phase].continue)
+                }
+            }
+        } else if (this.state.phase == 3){
+
         }
     })
 
@@ -389,7 +364,7 @@ componentWillMount() {
                     new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
                         new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
                             
-                            this.ballotsRef.remove();
+                            this.choiceRef.remove();
                             this._resetDayStatuses();
                             
                             this._changePhase(Phases[this.state.phase].continue);
@@ -447,11 +422,11 @@ componentWillUnmount() {
     }
 
     //Owner Listeners
-    if(this.voteRef){
-        this.voteRef.off();
+    if(this.choiceRef){
+        this.choiceRef.off();
     }
-    if(this.ballotsRef){
-        this.ballotsRef.off();
+    if(this.choiceRef){
+        this.choiceRef.off();
     }
     if(this.loadedRef){
         this.loadedRef.off();
@@ -467,7 +442,7 @@ _changePhase(change){
     this.setState({nextcounter:this.state.counter + change})
     this.roomRef.child('nextcounter').set(this.state.counter + change).then(()=>{
         this.roomRef.child('ready').remove().then(()=>{
-            this.voteRef.remove()
+            this.choiceRef.remove()
         })
     })
 }
@@ -484,7 +459,6 @@ _resetDayStatuses() {
 }
 
 //Pressing any name button
-//TODO does item.index have a value?
 _nameBtnPress(item){
 
     if(!this.state.disabled){
@@ -500,7 +474,7 @@ _nameBtnPress(item){
                 this.setState({message:'That player is Immune'})
             } else {
                 this.setState({message:'You have selected ' + item.name + '.'})
-                this.voteRef.child(this.state.place).set(item.place).then(()=>{this.myReadyRef.set(true)})
+                this.choiceRef.child(this.state.place).set(item.key).then(()=>{this.myReadyRef.set(true)})
             }
         } else if (this.state.phase == 3) {
 
@@ -512,7 +486,7 @@ _nameBtnPress(item){
                 this.setState({message:'Select a Dead player.'})
             } else {
                 this.setState({message:'You have selected ' + item.name + '.'})
-                this.actionRef.child(this.state.place).set(item.place).then(()=>{this.myReadyRef.set(true)})
+                this.actionRef.child(this.state.place).set(item.key).then(()=>{this.myReadyRef.set(true)})
             }
         }
     }
@@ -538,7 +512,7 @@ _optionOnePress() {
 
     if (this.state.phase == 2){
         this.setState({message:'You voted INNOCENT.'})
-        this.ballotsRef.child(this.state.place).set(false).then(()=>{this.myReadyRef.set(true)})
+        this.choiceRef.child(this.state.place).set(false).then(()=>{this.myReadyRef.set(true)})
     }
 }
 
@@ -552,7 +526,7 @@ _optionTwoPress() {
         this.setState({message:'You abstained.'})
     } else if (this.state.phase == 2){
         this.setState({message:'You voted GUILTY.'})
-        this.ballotsRef.child(this.state.place).set(true).then(()=>{this.myReadyRef.set(true)})
+        this.choiceRef.child(this.state.place).set(true).then(()=>{this.myReadyRef.set(true)})
     } else if (this.state.phase == 3){
         this.myReadyRef.set(true);
         this.setState({message:'You stayed home.'})
@@ -566,9 +540,9 @@ _resetOptionPress() {
     this.setState({message:Phases[this.state.phase].message})
 
     if(this.state.phase == 1){
-        this.voteRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
+        this.choiceRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
     } else if (this.state.phase == 2){
-        this.ballotsRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
+        this.choiceRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
     } else if (this.state.phase == 3){
         this.actionRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
     }
@@ -576,12 +550,12 @@ _resetOptionPress() {
 
 //Sends a private notice message
 _noticeMsg(target,message){
-    this.msgRef.child(target).push({counter: this.state.counter, message: message})
+    this.msgRef.parent.child(target).push({message: message})
 }
 
 //Creates a public notice message
 _noticeMsgGlobal(message){
-    this.globalMsgRef.push({counter: this.state.counter, message: message})
+    this.globalMsgRef.push({message: message})
 }
 
 //Action Roles that adjust
@@ -799,18 +773,18 @@ _viewCover(cover){
     ).start()
 }
 
-//Rendering Main Visuals of Game Board
+//Rendering player list
 _renderListComponent(){
 
     return <View style = {{
-        position:'absolute', left:MARGIN*2, top:MARGIN*2, bottom:MARGIN*2, right:MARGIN*2,
+        position:'absolute', left:0, top:MARGIN*2, bottom:MARGIN*2, right:0,
         borderRadius:5,
     }}>
         <FlatList
-        data={this.namelist}
-        renderItem={({item}) => (this._renderItem(item))}
-        keyExtractor={item => item.uid}
-    />
+            data={this.namelist}
+            renderItem={({item}) => (this._renderItem(item))}
+            keyExtractor={item => item.uid}
+        />
     </View>
     
 }
@@ -818,9 +792,9 @@ _renderListComponent(){
 _renderItem(item){
     return <TouchableOpacity
         style = {{flexDirection:'row',alignItems:'center',
-                justifyContent:'center', height:40, borderRadius:2,
+                justifyContent:'center', height:40, marginBottom:5, borderRadius:5,
         backgroundColor: item.dead ? colors.dead : (item.immune? colors.immune :
-                    (item.status?colors.status:shadow))}}   
+                    (item.status?colors.status:colors.shadow))}}   
         onPress         = {() => { this._nameBtnPress(item) }}
         onLongPress     = {() => { this._nameBtnLongPress(item) }}
         disabled        = {this.state.disabled}
@@ -839,48 +813,23 @@ _renderItem(item){
     </TouchableOpacity>
 }
 
-_renderInfo(){
-    return <View style = {{
-        position:'absolute', left:0, bottom:this.height*0.4, right:0,
-    }}>
-        <FlatList
-            data={this.state.list}
-            renderItem={({item}) => (this._renderInfoItem(item))}
-            keyExtractor={item => item.key}
+//background info
+_renderInfo(section){
+    if(section){
+        return <Rolecard
+            roleid={this.state.myroleid}
+            amimafia={this.state.amimafia}
+            mafialist={this.state.mafialist}
         />
-    </View>
-}
-
-_renderInfoItem(item){
-    if (item.fl == 2){
-        return <View style = {{justifyContent:'center',alignItems:'center'}}>
-            <Text style = {styles.counterfont}>{
-                Phases[item.counter%3 + 1].name + ' ' + (item.counter - item.counter%3)/3
-            }</Text>
-            <Text style = {styles.roleDesc}>{item.desc}</Text>
-        </View>
-    } else if (item.fl == 4){
-        return <Text style = {styles.lfont}>{item.counter}</Text>
-    } else if(item.fl == 5){
-        return <View style = {{justifyContent: 'center', alignItems: 'center' }}>
-            <Text style = {styles.lfont}>you are a:</Text>
-            <Text style = {styles.mfont}>{item.myrole}</Text>
-            <Text style = {styles.lfont}>At night you:</Text>
-            <Text style = {styles.roleDesc}>{item.rolerules}</Text>
-            {this.state.amimafia?<View>
-                <Text style = {styles.lfont}>Your teammates:</Text>
-                <FlatList
-                    data={this.state.mafialist}
-                    renderItem={({item}) => (
-                        <Text style={[styles.roleDesc,{textDecorationLine:item.alive?'none':'line-through'}]}>
-                            {'[ ' + item.name + ' ] ' + item.rolename}</Text>
-                    )}
-                    keyExtractor={item => item.key}
-                /></View>:<View><Text style = {styles.lfont}>you win when:</Text>
-                <Text style = {styles.roleDesc}>{item.win}</Text></View>}
-        </View>
+    } else if (section == false){
+        return <Events
+            eventslist={this.state.newslist}
+        />
+    } else {
+        return null
     }
 }
+
 
 _renderWaiting(flex){
     return <View style = {{flex:flex, justifyContent:'center'}}>
@@ -912,20 +861,20 @@ _renderNav(){
         height:this.height*0.1, flexDirection:'row', justifyContent:'center'}}>
 
         <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15}}
-            onPress = {()=>this.setState({ list:this.state.profilelist,section:true}) }>
+            onPress = {()=>this.setState({ section:true}) }>
             <FontAwesome name='user'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
             <Text style = {{color:colors.font,marginLeft:0}}>Profile</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style = {{alignItems:'center',flex:0.3}}
-            onPress = {()=>this.setState({ list:null,section:null}) }>
+            onPress = {()=>this.setState({ section:null}) }>
             <FontAwesome name='gamepad'
                 style={{color:colors.font,fontSize:40,textAlign:'center'}}/>
         </TouchableOpacity>
 
         <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15}}
-            onPress = {()=>this.setState({ list:this.state.newslist,section:false}) }>
+            onPress = {()=>this.setState({ section:false}) }>
             <FontAwesome name='globe'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
             <Text style = {{color:colors.font,marginRight:0}}>Events</Text>
@@ -938,9 +887,9 @@ style = {{flex:1, alignSelf:'stretch', width:null}}>*/
 render() {
 
 return <View style = {{flex:1,backgroundColor:colors.gameback}}>
-    <View style = {{flex:1,backgroundColor:'rgba(0, 0, 0, 0.3)'}}>
+    <View style = {{flex:1,backgroundColor:'rgba(0, 0, 0, 0.3)',alignItems:'center'}}>
 
-        {this._renderInfo()}
+        {this._renderInfo(this.state.section)}
         {this._renderNav()}
 
         <Animated.View style = {{position:'absolute', elevation:0, bottom:0,

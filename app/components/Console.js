@@ -136,8 +136,8 @@ _viewChange(list,option,back) {
 
 componentWillReceiveProps(newProps){
     if(newProps.ready != this.state.ready){
-        this.setState({ready:newProps.ready, loading:newProps.loading})
-        if(newProps.loading){
+        this.setState({ready:newProps.ready})
+        if(newProps.ready == null){
             this._viewChange(false,false,false)
         } else if(newProps.ready){
             this._viewChange(false,false,true)
