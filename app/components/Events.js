@@ -55,7 +55,7 @@ render() {
             position:'absolute', left:this.width*0.1, right:this.width*0.1, bottom:this.height*0.4, height:this.height*0.5
         }}>
             <FlatList
-                data={this.props.eventslist}
+                data={[this.props.msgslist,this.props.eventslist]}
                 renderItem={({item}) => (this._renderItem(item))}
                 initialNumToRender={12}
                 inverted

@@ -114,8 +114,9 @@
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 2,
     "name" : "Villager",
-    "rules" : "",
-    "type" : 2
+    "rules" : "Learn from other town members.",
+    "type" : 2,
+    "visits" : true
   },
   "D" : {
     "win" : "All Mafia are removed.",
@@ -148,9 +149,8 @@
     "win" : "All Mafia are removed.",
     "image" : "https://firebasestorage.googleapis.com/v0/b/huddlec-4205b.appspot.com/o/murderer.png?alt=media&token=f74a146c-4321-4ab9-80e3-f5dd0907f96b",
     "index" : 6,
-    "name" : "Forensic",
-    "rules" : "Choose a dead player to uncover their role.",
-    "targetdead" : true,
+    "name" : "Hunter",
+    "rules" : "You ran out of bullets.",
     "type" : 2,
     "visits" : true
   },
@@ -169,7 +169,6 @@
     "index" : 8,
     "name" : "Hunter",
     "rules" : "Choose to shoot another player. You are limited to performing this action once per game.",
-    "charges" : 1,
     "type" : 2,
     "visits" : true
   },

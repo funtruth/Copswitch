@@ -53,15 +53,13 @@ constructor(props) {
         phase:              null,
         phasename:          '',
         message:            '',
-        nextcounter:        null,
 
         myroleid:           'A',
         targetdead:         '',
         targettown:         '',
 
         newslist:           [],
-        noteslist:          [],
-        profilelist:        [],
+        msglist:            [],
         mafialist:          [],
         section:            null,
 
@@ -95,14 +93,13 @@ constructor(props) {
     this.nominationRef      = this.roomRef.child('nominate');
     this.ownerRef           = this.roomRef.child('owner');
     this.counterRef         = this.roomRef.child('counter');
-    this.actionRef          = this.roomRef.child('actions');
 
     //Owner Listening
     this.choiceRef          = this.roomRef.child('choice');
     this.loadedRef          = this.roomRef.child('loaded');
 
-    this.msgRef             = firebase.database().ref('messages').child(this.user);
-    this.globalMsgRef       = firebase.database().ref('globalmsgs').child(roomname);
+    this.msgRef             = firebase.database().ref('msgs').child(roomname);
+    this.gMsgRef            = firebase.database().ref('gmsgs').child(roomname);
 }
 
 componentWillMount() {
@@ -111,24 +108,15 @@ componentWillMount() {
         if(snap.exists()){
             
             this._viewCover(false)
+            this.setState({ ready:snap.val() })
 
-            if(snap.val() == true){
-                this.setState({
-                    ready:true,
-                })
-            } else {
-                this.setState({
-                    ready:false,
-                })
-            }
         } else {
 
             this._viewCover(true)
+            this.setState({ ready:false })
 
             //PERFORM ACTIONS HERE BEFORE SUBMITTING TRUE
-            this.setState({
-                ready:false,
-            })
+
             setTimeout(()=>{
                 this.myReadyRef.once('value',snap=>{
                     if(snap.exists()){
@@ -170,6 +158,9 @@ componentWillMount() {
                         targetdead:     Rolesheet[this.namelist[i].roleid].targetdead?true:false,
                         targettown:     Rolesheet[this.namelist[i].roleid].targettown?true:false,
                     })
+
+                    //Set reference
+                    this.myMsgRef       = this.msgRef.orderByChild('place').equalTo(i)
                 }
 
                 //Mafialist
@@ -194,6 +185,23 @@ componentWillMount() {
                     }
                 }
             }
+
+            //TODO test if this works
+            this.myMsgRef.on('value',msgsnap=>{
+                if(msgsnap.exists()){
+                    var msg = msgsnap.val();
+                    var msglist = [];
+                    for(i=0;i<msg.length;i++){
+                        msglist.push({
+                            message:msg[i].message,
+                            key:i
+                        })
+                    }
+                    this.setState({msglist:msg.reverse()})
+                } else {
+                    this.setState({msglist:[]})
+                }
+            })
 
             this.setState({
                 playernum:      playernum,
@@ -231,7 +239,7 @@ componentWillMount() {
         }
     })
     
-    this.globalMsgRef.limitToLast(10).on('value',snap=>{
+    this.gMsgRef.limitToLast(10).on('value',snap=>{
         if(snap.exists()){
             var msg = [];
             snap.forEach((child)=>{   
@@ -246,26 +254,22 @@ componentWillMount() {
         }
     })
 
-    this.msgRef.on('value',snap=>{
-        if(snap.exists()){
-            var msg = [];
-            snap.forEach((child)=>{
-                msg.push({
-                    desc:       child.val().message,
-                    key:        child.key,
-                })
-            })
-            this.setState({noteslist:msg.reverse()})
-        } else {
-            this.setState({noteslist:[]})
-        }
-    })
-
     this.choiceRef.on('value',snap=>{
-        if(this.state.phase == 1){
-            if(snap.exists() && this.state.amiowner && snap.val().length>=this.state.triggernum){
 
-                var votesArray = snap.val();
+        if(this.state.amiowner && snap.exists()){
+
+            var choiceArray = snap.val();
+            var playerArray = this.namelist;
+            var msgs = [];
+            var gMsgs = [];
+            var total = 0;
+
+            for(i=0;i<choiceArray.length;i++){
+                if(choiceArray[i]) total++
+            }
+
+            if(this.state.phase == 1 && total>=this.state.triggernum){
+
                 var flag = false;
                 
                 for(i=0;i<this.state.triggernum;i++){
@@ -273,9 +277,9 @@ componentWillMount() {
                     var count = 0;
                     var players = 0;
 
-                    if(votesArray[i]){
+                    if(choiceArray[i] && choiceArray[i]!=-1){
                         for(j=0;j<this.state.playernum;j++){
-                            if(votesArray[i] == votesArray[j]){
+                            if(choiceArray[i] == choiceArray[j]){
                                 count++
                             }
                         }
@@ -293,25 +297,23 @@ componentWillMount() {
                 }
 
                 if(flag){
-                    this.actionRef.remove();
+                    this.choiceRef.remove();
                     this._changePhase(Phases[this.state.phase].trigger);
 
                 } else if(!flag && players >= this.state.playernum){
                     
-                    this.actionRef.remove();
+                    this.choiceRef.remove();
                     this._resetDayStatuses();
                     this._changePhase(Phases[this.state.phase].continue);
                 }
-            }
-        } else if (this.state.phase == 2){
-            if(snap.exists() && this.state.amiowner && snap.val().length>=this.state.playernum-1){
                 
-                var votesArray = snap.val();
+            } else if (this.state.phase == 2 && total>=this.state.playernum-1){
+            
                 var count = 0;
                 var names = null;
-    
+
                 for(i=0;i<this.state.playernum;i++){
-                    if(votesArray[i]){
+                    if(choiceArray[i]){
                         count++
                         if(!names){
                             names=this.namelist[i].name
@@ -323,22 +325,23 @@ componentWillMount() {
                         count--
                     }
                 }
-    
+
                 this._noticeMsgGlobal(names||'Nobody' + ' voted against ' + this.namelist[this.state.nominate].name + '.')
-    
+
                 if(count>0){
                     this.listRef.child(this.state.nominate).update({dead:true}).then(()=>{
                         this._changePlayerCount(false);
                     })
-    
+
                     this._noticeMsgGlobal(this.namelist[this.state.nominate].name + ' was hung.')
                         
                     if(this.namelist[this.state.nominate].roleid == 'a' || this.namelist[this.state.nominate].roleid == 'b'){
-    
+
                         //TODO NEW MURDERER LOGIC
-    
+
                     } 
                     
+                    this._resetDayStatuses();
                     this._changePhase(Phases[this.state.phase].trigger)
                     
                 } else {
@@ -346,38 +349,172 @@ componentWillMount() {
                     this.listRef.child(this.state.nominate).update({immune:true})
                     this._changePhase(Phases[this.state.phase].continue)
                 }
-            }
-        } else if (this.state.phase == 3){
+                
+            } else if (this.state.phase == 3 && total>=this.state.playernum){
 
+                for(i=0;i<choiceArray.length;i++){
+                    //ROLE BLOCKING
+                    if(playerArray[i].roleid == 'E'){
+                        //Add rb immunity later
+                        choiceArray[choiceArray[i]] = -1
+                    }
+                    //KILLING
+                    //TODO add cloud function to respond to player deaths
+                    else if (playerArray[i].roleid == 'a' || playerArray[i].roleid == 'b'){
+                        playerArray[choiceArray[i]].dead == true
+                    }
+                    else if (playerArray[i].roleid == 'J'){
+                        playerArray[choiceArray[i]].dead == true
+                    }
+                    //FRAMING
+                    else if (playerArray[i].roleid == 'd'){
+                        playerArray[choiceArray[i]].suspicious == true
+                    }
+                }
+
+                for(i=0;i<choiceArray.length;i++){
+                    if(choiceArray[i] != -1){
+                        if (playerArray[i].roleid == 'a') {
+
+                            msgs.push([
+                                {message:'You were stabbed.',place:choiceArray[i]},
+                                {message:'You stabbed ' + playerArray[choiceArray[i]].name + '.',place:i}
+                            ])
+
+                        }
+
+                        //Murderer 
+                        else if (playerArray[i].roleid == 'b') {
+
+                            msgs.push([
+                                {message:'You were stabbed.',place:choiceArray[i]},
+                                {message:'You stabbed ' + playerArray[choiceArray[i]].name + '.',place:i}
+                            ])
+
+                        }
+
+                        //Schemer
+                        else if (playerArray[i].roleid == 'c') {
+
+                            msgs.push([
+                                {message:'You framed ' + playerArray[choiceArray[i]].name + '.',place:i}
+                            ])
+                        }
+
+                        //Spy
+                        else if (playerArray[i].roleid == 'd') {
+
+                            msgs.push([
+                                {message: 'You spied on ' + playerArray[choiceArray[i]].name + '. They are a'
+                                + Rolesheet[playerArray[choiceArray[i]].roleid].name, place:i}
+                            ])
+
+                        }
+                        //Silencer
+                        else if (playerArray[i].roleid == 'f') {
+
+                            playerArray[choiceArray[i]].status = 'volume-mute'
+
+                            msgs.push([
+                                {message:'You were silenced.',place:choiceArray[i]},
+                                {message:'You silenced ' + playerArray[choiceArray[i]].name + '.',place:i}
+                            ])
+
+                        }
+                        //Detective
+                        else if (playerArray[i].roleid == 'A') {
+
+                            msgs.push([
+                                {message: playerArray[choiceArray[i]].name + 
+                                Rolesheet[playerArray[choiceArray[i]].roleid].suspicious?
+                                ' is suspicious.':' is not suspicious', place:i}
+                            ])
+
+                        }
+                        //Investigator
+                        else if (playerArray[i].roleid == 'B') {
+                            
+                        }
+                        //Villager
+                        else if (playerArray[i].roleid == 'C') {
+
+                            if(Rolesheet[playerArray[choiceArray[i]].roleid].type != 1){
+                                //TODO Promote logic
+                                playerArray[choiceArray[i]].raise += playerArray[choiceArray[i]].roleid
+                            }
+
+                            msgs.push([
+                                {message:'You learned from ' + playerArray[choiceArray[i]].name + '.',place:i}
+                            ])
+                        }
+                        //Doctor
+                        else if (playerArray[i].roleid == 'D') {
+                            
+                            if(playerArray[choiceArray[i]].dead){
+                                msgs.push([
+                                    {message:'You were healed!',place:choiceArray[i]},
+                                    {message:'You healed ' + playerArray[choiceArray[i]].name + '!',place:i}
+                                ])
+                            } else {
+                                msgs.push([
+                                    {message:'You visited ' + playerArray[choiceArray[i]].name + '.',place:i}
+                                ])
+                            }
+
+                        }
+                        //Escort
+                        else if (playerArray[i].roleid == 'E') {
+
+                            msgs.push([
+                                {message:'You were distracted.',place:choiceArray[i]},
+                                {message:'You distracted ' + playerArray[choiceArray[i]].name + '.',place:i}
+                            ])     
+
+                        }
+                        //Warden
+                        else if (playerArray[i].roleid == 'G') {
+
+                            for(j=0;j<choiceArray.length;j++){
+                                if(i!=j && choiceArray[i] == choiceArray[j]){
+                                    msgs.push([
+                                        {message:'Someone visited the house you were watching.',place:i},
+                                    ]) 
+                                }
+                            }
+
+                        }
+                        //Hunter - out of ammo
+                        else if (playerArray[i].roleid == 'H') {
+                            
+                        }
+                        //Overseer
+                        else if (playerArray[i].roleid == 'I') {
+                            
+                        }
+                        //Hunter
+                        else if (playerArray[i].roleid == 'J') {
+                            
+                            playerArray[i].roleid = 'H'
+
+                            msgs.push([
+                                {message:'You were shot.',place:choiceArray[i]},
+                                {message:'You shot ' + playerArray[choiceArray[i]].name + '.',place:i}
+                            ])
+                        }
+                        //Disguiser
+                        else if (playerArray[i].roleid == 'K') {
+                            
+                        }
+                    }
+                }
+
+                this.listRef.update(playerArray)
+                this.msgRef.update(msgs)
+
+                this._changePhase(Phases[this.state.phase].continue);
+            }
         }
     })
-
-    //Count listeners for the room owner
-    /*this.readyRef.on('value',snap=>{
-        if(snap.exists() && this.state.amiowner && ((snap.numChildren()+1)>this.state.playernum)
-            && this.state.playernum>0){
-                
-                
-                //Phase 4 Handling CONTINUE
-                if(this.state.phase == 3){
-                    
-                    new Promise((resolve) => resolve(this._adjustmentPhase())).then(()=>{
-                        new Promise((resolve) => resolve(this._actionPhase())).then(()=>{
-                            
-                            this.choiceRef.remove();
-                            this._resetDayStatuses();
-                            
-                            this._changePhase(Phases[this.state.phase].continue);
-
-                            //After Night, the day count increases
-                            this.counterRef.once('value',daycount=>{
-                                this.counterRef.set(daycount.val()+1);
-                            })
-                        });
-                    });
-                };
-        }
-    })*/
 
     this.loadedRef.on('value',snap=>{
         if(snap.exists() && this.state.amiowner){
@@ -391,6 +528,7 @@ componentWillMount() {
                         }
 
                         this.loadedRef.remove();
+                        this.choiceRef.remove();
                         this.roomRef.child('nextcounter').remove();
 
                     })
@@ -408,6 +546,9 @@ componentWillUnmount() {
     if(this.myInfoRef){
         this.myInfoRef.off();
     }
+    if(this.myMsgRef){
+        this.myMsgRef.off();
+    }
     if(this.ownerRef){
         this.ownerRef.off();
     }
@@ -419,6 +560,9 @@ componentWillUnmount() {
     }
     if(this.counterRef){
         this.counterRef.off();
+    }
+    if(this.gMsgRef){
+        this.gMsgRef.off();
     }
 
     //Owner Listeners
@@ -439,23 +583,21 @@ _buttonPress() {
 }
 
 _changePhase(change){
-    this.setState({nextcounter:this.state.counter + change})
     this.roomRef.child('nextcounter').set(this.state.counter + change).then(()=>{
-        this.roomRef.child('ready').remove().then(()=>{
-            this.choiceRef.remove()
-        })
+        this.roomRef.child('ready').remove()
     })
 }
 
 _resetDayStatuses() {
-    this.listRef.once('value',snap=>{
-        snap.forEach((child)=>{
-            this.listRef.child(child.key).update({
-                immune:null,
-                status:null
-            })
+
+    for(i=0;i<this.namelist.length;i++){
+        this.listRef.child(i).update({
+            immune:null,
+            status:null,
+            suspicious:null
         })
-    })
+    }
+
 }
 
 //Pressing any name button
@@ -486,12 +628,13 @@ _nameBtnPress(item){
                 this.setState({message:'Select a Dead player.'})
             } else {
                 this.setState({message:'You have selected ' + item.name + '.'})
-                this.actionRef.child(this.state.place).set(item.key).then(()=>{this.myReadyRef.set(true)})
+                this.choiceRef.child(this.state.place).set(item.key).then(()=>{this.myReadyRef.set(true)})
             }
         }
     }
 }
 
+//TODO - better handling
 _nameBtnLongPress(item){
     if(this.state.phase == 3) {
         if(this.state.amimafia){
@@ -522,14 +665,14 @@ _optionTwoPress() {
     this._buttonPress();
 
     if(this.state.phase == 1){
-        this.myReadyRef.set(true);
         this.setState({message:'You abstained.'})
+        this.choiceRef.child(this.state.place).set(-1).then(()=>{this.myReadyRef.set(true)})
     } else if (this.state.phase == 2){
         this.setState({message:'You voted GUILTY.'})
         this.choiceRef.child(this.state.place).set(true).then(()=>{this.myReadyRef.set(true)})
     } else if (this.state.phase == 3){
-        this.myReadyRef.set(true);
         this.setState({message:'You stayed home.'})
+        this.choiceRef.child(this.state.place).set(-1).then(()=>{this.myReadyRef.set(true)})
     }
 }
 
@@ -544,7 +687,7 @@ _resetOptionPress() {
     } else if (this.state.phase == 2){
         this.choiceRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
     } else if (this.state.phase == 3){
-        this.actionRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
+        this.choiceRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
     }
 }
 
@@ -555,203 +698,17 @@ _noticeMsg(target,message){
 
 //Creates a public notice message
 _noticeMsgGlobal(message){
-    this.globalMsgRef.push({message: message})
+    this.gMsgRef.push({message: message})
 }
 
-//Action Roles that adjust
-_adjustmentPhase() {
-    this.actionRef.once('value',snap=>{
-        snap.forEach((child)=>{
-
-            if (child.val().E) {
-                this.actionRef.child(child.val().target).child(child.val().roleid)
-                    .child(child.key).remove()
-                this.actionRefchild(child.key).update({ targetname: 'Nobody' })
-            }
-
-        })
-    })
-}
-
-//Action Roles
-_actionPhase() {
-    this.actionRef.once('value',snap=>{
-        snap.forEach((child)=>{
-            if(!child.val().E){
-                //Assassin
-                if (child.val().roleid == 'a') {
-                    this.actionRef.child(child.val().target).once('value',innersnap=>{
-                        if(!innersnap.val().D){
-                            this.listRef.child(child.val().target).update({dead:true});
-                            this.myInfoRef.update({bloody:true});
-                            this._changePlayerCount(false);
-
-                            this._noticeMsg(child.val().target,'You were stabbed.');
-                            this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                                child.val().targetname + ' was killed.');
-                        } 
-                        this._noticeMsg(child.key,'You have stabbed ' + child.val().targetname + '.');
-                    })
-        
-                }
-                //Murderer 
-                else if (child.val().roleid == 'b') {
-                    this.actionRef.child(child.val().target).once('value',innersnap=>{
-                        if(!innersnap.val().D){
-                            this.listRef.child(child.val().target).update({dead:true});
-                            this.myInfoRef.update({bloody:true});
-                            this._changePlayerCount(false);
-
-                            this._noticeMsg(child.val().target,'You were stabbed.');
-                            this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                                child.val().targetname + ' was killed.');
-                        }
-                        this._noticeMsg(child.key,'You have stabbed ' + child.val().targetname + '.');
-                    })
-    
-                }
-                //Schemer
-                else if (child.val().roleid == 'c') {
-                    this._noticeMsg(child.key,'You framed ' + child.val().targetname +" last night.");
-                }
-                //Spy
-                else if (child.val().roleid == 'd') {
-                    this.listRef.child(child.val().target).once('value',innersnap=>{
-                        this._noticeMsg(child.key,'You spied on ' + child.val().targetname 
-                        + ". They are a " + Rolesheet[innersnap.val().roleid].name + '.');
-                    })
-
-                }
-                //Silencer
-                else if (child.val().roleid == 'f') {
-                    this.listRef.child(child.val().target).update({ status: 'volume-mute' })
-                    this._noticeMsg(child.key,'You silenced ' + child.val().targetname + '.');
-                    this._noticeMsg(child.val().target,'You were silenced.');
-                }
-                //Detective
-                else if (child.val().roleid == 'A') {
-                    this.listRef.child(child.val().target).once('value',insidesnap=>{
-                        this.actionRef.child(child.val().target).once('value',scheme=>{
-                            if(scheme.val().c || insidesnap.val().suspicious){
-                                this._noticeMsg(child.key, child.val().targetname + ' is suspicious ...');
-                            } else {
-                                this._noticeMsg(child.key, child.val().targetname + ' is not suspicious.');
-                            }
-                        })
-                    })
-                }
-                //Investigator
-                else if (child.val().roleid == 'B') {
-                    this.listRef.child(child.val().target).once('value',innersnap=>{
-                        if(innersnap.val().bloody){
-                            this._noticeMsg(child.key, child.val().targetname + " has blood on their hands.");
-                        } else {
-                            this._noticeMsg(child.key, child.val().targetname 
-                            + " does not have blood on their hands.");
-                        }
-                    })
-
-                    
-                }
-                //Doctor
-                else if (child.val().roleid == 'D') {
-                    this.actionRef.child(child.val().target).once('value',insidesnap=>{
-                        if(insidesnap.val().a || insidesnap.val().b){
-                            this.listRef.child(child.key).update({bloody:true});
-                            this._noticeMsg(child.val().target,'The Doctor took care of your stab wounds.');
-                            this._noticeMsg(child.key,'You healed ' + child.val().targetname +"'s stab wounds.");
-                        } else {
-                            this._noticeMsg(child.key, 'You visited '+ child.val().targetname + '.');
-                        }
-                    })
-                }
-                //Escort
-                else if (child.val().roleid == 'E') {
-                    this._noticeMsg(child.val().target, 'You were distracted last night.');
-                    this._noticeMsg(child.key, 'You distracted ' + child.val().targetname +" last night.");     
-                }
-                //Warden
-                else if (child.val().roleid == 'G') {
-                    this.actionRef.child(child.val().target).once('value',insnap=>{
-                        var string = 'Nobody';
-                        insnap.forEach((visitor)=>{
-                            if(visitor.key.length == 1){
-                                visitor.forEach((person)=>{
-                                    if(person.key != child.key){
-                                        if(string == 'Nobody'){
-                                            string = person.val();
-                                        } else {
-                                            string += ', ' + person.val();
-                                        }
-                                    }
-                                })
-                            }
-                        })
-                        this._noticeMsg(child.key,string + ' visited ' + child.val().targetname 
-                            + "'s house last night.")
-                    })
-                }
-                //Forensic
-                else if (child.val().roleid == 'H') {
-                    this.listRef.child(child.val().target).once('value',innersnap=>{
-                        this._noticeMsg(child.key, child.val().targetname 
-                        + "'s body resembles a " + Rolesheet[innersnap.val().roleid].name + '.');
-                    })
-                }
-                //Overseer
-                else if (child.val().roleid == 'I') {
-                    this.actionRef.child(child.val().target).once('value',wheredhego=>{
-                        if(wheredhego.val().targetname){
-                            this._noticeMsg(child.key, child.val().targetname + ' visited ' 
-                            + wheredhego.val().targetname +"s house last night.");
-                        } else {
-                            this._noticeMsg(child.key, child.val().targetname 
-                            + ' visited Nobodys house last night.');
-                        }
-                    })
-                }
-                //Hunter
-                else if (child.val().roleid == 'J') {
-                    this.listRef.child(child.key).child('charges').once('value',charges=>{
-                        if(charges.val() > 0){
-                            this.actionRef.child(child.val().target).once('value',innersnap=>{
-                                if(!innersnap.val().D){
-                                    this.listRef.child(child.val().target).update({dead:true});
-                                    this._changePlayerCount(false);
-            
-                                    this._noticeMsg(child.val().target,'You were shot.');
-                                    this._noticeMsgGlobal(this.state.roomname,'#d31d1d',
-                                        child.val().targetname + ' was killed.');
-                                } 
-                                this._noticeMsg(child.key, 'You shot ' + child.val().targetname + '.');
-                            })
-                            this.listRef.child(child.key).update({charges: (charges.val()-1)})
-                            
-                        } else {
-                            this._noticeMsg(child.key, 'You are out of bullets.')
-                        }
-                    })
-                }
-                //Disguiser
-                else if (child.val().roleid == 'K') {
-                    this.listRef.child(child.val().target).once('value',role=>{
-                        this.myInfoRef.update({roleid:role.val().roleid})
-                        this._noticeMsg(child.key,'You took ' + child.val().targetname + "'s role.")
-                    })
-                }
-            }
-        })
-    })
-
-}
-
+//TODO Handling Game Ending
 _gameOver() {
     AsyncStorage.removeItem('ROOM-KEY');
     AsyncStorage.removeItem('GAME-KEY');
 
     this.msgRef.remove();
     if(this.state.amiowner){
-        this.globalMsgRef.remove();
+        this.gMsgRef.remove();
     }
     this.listRef.once('value',snap=>{
         if(snap.numChildren() <= 1){
@@ -824,6 +781,7 @@ _renderInfo(section){
     } else if (section == false){
         return <Events
             eventslist={this.state.newslist}
+            msgslist={this.state.msglist}
         />
     } else {
         return null
