@@ -26,6 +26,8 @@ constructor(props) {
         rules:'',
         win:'',
 
+        list: [],
+
     }
 
     this.width = Dimensions.get('window').width;
@@ -34,17 +36,21 @@ constructor(props) {
 }
 
 componentDidMount(){
-    
+    this.setState({
+        list: this.props.gmsglist.concat(this.props.msglist)
+    })
 }
 
 componentWillReceiveProps(newProps){
-    
+    this.setState({
+        list: newProps.gmsglist.concat(newProps.msglist)
+    })
 }
 
 _renderItem(item){
     return <View style = {{ marginTop:5,
         justifyContent:'center',alignItems:'center'}}>
-        <Text style = {styles.roleDesc}>{item.desc}</Text>
+        <Text style = {styles.roleDesc}>{item.message}</Text>
     </View>
 }
 
@@ -55,7 +61,7 @@ render() {
             position:'absolute', left:this.width*0.1, right:this.width*0.1, bottom:this.height*0.4, height:this.height*0.5
         }}>
             <FlatList
-                data={[this.props.msgslist,this.props.eventslist]}
+                data={this.state.list}
                 renderItem={({item}) => (this._renderItem(item))}
                 initialNumToRender={12}
                 inverted

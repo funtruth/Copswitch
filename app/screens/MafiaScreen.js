@@ -58,7 +58,7 @@ constructor(props) {
         targetdead:         '',
         targettown:         '',
 
-        newslist:           [],
+        gmsglist:           [],
         msglist:            [],
         mafialist:          [],
         section:            null,
@@ -98,8 +98,8 @@ constructor(props) {
     this.choiceRef          = this.roomRef.child('choice');
     this.loadedRef          = this.roomRef.child('loaded');
 
-    this.msgRef             = firebase.database().ref('msgs').child(roomname);
-    this.gMsgRef            = firebase.database().ref('gmsgs').child(roomname);
+    this.msgRef             = this.roomRef.child('msgs');
+    this.gMsgRef            = this.roomRef.child('gmsgs');
 }
 
 componentWillMount() {
@@ -186,7 +186,6 @@ componentWillMount() {
                 }
             }
 
-            //TODO test if this works
             this.myMsgRef.on('value',msgsnap=>{
                 if(msgsnap.exists()){
                     var msg = msgsnap.val();
@@ -197,7 +196,7 @@ componentWillMount() {
                             key:i
                         })
                     }
-                    this.setState({msglist:msg.reverse()})
+                    this.setState({msglist:msglist.reverse()})
                 } else {
                     this.setState({msglist:[]})
                 }
@@ -239,18 +238,19 @@ componentWillMount() {
         }
     })
     
-    this.gMsgRef.limitToLast(10).on('value',snap=>{
+    this.gMsgRef.on('value',snap=>{
         if(snap.exists()){
-            var msg = [];
-            snap.forEach((child)=>{   
-                msg.push({
-                    desc:       child.val().message,
-                    key:        child.key,
+            var msg = snap.val();
+            var gmsgs = [];
+            for(i=0;i<msg.length;i++){
+                gmsgs.push({
+                    message:    msg[i].message,
+                    key:        i+'g',
                 })
-            })
-            this.setState({newslist:msg.reverse()})
+            }
+            this.setState({gmsglist:gmsgs.reverse()})
         } else {
-            this.setState({newslist:[]})
+            this.setState({gmsglist:[]})
         }
     })
 
@@ -303,6 +303,8 @@ componentWillMount() {
                 } else if(!flag && players >= this.state.playernum){
                     
                     this.choiceRef.remove();
+                    this.msgRef.remove();
+                    this.gMsgRef.remove();
                     this._resetDayStatuses();
                     this._changePhase(Phases[this.state.phase].continue);
                 }
@@ -326,7 +328,7 @@ componentWillMount() {
                     }
                 }
 
-                this._noticeMsgGlobal(names||'Nobody' + ' voted against ' + this.namelist[this.state.nominate].name + '.')
+                this._noticeMsgGlobal((names||'Nobody') + ' voted against ' + this.namelist[this.state.nominate].name + '.')
 
                 if(count>0){
                     this.listRef.child(this.state.nominate).update({dead:true}).then(()=>{
@@ -508,8 +510,9 @@ componentWillMount() {
                     }
                 }
 
+                this.gMsgRef.remove();
                 this.listRef.update(playerArray)
-                this.msgRef.update(msgs)
+                this.msgRef.set(msgs)
 
                 this._changePhase(Phases[this.state.phase].continue);
             }
@@ -566,9 +569,6 @@ componentWillUnmount() {
     }
 
     //Owner Listeners
-    if(this.choiceRef){
-        this.choiceRef.off();
-    }
     if(this.choiceRef){
         this.choiceRef.off();
     }
@@ -634,11 +634,11 @@ _nameBtnPress(item){
     }
 }
 
-//TODO - better handling
 _nameBtnLongPress(item){
     if(this.state.phase == 3) {
         if(this.state.amimafia){
 
+            //TODO Personal Chat using push()
             for(i=0;i<this.mafialist.length;i++){
                 this._noticeMsg(this.namelist[this.mafialist[i].key].uid, 
                     this.namelist[this.state.place].name + ' wants to target ' + item.name + '.')
@@ -648,7 +648,6 @@ _nameBtnLongPress(item){
     }
 }
 
-//Day Phase - VOTE
 _optionOnePress() {
 
     this._buttonPress();
@@ -659,7 +658,6 @@ _optionOnePress() {
     }
 }
 
-//Day Phase - ABSTAIN
 _optionTwoPress() {
     
     this._buttonPress();
@@ -676,7 +674,6 @@ _optionTwoPress() {
     }
 }
 
-//Day Phase - WAITING PRESS
 _resetOptionPress() {
 
     this._buttonPress();
@@ -691,14 +688,16 @@ _resetOptionPress() {
     }
 }
 
-//Sends a private notice message
+//TODO remove//update function
 _noticeMsg(target,message){
     this.msgRef.parent.child(target).push({message: message})
 }
 
 //Creates a public notice message
+//TODO where to keep global messages? potentially move to main page/
 _noticeMsgGlobal(message){
-    this.gMsgRef.push({message: message})
+    var gmsgs = this.state.gmsglist;
+    this.gMsgRef.set(gmsgs.concat([{message:message}]))
 }
 
 //TODO Handling Game Ending
@@ -706,10 +705,6 @@ _gameOver() {
     AsyncStorage.removeItem('ROOM-KEY');
     AsyncStorage.removeItem('GAME-KEY');
 
-    this.msgRef.remove();
-    if(this.state.amiowner){
-        this.gMsgRef.remove();
-    }
     this.listRef.once('value',snap=>{
         if(snap.numChildren() <= 1){
             this.roomRef.remove();
@@ -780,8 +775,8 @@ _renderInfo(section){
         />
     } else if (section == false){
         return <Events
-            eventslist={this.state.newslist}
-            msgslist={this.state.msglist}
+            gmsglist={this.state.gmsglist}
+            msglist={this.state.msglist}
         />
     } else {
         return null

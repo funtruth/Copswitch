@@ -53,25 +53,24 @@ render() {
 
     return (
         <View style = {{
-            position:'absolute', left:this.height*0.1, right:this.height*0.1, bottom:this.height*0.4
+            position:'absolute', left:this.height*0.1, right:this.height*0.1, bottom:this.height*0.45,
+            alignItems:'center'
         }}>
-            <View style = {{justifyContent: 'center', alignItems: 'center' }}>
-                <Text style = {styles.lfont}>you are a:</Text>
-                <Text style = {styles.mfont}>{this.state.role}</Text>
-                <Text style = {styles.lfont}>At night you:</Text>
-                <Text style = {styles.roleDesc}>{this.state.rules}</Text>
-                {this.props.amimafia?<View>
-                    <Text style = {styles.lfont}>Your teammates:</Text>
-                    <FlatList
-                        data={this.props.mafialist}
-                        renderItem={({item}) => (
-                            <Text style={[styles.roleDesc,{textDecorationLine:item.dead?'line-through':'none'}]}>
-                                {'[ ' + item.name + ' ] ' + item.rolename}</Text>
-                        )}
-                        keyExtractor={item => item.key}
-                    /></View>:<View><Text style = {styles.lfont}>you win when:</Text>
-                    <Text style = {styles.roleDesc}>{this.state.win}</Text></View>}
-            </View>
+            <Text style = {styles.lfont}>you are a:</Text>
+            <Text style = {styles.mfont}>{this.state.role}</Text>
+            <Text style = {styles.lfont}>At night you:</Text>
+            <Text style = {styles.roleDesc}>{this.state.rules}</Text>
+            {this.props.amimafia?<View>
+                <Text style = {styles.lfont}>Your teammates:</Text>
+                <FlatList
+                    data={this.props.mafialist}
+                    renderItem={({item}) => (
+                        <Text style={[styles.roleDesc,{textDecorationLine:item.dead?'line-through':'none'}]}>
+                            {'[ ' + item.name + ' ] ' + item.rolename}</Text>
+                    )}
+                    keyExtractor={item => item.key}
+                /></View>:<View><Text style = {styles.lfont}>you win when:</Text>
+                <Text style = {styles.roleDesc}>{this.state.win}</Text></View>}
         </View>
     )
 }
