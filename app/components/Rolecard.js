@@ -14,7 +14,6 @@ const MARGIN = 10;
 
 export class Rolecard extends React.Component {
 
-    
 constructor(props) {
     super(props);
 

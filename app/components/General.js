@@ -12,7 +12,7 @@ const FADEIN_ANIM = 600;
 
 const MARGIN = 10;
 
-export class Events extends React.Component {
+export class General extends React.Component {
 
     
 constructor(props) {
@@ -24,8 +24,8 @@ constructor(props) {
         win:'',
     }
 
-    this.list = this.props.notlist.concat(this.props.msglist)
-
+    this.list = this.props.gmsglist
+    
     this.opacity = []
     for(i=0;i<this.list.length;i++){
         this.list[i].index = i
@@ -55,7 +55,7 @@ animate () {
 }
 
 componentWillReceiveProps(newProps){
-    this.list = newProps.notlist.concat(newProps.msglist)
+    this.list = newProps.gmsglist
 }
 
 _renderItem(item){

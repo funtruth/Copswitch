@@ -21,6 +21,7 @@ import { CustomButton } from '../components/CustomButton.js';
 import { Console } from '../components/Console.js';
 import { Rolecard } from '../components/Rolecard.js';
 import { Events } from '../components/Events.js';
+import { General } from '../components/General.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -32,6 +33,7 @@ const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
+import { Status } from '../components/Status';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;
@@ -60,6 +62,7 @@ constructor(props) {
 
         gmsglist:           [],
         msglist:            [],
+
         mafialist:          [],
         section:            null,
 
@@ -81,6 +84,7 @@ constructor(props) {
     };
     
     this.namelist           = [];
+    this.notlist            = [];
 
     this.height             = Dimensions.get('window').height;
     this.width              = Dimensions.get('window').width;
@@ -100,6 +104,8 @@ constructor(props) {
 
     this.msgRef             = this.roomRef.child('msgs');
     this.gMsgRef            = this.roomRef.child('gmsgs');
+    this.notRef             = this.roomRef.child('nots');
+    this.eNotRef            = this.roomRef.child('enots');
 }
 
 componentWillMount() {
@@ -240,17 +246,38 @@ componentWillMount() {
     
     this.gMsgRef.on('value',snap=>{
         if(snap.exists()){
-            var msg = snap.val();
             var gmsgs = [];
-            for(i=0;i<msg.length;i++){
+            snap.forEach((child)=>{
                 gmsgs.push({
-                    message:    msg[i].message,
-                    key:        i+'g',
+                    message:    child.val().message,
+                    key:        child.key,
                 })
-            }
+            })
             this.setState({gmsglist:gmsgs.reverse()})
         } else {
             this.setState({gmsglist:[]})
+        }
+    })
+
+    this.notRef.on('child_added',snap=>{
+        if(snap.exists()){
+            
+            this.notlist.push({
+                message:    snap.val(),
+                key:        snap.key,
+            })
+        
+        }
+    })
+
+    this.eNotRef.on('child_added',snap=>{
+        if(snap.exists() && this.state.amimafia){
+            
+            this.notlist.push({
+                message:    snap.val(),
+                key:        snap.key,
+            })
+        
         }
     })
 
@@ -287,7 +314,7 @@ componentWillMount() {
                         if(count>=this.state.triggernum){
                             flag = true;
                             this.roomRef.update({nominate:i});
-                            this._noticeMsgGlobal(this.namelist[i].name + ' has been nominated.')
+                            this._gMsg(this.namelist[i].name + ' has been nominated.')
                         }
 
                         players++;
@@ -328,14 +355,14 @@ componentWillMount() {
                     }
                 }
 
-                this._noticeMsgGlobal((names||'Nobody') + ' voted against ' + this.namelist[this.state.nominate].name + '.')
+                this._gMsg((names||'Nobody') + ' voted against ' + this.namelist[this.state.nominate].name + '.')
 
                 if(count>0){
                     this.listRef.child(this.state.nominate).update({dead:true}).then(()=>{
                         this._changePlayerCount(false);
                     })
 
-                    this._noticeMsgGlobal(this.namelist[this.state.nominate].name + ' was hung.')
+                    this._gMsg(this.namelist[this.state.nominate].name + ' was hung.')
                         
                     if(this.namelist[this.state.nominate].roleid == 'a' || this.namelist[this.state.nominate].roleid == 'b'){
 
@@ -347,7 +374,7 @@ componentWillMount() {
                     this._changePhase(Phases[this.state.phase].trigger)
                     
                 } else {
-                    this._noticeMsgGlobal(this.namelist[this.state.nominate].name + ' was not hung.',1)
+                    this._gMsg(this.namelist[this.state.nominate].name + ' was not hung.')
                     this.listRef.child(this.state.nominate).update({immune:true})
                     this._changePhase(Phases[this.state.phase].continue)
                 }
@@ -567,6 +594,12 @@ componentWillUnmount() {
     if(this.gMsgRef){
         this.gMsgRef.off();
     }
+    if(this.notRef){
+        this.notRef.off();
+    }
+    if(this.eNotRef){
+        this.eNotRef.off();
+    }
 
     //Owner Listeners
     if(this.choiceRef){
@@ -634,20 +667,6 @@ _nameBtnPress(item){
     }
 }
 
-_nameBtnLongPress(item){
-    if(this.state.phase == 3) {
-        if(this.state.amimafia){
-
-            //TODO Personal Chat using push()
-            for(i=0;i<this.mafialist.length;i++){
-                this._noticeMsg(this.namelist[this.mafialist[i].key].uid, 
-                    this.namelist[this.state.place].name + ' wants to target ' + item.name + '.')
-            }
-
-        }
-    }
-}
-
 _optionOnePress() {
 
     this._buttonPress();
@@ -688,16 +707,12 @@ _resetOptionPress() {
     }
 }
 
-//TODO remove//update function
-_noticeMsg(target,message){
-    this.msgRef.parent.child(target).push({message: message})
-}
-
 //Creates a public notice message
-//TODO where to keep global messages? potentially move to main page/
-_noticeMsgGlobal(message){
-    var gmsgs = this.state.gmsglist;
-    this.gMsgRef.set(gmsgs.concat([{message:message}]))
+_gMsg(message){
+    this.gMsgRef.push(message)
+}
+_eNot(message){
+    this.eNotRef.push(message)
 }
 
 //TODO Handling Game Ending
@@ -748,7 +763,6 @@ _renderItem(item){
         backgroundColor: item.dead ? colors.dead : (item.immune? colors.immune :
                     (item.status?colors.status:colors.shadow))}}   
         onPress         = {() => { this._nameBtnPress(item) }}
-        onLongPress     = {() => { this._nameBtnLongPress(item) }}
         disabled        = {this.state.disabled}
     >
         <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
@@ -775,11 +789,13 @@ _renderInfo(section){
         />
     } else if (section == false){
         return <Events
-            gmsglist={this.state.gmsglist}
             msglist={this.state.msglist}
+            notlist={this.notlist}
         />
     } else {
-        return null
+        return <General
+            gmsglist={this.state.gmsglist}
+        />
     }
 }
 

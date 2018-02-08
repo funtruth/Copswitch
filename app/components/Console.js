@@ -169,18 +169,12 @@ render() {
         <Animated.View style = {{position:'absolute',bottom:this.height*0.14,height:this.state.size, width:this.width*0.8,
                 backgroundColor:colors.background, borderRadius:20, justifyContent:'center'}}>
                 
-            <View style = {{justifyContent:'center', alignItems:'center'}}>
-                <Text style = {{
-                    fontSize:30,
-                    fontFamily:'LuckiestGuy-Regular',
-                    color:colors.font
-                }}>{this.props.title}</Text>
-                <Text style = {{
-                    fontSize:20,
-                    fontFamily:'LuckiestGuy-Regular',
-                    color:colors.striker
-                }}>{this.props.subtitle}</Text>
-            </View>
+            <Text style = {{
+                fontSize:30,
+                fontFamily:'LuckiestGuy-Regular',
+                alignSelf:'center',
+                color:colors.font
+            }}>{this.props.title}</Text>
 
             <Animated.View style = {{height:this.state.listSize, opacity:this.state.listOpacity, 
                 justifyContent:'center', alignItems:'center'}}>
