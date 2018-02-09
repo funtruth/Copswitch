@@ -61,6 +61,8 @@ render() {
             <Text style = {styles.mfont}>{Rolesheet[this.props.roleid].name}</Text>
             <Text style = {styles.lfont}>AT NIGHT YOU:</Text>
             <Text style = {styles.roleDesc}>{Rolesheet[this.props.roleid].rules}</Text>
+            <Text style = {styles.lfont}>you win when:</Text>
+            <Text style = {styles.roleDesc}>{Rolesheet[this.props.roleid].win}</Text>
             {this.props.amimafia?<View>
                 <Text style = {styles.lfont}>YOUR TEAMMATES:</Text>
                 <FlatList
@@ -70,8 +72,7 @@ render() {
                             {'[ ' + item.name + ' ] ' + item.rolename}</Text>
                     )}
                     keyExtractor={item => item.key}
-                /></View>:<View><Text style = {styles.lfont}>you win when:</Text>
-                <Text style = {styles.roleDesc}>{Rolesheet[this.props.roleid].win}</Text></View>}
+                /></View>:null}
         </Animated.View>
     )
 }

@@ -147,8 +147,8 @@ optionBack(){
 render() {
 
     return ( 
-        <Animated.View style = {{position:'absolute',bottom:this.height*0.14,height:this.state.size, width:this.width*0.8,
-                backgroundColor:colors.background, borderRadius:20, justifyContent:'center'}}>
+        <Animated.View style = {{position:'absolute',bottom:this.height*0.14,height:this.state.size, width:this.width*0.87,
+                backgroundColor:colors.background, borderRadius:10, justifyContent:'center'}}>
                 
             <View style = {{ 
                 position:'absolute', top:0, left:0, height:this.height*0.1, width:this.width*0.4,

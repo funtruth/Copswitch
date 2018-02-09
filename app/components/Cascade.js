@@ -81,19 +81,9 @@ _renderItem(item){
 render() {
 
     return (
-        <View style = {{
-            position:'absolute', left:this.height*0.04, right:this.height*0.04, 
-            bottom:this.height*0.33, height:this.height*0.56
-        }}>
-            <FlatList
-                data={this.list}
-                renderItem={({item}) => (this._renderItem(item))}
-                initialNumToRender={12}
-                inverted
-                showsVerticalScrollIndicator={false}
-                keyExtractor={item => item.key}
-            />
-        </View>
+        <View style = {{position:'absolute', left:-25, bottom:0, width:75, height:50,backgroundColor:'white'}}>
+        
+            </View>
     )
 }
 }

@@ -830,24 +830,38 @@ _renderNav(){
     return <View style = {{position:'absolute',bottom:MARGIN,left:0,right:0,
         height:this.height*0.1, flexDirection:'row', justifyContent:'center'}}>
 
-        <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15}}
+        <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15, bottom:MARGIN/2}}
             onPress = {()=>this.setState({ section:true}) }>
             <FontAwesome name='user'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
-            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Profile</Text>
+            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Role</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style = {{alignItems:'center',flex:0.3}}
+        <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.17, bottom:MARGIN/2}}
+            onPress = {()=>this.setState({ section:true}) }>
+            <FontAwesome name='globe'
+                style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
+            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>News</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style = {{alignItems:'center',flex:0.2, bottom:0}}
             onPress = {()=>this.setState({ section:null}) }>
             <FontAwesome name='gamepad'
                 style={{color:colors.font,fontSize:40,textAlign:'center'}}/>
         </TouchableOpacity>
 
-        <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15}}
+        <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.17, bottom:MARGIN/2}}
             onPress = {()=>this.setState({ section:false}) }>
-            <FontAwesome name='globe'
+            <MaterialIcons name='notifications'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
-            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Events</Text>
+            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Notes</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15, bottom:MARGIN/2}}
+            onPress = {()=>this.setState({ section:true}) }>
+            <FontAwesome name='book'
+                style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
+            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Menu</Text>
         </TouchableOpacity>
     </View>
 }
@@ -880,9 +894,6 @@ return <View style = {{flex:1,backgroundColor:colors.gameback}}>
 
     </View>
 
-    <View style = {{position:'absolute', left:-25, bottom:0, width:75, height:50,backgroundColor:'white'}}>
-
-    </View>
 </View>
 }
 //</Image>
