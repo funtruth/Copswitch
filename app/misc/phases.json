@@ -4,7 +4,6 @@
         "message" : "Choose an Option",
         "btn1" : "VOTE",
         "btn2" : "ABSTAIN",
-        "phasecolor" : "#F9F2DE",
         "continue" : 2,
         "trigger" : 1
     },
@@ -13,7 +12,6 @@
         "message" : "has been nominated",
         "btn1" : "INNOCENT",
         "btn2" : "GUILTY",
-        "phasecolor" : "#F9F2DE",
         "continue" : -1,
         "trigger" : 1
     },
@@ -22,7 +20,6 @@
         "message" : "Visit another Player",
         "btn1" : "VISIT",
         "btn2" : "STAY HOME",
-        "phasecolor" : "#F9F2DE",
         "continue" : -2
     },
     "6" : {
@@ -30,14 +27,12 @@
         "message" : null,
         "btn1" : "PLAY AGAIN",
         "btn2" : "QUIT",
-        "phasecolor" : "#F9F2DE"
     },
     "7" : {
         "name" : "MAFIA WIN",
         "message" : null,
         "btn1" : "PLAY AGAIN",
         "btn2" : "QUIT",
-        "phasecolor" : "#F9F2DE"
     }
   }
   

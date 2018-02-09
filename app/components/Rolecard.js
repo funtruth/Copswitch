@@ -52,10 +52,10 @@ render() {
             transform: [{
                 translateX: this.state.opacity.interpolate({
                     inputRange: [0, 0.5, 1],
-                    outputRange: [0, this.height*0.02, this.height*0.04],
+                    outputRange: [0, this.height*0.03, this.height*0.05],
                 })
             }],
-            position:'absolute', left:this.height*0.04, right:this.height*0.08, 
+            position:'absolute', left:0, right:this.height*0.08, 
             bottom:this.height*0.33, height:this.height*0.56 }}>
             <Text style = {styles.lfont}>YOU ARE A:</Text>
             <Text style = {styles.mfont}>{Rolesheet[this.props.roleid].name}</Text>

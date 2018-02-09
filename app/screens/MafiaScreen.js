@@ -782,21 +782,25 @@ _renderItem(item){
 //background info
 //TODO turn into component
 _renderInfo(section){
-    if(section){
+    if(section == 'Role'){
         return <Rolecard
             roleid={this.state.myroleid}
             amimafia={this.state.amimafia}
             mafialist={this.state.mafialist}
         />
-    } else if (section === false){
+    } else if (section == 'Notes'){
         return <Events
             msglist={this.state.msglist}
             notlist={this.notlist}
         />
-    } else {
+    } else if (section == 'News') {
         return <General
             gmsglist={this.state.gmsglist}
         />
+    } else if (section == 'Menu') {
+        return null
+    } else if (section) {
+        return null
     }
 }
 
@@ -831,14 +835,14 @@ _renderNav(){
         height:this.height*0.1, flexDirection:'row', justifyContent:'center'}}>
 
         <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15, bottom:MARGIN/2}}
-            onPress = {()=>this.setState({ section:true}) }>
+            onPress = {()=>this.setState({ section:'Role'}) }>
             <FontAwesome name='user'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
             <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Role</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.17, bottom:MARGIN/2}}
-            onPress = {()=>this.setState({ section:true}) }>
+            onPress = {()=>this.setState({ section:'News'}) }>
             <FontAwesome name='globe'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
             <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>News</Text>
@@ -851,14 +855,14 @@ _renderNav(){
         </TouchableOpacity>
 
         <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.17, bottom:MARGIN/2}}
-            onPress = {()=>this.setState({ section:false}) }>
+            onPress = {()=>this.setState({ section:'Notes'}) }>
             <MaterialIcons name='notifications'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
             <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Notes</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15, bottom:MARGIN/2}}
-            onPress = {()=>this.setState({ section:true}) }>
+            onPress = {()=>this.setState({ section:'Menu'}) }>
             <FontAwesome name='book'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
             <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Menu</Text>
@@ -880,7 +884,7 @@ return <View style = {{flex:1,backgroundColor:colors.gameback}}>
             title = {(this.state.phase == 1 || this.state.phase == 3)?
                 this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
                 :this.state.phasename}
-            subtitle = {this.state.message}
+            section = {this.state.section}
             phase = {this.state.phase}
             okay = {this.state.btn1}
             cancel = {this.state.btn2}

@@ -72,7 +72,7 @@ _renderItem(item){
         transform: [{
             translateX: this.opacity[item.index].interpolate({
                 inputRange: [0, 0.5, 1],
-                outputRange: [0, this.height*0.02, this.height*0.04],
+                outputRange: [0, this.height*0.03, this.height*0.05],
             }),
         }] }}>
         <Text style = {styles.message}>{item.message}</Text>
@@ -83,7 +83,7 @@ render() {
 
     return (
         <View style = {{
-            position:'absolute', left:this.height*0.04, right:this.height*0.04, 
+            position:'absolute', left:0, right:this.height*0.04, 
             bottom:this.height*0.33, height:this.height*0.56
         }}>
             <FlatList

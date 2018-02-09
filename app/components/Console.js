@@ -17,22 +17,17 @@ constructor(props) {
     super(props);
 
     this.state = {
-        ready: null,
 
-        listFlex: new Animated.Value(0.01),
         listOpacity: new Animated.Value(0),
 
-        optionSize: new Animated.Value(2),
-        optionOpacity: new Animated.Value(0),
+        optionOneOpacity: new Animated.Value(0),
+        optionTwoOpacity: new Animated.Value(0),
         optionDisabled: true,
         
-        backSize: new Animated.Value(2),
         backOpacity: new Animated.Value(0),
         backDisabled: true,
 
         size: new Animated.Value(2),
-
-        radiusScale: new Animated.Value(0.25)
     }
 
     this.width = Dimensions.get('window').width;
@@ -40,9 +35,9 @@ constructor(props) {
     
 }
 
-_viewChange(list,option,back) {
+_viewChange(list,optionOne,optionTwo,back) {
     this.setState({
-        optionDisabled:!option,
+        optionDisabled:back,
         backDisabled:!back,
     })
     setTimeout(()=>{
@@ -58,7 +53,12 @@ _viewChange(list,option,back) {
                     toValue: 0
             }),
             Animated.timing(
-                this.state.optionOpacity, {
+                this.state.optionOneOpacity, {
+                    duration: FADEIN_ANIM,
+                    toValue: 0
+            }),
+            Animated.timing(
+                this.state.optionTwoOpacity, {
                     duration: FADEIN_ANIM,
                     toValue: 0
             }),
@@ -70,24 +70,7 @@ _viewChange(list,option,back) {
             Animated.timing(
                 this.state.size, {
                     duration: FADEIN_ANIM,
-                    toValue: list?this.height*0.75:this.height*0.15
-            })
-        ]),
-        Animated.parallel([
-            Animated.timing(
-                this.state.listFlex, {
-                    duration: BLINK_ANIM,
-                    toValue: list?0.8:0.01
-            }),
-            Animated.timing(
-                this.state.optionSize, {
-                    duration: BLINK_ANIM,
-                    toValue: option?this.height*0.15:2
-            }),
-            Animated.timing(
-                this.state.backSize, {
-                    duration: BLINK_ANIM,
-                    toValue: back?this.height*0.075:2
+                    toValue: list?this.height*0.76:this.height*0.15
             })
         ]),
         Animated.parallel([
@@ -97,9 +80,14 @@ _viewChange(list,option,back) {
                     toValue: list?1:0
             }),
             Animated.timing(
-                this.state.optionOpacity, {
+                this.state.optionOneOpacity, {
                     duration: FADEIN_ANIM,
-                    toValue: option?1:0
+                    toValue: optionOne?1:0
+            }),
+            Animated.timing(
+                this.state.optionTwoOpacity, {
+                    duration: FADEIN_ANIM,
+                    toValue: optionTwo?1:0
             }),
             Animated.timing(
                 this.state.backOpacity, {
@@ -111,15 +99,25 @@ _viewChange(list,option,back) {
         
 }
 
+componentDidMount(){
+    this._viewChange(false,true,true,false)
+}
+
 componentWillReceiveProps(newProps){
-    if(newProps.ready != this.state.ready){
-        this.setState({ready:newProps.ready})
+
+    if(!newProps.section && this.props.section){
+        this._viewChange(true,false,true,false)
+    } else if (newProps.section && !this.props.section) {
+        this._viewChange(false,true,true,false)
+    }
+
+    if(newProps.ready != this.props.ready){
         if(newProps.ready == null){
-            this._viewChange(false,false,false)
+            this._viewChange(false,false,false,false)
         } else if(newProps.ready){
-            this._viewChange(false,false,true)
+            this._viewChange(false,false,false,true)
         } else  {
-            this._viewChange(false,true,false)
+            this._viewChange(true,false,true,false)
         }
     }
 }
@@ -137,18 +135,18 @@ optionTwo(){
 }
 
 optionBack(){
-    if(this.state.ready){
+    if(this.props.ready){
         this.props.onBack()
     } else {
-        this._viewChange(false,true,false)
+        this._viewChange(true,false,true,false)
     }
 }
 
 render() {
 
     return ( 
-        <Animated.View style = {{position:'absolute',bottom:this.height*0.14,height:this.state.size, width:this.width*0.87,
-                backgroundColor:colors.background, borderRadius:10, justifyContent:'center'}}>
+        <Animated.View style = {{position:'absolute',bottom:this.height*0.13,height:this.state.size, width:this.width*0.87,
+                backgroundColor:colors.background, borderRadius:10}}>
                 
             <View style = {{ 
                 position:'absolute', top:0, left:0, height:this.height*0.1, width:this.width*0.4,
@@ -161,17 +159,27 @@ render() {
                 }}>{this.props.title}</Text>
             </View>
 
-            <Animated.View style = {{flex:this.state.listFlex, opacity:this.state.listOpacity,
+            <Animated.View style = {{
+                flex:this.state.listOpacity.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [0.01, 0.4, 0.8],
+                }), 
+                opacity:this.state.listOpacity,
+                top:this.height*0.07,
                 justifyContent:'center', alignItems:'center'}}>
                 {this.props.children}
             </Animated.View>
 
             <Animated.View style = {{
                 position:'absolute', right:0, top:0, width:this.width*0.4,
-                height:this.state.optionSize, opacity:this.state.optionOpacity, 
+                height:this.state.optionOneOpacity.interpolate({
+                    inputRange: [0, 0.1, 1],
+                    outputRange: [2, this.height*0.07, this.height*0.075],
+                }), 
+                opacity:this.state.optionOneOpacity, 
                 justifyContent:'center', alignItems:'center'}}>
                 <CustomButton
-                    size = {0.4}
+                    size = {0.8}
                     flex = {0.8}
                     depth = {0}
                     radius = {15}
@@ -181,14 +189,23 @@ render() {
                     disabled = {this.state.optionDisabled}
                     title = {this.props.okay}
                 />
+            </Animated.View>
+
+            <Animated.View style = {{
+                position:'absolute', right:0, bottom:0, width:this.width*0.4,
+                height:this.state.optionTwoOpacity.interpolate({
+                    inputRange: [0, 0.1, 1],
+                    outputRange: [2, this.height*0.07, this.height*0.075],
+                }),  
+                opacity:this.state.optionTwoOpacity, 
+                justifyContent:'center', alignItems:'center'}}>
                 <CustomButton
-                    size = {0.4}
+                    size = {0.8}
                     flex = {0.8}
                     depth = {0}
                     radius = {15}
                     fontSize = {20}
-                    color = {colors.background}
-                    shadow = {colors.background}
+                    color = {colors.shadow}
                     onPress = {()=>this.optionTwo()}
                     disabled = {this.state.optionDisabled}
                     title = {this.props.cancel}
@@ -197,7 +214,11 @@ render() {
 
             <Animated.View style = {{
                 position:'absolute', bottom:0, right:0, width:this.width*0.4,
-                height:this.state.backSize, opacity:this.state.backOpacity, 
+                height:this.state.backOpacity.interpolate({
+                    inputRange: [0, 0.1, 1],
+                    outputRange: [2, this.height*0.07, this.height*0.075],
+                }), 
+                opacity:this.state.backOpacity, 
                 alignItems:'center'}}>
                 <CustomButton
                     size = {0.8}
@@ -208,7 +229,7 @@ render() {
                     color = {colors.shadow}
                     onPress = {()=>this.optionBack()}
                     disabled = {this.state.backDisabled}
-                    title = 'return'
+                    title = 'cancel'
                 />
             </Animated.View>
 
