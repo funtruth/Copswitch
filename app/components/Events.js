@@ -24,7 +24,7 @@ constructor(props) {
         win:'',
     }
 
-    this.list = this.props.notlist.concat(this.props.msglist)
+    this.list = this.props.msglist
 
     this.opacity = []
     for(i=0;i<this.list.length;i++){
@@ -54,14 +54,9 @@ animate () {
     Animated.stagger(80, animations).start()
 }
 
-componentWillReceiveProps(newProps){
-    this.list = newProps.notlist.concat(newProps.msglist)
-}
-
 _renderItem(item){
-    return <Animated.View style = {{ marginTop:5, opacity:this.opacity[item.index],
-        justifyContent:'center',alignItems:'center'}}>
-        <Text style = {styles.roleDesc}>{item.message}</Text>
+    return <Animated.View style = {{ marginTop:5, opacity:this.opacity[item.index] }}>
+        <Text style = {styles.message}>{item.message}</Text>
     </Animated.View>
 }
 
@@ -69,7 +64,8 @@ render() {
 
     return (
         <View style = {{
-            position:'absolute', left:this.width*0.1, right:this.width*0.1, bottom:this.height*0.4, height:this.height*0.5
+            position:'absolute', left:this.height*0.08, right:this.height*0.08, 
+            bottom:this.height*0.33, height:this.height*0.56
         }}>
             <FlatList
                 data={this.list}

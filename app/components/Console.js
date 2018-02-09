@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, Animated, Dimensions, TouchableOpacity } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { View, Text, Animated, Dimensions } from 'react-native';
 
 import colors from '../misc/colors.js';
 import { CustomButton } from './CustomButton';
 
-const FADEOUT_ANIM = 300;
-const SIZE_ANIM = 500;
+const FADEOUT_ANIM = 200;
+const BLINK_ANIM = 50;
 const FADEIN_ANIM = 600;
 
 const MARGIN = 10;
@@ -19,9 +18,8 @@ constructor(props) {
 
     this.state = {
         ready: null,
-        loading: null,
 
-        listSize: new Animated.Value(2),
+        listFlex: new Animated.Value(0.01),
         listOpacity: new Animated.Value(0),
 
         optionSize: new Animated.Value(2),
@@ -33,7 +31,6 @@ constructor(props) {
         backDisabled: true,
 
         size: new Animated.Value(2),
-        opacity: new Animated.Value(0),
 
         radiusScale: new Animated.Value(0.25)
     }
@@ -51,11 +48,6 @@ _viewChange(list,option,back) {
     Animated.sequence([
         Animated.parallel([
             Animated.timing(
-                this.state.opacity, {
-                    duration: FADEIN_ANIM,
-                    toValue: 0
-            }),
-            Animated.timing(
                 this.state.listOpacity, {
                     duration: FADEIN_ANIM,
                     toValue: 0
@@ -71,49 +63,29 @@ _viewChange(list,option,back) {
                     toValue: 0
             }),
             Animated.timing(
-                this.state.listSize, {
-                    duration: FADEIN_ANIM,
-                    toValue: 2
-            }),
-            Animated.timing(
-                this.state.optionSize, {
-                    duration: FADEIN_ANIM,
-                    toValue: 2
-            }),
-            Animated.timing(
-                this.state.backSize, {
-                    duration: FADEIN_ANIM,
-                    toValue: 2
-            })
-        ]),
-        Animated.parallel([
-            Animated.timing(
-                this.state.listSize, {
-                    duration: FADEIN_ANIM,
-                    toValue: list?this.height*0.5:2
-            }),
-            Animated.timing(
                 this.state.size, {
                     duration: FADEIN_ANIM,
-                    toValue: list?this.height*0.75:this.height*0.22
-            }),
-            Animated.timing(
-                this.state.optionSize, {
-                    duration: FADEIN_ANIM,
-                    toValue: option?this.height*0.1:2
-            }),
-            Animated.timing(
-                this.state.backSize, {
-                    duration: FADEIN_ANIM,
-                    toValue: back?this.height*0.1:2
+                    toValue: list?this.height*0.75:this.height*0.15
             })
         ]),
         Animated.parallel([
             Animated.timing(
-                this.state.opacity, {
-                    duration: FADEIN_ANIM,
-                    toValue: 1
+                this.state.listFlex, {
+                    duration: BLINK_ANIM,
+                    toValue: list?0.8:0.01
             }),
+            Animated.timing(
+                this.state.optionSize, {
+                    duration: BLINK_ANIM,
+                    toValue: option?this.height*0.15:2
+            }),
+            Animated.timing(
+                this.state.backSize, {
+                    duration: BLINK_ANIM,
+                    toValue: back?this.height*0.075:2
+            })
+        ]),
+        Animated.parallel([
             Animated.timing(
                 this.state.listOpacity, {
                     duration: FADEIN_ANIM,
@@ -155,6 +127,10 @@ optionOne(){
     }
 }
 
+optionTwo(){
+    this.props.onTwo()
+}
+
 optionBack(){
     if(this.state.ready){
         this.props.onBack()
@@ -169,23 +145,29 @@ render() {
         <Animated.View style = {{position:'absolute',bottom:this.height*0.14,height:this.state.size, width:this.width*0.8,
                 backgroundColor:colors.background, borderRadius:20, justifyContent:'center'}}>
                 
-            <Text style = {{
-                fontSize:30,
-                fontFamily:'LuckiestGuy-Regular',
-                alignSelf:'center',
-                color:colors.font
-            }}>{this.props.title}</Text>
+            <View style = {{ 
+                position:'absolute', top:0, left:0, height:this.height*0.1, width:this.width*0.4,
+                alignItems:'center', justifyContent:'center', 
+            }}>
+                <Text style = {{
+                    fontSize:30,
+                    fontFamily:'LuckiestGuy-Regular',
+                    color:colors.font
+                }}>{this.props.title}</Text>
+            </View>
 
-            <Animated.View style = {{height:this.state.listSize, opacity:this.state.listOpacity, 
+            <Animated.View style = {{flex:this.state.listFlex, opacity:this.state.listOpacity,
                 justifyContent:'center', alignItems:'center'}}>
                 {this.props.list}
             </Animated.View>
 
-            <Animated.View style = {{height:this.state.optionSize, opacity:this.state.optionOpacity, 
-                flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
-                <View style = {{flex:0.4}}><CustomButton
-                    size = {0.7}
-                    flex = {1}
+            <Animated.View style = {{
+                position:'absolute', right:0, top:0, width:this.width*0.4,
+                height:this.state.optionSize, opacity:this.state.optionOpacity, 
+                justifyContent:'center', alignItems:'center'}}>
+                <CustomButton
+                    size = {0.4}
+                    flex = {0.8}
                     depth = {0}
                     radius = {15}
                     fontSize = {20}
@@ -193,27 +175,28 @@ render() {
                     onPress = {()=> this.optionOne() }
                     disabled = {this.state.optionDisabled}
                     title = {this.props.okay}
-                /></View>
-                <View style = {{flex:0.05}}/>
-                <View style = {{flex:0.4}}><CustomButton
-                    size = {0.7}
-                    flex = {1}
+                />
+                <CustomButton
+                    size = {0.4}
+                    flex = {0.8}
                     depth = {0}
                     radius = {15}
                     fontSize = {20}
                     color = {colors.background}
                     shadow = {colors.background}
-                    onPress = {()=>this.props.onTwo()}
+                    onPress = {()=>this.optionTwo()}
                     disabled = {this.state.optionDisabled}
                     title = {this.props.cancel}
-                /></View>
+                />
             </Animated.View>
 
-            <Animated.View style = {{height:this.state.backSize, opacity:this.state.backOpacity, 
-                justifyContent:'center', alignItems:'center'}}>
+            <Animated.View style = {{
+                position:'absolute', bottom:0, right:0, width:this.width*0.4,
+                height:this.state.backSize, opacity:this.state.backOpacity, 
+                alignItems:'center'}}>
                 <CustomButton
-                    size = {0.7}
-                    flex = {0.4}
+                    size = {0.8}
+                    flex = {0.8}
                     depth = {0}
                     radius = {15}
                     fontSize = {20}

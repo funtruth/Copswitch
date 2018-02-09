@@ -113,8 +113,15 @@ export default styles = StyleSheet.create({
 
     //Details Screen
     roleDesc: {
-        fontSize: 18,
-        fontFamily: 'ConcertOne-Regular',
+        fontSize: 15,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.striker,
+        marginTop:5,
+        marginBottom:5,
+    },
+    message: {
+        fontSize: 15,
+        fontFamily: 'FredokaOne-Regular',
         color: colors.striker,
         marginTop:5,
         marginBottom:5,
@@ -251,7 +258,6 @@ export default styles = StyleSheet.create({
         fontSize:17,
         fontFamily:'LuckiestGuy-Regular',
         color:colors.font,
-        alignSelf: 'center',
     },
     counterfont: {
         fontSize:17,
@@ -286,7 +292,6 @@ export default styles = StyleSheet.create({
     mfont: {
         fontSize: 30,
         fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
         color: colors.striker,
     },
     mlfont: {

@@ -51,16 +51,14 @@ componentWillReceiveProps(newProps){
 render() {
 
     return (
-        <View style = {{
-            position:'absolute', left:this.height*0.1, right:this.height*0.1, bottom:this.height*0.45,
-            alignItems:'center'
-        }}>
-            <Text style = {styles.lfont}>you are a:</Text>
+        <View style = {{ position:'absolute', left:this.height*0.08, right:this.height*0.08, 
+            bottom:this.height*0.33, height:this.height*0.56 }}>
+            <Text style = {styles.lfont}>YOU ARE A:</Text>
             <Text style = {styles.mfont}>{this.state.role}</Text>
-            <Text style = {styles.lfont}>At night you:</Text>
+            <Text style = {styles.lfont}>AT NIGHT YOU:</Text>
             <Text style = {styles.roleDesc}>{this.state.rules}</Text>
             {this.props.amimafia?<View>
-                <Text style = {styles.lfont}>Your teammates:</Text>
+                <Text style = {styles.lfont}>YOUR TEAMMATES:</Text>
                 <FlatList
                     data={this.props.mafialist}
                     renderItem={({item}) => (

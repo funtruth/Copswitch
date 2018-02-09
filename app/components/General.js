@@ -41,6 +41,18 @@ componentDidMount(){
     this.animate()
 }
 
+shouldComponentUpdate(nextProps, nextState){
+    return nextProps.gmsglist.length > this.props.gmsglist.length
+}
+
+componentWillUpdate(nextProps, nextState){
+    this.list = nextProps.gmsglist
+    for(i=0;i<this.list.length;i++){
+        this.list[i].index = i
+        this.opacity[i] = new Animated.Value(1)
+    }
+}
+
 animate () {
     const animations = this.list.map((item) => {
         return Animated.timing(
@@ -54,14 +66,16 @@ animate () {
     Animated.stagger(80, animations).start()
 }
 
-componentWillReceiveProps(newProps){
-    this.list = newProps.gmsglist
-}
 
 _renderItem(item){
     return <Animated.View style = {{ marginTop:5, opacity:this.opacity[item.index],
-        justifyContent:'center',alignItems:'center'}}>
-        <Text style = {styles.roleDesc}>{item.message}</Text>
+        transform: [{
+            translateX: this.opacity[item.index].interpolate({
+                inputRange: [0, 0.1, 1],
+                outputRange: [0, 30, 0],
+            }),
+        }] }}>
+        <Text style = {styles.message}>{item.message}</Text>
     </Animated.View>
 }
 
@@ -69,7 +83,8 @@ render() {
 
     return (
         <View style = {{
-            position:'absolute', left:this.width*0.1, right:this.width*0.1, bottom:this.height*0.4, height:this.height*0.5
+            position:'absolute', left:this.height*0.08, right:this.height*0.08, 
+            bottom:this.height*0.33, height:this.height*0.56
         }}>
             <FlatList
                 data={this.list}
@@ -78,6 +93,7 @@ render() {
                 inverted
                 showsVerticalScrollIndicator={false}
                 keyExtractor={item => item.key}
+                ListEmptyComponent={<Text style = {{color:'white'}}>hi</Text>}
             />
         </View>
     )

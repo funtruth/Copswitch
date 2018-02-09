@@ -682,7 +682,7 @@ _optionTwoPress() {
     this._buttonPress();
 
     if(this.state.phase == 1){
-        this.setState({message:'You abstained.'})
+        //TODO message handling?
         this.choiceRef.child(this.state.place).set(-1).then(()=>{this.myReadyRef.set(true)})
     } else if (this.state.phase == 2){
         this.setState({message:'You voted GUILTY.'})
@@ -759,7 +759,7 @@ _renderListComponent(){
 _renderItem(item){
     return <TouchableOpacity
         style = {{flexDirection:'row',alignItems:'center',
-                justifyContent:'center', height:40, marginBottom:5, borderRadius:5,
+                justifyContent:'center', height:40, margin:5, marginTop:0, borderRadius:5,
         backgroundColor: item.dead ? colors.dead : (item.immune? colors.immune :
                     (item.status?colors.status:colors.shadow))}}   
         onPress         = {() => { this._nameBtnPress(item) }}
@@ -780,6 +780,7 @@ _renderItem(item){
 }
 
 //background info
+//TODO turn into component
 _renderInfo(section){
     if(section){
         return <Rolecard
@@ -787,7 +788,7 @@ _renderInfo(section){
             amimafia={this.state.amimafia}
             mafialist={this.state.mafialist}
         />
-    } else if (section == false){
+    } else if (section === false){
         return <Events
             msglist={this.state.msglist}
             notlist={this.notlist}
@@ -833,7 +834,7 @@ _renderNav(){
             onPress = {()=>this.setState({ section:true}) }>
             <FontAwesome name='user'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
-            <Text style = {{color:colors.font,marginLeft:0}}>Profile</Text>
+            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Profile</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style = {{alignItems:'center',flex:0.3}}
@@ -846,7 +847,7 @@ _renderNav(){
             onPress = {()=>this.setState({ section:false}) }>
             <FontAwesome name='globe'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
-            <Text style = {{color:colors.font,marginRight:0}}>Events</Text>
+            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Events</Text>
         </TouchableOpacity>
     </View>
 }
