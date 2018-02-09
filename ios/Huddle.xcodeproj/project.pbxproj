@@ -64,6 +64,9 @@
 		836166246E454AA4867ECAEB /* Bangers-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B2DD6C4A3A7F402E9041A2F4 /* Bangers-Regular.ttf */; };
 		DD6256C43BA64CFEA6D7047F /* LuckiestGuy-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 33CB2AD8700844EF961C19F2 /* LuckiestGuy-Regular.ttf */; };
 		725BEBCC3EC640E6AB754951 /* SigmarOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 364024F1E21246B5AA9DC88F /* SigmarOne-Regular.ttf */; };
+		1306C73330A14079AA3E5E27 /* Baloo-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 00C4C5D587464E5DAE36EAC5 /* Baloo-Regular.ttf */; };
+		BED5394A116B4A3683687EDA /* FredokaOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85699FF245B44C3296681944 /* FredokaOne-Regular.ttf */; };
+		1C053EB672AE479A81C3FD78 /* RammettoOne-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0B89FD080F4542AEA0EE7300 /* RammettoOne-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -364,6 +367,9 @@
 		B2DD6C4A3A7F402E9041A2F4 /* Bangers-Regular.ttf */ = {isa = PBXFileReference; name = "Bangers-Regular.ttf"; path = "../assets/fonts/Bangers-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		33CB2AD8700844EF961C19F2 /* LuckiestGuy-Regular.ttf */ = {isa = PBXFileReference; name = "LuckiestGuy-Regular.ttf"; path = "../assets/fonts/LuckiestGuy-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		364024F1E21246B5AA9DC88F /* SigmarOne-Regular.ttf */ = {isa = PBXFileReference; name = "SigmarOne-Regular.ttf"; path = "../assets/fonts/SigmarOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		00C4C5D587464E5DAE36EAC5 /* Baloo-Regular.ttf */ = {isa = PBXFileReference; name = "Baloo-Regular.ttf"; path = "../assets/fonts/Baloo-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		85699FF245B44C3296681944 /* FredokaOne-Regular.ttf */ = {isa = PBXFileReference; name = "FredokaOne-Regular.ttf"; path = "../assets/fonts/FredokaOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		0B89FD080F4542AEA0EE7300 /* RammettoOne-Regular.ttf */ = {isa = PBXFileReference; name = "RammettoOne-Regular.ttf"; path = "../assets/fonts/RammettoOne-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -584,6 +590,9 @@
 				B2DD6C4A3A7F402E9041A2F4 /* Bangers-Regular.ttf */,
 				33CB2AD8700844EF961C19F2 /* LuckiestGuy-Regular.ttf */,
 				364024F1E21246B5AA9DC88F /* SigmarOne-Regular.ttf */,
+				00C4C5D587464E5DAE36EAC5 /* Baloo-Regular.ttf */,
+				85699FF245B44C3296681944 /* FredokaOne-Regular.ttf */,
+				0B89FD080F4542AEA0EE7300 /* RammettoOne-Regular.ttf */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -1138,6 +1147,9 @@
 				836166246E454AA4867ECAEB /* Bangers-Regular.ttf in Resources */,
 				DD6256C43BA64CFEA6D7047F /* LuckiestGuy-Regular.ttf in Resources */,
 				725BEBCC3EC640E6AB754951 /* SigmarOne-Regular.ttf in Resources */,
+				1306C73330A14079AA3E5E27 /* Baloo-Regular.ttf in Resources */,
+				BED5394A116B4A3683687EDA /* FredokaOne-Regular.ttf in Resources */,
+				1C053EB672AE479A81C3FD78 /* RammettoOne-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
