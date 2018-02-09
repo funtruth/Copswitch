@@ -18,7 +18,6 @@ constructor(props) {
     super(props);
 
     this.state = {
-        size: new Animated.Value(2),
         opacity: new Animated.Value(0),
 
         role: 'A',
@@ -33,30 +32,35 @@ constructor(props) {
 }
 
 componentDidMount(){
-    this.setState({
-        role:Rolesheet[this.props.roleid].name,
-        rules:Rolesheet[this.props.roleid].rules,
-        win:Rolesheet[this.props.roleid].win,
-    }) 
+    this.animate()
 }
 
-componentWillReceiveProps(newProps){
-    this.setState({
-        role:Rolesheet[newProps.roleid].name,
-        rules:Rolesheet[newProps.roleid].rules,
-        win:Rolesheet[newProps.roleid].win,
-    })
+animate(){
+    Animated.timing(
+        this.state.opacity, {
+            toValue:1,
+            duration:150
+        }
+    ).start()
 }
 
 render() {
 
     return (
-        <View style = {{ position:'absolute', left:this.height*0.08, right:this.height*0.08, 
+        <Animated.View style = {{ 
+            opacity: this.state.opacity,
+            transform: [{
+                translateX: this.state.opacity.interpolate({
+                    inputRange: [0, 0.5, 1],
+                    outputRange: [0, this.height*0.02, this.height*0.04],
+                })
+            }],
+            position:'absolute', left:this.height*0.04, right:this.height*0.08, 
             bottom:this.height*0.33, height:this.height*0.56 }}>
             <Text style = {styles.lfont}>YOU ARE A:</Text>
-            <Text style = {styles.mfont}>{this.state.role}</Text>
+            <Text style = {styles.mfont}>{Rolesheet[this.props.roleid].name}</Text>
             <Text style = {styles.lfont}>AT NIGHT YOU:</Text>
-            <Text style = {styles.roleDesc}>{this.state.rules}</Text>
+            <Text style = {styles.roleDesc}>{Rolesheet[this.props.roleid].rules}</Text>
             {this.props.amimafia?<View>
                 <Text style = {styles.lfont}>YOUR TEAMMATES:</Text>
                 <FlatList
@@ -67,8 +71,8 @@ render() {
                     )}
                     keyExtractor={item => item.key}
                 /></View>:<View><Text style = {styles.lfont}>you win when:</Text>
-                <Text style = {styles.roleDesc}>{this.state.win}</Text></View>}
-        </View>
+                <Text style = {styles.roleDesc}>{Rolesheet[this.props.roleid].win}</Text></View>}
+        </Animated.View>
     )
 }
 }

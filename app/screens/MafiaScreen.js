@@ -740,7 +740,7 @@ _viewCover(cover){
     ).start()
 }
 
-//Rendering player list
+//TODO MOVE Playerlist to 'List.js' component to animate staggered
 _renderListComponent(){
 
     return <View style = {{
@@ -862,14 +862,6 @@ return <View style = {{flex:1,backgroundColor:colors.gameback}}>
         {this._renderInfo(this.state.section)}
         {this._renderNav()}
 
-        <Animated.View style = {{position:'absolute', elevation:0, bottom:0,
-            height:this.height*4/9, width:this.height*4/9, borderRadius:this.height*2/9, backgroundColor: colors.shadow,
-            justifyContent:'center', alignItems:'center',
-            transform: [
-                {scale:this.state.radiusScale}
-            ],
-        }}/>
-
         <Console
             title = {(this.state.phase == 1 || this.state.phase == 3)?
                 this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
@@ -879,11 +871,16 @@ return <View style = {{flex:1,backgroundColor:colors.gameback}}>
             okay = {this.state.btn1}
             cancel = {this.state.btn2}
             ready = {this.state.ready}
-            list = {this._renderListComponent()}
             onOne = {() => this._optionOnePress()}
             onTwo = {() => this._optionTwoPress()}
             onBack = {() => this._resetOptionPress()}
-        />
+        >
+            {this._renderListComponent()}
+        </Console>
+
+    </View>
+
+    <View style = {{position:'absolute', left:-25, bottom:0, width:75, height:50,backgroundColor:'white'}}>
 
     </View>
 </View>

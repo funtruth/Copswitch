@@ -12,7 +12,7 @@ const FADEIN_ANIM = 600;
 
 const MARGIN = 10;
 
-export class General extends React.Component {
+export class List extends React.Component {
 
     
 constructor(props) {
@@ -24,7 +24,7 @@ constructor(props) {
         win:'',
     }
 
-    this.list = this.props.gmsglist
+    this.list = this.props.namelist
     
     this.opacity = []
     for(i=0;i<this.list.length;i++){
@@ -38,27 +38,28 @@ constructor(props) {
 }
 
 componentDidMount(){
-    this.animate()
+    this.animate(true)
 }
 
+
 shouldComponentUpdate(nextProps, nextState){
-    return nextProps.gmsglist.length > this.props.gmsglist.length
+    return nextProps.namelist.length > this.props.namelist.length
 }
 
 componentWillUpdate(nextProps, nextState){
-    this.list = nextProps.gmsglist
+    this.list = nextProps.namelist
     for(i=0;i<this.list.length;i++){
         this.list[i].index = i
-        this.opacity[i] = new Animated.Value(1)
+        this.opacity[i] = new Animated.Value(0)
     }
 }
 
-animate () {
+animate (show) {
     const animations = this.list.map((item) => {
         return Animated.timing(
         this.opacity[item.index],
             {
-                toValue: 1,
+                toValue: show?1:0,
                 duration: 150
             }
         )
@@ -68,31 +69,39 @@ animate () {
 
 
 _renderItem(item){
-    return <Animated.View style = {{ marginTop:5, opacity:this.opacity[item.index], width:this.width*0.76,
-        transform: [{
-            translateX: this.opacity[item.index].interpolate({
-                inputRange: [0, 0.5, 1],
-                outputRange: [0, this.height*0.02, this.height*0.04],
-            }),
-        }] }}>
-        <Text style = {styles.message}>{item.message}</Text>
-    </Animated.View>
+    return <TouchableOpacity
+        style = {{flexDirection:'row',alignItems:'center',
+                justifyContent:'center', height:40, margin:5, marginTop:0, borderRadius:5,
+        backgroundColor: item.dead ? colors.dead : (item.immune? colors.immune :
+                    (item.status?colors.status:colors.shadow))}}   
+        onPress         = {this.props.onPress}
+        disabled        = {this.state.disabled}
+    >
+        <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
+        <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
+            'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
+            style={{color:colors.font, fontSize:26}}/>
+        </View>
+        <View style = {{flex:0.7, justifyContent:'center'}}>
+            <Text style = {styles.lfont}>{false?item.name + ' (' + Rolesheet[item.roleid].name + ') ':
+                item.name}</Text>
+        </View>
+        <View style = {{flex:0.15}}/>
+    
+    </TouchableOpacity>
 }
 
 render() {
 
     return (
         <View style = {{
-            position:'absolute', left:this.height*0.04, right:this.height*0.04, 
-            bottom:this.height*0.33, height:this.height*0.56
+            position:'absolute', left:0, top:MARGIN*2, bottom:MARGIN*2, right:0,
+            borderRadius:5,
         }}>
             <FlatList
                 data={this.list}
                 renderItem={({item}) => (this._renderItem(item))}
-                initialNumToRender={12}
-                inverted
-                showsVerticalScrollIndicator={false}
-                keyExtractor={item => item.key}
+                keyExtractor={item => item.uid}
             />
         </View>
     )

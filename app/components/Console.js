@@ -45,6 +45,11 @@ _viewChange(list,option,back) {
         optionDisabled:!option,
         backDisabled:!back,
     })
+    setTimeout(()=>{
+        this.setState({
+            viewList:list
+        })
+    },3000)
     Animated.sequence([
         Animated.parallel([
             Animated.timing(
@@ -158,7 +163,7 @@ render() {
 
             <Animated.View style = {{flex:this.state.listFlex, opacity:this.state.listOpacity,
                 justifyContent:'center', alignItems:'center'}}>
-                {this.props.list}
+                {this.props.children}
             </Animated.View>
 
             <Animated.View style = {{

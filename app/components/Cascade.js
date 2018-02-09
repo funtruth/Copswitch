@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { View, Text, Animated, Dimensions, TouchableOpacity, FlatList } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
@@ -12,7 +11,7 @@ const FADEIN_ANIM = 600;
 
 const MARGIN = 10;
 
-export class General extends React.Component {
+export class Cascade extends React.Component {
 
     
 constructor(props) {

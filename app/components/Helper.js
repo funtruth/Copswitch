@@ -74,6 +74,15 @@ _receiveNav(navigation){
     this.navigation = navigation
 }
 
+_showCover(show){
+    Animated.timing(
+        this.radiusScale,{
+            toValue:show?5:0.25,
+            duration:400
+        }
+    ).start()
+}
+
 _navigate(screen){
     this.setState({
         disabled:true
@@ -310,7 +319,8 @@ render() {
                             },
                             navigateP:(val,roomname)=>{
                                 this._navigateP(val,roomname)
-                            }
+                            },
+                            cover:val=>{this._showCover(val)}
                         }}
                     />
                 </View>
