@@ -62,8 +62,6 @@ export default colors = {
 
     helper:                 'white',
     background:             '#403e3b',
-    menuBackground:         '#a7a9a9',
-    shadow:                 '#e3c382',
     shadow:                 '#5f5d58',
 
 }

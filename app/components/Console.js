@@ -124,7 +124,7 @@ componentWillReceiveProps(newProps){
 
 optionOne(){
     if(this.props.phase == 1 || this.props.phase == 3){
-        this._viewChange(true,false,true)
+        this._viewChange(true,false,true,false)
     } else {
         this.props.onOne()
     }
@@ -181,14 +181,10 @@ render() {
                 <CustomButton
                     size = {0.8}
                     flex = {0.8}
-                    depth = {0}
-                    radius = {15}
-                    fontSize = {20}
-                    color = {colors.shadow}
+                    backgroundColor = {colors.shadow}
                     onPress = {()=> this.optionOne() }
-                    disabled = {this.state.optionDisabled}
-                    title = {this.props.okay}
-                />
+                ><Text style = {styles.choiceButton}>{this.props.okay}</Text>
+                </CustomButton>
             </Animated.View>
 
             <Animated.View style = {{
@@ -202,14 +198,10 @@ render() {
                 <CustomButton
                     size = {0.8}
                     flex = {0.8}
-                    depth = {0}
-                    radius = {15}
-                    fontSize = {20}
-                    color = {colors.shadow}
+                    backgroundColor = {colors.shadow}
                     onPress = {()=>this.optionTwo()}
-                    disabled = {this.state.optionDisabled}
-                    title = {this.props.cancel}
-                />
+                    ><Text style = {styles.choiceButton}>{this.props.cancel}</Text>
+                </CustomButton>
             </Animated.View>
 
             <Animated.View style = {{
@@ -223,14 +215,10 @@ render() {
                 <CustomButton
                     size = {0.8}
                     flex = {0.8}
-                    depth = {0}
-                    radius = {15}
-                    fontSize = {20}
-                    color = {colors.shadow}
+                    backgroundColor = {colors.shadow}
                     onPress = {()=>this.optionBack()}
-                    disabled = {this.state.backDisabled}
-                    title = 'cancel'
-                />
+                    ><Text style = {styles.choiceButton}>CANCEL</Text>
+                </CustomButton>
             </Animated.View>
 
         </Animated.View>

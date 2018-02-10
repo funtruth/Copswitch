@@ -1,6 +1,6 @@
 {
     "Home" : {
-        "yFactor" : 0.5,
+        "yFactor" : 1,
         "close" : false,
         "alert" : true
     },

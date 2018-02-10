@@ -7,18 +7,21 @@ import {
     Text,
     Keyboard,
     Animated,
-    Dimensions
+    Dimensions,
+    TouchableOpacity
 }   from 'react-native';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
+
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import randomize from 'randomatic';
-import * as Animatable from 'react-native-animatable';
 
-const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 const QUICK_ANIM    = 400;
 const MED_ANIM      = 600;
 const SLOW_ANIM     = 1000;
+
+const MARGIN = 10;
 
 import { CustomButton } from '../components/CustomButton.js';
 import { HelperButton } from '../components/HelperButton.js';
@@ -34,92 +37,44 @@ export class Home extends React.Component {
 
     constructor(props) {
         super(props);
-
+        
         this.state = {
-            connected:  true,
-            disabled:   false,
-            loading:    false,
-
-            showOptions: false,
-        };
-        
-        this.width = 180,
-        this.height = 320,
-        this.radius = 370,
-
-        this.connectedRef = firebase.database().ref(".info/connected");
-        
-    }
-
-    componentWillMount() {
-
-        this.connectedRef.on('value',snap=>{
-            if(snap.val()==true){
-                this.setState({connected:true})
-            } else {
-                this.setState({connected:true})
-            }
-        })   
-    }
-
-    componentDidMount() {
-        setTimeout(()=>{
-            this.setState({
-                showOptions:true
-            })
-        },1000)
-    }
-
-    componentWillUnmount() {
-        if(this.connectedRef){
-            this.connectedRef.off();
+            nav: new Animated.Value(1),
+            wiggle: new Animated.Value(0)
         }
-    }
 
-    _renderConnection() {
-        return <Animatable.View ref = 'wifi' style = {{flex:0.06}}>
-            <CustomButton
-                size = {1}
-                flex = {0.5}
-                opacity = {1}
-                depth = {4}
-                color = {colors.menubtn}
-                radius = {5}
-                onPress = {()=>{ this._connection() }}
-                component = {
-                    <Text style = {styles.dconcerto}>
-                        {this.state.connected?'connected':'disconnected'}</Text>}
-            />
-        </Animatable.View>
-    }
-
-    _connection() {
-        this.connectedRef.once('value',snap=>{
-            if(snap.val()==true){
-                this.setState({connected:true})
-            } else {
-                this.setState({connected:false})
-            }
-        })   
-    }
-
-    _optionPress(id){
-        this.setState({
-            showOptions:false
-        })
+        this.width = Dimensions.get('window').width
+        this.height = Dimensions.get('window').height
+        
     }
 
     _joinRoom() {
         this.props.screenProps.navigate('JoinTutorial')
     }
 
+    _nav(){
+        const animation = Animated.sequence([
+            Animated.timing(
+                this.state.wiggle, {
+                    toValue:1,
+                    duration:3000
+                }
+            ), 
+            Animated.timing(
+                this.state.wiggle, {
+                    toValue:0,
+                    duration:3000
+                }
+            )
+        ])
+        Animated.loop(animation).start()
+    }
+
     _createRoom() {
-        this.setState({disabled:true});
 
         const roomname = randomize('0',4);
         //TODO: Check if room already exists
         AsyncStorage.setItem('ROOM-KEY', roomname);
-
 
         firebase.database().ref('rooms/' + roomname).set({
             owner: firebase.auth().currentUser.uid,
@@ -129,37 +84,76 @@ export class Home extends React.Component {
         })
     }
 
+    componentDidMount(){
+        this._nav()
+    }
+
+    _renderNav(){
+        return <Animated.View style = {{
+            bottom:this.state.nav.interpolate({
+                inputRange: [0,1],
+                outputRange: [this.height*0.1,this.height*0.39]
+            }),
+            position:'absolute',left:0,right:0,
+            height:this.height*0.1, flexDirection:'row', justifyContent:'center'}}>
+    
+            <AnimatedOpacity style = {{
+                bottom:this.state.wiggle.interpolate({
+                    inputRange: [0,0.5,1],
+                    outputRange: [0,MARGIN*3,0]
+                }),
+                justifyContent:'center', alignItems:'center', flex:0.2}}
+                onPress = {()=> this._createRoom() }>
+                <FontAwesome name='cloud'
+                    style={{color:colors.font,fontSize:30,textAlign:'center'}}/>
+                <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Create</Text>
+            </AnimatedOpacity>
+    
+            <AnimatedOpacity style = {{
+                bottom:this.state.wiggle.interpolate({
+                    inputRange: [0,0.5,1],
+                    outputRange: [0,MARGIN,0]
+                }),
+                justifyContent:'center', alignItems:'center', flex:0.25}}
+                onPress = {()=> this._joinRoom() }>
+                <FontAwesome name='key'
+                    style={{color:colors.font,fontSize:40,textAlign:'center'}}/>
+                <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Join</Text>
+            </AnimatedOpacity>
+    
+            <AnimatedOpacity style = {{
+                bottom:this.state.wiggle.interpolate({
+                    inputRange: [0,0.5,1],
+                    outputRange: [0, MARGIN*3,0]
+                }),
+                justifyContent:'center', alignItems:'center', flex:0.2}}
+                onPress = {()=>
+                    this.props.screenProps.menu(true)
+                }>
+                <FontAwesome name='book'
+                    style={{color:colors.font,fontSize:30,textAlign:'center'}}/>
+                <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Menu</Text>
+            </AnimatedOpacity>
+
+        </Animated.View>
+    }
+
     render() {
 
         return <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
             justifyContent:'center', alignItems:'center', backgroundColor:colors.background}}>
 
-                <HelperButton
-                    title = {'Join' + '\n' + 'Room'}
-                    icon = 'key'
-                    screen = {this.props.navigation.state.routeName}
-                    color = {colors.lightbutton}
-                    degrees = {350}
-                    order = {2}
-                    showOptions = {this.state.showOptions}
-                    onPress = {() => {
-                        this._optionPress(2)
-                        this._joinRoom()
-                    }}
-                />
-                <HelperButton
-                    title = {'Create' + '\n' + 'Room'}
-                    icon = 'crown'
-                    screen = {this.props.navigation.state.routeName}
-                    color = {colors.menubtn}
-                    degrees = {190}
-                    order = {1}
-                    showOptions = {this.state.showOptions}
-                    onPress = {() => {
-                        this._optionPress(1)
-                        this._createRoom()
-                    }}
-                />
+            <Animated.View style = {{
+                bottom:this.height*0.08,
+                height:this.height/9, width:this.height/9, 
+                borderRadius:this.height/18, backgroundColor: colors.helper,
+                alignItems:'center', justifyContent:'center'
+            }}>
+                <FontAwesome name='user-secret' 
+                    style={{ color:colors.background, fontSize: this.height/1.8/9 }}/>
+            </Animated.View>
+
+            {this._renderNav()}
 
         </View>
     }

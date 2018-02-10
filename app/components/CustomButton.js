@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import { Button } from 'react-native-elements';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
-
-import colors from '../misc/colors.js';
 
 export class CustomButton extends React.Component {
 
@@ -16,17 +13,22 @@ HOME SCREEN wifi button
 constructor(props) {
     super(props);
 
-    this.state = {
-        margin: this.props.depth
+    this.state ={
+        disabled:false,
     }
 }
       
 _handlePressIn(){
-    this.setState({margin:this.props.depth/2})
+
 }
 
 _handlePressOut(){
-    this.setState({margin:this.props.depth})
+    this._buttonPress()
+}
+
+_buttonPress() {
+    this.setState({disabled:true});
+    setTimeout(() => {this.setState({disabled: false})}, 600);
 }
 
 render() {
@@ -36,48 +38,25 @@ render() {
             flex:this.props.size,
             flexDirection:'row',
             justifyContent:'center',
-            opacity:1,
+            opacity:this.props.opacity
         }}>
-            <View style = {{
+            <TouchableOpacity style = {{
                 flex:this.props.flex,
                 justifyContent:'center',
-                backgroundColor:this.props.shadow?this.props.shadow:colors.shadow, 
-                borderTopLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
-                borderBottomLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
-                borderTopRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
-                borderBottomRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
-                marginTop:this.state.margin==this.props.depth?0:this.props.depth/2
-            }}>
-                <TouchableOpacity style = {{
-                    flex:1,
-                    justifyContent:'center',
-                    alignItems:'center',
-                    backgroundColor:this.props.color,
-                    marginBottom:this.state.margin, 
-                    borderTopLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
-                    borderBottomLeftRadius:this.props.leftradius?this.props.leftradius:this.props.radius,
-                    borderTopRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
-                    borderBottomRightRadius:this.props.rightradius?this.props.rightradius:this.props.radius,
+                backgroundColor:this.props.backgroundColor, 
+                borderRadius:5
+            }}
+                onPress = {this.props.onPress}
+                onPressIn = {()=>{
+                    this._handlePressIn()
                 }}
-                    onPress = {this.props.onPress}
-                    onLongPress = {this.props.onLongPress}
-                    onPressIn = {()=>{
-                        this._handlePressIn()
-                    }}
-                    onPressOut = {()=>{
-                        this._handlePressOut()
-                    }}
-                    activeOpacity = {0.6}
-                    disabled = {this.props.disabled}>
-                    {this.props.component?this.props.component:<Text style = {{
-                        fontSize:this.props.fontSize,
-                        fontFamily:'LuckiestGuy-Regular',
-                        color:colors.font,
-                        alignSelf: 'center',
-                        margin: this.props.textMargin,
-                    }}>{this.props.title}</Text>}
-                </TouchableOpacity>
-            </View>
+                onPressOut = {()=>{
+                    this._handlePressOut()
+                }}
+                activeOpacity = {0.6}
+                disabled = {this.state.disabled}>
+                {this.props.children}
+            </TouchableOpacity>
         </Animated.View>
     )
 }

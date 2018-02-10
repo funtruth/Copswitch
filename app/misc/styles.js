@@ -110,6 +110,24 @@ export default styles = StyleSheet.create({
         marginLeft:10,
         marginRight:10,
     },
+    listButton: {
+        fontFamily:'LuckiestGuy-Regular',
+        fontSize:17,
+        color:colors.font,
+    },
+    pagerButton: {
+        fontSize: 15,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.font,
+        marginTop:5,
+        marginBottom:5,
+    },
+    choiceButton: {
+        fontFamily:'LuckiestGuy-Regular',
+        color: colors.font,
+        fontSize: 17,
+        alignSelf: 'center',
+    },
 
     //Details Screen
     roleDesc: {

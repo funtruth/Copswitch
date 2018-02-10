@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Dimensions } from 'react-native';
 
 import colors from '../misc/colors.js';
-import * as Animatable from 'react-native-animatable';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import styles from '../misc/styles.js';
 import { CustomButton } from './CustomButton';
 
 export class Pager extends React.Component {
 
 constructor(props) {
     super(props);
+
+    this.height = Dimensions.get('window').height;
+    this.width = Dimensions.get('window').width;
 }
 
 /*
@@ -26,41 +28,26 @@ render() {
     this.forwardDisabled = this.props.page<=this.props.currentpage;
 
     return ( 
-        <View style = {{height:this.props.height, flexDirection:'row', justifyContent:'center', marginBottom:10}}>
-            <View style = {{flex:0.25, justifyContent:'center'}}>
+        <View>
+            <View style = {{bottom:0, left:0, width:this.width*0.25, justifyContent:'center'}}>
                 {this.firstpage?null:<CustomButton
                     size = {1}
                     flex = {0.8}
-                    depth = {6}
-                    color = {colors.lightbutton}
-                    shadow = {colors.lightshadow}
-                    radius = {15} fontSize = {20}
+                    backgroundColor = {colors.shadow}
                     onPress = {this.props.goBack}
-                    title = 'I<'
-                />}
+                ><Text style = {styles.pagerButton}>Prev Page</Text>
+                </CustomButton>}
             </View>
-            <View style = {{flex:0.25, justifyContent:'center',
-                borderRadius:15, backgroundColor:colors.menubtn}}>
-                <Text style = {{
-                    fontFamily:'LuckiestGuy-Regular',
-                    fontSize: 25,
-                    color: colors.font,
-                    alignSelf:'center'
-                }}>{this.props.currentpage + '/' + this.props.lastpage}</Text>
-            </View>
-            <View style = {{flex:0.25, justifyContent:'center'}}>
+
+            <View style = {{bottom:0, right:0, width:this.width*0.25, justifyContent:'center'}}>
                 {this.lastpage?null:<CustomButton
                     size = {1}
                     flex = {0.8}
-                    depth = {6}
-                    color = {colors.lightbutton}
-                    shadow = {colors.lightshadow}
-                    radius = {15} fontSize = {20}
+                    backgroundColor = {colors.shadow}
                     onPress = {this.props.goForward}
                     disabled = {this.forwardDisabled}
-                    opacity = {this.forwardDisabled?0.5:1}
-                    title = '>I'
-                />}
+                ><Text style = {styles.pagerButton}>Next Page</Text>
+                </CustomButton>}
             </View>
         </View>
     )

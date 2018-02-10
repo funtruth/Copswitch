@@ -13,7 +13,6 @@ const FADEIN_ANIM = 600;
 const MARGIN = 10;
 
 export class General extends React.Component {
-
     
 constructor(props) {
     super(props);

@@ -6,6 +6,7 @@ import styles from '../misc/styles.js';
 import * as Animatable from 'react-native-animatable';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { CustomButton } from './CustomButton';
+import { Rolecard } from './Rolecard.js';
 import Rolesheet from '../misc/roles.json';
 
 

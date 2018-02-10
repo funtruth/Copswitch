@@ -320,7 +320,8 @@ render() {
                             navigateP:(val,roomname)=>{
                                 this._navigateP(val,roomname)
                             },
-                            cover:val=>{this._showCover(val)}
+                            cover:val=>{this._showCover(val)},
+                            menu:val=>{this._menuPress(val)}
                         }}
                     />
                 </View>
