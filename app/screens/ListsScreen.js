@@ -44,6 +44,8 @@ class General extends Component {
             disabled:false,
         }
 
+        this.height = Dimensions.get('window').height
+
         this.arr = []
         this.opacity = []
         for(var i=0;i<3;i++){
@@ -77,12 +79,9 @@ class General extends Component {
     }
 
     render(){
-        return <View style = {{flex:1}}>
+        return <View style = {{justifyContent:'center', flex:1}}>
 
             <CustomButton
-                size = {0.1}
-                flex = {0.85}
-                backgroundColor = {colors.shadow}
                 opacity = {this.opacity[0]}
                 onPress = {()=>
                     this.props.navigation.navigate('Roles')
@@ -91,9 +90,6 @@ class General extends Component {
             </CustomButton>
 
             <CustomButton
-                size = {0.1}
-                flex = {0.85}
-                backgroundColor = {colors.shadow}
                 opacity = {this.opacity[1]}
                 onPress = {()=>
                     this.props.navigation.navigate('Menu',{menu:'rules'}) 
@@ -102,9 +98,6 @@ class General extends Component {
             </CustomButton>
 
             <CustomButton
-                size = {0.1}
-                flex = {0.85}
-                backgroundColor = {colors.shadow}
                 opacity = {this.opacity[2]}
                 onPress = {()=>{ 
                     this.props.navigation.navigate('InfoPage',{section:'about'})
@@ -220,7 +213,7 @@ class Roles extends Component {
     }
 
     render(){
-        return <View style = {{flex:1}}>
+        return <View style = {{flex:1, alignItems:'center'}}>
 
             <Header title = 'Roles' onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back())
@@ -460,22 +453,18 @@ class InfoPage extends Component {
     }
 
     render(){
-        return <View style = {{ flex:1 }}>
+        return <View style = {{ flex:1, alignItems:'center' }}>
 
             <Header title = {this.state.title} onPress = {()=>{
                 this.props.navigation.dispatch(NavigationActions.back());
             }}/>
             
-            <View style = {{flex:1, backgroundColor:colors.shadow, borderRadius:15,
-                marginLeft:15, marginRight:15, marginBottom:10}}>
-                <View style = {{flex:1, backgroundColor:colors.font,borderRadius:15, marginBottom:6}}>
-                    <FlatList
-                        data={this.state.infolist}
-                        renderItem={({item}) => this._renderListItem(item) }
-                        numColumns = {1}
-                        keyExtractor={item => item.key}
-                    />
-                </View>
+            <View style = {{flex:1, backgroundColor:colors.font,borderRadius:15}}>
+                <FlatList
+                    data={this.state.infolist}
+                    renderItem={({item}) => this._renderListItem(item) }
+                    keyExtractor={item => item.key}
+                />
             </View>
 
             <Pager height={this.height*0.08}
@@ -491,7 +480,7 @@ class InfoPage extends Component {
 }
 
 
-export default RuleBook = StackNavigator(
+const RuleBook = StackNavigator(
     {
       General: {
         screen: General,
@@ -509,5 +498,13 @@ export default RuleBook = StackNavigator(
     {
       initialRouteName: 'General',
       headerMode: 'none',
+      cardStyle: {backgroundColor: 'transparent'}
     }
   );
+
+export default class ListScreen extends Component{
+
+    render(){
+        return <RuleBook/>
+    }
+}

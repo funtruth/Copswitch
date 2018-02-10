@@ -15,9 +15,10 @@ export default styles = StyleSheet.create({
 
     //Lists Header
     header: {
-        fontFamily:'LuckiestGuy-Regular',
-        fontSize: 25,
-        color: colors.background,
+        fontFamily:'FredokaOne-Regular',
+        fontSize: 23,
+        color: colors.font,
+        marginRight:15,
     },
 
     //Lists Screen
@@ -59,10 +60,10 @@ export default styles = StyleSheet.create({
         color: colors.main,
     },
     detail: {
-        color:colors.striker,
-        fontFamily: 'ConcertOne-Regular',
-        fontSize:17,
-        lineHeight: 25,
+        color:colors.shadow,
+        fontFamily: 'FredokaOne-Regular',
+        fontSize:15,
+        lineHeight: 18,
         alignSelf:'center',
         marginBottom:5,
         marginLeft:10,
@@ -77,8 +78,8 @@ export default styles = StyleSheet.create({
         marginRight:10,
     },
     comment: {
-        color:colors.striker,
-        fontFamily: 'ConcertOne-Regular',
+        color:colors.shadow,
+        fontFamily: 'FredokaOne-Regular',
         fontSize:17,
         lineHeight: 25,
         alignSelf:'center',
@@ -111,9 +112,11 @@ export default styles = StyleSheet.create({
         marginRight:10,
     },
     listButton: {
-        fontFamily:'LuckiestGuy-Regular',
-        fontSize:17,
+        fontFamily:'FredokaOne-Regular',
+        fontSize:22,
+        alignSelf:'center',
         color:colors.font,
+        margin:4,
     },
     pagerButton: {
         fontSize: 15,

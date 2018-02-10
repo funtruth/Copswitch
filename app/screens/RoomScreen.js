@@ -24,7 +24,7 @@ const SLOW_ANIM     = 1000;
 const MARGIN = 10;
 
 import { CustomButton } from '../components/CustomButton.js';
-import { HelperButton } from '../components/HelperButton.js';
+import Menu from './ListsScreen.js';
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
@@ -39,7 +39,7 @@ export class Home extends React.Component {
         super(props);
         
         this.state = {
-            nav: new Animated.Value(1),
+            nav: new Animated.Value(0),
             wiggle: new Animated.Value(0)
         }
 
@@ -52,22 +52,24 @@ export class Home extends React.Component {
         this.props.screenProps.navigate('JoinTutorial')
     }
 
-    _nav(){
-        const animation = Animated.sequence([
-            Animated.timing(
-                this.state.wiggle, {
-                    toValue:1,
-                    duration:3000
-                }
-            ), 
-            Animated.timing(
-                this.state.wiggle, {
-                    toValue:0,
-                    duration:3000
-                }
-            )
-        ])
+    _bounce(){
+        const animation = Animated.timing(
+            this.state.wiggle, {
+                toValue:1,
+                duration:5000
+            }
+        )
+        
         Animated.loop(animation).start()
+    }
+
+    _nav(){
+        Animated.timing(
+            this.state.nav, {
+                toValue:1,
+                duration:500
+            }
+        ).start()
     }
 
     _createRoom() {
@@ -85,23 +87,42 @@ export class Home extends React.Component {
     }
 
     componentDidMount(){
-        this._nav()
+        this._bounce()
+    }
+
+    _renderMain(){
+        return <Animated.View style = {{
+            bottom:this.state.wiggle.interpolate({
+                inputRange: [0,0.5,1],
+                outputRange: [this.height*0.02,-this.height*0.02,this.height*0.02]
+            }),
+            height:this.state.nav.interpolate({
+                inputRange: [0,0.5,1],
+                outputRange: [0,this.height*0.1,this.height*0.3]
+            }),
+            opacity:this.state.nav,
+            width:this.width*0.8,
+            marginBottom:MARGIN
+        }}>
+            <Menu/>
+        </Animated.View>
     }
 
     _renderNav(){
         return <Animated.View style = {{
-            bottom:this.state.nav.interpolate({
-                inputRange: [0,1],
-                outputRange: [this.height*0.1,this.height*0.39]
-            }),
-            position:'absolute',left:0,right:0,
             height:this.height*0.1, flexDirection:'row', justifyContent:'center'}}>
     
             <AnimatedOpacity style = {{
                 bottom:this.state.wiggle.interpolate({
                     inputRange: [0,0.5,1],
-                    outputRange: [0,MARGIN*3,0]
+                    outputRange: [MARGIN,-0.5*MARGIN,MARGIN]
                 }),
+                transform: [{
+                    scale:this.state.wiggle.interpolate({
+                        inputRange: [0,0.5,1],
+                        outputRange: [1,1.1,1]
+                    })
+                }],
                 justifyContent:'center', alignItems:'center', flex:0.2}}
                 onPress = {()=> this._createRoom() }>
                 <FontAwesome name='cloud'
@@ -112,8 +133,14 @@ export class Home extends React.Component {
             <AnimatedOpacity style = {{
                 bottom:this.state.wiggle.interpolate({
                     inputRange: [0,0.5,1],
-                    outputRange: [0,MARGIN,0]
+                    outputRange: [0.5*MARGIN,-1.5*MARGIN,0.5*MARGIN]
                 }),
+                transform: [{
+                    scale:this.state.wiggle.interpolate({
+                        inputRange: [0,0.5,1],
+                        outputRange: [1,1.1,1]
+                    })
+                }],
                 justifyContent:'center', alignItems:'center', flex:0.25}}
                 onPress = {()=> this._joinRoom() }>
                 <FontAwesome name='key'
@@ -124,12 +151,16 @@ export class Home extends React.Component {
             <AnimatedOpacity style = {{
                 bottom:this.state.wiggle.interpolate({
                     inputRange: [0,0.5,1],
-                    outputRange: [0, MARGIN*3,0]
+                    outputRange: [MARGIN,-0.5*MARGIN,MARGIN]
                 }),
+                transform: [{
+                    scale:this.state.wiggle.interpolate({
+                        inputRange: [0,0.5,1],
+                        outputRange: [1,1.1,1]
+                    })
+                }],
                 justifyContent:'center', alignItems:'center', flex:0.2}}
-                onPress = {()=>
-                    this.props.screenProps.menu(true)
-                }>
+                onPress = {()=> this._nav() }>
                 <FontAwesome name='book'
                     style={{color:colors.font,fontSize:30,textAlign:'center'}}/>
                 <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Menu</Text>
@@ -144,7 +175,10 @@ export class Home extends React.Component {
             justifyContent:'center', alignItems:'center', backgroundColor:colors.background}}>
 
             <Animated.View style = {{
-                bottom:this.height*0.08,
+                bottom:this.state.wiggle.interpolate({
+                    inputRange: [0,0.5,1],
+                    outputRange: [this.height*0.02,-this.height*0.01,this.height*0.02]
+                }),
                 height:this.height/9, width:this.height/9, 
                 borderRadius:this.height/18, backgroundColor: colors.helper,
                 alignItems:'center', justifyContent:'center'
@@ -152,6 +186,8 @@ export class Home extends React.Component {
                 <FontAwesome name='user-secret' 
                     style={{ color:colors.background, fontSize: this.height/1.8/9 }}/>
             </Animated.View>
+
+            {this._renderMain()}
 
             {this._renderNav()}
 

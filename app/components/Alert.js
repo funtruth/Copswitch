@@ -71,25 +71,19 @@ render() {
                     <View style = {{flex:0.4}}><CustomButton
                         size = {0.7}
                         flex = {1}
-                        depth = {3}
-                        radius = {15}
-                        fontSize = {20}
-                        color = {colors.shadow}
+                        backgroundColor = {colors.shadow}
                         onPress = {()=>{ this.props.onOkay() }}
                         title = {this.props.okay}
-                    /></View>
+                    ><Text style = {styles.choiceButton}>{this.props.okay}</Text></CustomButton>
+                    </View>
                     <View style = {{flex:0.05}}/>
                     <View style = {{flex:0.4}}><CustomButton
                         size = {0.7}
                         flex = {1}
-                        depth = {3}
-                        radius = {15}
-                        fontSize = {20}
-                        color = {colors.background}
-                        shadow = {colors.background}
+                        backgroundColor = {colors.background}
                         onPress = {()=>this._cancel()}
-                        title = {this.props.cancel}
-                    /></View>
+                        ><Text style = {styles.choiceButton}>{this.props.cancel}</Text></CustomButton>
+                    </View>
                 </View>
             </View>
         </Animated.View>

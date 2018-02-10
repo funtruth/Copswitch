@@ -19,18 +19,13 @@ constructor(props) {
 render() {
 
     return ( 
-        <View style = {{height:this.height*0.1, flexDirection:'row'}}>
-            <View style = {{flex:0.15, justifyContent:'center'}}>
-                <TouchableOpacity onPress = {this.props.onPress}>
-                    <MaterialCommunityIcons name='chevron-left'
-                    style={{ color:colors.font, fontSize: 30, alignSelf:'center'}}/>
-                </TouchableOpacity>
-            </View>
-            <View style = {{flex:0.7, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.header}>{this.props.title}</Text>
-            </View>
-            <View style = {{flex:0.15}}/>
-
+        <View style = {{flexDirection:'row', alignItems:'center'}}>
+            <TouchableOpacity onPress = {this.props.onPress}>
+                <MaterialCommunityIcons name='chevron-left'
+                style={{ color:colors.font, fontSize: 30, alignSelf:'center'}}/>
+            </TouchableOpacity>
+            <Text style = {styles.header}>{this.props.title}</Text>
+            
         </View>
     )
 }

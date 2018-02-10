@@ -11,7 +11,6 @@ import { NavigationActions } from 'react-navigation';
 import { Layout } from "../../router";
 import { Alert } from './Alert.js';
 
-import { HelperButton } from './HelperButton.js';
 import List from '../screens/ListsScreen.js';
 import Screens from '../misc/screens.json';
 
@@ -41,8 +40,7 @@ constructor(props) {
         showMenu:false,
         alertVisible:false,
 
-        helperY: new Animated.Value(this.height*4/9),
-        shadowY: new Animated.Value(this.height*5/18),
+        helperY: this.width*5/6,
 
         menuOpacity: new Animated.Value(0),
     }
@@ -101,18 +99,6 @@ _navigate(screen){
                 duration:400
             }
         ),
-        Animated.timing(
-            this.state.helperY,{
-                toValue:Screens[screen].yFactor*this.height,
-                duration:400
-            }
-        ),
-        Animated.timing(
-            this.state.shadowY,{
-                toValue:Screens[screen].yFactor*this.height - this.height/6,
-                duration:400
-            }
-        )
     ]).start()
         
 
@@ -163,18 +149,6 @@ _navigateP(screen,roomname){
                 duration:400
             }
         ),
-        Animated.timing(
-            this.state.helperY,{
-                toValue:Screens[screen].yFactor*this.height,
-                duration:400
-            }
-        ),
-        Animated.timing(
-            this.state.shadowY,{
-                toValue:Screens[screen].yFactor*this.height - this.height/6,
-                duration:400
-            }
-        )
     ]).start()
 
     setTimeout(()=>{
@@ -240,21 +214,6 @@ _viewAlert(bool){
     this.setState({
         alertVisible:bool
     })
-
-    Animated.parallel([
-        Animated.timing(
-            this.state.helperY,{
-                toValue:bool?helperHeight*this.height:Screens[this.screen].yFactor*this.height,
-                duration:400
-            }
-        ),
-        Animated.timing(
-            this.state.shadowY,{
-                toValue:bool?helperHeight*this.height-this.height/6:Screens[this.screen].yFactor*this.height-this.height/6,
-                duration:400
-            }
-        )
-    ]).start()
         
 }
 
@@ -294,12 +253,6 @@ _menuPress(show) {
                     duration:20
                 }
             ),
-            Animated.timing(
-                this.state.helperY,{
-                    toValue:this.height*(show?0.84:Screens[this.screen].yFactor),
-                    duration:200
-                }
-            )
         ]).start()
     }
 }
@@ -332,7 +285,7 @@ render() {
                     <MaterialCommunityIcons name='close-circle' style={{color:colors.shadow,fontSize:30}}/>
                 </TouchableOpacity>
 
-                <Animated.View style = {{position:'absolute', elevation:0, bottom:this.state.shadowY,
+                <Animated.View style = {{position:'absolute', elevation:0, left:this.state.helperY,
                     height:this.icon*4, width:this.icon*4, borderRadius:this.icon*2, backgroundColor: colors.immune,
                     justifyContent:'center', alignItems:'center',
                     transform: [
@@ -366,19 +319,6 @@ render() {
                     onOkay = {() => this._alertOkay()}
                     onCancel = {() => this._viewAlert(false)}
                 />
-
-                <Animated.View style = {{position:'absolute', elevation:5, bottom:this.state.helperY,
-                    height:this.icon, width:this.icon, borderRadius:this.icon/2, backgroundColor: colors.helper,
-                    justifyContent:'center', alignItems:'center',
-                }}>
-                    <TouchableOpacity
-                        style = {{flex:1, justifyContent:'center',alignItems:'center'}}
-                        onPress = {()=>{ this._menuPress(!this.state.showMenu) }}
-                        disabled = {this.state.disabled}
-                    >
-                        <FontAwesome name='user-secret' style={{ color:colors.background, fontSize: this.icon/1.8 }}/>
-                    </TouchableOpacity>
-                </Animated.View>
         </View>
     )
 }
