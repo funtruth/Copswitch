@@ -42,18 +42,7 @@ class General extends Component {
     constructor(props) {
         super(props);
 
-        this.state = {
-            disabled:false,
-        }
-
         this.height = Dimensions.get('window').height
-
-        this.arr = []
-        this.opacity = []
-        for(var i=0;i<3;i++){
-            this.arr.push(i)
-            this.opacity[i] = new Animated.Value(0)
-        }
     }
 
     //TODO: Create button in bottom left
@@ -63,48 +52,28 @@ class General extends Component {
         this.props.screenProps.quit();
     }
 
-    animate() {
-        const animations = this.arr.map((item) => {
-            return Animated.timing(
-            this.opacity[item],
-                {
-                    toValue: 1,
-                    duration: 150
-                }
-            )
-        })
-        Animated.stagger(80, animations).start()
-    }
-
-    componentDidMount(){
-        this.animate()
-    }
-
     render(){
-        return <View style = {{justifyContent:'center', flex:1}}>
+        return <View>
 
             <CustomButton
-                opacity = {this.opacity[0]}
                 onPress = {()=>
                     this.props.navigation.navigate('Roles')
                 }
-                ><Text style = {styles.listButton}>Roles</Text>
+                ><Text style = {styles.listfont}>Roles</Text>
             </CustomButton>
-
+                
             <CustomButton
-                opacity = {this.opacity[1]}
                 onPress = {()=>
                     this.props.navigation.navigate('Menu',{menu:'rules'}) 
                 }
-                ><Text style = {styles.listButton}>Rulebook</Text>
+                ><Text style = {styles.listfont}>Rulebook</Text>
             </CustomButton>
 
             <CustomButton
-                opacity = {this.opacity[2]}
                 onPress = {()=>{ 
                     this.props.navigation.navigate('InfoPage',{section:'about'})
                 }}
-                ><Text style = {styles.listButton}>About</Text>
+                ><Text style = {styles.listfont}>About</Text>
             </CustomButton>
             
         </View>
@@ -272,7 +241,7 @@ class Menu extends Component {
                     this.props.navigation.navigate('Menu',{menu:item.route}) 
                     :this.props.navigation.navigate('InfoPage',{section:item.route}) 
             }}
-        ><Text style = {styles.listButton}>{item.desc}</Text>
+        ><Text style = {styles.listfont}>{item.desc}</Text>
         </CustomButton>
         
     }
@@ -399,7 +368,6 @@ class InfoPage extends Component {
     }
 }
 
-
 export default RuleBook = StackNavigator(
     {
       General: {
@@ -418,6 +386,6 @@ export default RuleBook = StackNavigator(
     {
       initialRouteName: 'General',
       headerMode: 'none',
-      cardStyle: {backgroundColor: 'transparent'}
+      cardStyle: {backgroundColor: 'transparent', justifyContent:'center'}
     }
   );

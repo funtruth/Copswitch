@@ -34,6 +34,67 @@ const MENU_ANIM = 200;
 const GAME_ANIM = 1000;
 import randomize from 'randomatic';
 
+export class Build1 extends Component {
+    
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            roomname:null,
+            message:'testing things',
+        };
+        
+    }
+
+    _createRoom() {
+
+        AsyncStorage.setItem('ROOM-KEY', this.state.roomname).then(()=>{
+            this.props.navigate(this.state.roomname)
+        })
+    }
+
+    componentWillReceiveProps(newProps){
+
+        if(newProps.visible && !this.state.roomname){
+
+            var flag = false
+            var roomname = null
+    
+            firebase.database().ref('rooms').once('value',snap=>{
+
+                while(!flag){
+                    roomname = randomize('0',4);
+                    if(!snap.child(roomname).exists()){
+                        flag = true
+                        this.setState({roomname:roomname})
+                    }
+                }
+                
+                firebase.database().ref('rooms/').child(roomname).set({
+                    owner: firebase.auth().currentUser.uid,
+                    counter:1,
+                })
+            }) 
+        }
+    }
+
+    render() {
+
+        return <View>
+
+            <Text style = {styles.sfont}>{this.state.message}</Text>
+
+            <CustomButton
+                flex={0.4}
+                onPress={()=>this._createRoom()}
+            >
+                <Text style = {styles.font}>Make</Text>
+            </CustomButton>
+
+        </View>
+    }
+}
+
 export class CreationPager extends Component {
 
     constructor(props) {

@@ -17,15 +17,17 @@ export default styles = StyleSheet.create({
     header: {
         fontFamily:'FredokaOne-Regular',
         fontSize: 23,
-        color: colors.font,
+        color: colors.striker,
         marginRight:15,
     },
 
     //Lists Screen
-    normalFont: {
-        fontFamily:'ConcertOne-Regular',
-        fontSize: 18,
-        color: colors.font,
+    listfont: {
+        fontFamily:'FredokaOne-Regular',
+        fontSize:22,
+        alignSelf:'center',
+        color:colors.striker,
+        margin:4,
     },
     descFont: {
         fontFamily:'ConcertOne-Regular',
@@ -288,8 +290,8 @@ export default styles = StyleSheet.create({
         alignSelf: 'center',
     },
     sfont: {
-        fontSize: 15,
-        fontFamily: 'ConcertOne-Regular',
+        fontSize: 13,
+        fontFamily: 'FredokaOne-Regular',
         textAlign:'center',
         color: colors.striker,
     },

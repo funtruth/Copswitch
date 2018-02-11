@@ -18,40 +18,33 @@ constructor(props) {
     
 }
 
-_cancel() {
+_show(view) {
     Animated.timing(
         this.opacity,{
-            toValue:0,
-            duration:200
-        }
-    ).start()
-}
-
-_show() {
-    Animated.timing(
-        this.opacity,{
-            toValue:1,
+            toValue:view?1:0,
             duration:300
         }
     ).start()
 }
 
 componentWillReceiveProps(newProps){
-    if(newProps.visible){
-        this._show()
+    if(newProps.visible?!this.props.visible:this.props.visible){
+        this._show(newProps.visible)
     }
 }
 
 render() {
 
-    if(!this.props.visible){
-        return null
-    }
-
     return ( 
-        <Animated.View style = {{position:'absolute', top:0, bottom:0, left:0, right:0,
-            backgroundColor:'rgba(0, 0, 0, 0.3)', opacity:this.opacity,
-            justifyContent:'center', alignItems:'center'}}>
+        <Animated.View style = {{
+            justifyContent:'center',
+            opacity:this.opacity,
+            height:this.opacity.interpolate({
+                inputRange:[0,1],
+                outputRange:[0,this.height*0.3]
+            }),
+            width:this.width
+            }}>
             {this.props.children}
         </Animated.View>
     )

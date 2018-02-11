@@ -18,6 +18,7 @@ import {
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
 import { CustomButton } from '../components/CustomButton.js';
 import { Pager } from '../components/Pager.js';
@@ -55,13 +56,11 @@ export class Join1 extends Component {
                     setTimeout(()=>{
                         this.setState({errormessage:'Game has already started'})
                         this.refs.error.shake(800)
-                        this.refs.textInput.focus()
                     },800)
                 } else {
                     setTimeout(()=>{
                         this.setState({errormessage:'Invalid Room Code'})
                         this.refs.error.shake(800)
-                        this.refs.textInput.focus()
                     },800)
                         
                 }
@@ -71,7 +70,6 @@ export class Join1 extends Component {
             setTimeout(()=>{
                 this.setState({errormessage:'Code must be 4 Digits long'})
                 this.refs.error.shake(800)
-                this.refs.textInput.focus()
             },800)
         }
     }
@@ -89,17 +87,15 @@ export class Join1 extends Component {
 
     render() {
 
-        return <View style = {{flex:1,backgroundColor:'transparent'}}>
+        return <View>
 
-            <View style = {{height:this.height*0.2}}/>
-            <View style = {{height:this.height*0.1, justifyContent:'center'}}>
+            <View style = {{justifyContent:'center'}}>
                 <Text style = {styles.roomcode}>Enter code</Text>
             </View>
 
-            <View style = {{height:this.height*0.1, justifyContent:'center', 
+            <View style = {{justifyContent:'center', 
             alignItems:'center', flexDirection:'row'}}>
                 <TextInput
-                    autoFocus
                     ref='textInput'
                     keyboardType='numeric' 
                     maxLength={4}   
@@ -112,13 +108,6 @@ export class Join1 extends Component {
 
             <Animatable.Text style = {[styles.sfont,{marginTop:10}]}ref='error'>
                     {this.state.errormessage}</Animatable.Text>
-
-            <TouchableOpacity
-                style = {{position:'absolute', bottom:this.height*0.12, left:0, right:0, 
-                    justifyContent:'center', alignItems:'center'}}
-                onPress = {this.props.close}>
-                <Entypo name='dial-pad' style={{color:colors.shadow,fontSize:this.height*0.08}}/>
-            </TouchableOpacity>
 
         </View>
     }
