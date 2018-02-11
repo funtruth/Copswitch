@@ -10,8 +10,8 @@ import { NavigationActions } from 'react-navigation';
 
 import { Layout } from "../../router";
 import { Alert } from './Alert.js';
+import { CustomButton } from './CustomButton';
 
-import List from '../screens/ListsScreen.js';
 import Screens from '../misc/screens.json';
 
 const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
@@ -30,19 +30,13 @@ constructor(props) {
     this.height = Dimensions.get('window').height;
     
     this.icon = this.height/9;
-    this.menuSideMargins = new Animated.Value(this.width/2 - 10);
-    this.menuTopMargin = new Animated.Value(this.height/2 - 10);
-    this.menuBottomMargin = new Animated.Value(this.height/2 - 10);
 
     this.state = {
 
         disabled:true,
-        showMenu:false,
         alertVisible:false,
 
         helperY: this.width*5/6,
-
-        menuOpacity: new Animated.Value(0),
     }
 }
 
@@ -55,15 +49,6 @@ componentWillUnmount(){
 }
 
 _onBackPress(){
-    if(this.state.showMenu){
-        this._menuPress(false)
-    }
-    else if(this.state.alertVisible){
-        this._viewAlert(false)
-    }
-    else if(Screens[this.screen].alert){
-        this._viewAlert(true)
-    }
     return true
 }
 
@@ -186,7 +171,6 @@ _navigateP(screen,roomname){
 
 //Needs rework
 _quit(){
-    this._menuPress(false)
     setTimeout(()=>{
         this._viewAlert(true)
     },200)
@@ -203,13 +187,12 @@ _alertOkay(){
         this._navigate('Home')        
     }
 }
+
 _viewAlert(bool){
 
     if(bool){
         Keyboard.dismiss()
     }
-
-    const helperHeight = 0.54
 
     this.setState({
         alertVisible:bool
@@ -217,45 +200,6 @@ _viewAlert(bool){
         
 }
 
-_menuPress(show) {
-
-    if(show){
-        Keyboard.dismiss()
-    }
-
-    if(!this.state.alertVisible){
-        this.setState({
-            showMenu:show
-        })
-
-        Animated.parallel([
-            Animated.timing(
-                this.menuSideMargins,{
-                    toValue:show?15:this.width/2 - 10,
-                    duration:200
-                }
-            ),
-            Animated.timing(
-                this.menuTopMargin,{
-                    toValue:show?30:this.height/2 - 10,
-                    duration:200
-                }
-            ),
-            Animated.timing(
-                this.menuBottomMargin,{
-                    toValue:show?15:this.height/2 - 10,
-                    duration:200
-                }
-            ),
-            Animated.timing(
-                this.state.menuOpacity,{
-                    toValue:show?1:0,
-                    duration:20
-                }
-            ),
-        ]).start()
-    }
-}
 
 render() {
 
@@ -274,51 +218,45 @@ render() {
                                 this._navigateP(val,roomname)
                             },
                             cover:val=>{this._showCover(val)},
-                            menu:val=>{this._menuPress(val)}
                         }}
                     />
                 </View>
-            
-                <TouchableOpacity
-                    style = {{position:'absolute', top:this.height*0.05, right:this.height*0.05}}
-                    onPress = {()=>{this._viewAlert(true)}}>
-                    <MaterialCommunityIcons name='close-circle' style={{color:colors.shadow,fontSize:30}}/>
-                </TouchableOpacity>
 
                 <Animated.View style = {{position:'absolute', elevation:0, left:this.state.helperY,
-                    height:this.icon*4, width:this.icon*4, borderRadius:this.icon*2, backgroundColor: colors.immune,
+                    height:this.icon*4, width:this.icon*4, borderRadius:this.icon*2, backgroundColor: colors.helper,
                     justifyContent:'center', alignItems:'center',
                     transform: [
                         {scale:this.radiusScale}
                     ],
                 }}/>
 
-                <Animated.View style = {{position:'absolute', elevation:0, 
-                    left:this.menuSideMargins, right:this.menuSideMargins, 
-                    top:this.menuTopMargin, bottom:this.menuBottomMargin,
-                    borderRadius:30, backgroundColor:colors.immune}}>
-
-                    <View style = {{flex:0.07}}/>
-                    <Animated.View style = {{flex:0.86, backgroundColor:colors.font, opacity:this.state.menuOpacity}}>
-                        <List 
-                            screenProps = {{
-                                quit: ()=>{this._quit()}
-                            }}
-                        />
-                    </Animated.View>
-                    <View style = {{flex:0.07}}/>
-
-                </Animated.View>
-
                 <Alert
-                    subtitle = {'Are you sure you' + '\n' + 'want to leave?'}
-                    okay = 'OK'
-                    cancel = 'Cancel'
                     visible = {this.state.alertVisible}
-                    onClose = {() => this._viewAlert(false)}
-                    onOkay = {() => this._alertOkay()}
-                    onCancel = {() => this._viewAlert(false)}
-                />
+                >
+                    <View style = {{height:this.height*0.25, width:this.width*0.9,
+                        backgroundColor:colors.background, borderRadius:20}}>
+                        
+                        <View style = {{flex:0.35, flexDirection:'row',
+                            justifyContent:'center', alignItems:'center'}}>
+                            <View style = {{flex:0.4}}><CustomButton
+                                size = {0.7}
+                                flex = {1}
+                                backgroundColor = {colors.shadow}
+                                onPress = {()=>{ this._alertOkay() }}
+                            ><Text style = {styles.choiceButton}>OK</Text></CustomButton>
+                            </View>
+                            <View style = {{flex:0.05}}/>
+                            <View style = {{flex:0.4}}><CustomButton
+                                size = {0.7}
+                                flex = {1}
+                                backgroundColor = {colors.background}
+                                onPress = {()=>this._viewAlert(false)}
+                                ><Text style = {styles.choiceButton}>Cancel</Text></CustomButton>
+                            </View>
+                        </View>
+                        
+                    </View>
+                </Alert>
         </View>
     )
 }

@@ -64,15 +64,12 @@ export default styles = StyleSheet.create({
         fontFamily: 'FredokaOne-Regular',
         fontSize:15,
         lineHeight: 18,
-        alignSelf:'center',
         marginBottom:5,
         marginLeft:10,
         marginRight:10,
     },
     detailContainer: {
-        borderRadius:2,
         justifyContent:'center',
-        alignItems:'center',
         marginTop:10,
         marginLeft:10,
         marginRight:10,
@@ -80,16 +77,14 @@ export default styles = StyleSheet.create({
     comment: {
         color:colors.shadow,
         fontFamily: 'FredokaOne-Regular',
-        fontSize:17,
-        lineHeight: 25,
-        alignSelf:'center',
+        fontSize:15,
+        lineHeight: 18,
         marginBottom:5,
         marginLeft:10,
         marginRight:10,
     },
     commentContainer: {
         justifyContent:'center',
-        alignItems:'center',
         marginTop:10,
         marginLeft:10,
         marginRight:10,
@@ -121,7 +116,7 @@ export default styles = StyleSheet.create({
     pagerButton: {
         fontSize: 15,
         fontFamily: 'FredokaOne-Regular',
-        color: colors.font,
+        color: colors.shadow,
         marginTop:5,
         marginBottom:5,
     },
@@ -270,9 +265,9 @@ export default styles = StyleSheet.create({
 
     //General
     dfont: {
-        fontSize:17,
-        fontFamily:'LuckiestGuy-Regular',
-        color:colors.background,
+        fontSize:15,
+        fontFamily:'FredokaOne-Regular',
+        color:colors.shadow,
         alignSelf: 'center',
     },
     lfont: {
@@ -299,9 +294,9 @@ export default styles = StyleSheet.create({
         color: colors.striker,
     },
     font: {
-        fontSize:17,
-        fontFamily:'LuckiestGuy-Regular',
-        color:colors.striker,
+        fontSize:15,
+        fontFamily:'FredokaOne-Regular',
+        color:colors.font,
         alignSelf: 'center',
     },
     subfont: {
@@ -311,13 +306,8 @@ export default styles = StyleSheet.create({
         alignSelf: 'center',
     },
     mfont: {
-        fontSize: 30,
-        fontFamily: 'LuckiestGuy-Regular',
-        color: colors.striker,
-    },
-    mlfont: {
-        fontSize: 30,
-        fontFamily: 'LuckiestGuy-Regular',
+        fontSize: 19,
+        fontFamily: 'FredokaOne-Regular',
         textAlign:'center',
         color: colors.font,
     },

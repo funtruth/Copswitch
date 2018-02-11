@@ -16,6 +16,8 @@ constructor(props) {
     this.state ={
         disabled:false,
     }
+
+    
 }
       
 _handlePressIn(){
@@ -27,8 +29,15 @@ _handlePressOut(){
 }
 
 _buttonPress() {
-    this.setState({disabled:true});
-    setTimeout(() => {this.setState({disabled: false})}, 600);
+    this.setState({disabled:true})
+    this.timer = setTimeout(() => this.setState({disabled: false}), 600);
+}
+
+componentWillUnmount(){
+    if(this.timer){
+        clearTimeout(this.timer)
+    }
+    
 }
 
 render() {

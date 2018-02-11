@@ -24,6 +24,8 @@ const SLOW_ANIM     = 1000;
 const MARGIN = 10;
 
 import { CustomButton } from '../components/CustomButton.js';
+import { Alert } from '../components/Alert.js';
+import { Join1 } from '../tutorials/RoomJoin.js';
 import Menu from './ListsScreen.js';
 
 import colors from '../misc/colors.js';
@@ -40,7 +42,9 @@ export class Home extends React.Component {
         
         this.state = {
             nav: new Animated.Value(0),
-            wiggle: new Animated.Value(0)
+            wiggle: new Animated.Value(0),
+
+            join: false
         }
 
         this.width = Dimensions.get('window').width
@@ -49,7 +53,9 @@ export class Home extends React.Component {
     }
 
     _joinRoom() {
-        this.props.screenProps.navigate('JoinTutorial')
+        this.setState({
+            join:true
+        })
     }
 
     _bounce(){
@@ -63,10 +69,21 @@ export class Home extends React.Component {
         Animated.loop(animation).start()
     }
 
-    _nav(){
+    _stop(){
+        const animation = Animated.timing(
+            this.state.wiggle, {
+                toValue:1,
+                duration:5000
+            }
+        )
+        
+        Animated.loop(animation).stop()
+    }
+
+    _nav(nav){
         Animated.timing(
             this.state.nav, {
-                toValue:1,
+                toValue:nav?1:0,
                 duration:500
             }
         ).start()
@@ -74,20 +91,47 @@ export class Home extends React.Component {
 
     _createRoom() {
 
-        const roomname = randomize('0',4);
-        //TODO: Check if room already exists
-        AsyncStorage.setItem('ROOM-KEY', roomname);
+        var flag = false
+        var roomname = null
 
-        firebase.database().ref('rooms/' + roomname).set({
-            owner: firebase.auth().currentUser.uid,
-            counter:1,
-        }).then(()=>{
-            this.props.screenProps.navigateP('CreationTutorial',roomname)
+        firebase.database().ref('rooms').once('value',snap=>{
+            while(!flag){
+                roomname = randomize('0',4);
+                if(!snap.val()[roomname]){
+                    flag = true
+                }
+            }
+
+            AsyncStorage.setItem('ROOM-KEY', roomname);
+            
+            firebase.database().ref('rooms/').child(roomname).set({
+                owner: firebase.auth().currentUser.uid,
+                counter:1,
+            }).then(()=>{
+                this.props.screenProps.navigateP('CreationTutorial',roomname)
+            })
         })
+
+        
     }
 
-    componentDidMount(){
+    componentWillMount(){
         this._bounce()
+    }
+
+    _renderIcon(){
+        return <Animated.View style = {{
+            bottom:this.state.wiggle.interpolate({
+                inputRange: [0,0.5,1],
+                outputRange: [this.height*0.02,-this.height*0.01,this.height*0.02]
+            }),
+            height:this.height/9, width:this.height/9, 
+            borderRadius:this.height/18, backgroundColor: colors.font,
+            alignItems:'center', justifyContent:'center'
+        }}>
+            <FontAwesome name='user-secret' 
+                style={{ color:colors.background, fontSize: this.height/1.8/9 }}/>
+        </Animated.View>
     }
 
     _renderMain(){
@@ -101,8 +145,8 @@ export class Home extends React.Component {
                 outputRange: [0,this.height*0.1,this.height*0.3]
             }),
             opacity:this.state.nav,
-            width:this.width*0.8,
-            marginBottom:MARGIN
+            width:this.width,
+            marginBottom:MARGIN,
         }}>
             <Menu/>
         </Animated.View>
@@ -160,7 +204,7 @@ export class Home extends React.Component {
                     })
                 }],
                 justifyContent:'center', alignItems:'center', flex:0.2}}
-                onPress = {()=> this._nav() }>
+                onPress = {()=> this._nav(true) }>
                 <FontAwesome name='book'
                     style={{color:colors.font,fontSize:30,textAlign:'center'}}/>
                 <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Menu</Text>
@@ -174,22 +218,17 @@ export class Home extends React.Component {
         return <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
             justifyContent:'center', alignItems:'center', backgroundColor:colors.background}}>
 
-            <Animated.View style = {{
-                bottom:this.state.wiggle.interpolate({
-                    inputRange: [0,0.5,1],
-                    outputRange: [this.height*0.02,-this.height*0.01,this.height*0.02]
-                }),
-                height:this.height/9, width:this.height/9, 
-                borderRadius:this.height/18, backgroundColor: colors.helper,
-                alignItems:'center', justifyContent:'center'
-            }}>
-                <FontAwesome name='user-secret' 
-                    style={{ color:colors.background, fontSize: this.height/1.8/9 }}/>
-            </Animated.View>
-
+            {this._renderIcon()}
             {this._renderMain()}
-
             {this._renderNav()}
+
+            <Alert
+                visible = {this.state.join}
+            >
+                <Join1 
+                    close = {()=>this.setState({join:false})}
+                />
+            </Alert>
 
         </View>
     }

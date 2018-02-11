@@ -28,25 +28,25 @@ render() {
     this.forwardDisabled = this.props.page<=this.props.currentpage;
 
     return ( 
-        <View>
-            <View style = {{bottom:0, left:0, width:this.width*0.25, justifyContent:'center'}}>
+        <View style = {{position:'absolute', bottom:0, left:0, right:0, height:this.height*0.1, flexDirection:'row'}}>
+            <View style = {{width:this.width*0.25}}>
                 {this.firstpage?null:<CustomButton
                     size = {1}
                     flex = {0.8}
-                    backgroundColor = {colors.shadow}
+                    backgroundColor = {colors.font}
                     onPress = {this.props.goBack}
-                ><Text style = {styles.pagerButton}>Prev Page</Text>
+                ><Text style = {styles.pagerButton}>Prev</Text>
                 </CustomButton>}
             </View>
 
-            <View style = {{bottom:0, right:0, width:this.width*0.25, justifyContent:'center'}}>
+            <View style = {{width:this.width*0.25}}>
                 {this.lastpage?null:<CustomButton
                     size = {1}
                     flex = {0.8}
-                    backgroundColor = {colors.shadow}
+                    backgroundColor = {colors.font}
                     onPress = {this.props.goForward}
                     disabled = {this.forwardDisabled}
-                ><Text style = {styles.pagerButton}>Next Page</Text>
+                ><Text style = {styles.pagerButton}>Next</Text>
                 </CustomButton>}
             </View>
         </View>

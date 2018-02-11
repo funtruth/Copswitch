@@ -89,9 +89,9 @@ export class Join1 extends Component {
 
     render() {
 
-        return <View style = {{flex:1,backgroundColor:colors.background}}>
+        return <View style = {{flex:1,backgroundColor:'transparent'}}>
 
-            <View style = {{height:this.height*0.26}}/>
+            <View style = {{height:this.height*0.2}}/>
             <View style = {{height:this.height*0.1, justifyContent:'center'}}>
                 <Text style = {styles.roomcode}>Enter code</Text>
             </View>
@@ -116,7 +116,7 @@ export class Join1 extends Component {
             <TouchableOpacity
                 style = {{position:'absolute', bottom:this.height*0.12, left:0, right:0, 
                     justifyContent:'center', alignItems:'center'}}
-                onPress = {()=> this.refs.textInput.focus() }>
+                onPress = {this.props.close}>
                 <Entypo name='dial-pad' style={{color:colors.shadow,fontSize:this.height*0.08}}/>
             </TouchableOpacity>
 

@@ -14,6 +14,8 @@ import {
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Foundation from 'react-native-vector-icons/Foundation';
 import { CustomButton } from '../components/CustomButton.js';
 import { Header } from '../components/Header.js';
 import { Pager } from '../components/Pager.js';
@@ -117,190 +119,108 @@ class Roles extends Component {
         this.state = {
             townlist: [],
             mafialist: [],
-            neutrallist: [],
             roleid:   'a',
             index: 0,
             descVisible: false,
 
             showtown:    true,
-            showmafia:   false,
-            showneutral: false,
         }
 
+        this.height = Dimensions.get('window').height;
+        this.width = Dimensions.get('window').width;
     }
 
     componentWillMount() {
 
-        AsyncStorage.getItem('GAME-KEY',(error,result)=>{
-            
-            if(result != null){
-                this.listOfRoles = firebase.database().ref('listofroles/' + result);
-                
-                this.listOfRoles.on('value',snap=>{
-                    if(snap.exists()){
-                        var mafialist = [];
-                        var townlist = [];
-                        var neutrallist = [];
-                        snap.forEach((child)=>{
-                            if(Rolesheet[child.key].type == 1){
-                                mafialist.push({
-                                    name:           Rolesheet[child.key].name,
-                                    index:          Rolesheet[child.key].index,
-                                    key:            child.key,    
-                                })
-                            } else if (Rolesheet[child.key].type == 2) {
-                                townlist.push({
-                                    name:           Rolesheet[child.key].name,
-                                    index:          Rolesheet[child.key].index,
-                                    key:            child.key,    
-                                })
-                            } else {
-                                neutrallist.push({
-                                    name:           Rolesheet[child.key].name,
-                                    index:          Rolesheet[child.key].index,
-                                    key:            child.key,    
-                                })
-                            }
-                        })
-                        this.setState({
-                            mafialist:mafialist,
-                            townlist:townlist,
-                            neutrallist:neutrallist
-                        })
-                    }
-                })
-            } else {
-                var keys = Object.keys(Rolesheet).sort()
-                
-                var townlist = [];
-                var mafialist = [];
-                var neutrallist = [];
+        var keys = Object.keys(Rolesheet).sort()
         
-                keys.forEach(function(key){
-                    if(Rolesheet[key].type == 1){
-                        mafialist.push({
-                            name:           Rolesheet[key].name,
-                            index:          Rolesheet[key].index,
-                            key:            key,
-                        })
-                    } else if (Rolesheet[key].type == 2) {
-                        townlist.push({
-                            name:           Rolesheet[key].name,
-                            index:          Rolesheet[key].index,
-                            key:            key,
-                        })
-                    } else {
-                        neutrallist.push({
-                            name:           Rolesheet[key].name,
-                            index:          Rolesheet[key].index,
-                            key:            key,
-                        })
-                    }
+        var townlist = [];
+        var mafialist = [];
+
+        keys.forEach(function(key){
+            if(Rolesheet[key].type == 1){
+                mafialist.push({
+                    name:           Rolesheet[key].name,
+                    index:          Rolesheet[key].index,
+                    key:            key,
                 })
-                this.setState({
-                    mafialist:mafialist,
-                    townlist:townlist,
-                    neutrallist:neutrallist,
+            } else if (Rolesheet[key].type == 2) {
+                townlist.push({
+                    name:           Rolesheet[key].name,
+                    index:          Rolesheet[key].index,
+                    key:            key,
                 })
             }
         })
-
-        
+        this.setState({
+            mafialist:mafialist,
+            townlist:townlist,
+        })  
     }
 
     _roleBtnPress(key) {
         this.setState({roleid:key, descVisible:true})
     }
 
+    _renderItem(item){
+        return <TouchableOpacity
+                style = {{ 
+                    marginTop:5,
+                    alignItems:'center',
+                    width:this.width/2
+                }}
+                onPress = {()=>{ this._roleBtnPress(item.key,item.index) }}>
+                <Text style = {styles.mfont}>{item.name}</Text>
+            </TouchableOpacity>
+    }
+
     render(){
-        return <View style = {{flex:1, alignItems:'center'}}>
+        return <View style = {{flex:1, width:this.width*0.8, alignSelf:'center'}}>
 
-            <Header title = 'Roles' onPress = {()=>{
-                this.props.navigation.dispatch(NavigationActions.back())
-            }}/>
-
-            <View style = {{flex:0.1, flexDirection:'row', justifyContent:'center', marginBottom:5}}>
-                <CustomButton
-                    size = {0.3}
-                    flex = {1}
-                    opacity = {1}
-                    depth = {4}
-                    color = {this.state.showtown?colors.menubtn:colors.lightbutton}
-                    shadow = {this.state.showtown?colors.shadow:colors.lightshadow}
-                    leftradius = {30}
-                    rightradius = {0}
-                    onPress = {()=>{
-                        this.setState({
-                            showtown:true,
-                            showmafia:false,
-                            showneutral:false
-                        })
-                    }}
-                    component = {<Text style = {this.state.showtown?
-                        styles.centeredBtn:styles.centeredBtnPressed}>Town</Text>}
-                />
-                <View style = {{width:4, backgroundColor:colors.background}}/>
-                <CustomButton
-                    size = {0.3}
-                    flex = {1}
-                    opacity = {1}
-                    depth = {4}
-                    color = {this.state.showmafia?colors.menubtn:colors.lightbutton}
-                    shadow = {this.state.showmafia?colors.shadow:colors.lightshadow}
-                    radius = {0}
-                    onPress = {()=>{
-                        this.setState({
-                            showtown:false,
-                            showmafia:true,
-                            showneutral:false
-                        })
-                    }}
-                    component = {<Text style = {this.state.showmafia?
-                        styles.centeredBtn:styles.centeredBtnPressed}>Fowl</Text>}
-                />
-                <View style = {{width:4, backgroundColor:colors.background}}/>
-                <CustomButton
-                    size = {0.3}
-                    flex = {1}
-                    opacity = {1}
-                    depth = {4}
-                    color = {this.state.showneutral?colors.menubtn:colors.lightbutton}
-                    shadow = {this.state.showneutral?colors.shadow:colors.lightshadow}
-                    rightradius = {30}
-                    leftradius = {0}
-                    onPress = {()=>{
-                        this.setState({
-                            showtown:false,
-                            showmafia:false,
-                            showneutral:true
-                        })
-                    }}
-                    component = {<Text style = {this.state.showneutral?
-                        styles.centeredBtn:styles.centeredBtnPressed}>Neutral</Text>}
-                />
-            </View>
-
-            <View style = {{flex:0.9,paddingLeft:20,paddingRight:20}}>
-                <FlatList
-                    data={this.state.showtown?this.state.townlist:
-                        (this.state.showmafia?this.state.mafialist:this.state.neutrallist)}
-                    renderItem={({item}) => (
-                        <View style = {{flex:0.5, flexDirection:'row',justifyContent:'center'}}>
-                            <View style = {{flex:0.9, backgroundColor:colors.lightbutton, 
-                                borderRadius:40,justifyContent:'center', margin:5}}>
-                                <TouchableOpacity
-                                    style = {{ justifyContent:'center', alignItems:'center'}}
-                                    onPress = {()=>{ this._roleBtnPress(item.key,item.index) }}>
-                                    <Text style = {{ color:colors.font, fontFamily: 'LuckiestGuy-Regular',
-                                        fontSize:15, marginTop:8, marginBottom:8}}>{item.name}</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    )}
-                    numColumns = {2}
-                    keyExtractor={item => item.key}/>
-            </View>
+            <FlatList
+                data={this.state.showtown?this.state.townlist:this.state.mafialist}
+                renderItem={({item}) => this._renderItem(item)}
+                contentContainerStyle={{
+                    alignItems:'center'
+                }}
+                showsVerticalScrollIndicator = {false}
+                keyExtractor={item => item.key}/>
             
+            <View style = {{position:'absolute', left:0, top:0, 
+                width:this.width*0.2, height:this.height*0.25, 
+                justifyContent:'center'}}>
+
+                <CustomButton
+                    size={0.3}
+                    opacity={0.4}
+                    onPress = {()=> this.props.navigation.dispatch(NavigationActions.back()) }
+                >
+                    <FontAwesome name='arrow-left'
+                        style={{color:colors.font,fontSize:25, alignSelf:'center'}}/>
+                    <Text style = {styles.mfont}>Back</Text>
+                </CustomButton>
+                <View style = {{flex:0.1}}/>
+                <CustomButton
+                    size={0.3}
+                    opacity={this.state.showtown?1:0.4}
+                    onPress = {()=>{ this.setState({ showtown:true }) }}
+                >
+                    <Foundation name='shield'
+                        style={{color:colors.font,fontSize:25, alignSelf:'center'}}/>
+                    <Text style = {styles.mfont}>Town</Text>
+                </CustomButton>
+                
+                <CustomButton
+                    size={0.3}
+                    opacity={this.state.showtown?0.4:1}
+                    onPress = {()=>{ this.setState({ showtown:false }) }}
+                >
+                    <Foundation name='skull'
+                        style={{color:colors.font,fontSize:25, alignSelf:'center'}}/>
+                    <Text style = {styles.mfont}>Mafia</Text>
+                </CustomButton>
+            </View>
+
             <Desc
                 roleid = {this.state.roleid}
                 visible = {this.state.descVisible}
@@ -319,8 +239,6 @@ class Menu extends Component {
 
         this.state = {
             menulist: [],
-            title:null,
-            disabled:false,
         }
 
         this.height = Dimensions.get('window').height;
@@ -344,40 +262,45 @@ class Menu extends Component {
         })
         this.setState({
             menulist:   menulist,
-            title:      (Menus.headers)[menu],
         })
     }
 
     _renderMenuButton(item) {
         return <CustomButton
-            size = {1}
-            flex = {1}
-            backgroundColor = {colors.background}
             onPress = {()=>{
                 item.type==1?
                     this.props.navigation.navigate('Menu',{menu:item.route}) 
                     :this.props.navigation.navigate('InfoPage',{section:item.route}) 
             }}
-            disabled = {this.state.disabled}
         ><Text style = {styles.listButton}>{item.desc}</Text>
         </CustomButton>
         
     }
 
     render(){
-        return <View style = {{flex:1, alignItems:'center'}}>
-            
-            <Header title = {this.state.title} onPress = {()=>{
-                this.props.navigation.dispatch(NavigationActions.back())
-            }}/>
+        return <View style = {{flex:1, width:this.width*0.8, 
+            alignSelf:'center', alignItems:'center', justifyContent:'center'}}>
 
-            <View style = {{flex:0.9, width:this.width*0.7}}>
+            <View style = {{width:this.width*0.7}}>
                 <FlatList
                     data={this.state.menulist}
                     renderItem={({item}) => this._renderMenuButton(item) }
                     keyExtractor={item => item.key}
                 />
             </View>
+
+            <View style = {{position:'absolute', left:0, bottom:0, 
+                width:this.width*0.2, height:this.height*0.23 }}>
+                <CustomButton
+                    opacity={0.4}
+                    onPress = {()=> this.props.navigation.dispatch(NavigationActions.back()) }
+                >
+                    <FontAwesome name='arrow-left'
+                        style={{color:colors.font,fontSize:25, alignSelf:'center'}}/>
+                    <Text style = {styles.mfont}>Back</Text>
+                </CustomButton>
+            </View>
+
         </View>
     }
 }
@@ -396,6 +319,7 @@ class InfoPage extends Component {
         }
 
         this.height = Dimensions.get('window').height;
+        this.width = Dimensions.get('window').width;
     }
 
 
@@ -413,12 +337,10 @@ class InfoPage extends Component {
                 <Text style = {styles.comment}>{item.desc}</Text>
             </View>
         } else if (item.type == 3){
-            return <View style = {styles.linkContainer}><CustomButton size = {0.05}
-                depth = {3} radius = {15} fontSize = {15} textMargin = {5}
-                color = {colors.link} shadow = {colors.linkshadow}
-                title = {item.desc}
-                onPress = {()=>{this.props.navigation.navigate('InfoPage',{section:item.route})}}
-            /></View>
+            return <View style = {styles.linkContainer}><CustomButton size = {0.15} backgroundColor = {colors.link}
+                onPress = {()=>{this.props.navigation.navigate('InfoPage',{section:item.route})}}>
+                <Text style = {styles.link}>{item.desc}</Text>
+            </CustomButton></View>
         }
     }
 
@@ -459,7 +381,7 @@ class InfoPage extends Component {
                 this.props.navigation.dispatch(NavigationActions.back());
             }}/>
             
-            <View style = {{flex:1, backgroundColor:colors.font,borderRadius:15}}>
+            <View style = {{flex:1, width:this.width*0.8, backgroundColor:colors.font,borderRadius:15}}>
                 <FlatList
                     data={this.state.infolist}
                     renderItem={({item}) => this._renderListItem(item) }
@@ -467,20 +389,18 @@ class InfoPage extends Component {
                 />
             </View>
 
-            <Pager height={this.height*0.08}
-                currentpage={this.state.page}
-                lastpage = {this.state.lastpage}
-                goBack = {() => this._pageBack()}
-                goForward = {() => this._pageForward()}
-                finish = {() => { this.props.navigation.goBack() }}
-            /> 
+            <TouchableOpacity style = {{position:'absolute', left:0, top:0, bottom:0, width:this.width*0.13}}
+                onPress = {()=>{ this._pageBack() }}/>
+
+            <TouchableOpacity style = {{position:'absolute', right:0, top:0, bottom:0, width:this.width*0.13}}
+                onPress = {()=>{ this._pageForward() }}/>
 
         </View>
     }
 }
 
 
-const RuleBook = StackNavigator(
+export default RuleBook = StackNavigator(
     {
       General: {
         screen: General,
@@ -501,10 +421,3 @@ const RuleBook = StackNavigator(
       cardStyle: {backgroundColor: 'transparent'}
     }
   );
-
-export default class ListScreen extends Component{
-
-    render(){
-        return <RuleBook/>
-    }
-}
