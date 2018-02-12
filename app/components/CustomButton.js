@@ -53,7 +53,7 @@ render() {
                 flex:this.props.flex,
                 justifyContent:'center',
                 backgroundColor:this.props.backgroundColor, 
-                borderRadius:5
+                borderRadius:5,
             }}
                 onPress = {this.props.onPress}
                 onPressIn = {()=>{

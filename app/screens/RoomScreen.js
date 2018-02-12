@@ -170,11 +170,12 @@ export class Home extends React.Component {
     render() {
 
         return <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
-            justifyContent:'center', alignItems:'center', backgroundColor:colors.background}}>
+            justifyContent:'center', alignItems:'center'}}>
 
-            {this._renderIcon()}
-
-            <Alert visible = {this.state.crea}>
+            <Alert 
+                flex = {0.1}
+                visible = {this.state.crea}
+            >
                 <Build1
                     visible = {this.state.crea}
                     navigate = {(val)=>
@@ -183,11 +184,21 @@ export class Home extends React.Component {
                 />
             </Alert>
 
-            <Alert visible = {this.state.join}>
-                <Join1 />
+            <Alert
+                flex = {0.3}
+                visible = {this.state.join}
+            >
+                <Join1 
+                    navigate = {(val)=>
+                        this.props.screenProps.navigateP('LobbyTutorial',val)
+                    }
+                />
             </Alert>
 
-            <Alert visible = {this.state.menu}>
+            <Alert 
+                flex = {0.4}
+                visible = {this.state.menu}
+            >
                 <Menu />
             </Alert>
             

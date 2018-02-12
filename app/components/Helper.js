@@ -3,18 +3,12 @@ import { View, Text, Animated, Dimensions, TouchableOpacity, BackHandler, Keyboa
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
-import * as Animatable from 'react-native-animatable';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { NavigationActions } from 'react-navigation';
 
 import { Layout } from "../../router";
-import { Alert } from './Alert.js';
-import { CustomButton } from './CustomButton';
 
 import Screens from '../misc/screens.json';
 
-const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 const FAST_ANIM = 100;
 const MED_ANIM = 400;
 
@@ -32,10 +26,6 @@ constructor(props) {
     this.icon = this.height/9;
 
     this.state = {
-
-        disabled:true,
-        alertVisible:false,
-
         helperY: this.width*5/6,
     }
 }
@@ -67,14 +57,6 @@ _showCover(show){
 }
 
 _navigate(screen){
-    this.setState({
-        disabled:true
-    })
-    setTimeout(()=>{
-        this.setState({
-            disabled:false
-        })
-    },2500)
 
     console.log('Starting Animation')
     Animated.parallel([
@@ -117,14 +99,6 @@ _navigate(screen){
 }
 
 _navigateP(screen,roomname){
-    this.setState({
-        disabled:true
-    })
-    setTimeout(()=>{
-        this.setState({
-            disabled:false
-        })
-    },2500)
 
     console.log('Starting Animation')
     Animated.parallel([
@@ -169,45 +143,13 @@ _navigateP(screen,roomname){
     },1500) 
 }
 
-//Needs rework
-_quit(){
-    setTimeout(()=>{
-        this._viewAlert(true)
-    },200)
-        
-}
-
-_alertOkay(){
-    this.setState({
-        alertVisible:false
-    })
-    if(this.screen == 'Home'){
-        BackHandler.exitApp()
-    } else {
-        this._navigate('Home')        
-    }
-}
-
-_viewAlert(bool){
-
-    if(bool){
-        Keyboard.dismiss()
-    }
-
-    this.setState({
-        alertVisible:bool
-    })
-        
-}
-
-
 render() {
 
-    return ( 
+    return (
         <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
-            justifyContent:'center', alignItems:'center', backgroundColor:'transparent'}}>
+            justifyContent:'center', alignItems:'center', backgroundColor:colors.background}}>
 
-                <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,}}>
+                <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0}}>
                     <Layout
                         screenProps={{
                             passNavigation:val=>{this._receiveNav(val)},
@@ -230,33 +172,6 @@ render() {
                     ],
                 }}/>
 
-                <Alert
-                    visible = {this.state.alertVisible}
-                >
-                    <View style = {{height:this.height*0.25, width:this.width*0.9,
-                        backgroundColor:colors.background, borderRadius:20}}>
-                        
-                        <View style = {{flex:0.35, flexDirection:'row',
-                            justifyContent:'center', alignItems:'center'}}>
-                            <View style = {{flex:0.4}}><CustomButton
-                                size = {0.7}
-                                flex = {1}
-                                backgroundColor = {colors.shadow}
-                                onPress = {()=>{ this._alertOkay() }}
-                            ><Text style = {styles.choiceButton}>OK</Text></CustomButton>
-                            </View>
-                            <View style = {{flex:0.05}}/>
-                            <View style = {{flex:0.4}}><CustomButton
-                                size = {0.7}
-                                flex = {1}
-                                backgroundColor = {colors.background}
-                                onPress = {()=>this._viewAlert(false)}
-                                ><Text style = {styles.choiceButton}>Cancel</Text></CustomButton>
-                            </View>
-                        </View>
-                        
-                    </View>
-                </Alert>
         </View>
     )
 }

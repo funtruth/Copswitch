@@ -41,7 +41,7 @@ render() {
             opacity:this.opacity,
             height:this.opacity.interpolate({
                 inputRange:[0,1],
-                outputRange:[0,this.height*0.3]
+                outputRange:[0,this.height*this.props.flex]
             }),
             width:this.width
             }}>

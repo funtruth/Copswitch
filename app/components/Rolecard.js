@@ -58,7 +58,7 @@ render() {
             position:'absolute', left:0, right:this.height*0.08, 
             bottom:this.height*0.33, height:this.height*0.56 }}>
             <Text style = {styles.lfont}>YOU ARE A:</Text>
-            <Text style = {styles.mfont}>{Rolesheet[this.props.roleid].name}</Text>
+            <Text style = {styles.title}>{Rolesheet[this.props.roleid].name}</Text>
             <Text style = {styles.lfont}>AT NIGHT YOU:</Text>
             <Text style = {styles.roleDesc}>{Rolesheet[this.props.roleid].rules}</Text>
             <Text style = {styles.lfont}>you win when:</Text>

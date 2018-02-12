@@ -17,11 +17,11 @@ import {
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
 import { CustomButton } from '../components/CustomButton.js';
-import { Pager } from '../components/Pager.js';
 
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
@@ -39,7 +39,7 @@ export class Join1 extends Component {
 
         this.state = {
             roomname:null,
-            errormessage:'Code must be 4 Digits long',
+            errormessage:'Must be 4 Digits long',
         };
 
         this.height = Dimensions.get('window').height;
@@ -50,7 +50,7 @@ export class Join1 extends Component {
     _continue(roomname) {
         if(roomname.length==4){
             firebase.database().ref('rooms/' + roomname).once('value', snap => {
-                if(snap.exists() && (snap.val().counter == 0)){
+                if(snap.exists() && (snap.val().counter == 1)){
                     this._joinRoom(roomname)
                 } else if (snap.exists() && (snap.val().counter > 0)) {
                     setTimeout(()=>{
@@ -75,13 +75,8 @@ export class Join1 extends Component {
     }
 
     _joinRoom(roomname) {
-        AsyncStorage.setItem('ROOM-KEY', roomname);
-
-        firebase.database().ref('rooms/' + roomname 
-            + '/listofplayers/' + firebase.auth().currentUser.uid).update({
-                presseduid:         'foo',
-        }).then(()=>{
-            this.props.screenProps.navigateP('LobbyTutorial',roomname)
+        AsyncStorage.setItem('ROOM-KEY', roomname).then(()=>{
+            this.props.navigate(roomname)
         })
     }
 
@@ -89,9 +84,7 @@ export class Join1 extends Component {
 
         return <View>
 
-            <View style = {{justifyContent:'center'}}>
-                <Text style = {styles.roomcode}>Enter code</Text>
-            </View>
+            <Text style = {styles.roomcode}>CODE</Text>
 
             <View style = {{justifyContent:'center', 
             alignItems:'center', flexDirection:'row'}}>
@@ -100,7 +93,7 @@ export class Join1 extends Component {
                     keyboardType='numeric' 
                     maxLength={4}   
                     value={this.state.roomname}
-                    style={[styles.textInput,{flex:0.7}]}
+                    style={[styles.textInput,{flex:0.5}]}
                     onChangeText={val=>this.setState({roomname:val})}
                     onSubmitEditing={event=>this._continue(event.nativeEvent.text)}
                 />
@@ -123,23 +116,20 @@ export class LobbyPager extends Component {
         const roomname = params.roomname;
 
         this.state = {
-            page: 1,
-            currentpage:1,
 
             roomname: params.roomname,
-            alias:'',
             loading:true,
 
-            transition: false,
-            transitionOpacity: new Animated.Value(0),
+            namelist: [],
+
         };
 
         this.width  = Dimensions.get('window').width;
         this.height = Dimensions.get('window').height;
 
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
-        this.listPlayerRef  = this.roomRef.child('listofplayers');
-        this.myInfoRef      = this.roomRef.child('listofplayers').child(firebase.auth().currentUser.uid);
+        this.lobbyRef       = this.roomRef.child('lobby');
+        this.myInfoRef      = this.lobbyRef.child(firebase.auth().currentUser.uid);
         this.counterRef     = this.roomRef.child('counter');
         
     }
@@ -157,6 +147,21 @@ export class LobbyPager extends Component {
                 }
             }
         })
+
+        this.lobbyRef.on('value',snap=>{
+            if(snap.exists()){
+                var list = [];
+                snap.forEach((child)=> {
+                    list.push({
+                        name: child.val().name,
+                        key: child.key,
+                    })
+                })
+                this.setState({
+                    namelist:list
+                })
+            }
+        })
     }
 
     componentWillUnmount() {
@@ -166,11 +171,8 @@ export class LobbyPager extends Component {
     }
 
     _leaveRoom() {
-        //Remove my player information, then check if there are still players
-        //If there are no players left, delete the Room
-        //Navigate back to home screen
         this.myInfoRef.remove().then(()=>{
-            this.myInfoRef.once('value',snap=>{
+            this.lobbyRef.once('value',snap=>{
                 if(!snap.exists()){
                     this.roomRef.remove();
                 }
@@ -182,159 +184,70 @@ export class LobbyPager extends Component {
     }
 
     _transition(boolean) {
-        if(boolean){
-            this.setState({transition:true})
-            Animated.timing(
-                this.state.transitionOpacity,{
-                    toValue:1,
-                    duration:GAME_ANIM
-                }
-            ).start()
-        } else {
-            setTimeout(()=>{this.setState({transition:false})},GAME_ANIM)
-            Animated.timing(
-                this.state.transitionOpacity,{
-                    toValue:0,
-                    duration:GAME_ANIM
-                }
-            ).start()
-        }
-    }
-
-    _updatePage(page){
-        if(page > this.state.page){
-            this.setState({page:page, currentpage:page})
-        } else {
-            this.setState({currentpage:page})
-        }
-    }
-
-    _navigateTo(page){
-        this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
-        this.setState({currentpage:page})
-        this._menuPress()
-    }
-
-    _changePage(page){
-        if(page<6 && page>0){
-            this.refs.scrollView.scrollTo({x:(page-1)*this.width,animated:true})
-            this.setState({currentpage:page})
-        }
-    }
-
-    render() {
-        return <View style = {{flex:1, backgroundColor:colors.background}}>
-            <View style = {{ height:this.height*0.1, justifyContent:'center', alignItems:'center', marginTop:10}}>
-                    <Text style = {styles.roomcode}>{this.state.roomname}</Text>
-            </View>
-            
-            <View style = {{height:this.height*0.73}}>
-                <ScrollView style = {{flex:1,backgroundColor:colors.background}}
-                    horizontal showsHorizontalScrollIndicator={false} ref='scrollView' 
-                    scrollEnabled = {false}>
-                    <Lobby1
-                        roomname = {this.state.roomname}
-                        width = {this.width}
-                        refs = {this.refs}
-                        updatePage = {val => this._updatePage(val)}
-                    />
-                    <Lobby2 
-                        roomname = {this.state.roomname}
-                        width = {this.width}
-                        refs = {this.refs}
-                    />
-                </ScrollView>
-            </View>
-
-            <Pager
-                height = {this.height*0.08}
-                page = {this.state.page}
-                currentpage = {this.state.currentpage}
-                lastpage = {2}
-                goBack = {() => this._changePage(this.state.currentpage - 1)}
-                goForward = {() => this._changePage(this.state.currentpage + 1)}
-            />
-
-            {this.state.transition?<Animated.View
-                style = {{position:'absolute', top:0, bottom:0, left:0, right:0, justifyContent:'center',
-                alignItems:'center', backgroundColor:colors.shadow, opacity:this.state.transitionOpacity}}>
-                <Text style = {styles.roomcode}>LOADING ...</Text>
-            </Animated.View>:null}
-        </View>
-    }
-}
-
-export class Lobby1 extends Component {
-    
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            alias:null,
-            errormessage:'Your name must be 1 - 10 Characters',
-        };
-
-        this.height = Dimensions.get('window').height;
-        this.width = Dimensions.get('window').width;
-    }
-
-    _continue(name) {
-        if(name && name.trim().length>0 && name.trim().length < 11){
-
-            this.props.updatePage(2)
-
-            firebase.database().ref('rooms').child(this.props.roomname).child('listofplayers')
-            .child(firebase.auth().currentUser.uid).update({
-                name:               name.trim(),
-                presseduid:         'foo',
-            }).then(()=>{
-                firebase.database().ref('rooms').child(this.props.roomname).child('ready')
-                .child(firebase.auth().currentUser.uid).set(false).then(()=>{
-                    this.setState({errormessage:null})
-                    this.props.refs.scrollView.scrollTo({x:this.props.width,y:0,animated:true})
-                })
-            })
-        } else {
-            this.refs.nameerror.shake(800)
-        }
         
     }
 
     render() {
-        return <View style = {{flex:0.7, alignItems:'center', width:this.props.width}}>
-
-            <View style = {{height:this.height*0.12}}/>
-            <View style = {{height:this.height*0.07, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.subtitle}>choose your name!</Text>
+        return <View style = {{flex:1, justifyContent:'center', alignItems:'center'}}>
+        
+            <View style = {{ height:this.height*0.1, justifyContent:'center', alignItems:'center' }}>
+                <Text style = {styles.lobbytitle}>Room</Text>
+                <Text style = {styles.lobbycode}>{this.state.roomname}</Text>
             </View>
-            <TextInput
-                autoFocus
-                keyboardType='default'
-                maxLength={10}
-                style={[styles.nameInput,{height:this.height*0.1, width:this.width*0.6}]}
-                value={this.state.alias}
-                onChangeText = {(text) => {this.setState({alias: text})}}
-                onSubmitEditing = {(event)=>{
-                    this._continue(event.nativeEvent.text);
-                }}
-            />
-
-            <View style = {{height:this.height*0.1}}/>
-
-            <CustomButton
-                size = {0.2}
-                flex = {0.5}
-                depth = {6}
-                radius = {10}
-                color = {colors.menubtn}
-                onPress = {()=>{
-                    this._continue(this.state.alias);
-                }}
-                title = 'GO'
-            />
             
-            <Animatable.Text style = {[styles.sfont,{height:this.height*0.1, justifyContent:'center'}]} 
-                ref = 'nameerror'>{this.state.errormessage}</Animatable.Text>
+            <NameField
+                name = {(val)=>{ this.myInfoRef.update({ name:val }) }}
+            />
+
+            <View style = {{height:this.height*0.6}}>
+
+            </View>
+
+            <AnimatedOpacity
+                style = {{alignItems:'center'}}
+                onPress = {()=> this._leaveRoom() }>
+                <FontAwesome name='lock'
+                    style={{color:colors.font, fontSize:30}}/>
+                <Text style = {styles.sfont}>Leave</Text>
+            </AnimatedOpacity>
+            
+
+        </View>
+    }
+}
+
+class NameField extends Component {
+    
+    constructor(props) {
+        super(props);
+
+        this.width = Dimensions.get('window').width,
+        this.height = Dimensions.get('window').height
+    }
+
+    render() {
+        return <View style = {{height:this.height*0.1,flexDirection:'row'}}>
+
+            <View style = {{width:45}}/>
+
+            <TextInput
+                ref = 'alias'
+                keyboardType='default'
+                placeholder='Nickname'
+                placeholderTextColor={colors.dead}
+                maxLength={10}
+                style={[styles.nameInput,{width:this.width*0.4}]}
+                onSubmitEditing = {(event)=>{
+                    this.props.name(event.nativeEvent.text.trim());
+                }}
+            />
+
+            <AnimatedOpacity
+                style = {{alignItems:'center', justifyContent:'center', width:45}}
+                onPress = {()=> this.refs.alias.focus() }>
+                <FontAwesome name='pencil'
+                    style={{color:colors.font, fontSize:30}}/>
+            </AnimatedOpacity>
 
         </View>
     }

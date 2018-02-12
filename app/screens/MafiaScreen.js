@@ -862,7 +862,7 @@ _renderNav(){
         </TouchableOpacity>
 
         <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15, bottom:MARGIN/2}}
-            onPress = {()=>this.setState({ section:'Menu'}) }>
+            onPress = {()=>this.setState({ section:'Menu' }) }>
             <FontAwesome name='book'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
             <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Menu</Text>

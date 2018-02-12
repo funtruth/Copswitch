@@ -37,13 +37,13 @@ export default styles = StyleSheet.create({
         lineHeight: 20
     },
     centeredBtn: {
-        fontFamily:'LuckiestGuy-Regular',
+        fontFamily:'FredokaOne-Regular',
         fontSize: 18,
         color: colors.font,
         alignSelf:'center',
     },
     centeredBtnPressed: {
-        fontFamily:'LuckiestGuy-Regular',
+        fontFamily:'FredokaOne-Regular',
         fontSize: 18,
         color: colors.font,
         alignSelf:'center',
@@ -123,7 +123,7 @@ export default styles = StyleSheet.create({
         marginBottom:5,
     },
     choiceButton: {
-        fontFamily:'LuckiestGuy-Regular',
+        fontFamily:'FredokaOne-Regular',
         color: colors.font,
         fontSize: 17,
         alignSelf: 'center',
@@ -154,7 +154,7 @@ export default styles = StyleSheet.create({
     },
     chat:{
         fontSize:20,
-        fontFamily:'LuckiestGuy-Regular',
+        fontFamily:'FredokaOne-Regular',
         color:colors.details,
         alignSelf: 'center',
         marginTop:15,
@@ -162,23 +162,15 @@ export default styles = StyleSheet.create({
     },
     leftfont:{
         fontSize:17,
-        fontFamily:'LuckiestGuy-Regular',
+        fontFamily:'FredokaOne-Regular',
         color:colors.striker,
         marginTop:5,
     },
-
-    //Join Tutorial
     roomcode: {
-        fontSize: 40,
-        fontFamily: 'LuckiestGuy-Regular',
+        fontSize: 30,
+        fontFamily: 'FredokaOne-Regular',
         textAlign:'center',
         color: colors.striker
-    },
-    subtitle : {
-        fontSize: 20,
-        fontFamily: 'ConcertOne-Regular',
-        textAlign:'center',
-        color: colors.striker,
     },
     digit: {
         flex:0.3,
@@ -188,9 +180,45 @@ export default styles = StyleSheet.create({
         borderRadius:2,
         margin:5
     },
+
+    //Lobby
+    lobbytitle : {
+        fontSize: 17,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.striker,
+    },
+    lobbycode : {
+        fontSize: 25,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.font,
+    },
+    lobbytext : {
+        fontSize: 19,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.font,
+    },
+    lobbylabel: {
+        fontSize: 15,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.font,
+    },
     nameInput: {
-        backgroundColor: colors.main,
-        fontFamily:'LuckiestGuy-Regular',
+        fontFamily:'FredokaOne-Regular',
+        fontSize: 18,
+        color:colors.font,
+        textAlign:'center',
+        justifyContent:'center',
+    },
+    error: {
+        fontSize: 15,
+        fontFamily: 'FredokaOne-Regular',
+        textAlign:'center',
+        color: colors.striker,
+    },
+    textOutput: {
+        flex:0.7,
+        backgroundColor:colors.font,
+        fontFamily:'FredokaOne-Regular',
         fontSize: 30,
         color:colors.background,
         textAlign:'center',
@@ -198,71 +226,18 @@ export default styles = StyleSheet.create({
     },
     textInput: {
         backgroundColor: colors.main,
-        fontFamily:'LuckiestGuy-Regular',
-        fontSize: 30,
+        fontFamily:'FredokaOne-Regular',
+        fontSize: 25,
         color:colors.background,
         textAlign:'center',
         borderRadius:10,
     },
     playerList: {
         fontSize: 25,
-        fontFamily: 'LuckiestGuy-Regular',
+        fontFamily: 'FredokaOne-Regular',
         textAlign:'center',
         color: colors.font,
         margin:5,
-    },
-
-    //Create Tutorial
-    options: {
-        fontSize: 20,
-        fontFamily: 'ConcertOne-Regular',
-        marginLeft:20,
-        color: colors.font,
-    },
-    title : {
-        fontSize: 30,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.striker,
-    },
-    subtitle : {
-        fontSize: 20,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.striker,
-    },
-    menuBtn : {
-        fontFamily:'LuckiestGuy-Regular',
-        fontSize: 25,
-        color: colors.font,
-        alignSelf:'center'
-    },
-    error: {
-        fontSize: 15,
-        fontFamily: 'LuckiestGuy-Regular',
-        textAlign:'center',
-        color: colors.striker,
-    },
-    textOutput: {
-        flex:0.7,
-        backgroundColor:colors.font,
-        fontFamily:'LuckiestGuy-Regular',
-        fontSize: 30,
-        color:colors.background,
-        textAlign:'center',
-        borderRadius:10,
-    },
-    warningTitle: {
-        fontFamily:'LuckiestGuy-Regular',
-        fontSize: 30,
-        color:colors.font,
-        textAlign:'center',
-    },
-    warningText: {
-        fontFamily:'LuckiestGuy-Regular',
-        fontSize: 20,
-        color:colors.font,
-        textAlign:'center',
     },
 
     //General
@@ -274,18 +249,18 @@ export default styles = StyleSheet.create({
     },
     lfont: {
         fontSize:17,
-        fontFamily:'LuckiestGuy-Regular',
+        fontFamily:'FredokaOne-Regular',
         color:colors.font,
     },
     counterfont: {
         fontSize:17,
-        fontFamily:'LuckiestGuy-Regular',
+        fontFamily:'FredokaOne-Regular',
         color:colors.font,
         marginLeft:15,
     },
     lsfont: {
         fontSize:12,
-        fontFamily:'LuckiestGuy-Regular',
+        fontFamily:'FredokaOne-Regular',
         color:colors.font,
         alignSelf: 'center',
     },
@@ -303,7 +278,7 @@ export default styles = StyleSheet.create({
     },
     subfont: {
         fontSize:17,
-        fontFamily:'LuckiestGuy-Regular',
+        fontFamily:'FredokaOne-Regular',
         color:colors.striker,
         alignSelf: 'center',
     },
@@ -315,11 +290,11 @@ export default styles = StyleSheet.create({
     },
     plainfont: {
         color: colors.font,
-        fontFamily: 'LuckiestGuy-Regular',
+        fontFamily: 'FredokaOne-Regular',
     },
     plaindfont: {
         color: colors.background,
-        fontFamily: 'LuckiestGuy-Regular',
+        fontFamily: 'FredokaOne-Regular',
     }
 
 })

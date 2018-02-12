@@ -34,5 +34,6 @@ export const Layout = StackNavigator(
       {
         headerMode: "none",
         initialRouteName: "Loading",
+        cardStyle: {backgroundColor:'transparent'}
       }
 );

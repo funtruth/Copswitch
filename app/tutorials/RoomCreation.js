@@ -41,7 +41,7 @@ export class Build1 extends Component {
 
         this.state = {
             roomname:null,
-            message:'testing things',
+            message:'Almost there!',
         };
         
     }
@@ -88,7 +88,7 @@ export class Build1 extends Component {
                 flex={0.4}
                 onPress={()=>this._createRoom()}
             >
-                <Text style = {styles.font}>Make</Text>
+                <Text style = {styles.mfont}>Create Room</Text>
             </CustomButton>
 
         </View>
