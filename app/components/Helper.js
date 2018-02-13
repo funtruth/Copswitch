@@ -13,141 +13,138 @@ const FAST_ANIM = 100;
 const MED_ANIM = 400;
 
 export class Helper extends React.Component {
-    
-constructor(props) {
-    super(props);
+        
+    constructor(props) {
+        super(props);
 
-    this.screen = 'Loading'
-    this.radiusScale = new Animated.Value(5)
-    
-    this.width = Dimensions.get('window').width;
-    this.height = Dimensions.get('window').height;
-    
-    this.icon = this.height/9;
+        this.screen = 'Loading'
+        this.radiusScale = new Animated.Value(5)
+        
+        this.width = Dimensions.get('window').width;
+        this.height = Dimensions.get('window').height;
+        
+        this.icon = this.height/9;
 
-    this.state = {
-        helperY: this.width*5/6,
-    }
-}
-
-componentDidMount(){
-    BackHandler.addEventListener("hardwareBackPress", this._onBackPress.bind(this));
-}
-
-componentWillUnmount(){
-    BackHandler.removeEventListener("hardwareBackPress");
-}
-
-_onBackPress(){
-    return true
-}
-
-//Prop Functions
-_receiveNav(navigation){
-    this.navigation = navigation
-}
-
-_showCover(show){
-    Animated.timing(
-        this.radiusScale,{
-            toValue:show?5:0.25,
-            duration:400
+        this.state = {
+            helperY: this.width*5/6,
         }
-    ).start()
-}
+    }
 
-_navigate(screen){
+    componentDidMount(){
+        BackHandler.addEventListener("hardwareBackPress", this._onBackPress.bind(this));
+    }
 
-    console.log('Starting Animation')
-    Animated.parallel([
+    componentWillUnmount(){
+        BackHandler.removeEventListener("hardwareBackPress");
+    }
+
+    _onBackPress(){
+        return true
+    }
+
+    //Prop Functions
+    _receiveNav(navigation){
+        this.navigation = navigation
+    }
+
+    _showCover(show){
         Animated.timing(
             this.radiusScale,{
-                toValue:5,
+                toValue:show?5:0.25,
                 duration:400
             }
-        ),
-    ]).start()
-        
+        ).start()
+    }
 
-    setTimeout(()=>{
-        if(screen == 'Home'){
-              this.navigation.dispatch(
+    _navigate(screen,param){
+
+        console.log('Starting Animation')
+        Animated.parallel([
+            Animated.timing(
+                this.radiusScale,{
+                    toValue:5,
+                    duration:400
+                }
+            ),
+        ]).start()
+            
+
+        setTimeout(()=>{
+            if(screen == 'Home'){
+                this.navigation.dispatch(
+                    NavigationActions.reset({
+                        index: 0,
+                        actions: [
+                        NavigationActions.navigate({ routeName: 'Home'})
+                        ]
+                    })
+                )
+            } else {
+                this.navigation.navigate(screen)
+            }
+
+            this.screen = screen
+            console.log("Navigating Screens");
+        },400)
+
+        setTimeout(()=>{
+            Animated.timing(
+                this.radiusScale,{
+                    toValue:0.25,
+                    duration:500
+                }
+            ).start()
+            console.log('Uncovering Screen')
+        },1500) 
+    }
+
+    _navigateP(screen,param){
+
+        Animated.parallel([
+            Animated.timing(
+                this.radiusScale,{
+                    toValue:5,
+                    duration:400
+                }
+            ),
+        ]).start()
+
+        setTimeout(()=>{
+
+            if(screen == 'Mafia'){
+                this.navigation.dispatch(
                 NavigationActions.reset({
                     index: 0,
                     actions: [
-                      NavigationActions.navigate({ routeName: 'Home'})
+                        NavigationActions.navigate({ 
+                            routeName: 'Mafia',
+                            params: { roomname:param }
+                        })
                     ]
-                  })
-              )
-        } else {
-            this.navigation.navigate(screen)
-        }
-
-        this.screen = screen
-        console.log("Navigating Screens");
-    },400)
-
-    setTimeout(()=>{
-        Animated.timing(
-            this.radiusScale,{
-                toValue:0.25,
-                duration:500
-            }
-        ).start()
-        console.log('Uncovering Screen')
-    },1500) 
-}
-
-_navigateP(screen,roomname){
-
-    console.log('Starting Animation')
-    Animated.parallel([
-        Animated.timing(
-            this.radiusScale,{
-                toValue:5,
-                duration:400
-            }
-        ),
-    ]).start()
-
-    setTimeout(()=>{
-
-        if(screen == 'MafiaRoom'){
-            this.navigation.dispatch(
-              NavigationActions.reset({
-                  index: 0,
-                  actions: [
-                    NavigationActions.navigate({ 
-                        routeName: 'MafiaRoom',
-                        params: { roomname:roomname }
                     })
-                  ]
-                })
-            )
-        } else {
-            this.navigation.navigate(screen,{ roomname:roomname })
-        }
-
-        this.screen = screen
-        console.log("Navigating Screens");
-    },400)
-
-    setTimeout(()=>{
-        Animated.timing(
-            this.radiusScale,{
-                toValue:0.25,
-                duration:500
+                )
+            } else {
+                this.navigation.navigate(screen,{ roomname:param })
             }
-        ).start()
-        console.log('Uncovering Screen')
-    },1500) 
-}
 
-render() {
+            this.screen = screen
+        },400)
 
-    return (
-        <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
-            justifyContent:'center', alignItems:'center', backgroundColor:colors.background}}>
+        setTimeout(()=>{
+            Animated.timing(
+                this.radiusScale,{
+                    toValue:0.25,
+                    duration:500
+                }
+            ).start()
+        },1500) 
+    }
+
+    render() {
+
+        return (
+            <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
+                justifyContent:'center', alignItems:'center', backgroundColor:colors.background}}>
 
                 <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0}}>
                     <Layout
@@ -172,7 +169,7 @@ render() {
                     ],
                 }}/>
 
-        </View>
-    )
-}
+            </View>
+        )
+    }
 }

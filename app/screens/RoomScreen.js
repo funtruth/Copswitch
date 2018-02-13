@@ -25,8 +25,7 @@ const MARGIN = 10;
 
 import { CustomButton } from '../components/CustomButton.js';
 import { Alert } from '../components/Alert.js';
-import { Join1 } from '../tutorials/RoomJoin.js';
-import { Build1 } from '../tutorials/RoomCreation.js';
+import { Join1, Build1 } from './LobbyScreen.js';
 import Menu from './ListsScreen.js';
 
 import colors from '../misc/colors.js';
@@ -179,7 +178,7 @@ export class Home extends React.Component {
                 <Build1
                     visible = {this.state.crea}
                     navigate = {(val)=>
-                        this.props.screenProps.navigateP('CreationTutorial',val)
+                        this.props.screenProps.navigateP('Lobby',val)
                     }
                 />
             </Alert>
@@ -190,7 +189,7 @@ export class Home extends React.Component {
             >
                 <Join1 
                     navigate = {(val)=>
-                        this.props.screenProps.navigateP('LobbyTutorial',val)
+                        this.props.screenProps.navigateP('Lobby',val)
                     }
                 />
             </Alert>
@@ -221,7 +220,7 @@ export class Loading extends React.Component {
 
         AsyncStorage.getItem('GAME-KEY',(error,result)=>{
             if(result != null){
-                this.props.screenProps.navigateP('MafiaRoom',result)
+                this.props.screenProps.navigateP('Mafia',result)
             } else {
                 if(firebase.auth().currentUser){
                     this.props.screenProps.navigate('Home')

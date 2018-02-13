@@ -20,17 +20,81 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
+import * as Animatable from 'react-native-animatable';
 
 import { CustomButton } from '../components/CustomButton.js';
+import { Desc } from '../components/Desc.js';
+import { Slide } from '../parents/Slide.js';
 
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
 
-import * as Animatable from 'react-native-animatable';
 const MENU_ANIM = 200;
 const GAME_ANIM = 1000;
+import randomize from 'randomatic';
+
+export class Build1 extends Component {
+    
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            roomname:null,
+            message:'Almost there!',
+        };
+        
+    }
+
+    _createRoom() {
+
+        AsyncStorage.setItem('ROOM-KEY', this.state.roomname).then(()=>{
+            this.props.navigate(this.state.roomname)
+        })
+    }
+
+    componentWillReceiveProps(newProps){
+
+        if(newProps.visible && !this.state.roomname){
+
+            var flag = false
+            var roomname = null
+    
+            firebase.database().ref('rooms').once('value',snap=>{
+
+                while(!flag){
+                    roomname = randomize('0',4);
+                    if(!snap.child(roomname).exists()){
+                        flag = true
+                        this.setState({roomname:roomname})
+                    }
+                }
+                
+                firebase.database().ref('rooms/').child(roomname).set({
+                    owner: firebase.auth().currentUser.uid,
+                    counter:1,
+                })
+            }) 
+        }
+    }
+
+    render() {
+
+        return <View>
+
+            <Text style = {styles.sfont}>{this.state.message}</Text>
+
+            <CustomButton
+                flex={0.4}
+                onPress={()=>this._createRoom()}
+            >
+                <Text style = {styles.mfont}>Create Room</Text>
+            </CustomButton>
+
+        </View>
+    }
+}
 
 export class Join1 extends Component {
 
@@ -92,6 +156,8 @@ export class Join1 extends Component {
                     ref='textInput'
                     keyboardType='numeric' 
                     maxLength={4}   
+                    placeholder='9999'
+                    placeholderTextColor={colors.dead}
                     value={this.state.roomname}
                     style={[styles.textInput,{flex:0.5}]}
                     onChangeText={val=>this.setState({roomname:val})}
@@ -106,8 +172,7 @@ export class Join1 extends Component {
     }
 }
 
-
-export class LobbyPager extends Component {
+export class Lobby extends Component {
     
     constructor(props) {
         super(props);
@@ -119,17 +184,23 @@ export class LobbyPager extends Component {
 
             roomname: params.roomname,
             loading:true,
+            owner:false,
 
             namelist: [],
 
         };
 
-        this.width  = Dimensions.get('window').width;
-        this.height = Dimensions.get('window').height;
+        this.mcount         = 0;
+
+        this.width          = Dimensions.get('window').width;
+        this.height         = Dimensions.get('window').height;
+
+        this.user           = firebase.auth().currentUser.uid;
 
         this.roomRef        = firebase.database().ref('rooms').child(roomname);
+        this.ownerRef       = this.roomRef.child('owner');
         this.lobbyRef       = this.roomRef.child('lobby');
-        this.myInfoRef      = this.lobbyRef.child(firebase.auth().currentUser.uid);
+        this.myInfoRef      = this.lobbyRef.child(this.user);
         this.counterRef     = this.roomRef.child('counter');
         
     }
@@ -139,26 +210,47 @@ export class LobbyPager extends Component {
         this.counterRef.on('value',snap=>{
             if(snap.exists()){
                 if(snap.val() == 2){
-                    this._transition(true);
-                } else if(snap.val()>1){
-                    AsyncStorage.setItem('GAME-KEY',this.state.roomname);
 
-                    this.props.screenProps.navigate('MafiaRoom',this.state.roomname)
+                    AsyncStorage.setItem('GAME-KEY',this.state.roomname);
+                    this._transition(true);
+
+                } else if(snap.val == 3){
+
+                    this.props.screenProps.navigate('Mafia',this.state.roomname)
                 }
             }
         })
 
-        this.lobbyRef.on('value',snap=>{
+        this.lobbyRef.on('child_added',snap=>{
             if(snap.exists()){
-                var list = [];
-                snap.forEach((child)=> {
-                    list.push({
-                        name: child.val().name,
-                        key: child.key,
-                    })
-                })
+                this.setState(prevState => ({
+                    namelist: [{
+                        name: snap.val().name, 
+                        message: ' joined the room',
+                        key:this.mcount
+                    }, ...prevState.namelist]
+                }))
+                this.mcount++
+            }
+        })
+
+        this.lobbyRef.on('child_removed',snap=>{
+            if(snap.exists()){
+                this.setState(prevState => ({
+                    namelist: [{
+                        name: snap.val().name, 
+                        message: ' left the room',
+                        key:this.mcount
+                    }, ...prevState.namelist]
+                }))
+                this.mcount++
+            }
+        })
+
+        this.ownerRef.on('value',snap=>{
+            if(snap.exists()){
                 this.setState({
-                    namelist:list
+                    owner:snap.val() == this.uid
                 })
             }
         })
@@ -168,19 +260,64 @@ export class LobbyPager extends Component {
         if(this.counterRef){
             this.counterRef.off();
         }
+        if(this.lobbyRef){
+            this.lobbyRef.off();
+        }
+        if(this.ownerRef){
+            this.ownerRef.off();
+        }
+    }
+
+
+    _startGame(roomname) {
+        this._handOutRoles(roomname).then(val=>{
+
+            alert(val)
+            this.counterRef.set(3).then(()=>{
+                this.props.screenProps.navigateP('Mafia',roomname)
+            })
+
+        })
+    }
+
+    _handOutRoles(roomname){
+        
+        var randomstring = '';
+
+        firebase.database().ref('rooms').child(roomname).child('listofroles').once('value',snap=>{
+
+            snap.forEach((child)=>{
+                for(i=0;i<child.val();i++){
+                    randomstring += randomize('?', 1, {chars: child.key})
+                }
+            })
+
+            var max = randomstring.length - 1
+    
+            for(i=0;i<this.namelist.length;i++){
+                var randomnumber = Math.floor(Math.random() * (max + 1));
+                this.namelist[roleid] = randomstring.charAt(randomnumber-1)
+                randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);
+                max--
+            }
+
+            this.roomRef.child('list').set(this.namelist)
+
+            return true
+
+        })
     }
 
     _leaveRoom() {
-        this.myInfoRef.remove().then(()=>{
-            this.lobbyRef.once('value',snap=>{
-                if(!snap.exists()){
-                    this.roomRef.remove();
-                }
-            }).then(()=>{
+        if(this.state.owner){
+            this.roomRef.remove().then(()=>{
                 this.props.screenProps.navigate('Home')
             })
-        })
-        
+        } else {
+            this.myInfoRef.remove().then(()=>{
+                this.props.screenProps.navigate('Home')
+            })
+        }
     }
 
     _transition(boolean) {
@@ -195,13 +332,11 @@ export class LobbyPager extends Component {
                 <Text style = {styles.lobbycode}>{this.state.roomname}</Text>
             </View>
             
-            <NameField
-                name = {(val)=>{ this.myInfoRef.update({ name:val }) }}
-            />
+            <NameField name = {(val)=>{ this.myInfoRef.update({ name:val }) }}/>
 
-            <View style = {{height:this.height*0.6}}>
+            <Players list = {this.state.namelist}/>
 
-            </View>
+            <View style = {{height:this.height*0.1}}/>
 
             <AnimatedOpacity
                 style = {{alignItems:'center'}}
@@ -223,6 +358,10 @@ class NameField extends Component {
 
         this.width = Dimensions.get('window').width,
         this.height = Dimensions.get('window').height
+    }
+
+    componentWillReceiveProps(newProps){
+
     }
 
     render() {
@@ -253,68 +392,37 @@ class NameField extends Component {
     }
 }
 
-export class Lobby2 extends Component {
+class Players extends Component {
+
     constructor(props) {
         super(props);
 
+        this.width = Dimensions.get('window').width,
+        this.height = Dimensions.get('window').height
+
         this.state = {
-            namelist:[],
-        };
-
-        this.height = Dimensions.get('window').height;
-        this.width  = Dimensions.get('window').width;
-    }
-
-    componentWillMount() {
-        this.listofplayersRef = firebase.database().ref('rooms')
-            .child(this.props.roomname).child('listofplayers')
-        this.listofplayersRef.on('value',snap=>{
-            var list = [];
-            snap.forEach((child)=> {
-                list.push({
-                    name: child.val().name,
-                    key: child.key,
-                })
-            })
-            this.setState({
-                namelist:list
-            })
-        })
-    }
-
-    componentWillUnmount() {
-        if(this.listofplayersRef){
-            this.listofplayersRef.off();
+            list:[]
         }
     }
 
+    componentWillReceiveProps(newProps){
+        this.setState({
+            list:newProps.list
+        })
+    }
 
-    _renderListComponent(){
-        return <FlatList
-            data={this.state.namelist}
-            renderItem={({item}) => (
-                <Text style = {styles.playerList}>{item.name}</Text>
-            )}
-            contentContainerStyle = {{marginTop:10, marginBottom:10}}
-            numColumns={1}
-            keyExtractor={item => item.key}
-        />
+    _renderItem(item){
+        return <Slide><Text style = {styles.playerList}>{item.name + item.message}</Text></Slide>
     }
 
     render() {
-        return <View style = {{flex:0.7,backgroundColor:colors.background, width:this.props.width,
-            alignItems:'center'}}>
 
-            <View style = {{height:this.height*0.14}}/>
-
-            <View style = {{height:this.height*0.1, justifyContent:'center', alignItems:'center'}}>
-                <Text style = {styles.mfont}>Welcome!</Text>
-                <Text style = {styles.subfont}>Wait for Owner to start.</Text>
-            </View>
-            
-            <View style = {{height:this.height*0.55, width:this.width*0.7, justifyContent:'center'}}>
-                {this._renderListComponent()}
-            </View>
+        return <View style = {{height:this.height*0.5}}> 
+            <FlatList
+                data={this.state.list}
+                renderItem={({item}) => this._renderItem(item)}
+                keyExtractor={item => item.key}
+            />
         </View>
     }
 }

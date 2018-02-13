@@ -233,11 +233,12 @@ export default styles = StyleSheet.create({
         borderRadius:10,
     },
     playerList: {
-        fontSize: 25,
+        fontSize: 16,
         fontFamily: 'FredokaOne-Regular',
-        textAlign:'center',
         color: colors.font,
+        alignSelf:'center',
         margin:5,
+        opacity:0.7,
     },
 
     //General

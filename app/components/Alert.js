@@ -35,6 +35,10 @@ componentWillReceiveProps(newProps){
 
 render() {
 
+    if(this.props.unmount && !this.props.visible){
+        return null
+    }
+
     return ( 
         <Animated.View style = {{
             justifyContent:'center',

@@ -5,10 +5,8 @@ import { StackNavigator } from "react-navigation";
 
 import { Home, Loading } from "./app/screens/RoomScreen";
 
-import { CreationPager } from './app/tutorials/RoomCreation.js';
-import { Join1 } from './app/tutorials/RoomJoin.js';
-import { LobbyPager } from './app/tutorials/RoomJoin.js';
-import MafiaRoom from "./app/screens/MafiaScreen";
+import { Lobby } from './app/screens/LobbyScreen.js';
+import Mafia from "./app/screens/MafiaScreen";
 
 export const Layout = StackNavigator(
       {
@@ -18,17 +16,11 @@ export const Layout = StackNavigator(
         Home: {
           screen: Home
         },
-        CreationTutorial: {
-          screen: CreationPager
+        Lobby: {
+          screen: Lobby
         },
-        JoinTutorial: {
-          screen: Join1
-        },
-        LobbyTutorial: {
-          screen: LobbyPager
-        },
-        MafiaRoom: {
-          screen: MafiaRoom
+        Mafia: {
+          screen: Mafia
         },
       },
       {
