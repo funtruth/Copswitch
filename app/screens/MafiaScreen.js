@@ -17,7 +17,6 @@ import Rolesheet from '../misc/roles.json';
 import Screens from '../misc/screens.json';
 import Phases from '../misc/phases.json';
 
-import { CustomButton } from '../components/CustomButton.js';
 import { Console } from '../components/Console.js';
 import { Rolecard } from '../components/Rolecard.js';
 import { Events } from '../components/Events.js';

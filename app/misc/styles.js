@@ -17,8 +17,13 @@ export default styles = StyleSheet.create({
     header: {
         fontFamily:'FredokaOne-Regular',
         fontSize: 23,
-        color: colors.striker,
+        color: colors.font,
         marginRight:15,
+    },
+    chevron: {
+        color:colors.font, 
+        fontSize: 30, 
+        alignSelf:'center'
     },
 
     //Lists Screen
@@ -259,17 +264,10 @@ export default styles = StyleSheet.create({
         color:colors.font,
         marginLeft:15,
     },
-    lsfont: {
-        fontSize:12,
-        fontFamily:'FredokaOne-Regular',
-        color:colors.font,
-        alignSelf: 'center',
-    },
     sfont: {
-        fontSize: 13,
         fontFamily: 'FredokaOne-Regular',
         textAlign:'center',
-        color: colors.striker,
+        color: colors.font,
     },
     font: {
         fontSize:15,

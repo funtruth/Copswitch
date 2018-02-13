@@ -83,7 +83,7 @@ export class Build1 extends Component {
 
         return <View>
 
-            <Text style = {styles.sfont}>{this.state.message}</Text>
+            <Text style = {[styles.sfont,{color:colors.striker}]}>{this.state.message}</Text>
 
             <CustomButton
                 flex={0.4}
@@ -183,7 +183,7 @@ export class Lobby extends Component {
         this.state = {
 
             roomname: params.roomname,
-            loading:true,
+            loading:false,
             owner:false,
 
             namelist: [],
@@ -202,6 +202,7 @@ export class Lobby extends Component {
         this.lobbyRef       = this.roomRef.child('lobby');
         this.myInfoRef      = this.lobbyRef.child(this.user);
         this.counterRef     = this.roomRef.child('counter');
+        this.rolesRef       = this.roomRef.child('roles');
         
     }
 
@@ -250,7 +251,7 @@ export class Lobby extends Component {
         this.ownerRef.on('value',snap=>{
             if(snap.exists()){
                 this.setState({
-                    owner:snap.val() == this.uid
+                    owner:snap.val() == this.user
                 })
             }
         })
@@ -268,23 +269,28 @@ export class Lobby extends Component {
         }
     }
 
+    _startCheck() {
+        this.counterRef.update(2).then(()=>{
 
-    _startGame(roomname) {
-        this._handOutRoles(roomname).then(val=>{
+        })
+    }
+
+    _startGame() {
+        this._handOutRoles().then(val=>{
 
             alert(val)
             this.counterRef.set(3).then(()=>{
-                this.props.screenProps.navigateP('Mafia',roomname)
+                this.props.screenProps.navigateP('Mafia',this.state.roomname)
             })
 
         })
     }
 
-    _handOutRoles(roomname){
+    _handOutRoles() {
         
         var randomstring = '';
 
-        firebase.database().ref('rooms').child(roomname).child('listofroles').once('value',snap=>{
+        this.rolesRef.once('value',snap=>{
 
             snap.forEach((child)=>{
                 for(i=0;i<child.val();i++){
@@ -331,22 +337,17 @@ export class Lobby extends Component {
                 <Text style = {styles.lobbytitle}>Room</Text>
                 <Text style = {styles.lobbycode}>{this.state.roomname}</Text>
             </View>
-            
+
             <NameField name = {(val)=>{ this.myInfoRef.update({ name:val }) }}/>
 
             <Players list = {this.state.namelist}/>
 
-            <View style = {{height:this.height*0.1}}/>
-
-            <AnimatedOpacity
-                style = {{alignItems:'center'}}
-                onPress = {()=> this._leaveRoom() }>
-                <FontAwesome name='lock'
-                    style={{color:colors.font, fontSize:30}}/>
-                <Text style = {styles.sfont}>Leave</Text>
-            </AnimatedOpacity>
-            
-
+            <Navigator
+                owner = {this.state.owner}
+                start = {()=> this._startGame()}
+                leave = {()=> this._leaveRoom()}
+                menu  = {()=> {}}
+            />
         </View>
     }
 }
@@ -372,6 +373,7 @@ class NameField extends Component {
             <TextInput
                 ref = 'alias'
                 keyboardType='default'
+                autoCapitalize='words'
                 placeholder='Nickname'
                 placeholderTextColor={colors.dead}
                 maxLength={10}
@@ -424,5 +426,49 @@ class Players extends Component {
                 keyExtractor={item => item.key}
             />
         </View>
+    }
+}
+
+class Navigator extends Component {
+
+    constructor(props) {
+        super(props);
+
+        this.width = Dimensions.get('window').width,
+        this.height = Dimensions.get('window').height
+
+    }
+
+    render(){
+        return <Animated.View style = {{
+            height:this.height*0.1, 
+            flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+    
+                <AnimatedOpacity
+                    style = {{alignItems:'center', flex:0.17}}
+                    onPress = {this.props.leave}>
+                    <FontAwesome name='close'
+                        style={{color:colors.font, fontSize:25}}/>
+                    <Text style = {styles.sfont}>Leave</Text>
+                </AnimatedOpacity>
+
+                <AnimatedOpacity
+                    style = {{alignItems:'center', flex:0.20}}
+                    onPress = {this.props.start}
+                    disabled = {!this.props.owner}>
+                    <FontAwesome name={this.props.owner?'check':'lock'}
+                        style={{color:this.props.owner?colors.font:colors.dead, fontSize:35}}/>
+                    <Text style = {[styles.sfont,{color:this.props.owner?colors.font:colors.dead}]}>Start</Text>
+                </AnimatedOpacity>
+
+                <AnimatedOpacity
+                    style = {{alignItems:'center', flex:0.17}}
+                    onPress = {this.props.menu}>
+                    <FontAwesome name='bars'
+                        style={{color:colors.font, fontSize:25}}/>
+                    <Text style = {styles.sfont}>Roles</Text>
+                </AnimatedOpacity>
+
+        </Animated.View>
     }
 }

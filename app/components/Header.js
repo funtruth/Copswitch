@@ -16,7 +16,7 @@ export class Header extends React.Component {
             <View style = {{flexDirection:'row', alignSelf:'center'}}>
                 <TouchableOpacity onPress = {this.props.onPress}>
                     <MaterialCommunityIcons name='chevron-left'
-                    style={{ color:colors.striker, fontSize: 30, alignSelf:'center'}}/>
+                    style={styles.chevron}/>
                 </TouchableOpacity>
                 <Text style = {styles.header}>{this.props.title}</Text>
                 

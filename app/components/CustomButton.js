@@ -10,6 +10,17 @@ USED IN:
 HOME SCREEN wifi button
 */
 
+
+/*DEPRECATED: LOCATIONS
+
+Alert
+Console
+Pager
+
+ListsScreen
+LobbyScreen
+
+*/
 constructor(props) {
     super(props);
 

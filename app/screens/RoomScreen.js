@@ -23,7 +23,6 @@ const SLOW_ANIM     = 1000;
 
 const MARGIN = 10;
 
-import { CustomButton } from '../components/CustomButton.js';
 import { Alert } from '../components/Alert.js';
 import { Join1, Build1 } from './LobbyScreen.js';
 import Menu from './ListsScreen.js';
@@ -82,86 +81,46 @@ export class Home extends React.Component {
             join:join?!this.state.join:false,
             menu:menu?!this.state.menu:false,
         })
-
-        if(crea?!this.state.crea:false || join?!this.state.join:false || menu?!this.state.menu:false) this._stop()
-        else this._bounce()
     }
 
     componentWillMount(){
-        this._bounce()
-    }
-
-    _renderIcon(){
-        return <Animated.View style = {{
-            bottom:this.state.wiggle.interpolate({
-                inputRange: [0,0.5,1],
-                outputRange: [this.height*0.01,-this.height*0.02,this.height*0.01]
-            }),
-            height:this.height/9, width:this.height/9, 
-            borderRadius:this.height/18, backgroundColor: colors.font,
-            alignItems:'center', justifyContent:'center'
-        }}>
-            <FontAwesome name='user-secret' 
-                style={{ color:colors.background, fontSize: this.height/1.8/9 }}/>
-        </Animated.View>
+        //this._bounce()
     }
 
     _renderNav(){
-        return <Animated.View style = {{height:this.height*0.1, flexDirection:'row', justifyContent:'center'}}>
-    
-            <AnimatedOpacity style = {{
-                bottom:this.state.wiggle.interpolate({
+        return <Animated.View style = {{
+            transform: [{
+                scale:this.state.wiggle.interpolate({
                     inputRange: [0,0.5,1],
-                    outputRange: [0,-1.5*MARGIN,0]
-                }),
-                transform: [{
-                    scale:this.state.wiggle.interpolate({
-                        inputRange: [0,0.5,1],
-                        outputRange: [1,1.1,1]
-                    })
-                }],
+                    outputRange: [1,1.05,1]
+                })
+            }],
+            height:this.height*0.1, flexDirection:'row', justifyContent:'center'
+        }}>
+    
+            <TouchableOpacity style = {{
                 justifyContent:'center', alignItems:'center', flex:0.2}}
                 onPress = {()=> this._navPress(true,false,false) }>
                 <FontAwesome name='cloud'
                     style={{color:colors.font,fontSize:30,textAlign:'center'}}/>
                 <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Create</Text>
-            </AnimatedOpacity>
+            </TouchableOpacity>
     
-            <AnimatedOpacity style = {{
-                bottom:this.state.wiggle.interpolate({
-                    inputRange: [0,0.5,1],
-                    outputRange: [-0.5*MARGIN,-2.5*MARGIN,-0.5*MARGIN]
-                }),
-                transform: [{
-                    scale:this.state.wiggle.interpolate({
-                        inputRange: [0,0.5,1],
-                        outputRange: [1,1.1,1]
-                    })
-                }],
+            <TouchableOpacity style = {{
                 justifyContent:'center', alignItems:'center', flex:0.25}}
                 onPress = {()=> this._navPress(false,true,false) }>
                 <FontAwesome name='key'
                     style={{color:colors.font,fontSize:40,textAlign:'center'}}/>
                 <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Join</Text>
-            </AnimatedOpacity>
+            </TouchableOpacity>
     
-            <AnimatedOpacity style = {{
-                bottom:this.state.wiggle.interpolate({
-                    inputRange: [0,0.5,1],
-                    outputRange: [0,-1.5*MARGIN,0]
-                }),
-                transform: [{
-                    scale:this.state.wiggle.interpolate({
-                        inputRange: [0,0.5,1],
-                        outputRange: [1,1.1,1]
-                    })
-                }],
+            <TouchableOpacity style = {{
                 justifyContent:'center', alignItems:'center', flex:0.2}}
                 onPress = {()=> this._navPress(false,false,true) }>
                 <FontAwesome name='book'
                     style={{color:colors.font,fontSize:30,textAlign:'center'}}/>
                 <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Menu</Text>
-            </AnimatedOpacity>
+            </TouchableOpacity>
 
         </Animated.View>
     }
@@ -171,39 +130,20 @@ export class Home extends React.Component {
         return <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
             justifyContent:'center', alignItems:'center'}}>
 
-            <Alert 
-                flex = {0.1}
-                visible = {this.state.crea}
-            >
-                <Build1
-                    visible = {this.state.crea}
-                    navigate = {(val)=>
-                        this.props.screenProps.navigateP('Lobby',val)
-                    }
-                />
+            <Alert flex = {0.1} visible = {this.state.crea}>
+                <Build1 visible = {this.state.crea}
+                    navigate = {(val)=> this.props.screenProps.navigateP('Lobby',val)}/>
             </Alert>
 
-            <Alert
-                flex = {0.3}
-                visible = {this.state.join}
-            >
-                <Join1 
-                    navigate = {(val)=>
-                        this.props.screenProps.navigateP('Lobby',val)
-                    }
-                />
+            <Alert flex = {0.3} visible = {this.state.join}>
+                <Join1 navigate = {(val)=> this.props.screenProps.navigateP('Lobby',val)}/>
             </Alert>
 
-            <Alert 
-                flex = {0.4}
-                visible = {this.state.menu}
-            >
+            <Alert flex = {0.4} visible = {this.state.menu}>
                 <Menu />
             </Alert>
             
             {this._renderNav()}
-
-            
 
         </View>
     }

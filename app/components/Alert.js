@@ -11,6 +11,7 @@ export class Alert extends React.Component {
 constructor(props) {
     super(props);
 
+    this.nav = new Animated.Value(0);
     this.opacity = new Animated.Value(0);
 
     this.width = Dimensions.get('window').width;
@@ -20,9 +21,9 @@ constructor(props) {
 
 _show(view) {
     Animated.timing(
-        this.opacity,{
+        this.nav,{
             toValue:view?1:0,
-            duration:300
+            duration:500
         }
     ).start()
 }
@@ -42,10 +43,13 @@ render() {
     return ( 
         <Animated.View style = {{
             justifyContent:'center',
-            opacity:this.opacity,
-            height:this.opacity.interpolate({
-                inputRange:[0,1],
-                outputRange:[0,this.height*this.props.flex]
+            opacity:this.nav.interpolate({
+                inputRange:[0,0.5,1],
+                outputRange:[0,0,1]
+            }),
+            height:this.nav.interpolate({
+                inputRange:[0,0.5,1],
+                outputRange:[0,this.height*this.props.flex,this.height*this.props.flex]
             }),
             width:this.width
             }}>
