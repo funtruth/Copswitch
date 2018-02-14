@@ -22,8 +22,10 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 import * as Animatable from 'react-native-animatable';
 
+import { RoleView } from '../components/RoleView.js';
+
 import { CustomButton } from '../components/CustomButton.js';
-import { Desc } from '../components/Desc.js';
+import { Alert } from '../components/Alert.js';
 import { Slide } from '../parents/Slide.js';
 
 import Rolesheet from '../misc/roles.json';
@@ -83,13 +85,11 @@ export class Build1 extends Component {
 
         return <View>
 
-            <Text style = {[styles.sfont,{color:colors.striker}]}>{this.state.message}</Text>
-
             <CustomButton
-                flex={0.4}
+                horizontal={0.4}
                 onPress={()=>this._createRoom()}
             >
-                <Text style = {styles.mfont}>Create Room</Text>
+                <Text style = {styles.create}>Create Room</Text>
             </CustomButton>
 
         </View>
@@ -186,6 +186,7 @@ export class Lobby extends Component {
             loading:false,
             owner:false,
 
+            showroles:false,
             namelist: [],
 
         };
@@ -326,12 +327,19 @@ export class Lobby extends Component {
         }
     }
 
+    _rolePress(key){
+        this.rolesRef.child(key).transaction(count=>{
+            return count+1
+        })
+    }
+
     _transition(boolean) {
         
     }
 
     render() {
-        return <View style = {{flex:1, justifyContent:'center', alignItems:'center'}}>
+        return <View style = {{flex:1, backgroundColor:colors.background, 
+            justifyContent:'center', alignItems:'center'}}>
         
             <View style = {{ height:this.height*0.1, justifyContent:'center', alignItems:'center' }}>
                 <Text style = {styles.lobbytitle}>Room</Text>
@@ -340,13 +348,21 @@ export class Lobby extends Component {
 
             <NameField name = {(val)=>{ this.myInfoRef.update({ name:val }) }}/>
 
-            <Players list = {this.state.namelist}/>
+            <View style = {{height:this.height*0.6}}>
+                <Alert visible = {!this.state.showroles} flex={0.6}>
+                    <Players list = {this.state.namelist}/>
+                </Alert>
+
+                <Alert visible = {this.state.showroles} flex={0.6}>
+                    <RoleView rolepress = {(key)=>this._rolePress(key)}/>
+                </Alert>
+            </View>
 
             <Navigator
                 owner = {this.state.owner}
                 start = {()=> this._startGame()}
                 leave = {()=> this._leaveRoom()}
-                menu  = {()=> {}}
+                menu  = {()=> this.setState({showroles:!this.state.showroles})}
             />
         </View>
     }
@@ -419,13 +435,11 @@ class Players extends Component {
 
     render() {
 
-        return <View style = {{height:this.height*0.5}}> 
-            <FlatList
-                data={this.state.list}
-                renderItem={({item}) => this._renderItem(item)}
-                keyExtractor={item => item.key}
-            />
-        </View>
+        return <FlatList
+            data={this.state.list}
+            renderItem={({item}) => this._renderItem(item)}
+            keyExtractor={item => item.key}
+        />
     }
 }
 

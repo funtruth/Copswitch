@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, Animated, Dimensions } from 'react-native';
 
-import colors from '../misc/colors.js';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { CustomButton } from './CustomButton';
-
 export class Alert extends React.Component {
 
     
@@ -26,6 +22,10 @@ _show(view) {
             duration:500
         }
     ).start()
+}
+
+componentDidMount(){
+    this._show(this.props.visible)
 }
 
 componentWillReceiveProps(newProps){

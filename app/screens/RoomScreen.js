@@ -25,7 +25,7 @@ const MARGIN = 10;
 
 import { Alert } from '../components/Alert.js';
 import { Join1, Build1 } from './LobbyScreen.js';
-import Menu from './ListsScreen.js';
+import { RuleBook } from './ListsScreen.js';
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
@@ -139,8 +139,8 @@ export class Home extends React.Component {
                 <Join1 navigate = {(val)=> this.props.screenProps.navigateP('Lobby',val)}/>
             </Alert>
 
-            <Alert flex = {0.4} visible = {this.state.menu}>
-                <Menu />
+            <Alert flex = {0.6} visible = {this.state.menu}>
+                <RuleBook />
             </Alert>
             
             {this._renderNav()}

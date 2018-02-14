@@ -17,9 +17,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Foundation from 'react-native-vector-icons/Foundation';
 import { CustomButton } from '../components/CustomButton.js';
+import { Slide } from '../parents/Slide.js';
 import { Header } from '../components/Header.js';
 import { Pager } from '../components/Pager.js';
 import { Desc } from '../components/Desc.js';
+import { RoleView } from '../components/RoleView.js';
 
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
@@ -56,6 +58,8 @@ class General extends Component {
         return <View>
 
             <CustomButton
+                horizontal = {0.4}
+                margin = {10}
                 onPress = {()=>
                     this.props.navigation.navigate('Roles')
                 }
@@ -63,6 +67,8 @@ class General extends Component {
             </CustomButton>
                 
             <CustomButton
+                horizontal = {0.4}
+                margin = {10}
                 onPress = {()=>
                     this.props.navigation.navigate('Menu',{menu:'rules'}) 
                 }
@@ -70,6 +76,7 @@ class General extends Component {
             </CustomButton>
 
             <CustomButton
+                horizontal = {0.4}
                 onPress = {()=>{ 
                     this.props.navigation.navigate('InfoPage',{section:'about'})
                 }}
@@ -80,124 +87,31 @@ class General extends Component {
     }
 }
 
-class Roles extends Component {
+export class Roles extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            townlist: [],
-            mafialist: [],
-            roleid:   'a',
-            index: 0,
-            descVisible: false,
-
-            showtown:    true,
+            roleid: 'A',
+            descVisible:false
         }
-
-        this.height = Dimensions.get('window').height;
-        this.width = Dimensions.get('window').width;
-    }
-
-    componentWillMount() {
-
-        var keys = Object.keys(Rolesheet).sort()
-        
-        var townlist = [];
-        var mafialist = [];
-
-        keys.forEach(function(key){
-            if(Rolesheet[key].type == 1){
-                mafialist.push({
-                    name:           Rolesheet[key].name,
-                    index:          Rolesheet[key].index,
-                    key:            key,
-                })
-            } else if (Rolesheet[key].type == 2) {
-                townlist.push({
-                    name:           Rolesheet[key].name,
-                    index:          Rolesheet[key].index,
-                    key:            key,
-                })
-            }
-        })
-        this.setState({
-            mafialist:mafialist,
-            townlist:townlist,
-        })  
     }
 
     _roleBtnPress(key) {
         this.setState({roleid:key, descVisible:true})
     }
 
-    _renderItem(item){
-        return <TouchableOpacity
-                style = {{ 
-                    marginTop:5,
-                    alignItems:'center',
-                    width:this.width/2
-                }}
-                onPress = {()=>{ this._roleBtnPress(item.key,item.index) }}>
-                <Text style = {styles.mfont}>{item.name}</Text>
-            </TouchableOpacity>
-    }
-
     render(){
-        return <View style = {{flex:1, width:this.width*0.8, alignSelf:'center'}}>
-
-            <FlatList
-                data={this.state.showtown?this.state.townlist:this.state.mafialist}
-                renderItem={({item}) => this._renderItem(item)}
-                contentContainerStyle={{
-                    alignItems:'center'
-                }}
-                showsVerticalScrollIndicator = {false}
-                keyExtractor={item => item.key}/>
+        return <View>
+            <RoleView rolepress = {(key)=> this._roleBtnPress(key)}/>
             
-            <View style = {{position:'absolute', left:0, top:0, 
-                width:this.width*0.2, height:this.height*0.25, 
-                justifyContent:'center'}}>
-
-                <CustomButton
-                    size={0.3}
-                    opacity={0.4}
-                    onPress = {()=> this.props.navigation.dispatch(NavigationActions.back()) }
-                >
-                    <FontAwesome name='arrow-left'
-                        style={{color:colors.font,fontSize:25, alignSelf:'center'}}/>
-                    <Text style = {styles.mfont}>Back</Text>
-                </CustomButton>
-                <View style = {{flex:0.1}}/>
-                <CustomButton
-                    size={0.3}
-                    opacity={this.state.showtown?1:0.4}
-                    onPress = {()=>{ this.setState({ showtown:true }) }}
-                >
-                    <Foundation name='shield'
-                        style={{color:colors.font,fontSize:25, alignSelf:'center'}}/>
-                    <Text style = {styles.mfont}>Town</Text>
-                </CustomButton>
-                
-                <CustomButton
-                    size={0.3}
-                    opacity={this.state.showtown?0.4:1}
-                    onPress = {()=>{ this.setState({ showtown:false }) }}
-                >
-                    <Foundation name='skull'
-                        style={{color:colors.font,fontSize:25, alignSelf:'center'}}/>
-                    <Text style = {styles.mfont}>Mafia</Text>
-                </CustomButton>
-            </View>
-
             <Desc
                 roleid = {this.state.roleid}
                 visible = {this.state.descVisible}
                 onClose = {val => this.setState({descVisible:val})}
             />
-
         </View>
-
     }
 }
 
@@ -236,39 +150,25 @@ class Menu extends Component {
 
     _renderMenuButton(item) {
         return <CustomButton
-            onPress = {()=>{
-                item.type==1?
-                    this.props.navigation.navigate('Menu',{menu:item.route}) 
-                    :this.props.navigation.navigate('InfoPage',{section:item.route}) 
-            }}
-        ><Text style = {styles.listfont}>{item.desc}</Text>
+            horizontal = {0.4}
+            margin = {10}
+            onPress = {()=>{item.type==1?
+                this.props.navigation.navigate('Menu',{menu:item.route}) 
+                :this.props.navigation.navigate('InfoPage',{section:item.route}) 
+            }}><Text numberOfLines={1} style = {styles.listfont}>{item.desc}</Text>
         </CustomButton>
         
     }
 
+    //TODO back button
     render(){
-        return <View style = {{flex:1, width:this.width*0.8, 
-            alignSelf:'center', alignItems:'center', justifyContent:'center'}}>
+        return <View style = {{backgroundColor:colors.background}}>
 
-            <View style = {{width:this.width*0.7}}>
-                <FlatList
-                    data={this.state.menulist}
-                    renderItem={({item}) => this._renderMenuButton(item) }
-                    keyExtractor={item => item.key}
-                />
-            </View>
-
-            <View style = {{position:'absolute', left:0, bottom:0, 
-                width:this.width*0.2, height:this.height*0.23 }}>
-                <CustomButton
-                    opacity={0.4}
-                    onPress = {()=> this.props.navigation.dispatch(NavigationActions.back()) }
-                >
-                    <FontAwesome name='arrow-left'
-                        style={{color:colors.font,fontSize:25, alignSelf:'center'}}/>
-                    <Text style = {styles.mfont}>Back</Text>
-                </CustomButton>
-            </View>
+            <FlatList
+                data={this.state.menulist}
+                renderItem={({item}) => this._renderMenuButton(item) }
+                keyExtractor={item => item.key}
+            />
 
         </View>
     }
@@ -368,7 +268,7 @@ class InfoPage extends Component {
     }
 }
 
-export default RuleBook = StackNavigator(
+export const RuleBook = StackNavigator(
     {
       General: {
         screen: General,

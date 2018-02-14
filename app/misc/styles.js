@@ -4,15 +4,6 @@ import colors from './colors.js';
 
 export default styles = StyleSheet.create({
 
-    //SPLASH
-    continue: {
-        fontSize:20,
-        fontFamily:'Bungee-Regular',
-        color:colors.background,
-        alignSelf: 'center',
-        marginTop:5
-    },
-
     //Lists Header
     header: {
         fontFamily:'FredokaOne-Regular',
@@ -26,12 +17,28 @@ export default styles = StyleSheet.create({
         alignSelf:'center'
     },
 
+    charfont: {
+        fontSize: 17,
+        fontFamily: 'FredokaOne-Regular',
+        textAlign:'center',
+        color: colors.shadow,
+        margin:4,
+    },
+    create: {
+        fontSize: 19,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.shadow,
+        margin:4
+    },
+
+
+
     //Lists Screen
     listfont: {
         fontFamily:'FredokaOne-Regular',
         fontSize:22,
         alignSelf:'center',
-        color:colors.striker,
+        color:colors.shadow,
         margin:4,
     },
     descFont: {
@@ -235,7 +242,7 @@ export default styles = StyleSheet.create({
         fontSize: 25,
         color:colors.background,
         textAlign:'center',
-        borderRadius:10,
+        borderRadius:30,
     },
     playerList: {
         fontSize: 16,

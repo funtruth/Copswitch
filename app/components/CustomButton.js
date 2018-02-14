@@ -26,13 +26,16 @@ constructor(props) {
 
     this.state ={
         disabled:false,
+        depth:4
     }
 
     
 }
       
 _handlePressIn(){
-
+    this.setState({
+        depth:2
+    })
 }
 
 _handlePressOut(){
@@ -40,8 +43,11 @@ _handlePressOut(){
 }
 
 _buttonPress() {
-    this.setState({disabled:true})
-    this.timer = setTimeout(() => this.setState({disabled: false}), 600);
+    this.setState({
+        disabled:true,
+        depth:4
+    })
+    this.timer = setTimeout(() => this.setState({disabled: false}), 50);
 }
 
 componentWillUnmount(){
@@ -54,30 +60,44 @@ componentWillUnmount(){
 render() {
 
     return (
-        <Animated.View style = {{
-            flex:this.props.size,
+        <View style = {{
+            flex:this.props.vertical,
+            opacity:this.props.opacity,
             flexDirection:'row',
             justifyContent:'center',
-            opacity:this.props.opacity
+            marginBottom:this.props.margin
         }}>
-            <TouchableOpacity style = {{
-                flex:this.props.flex,
-                justifyContent:'center',
-                backgroundColor:this.props.backgroundColor, 
-                borderRadius:5,
-            }}
-                onPress = {this.props.onPress}
-                onPressIn = {()=>{
-                    this._handlePressIn()
-                }}
-                onPressOut = {()=>{
-                    this._handlePressOut()
-                }}
-                activeOpacity = {0.6}
-                disabled = {this.state.disabled}>
-                {this.props.children}
-            </TouchableOpacity>
-        </Animated.View>
+            <View style = {[{
+                marginTop:4-this.state.depth,
+                flex:this.props.horizontal,
+                backgroundColor: this.props.backgroundColor || colors.dead,
+                borderRadius:15
+            },
+                this.props.style
+            ]}>
+                <TouchableOpacity style = {[{
+                    justifyContent:'center',
+                    alignItems:'center',
+                    backgroundColor: this.props.color || colors.font, 
+                    borderRadius:15,
+                },
+                    this.props.style
+                ]}
+                    onPress = {this.props.onPress}
+                    onPressIn = {()=>{
+                        this._handlePressIn()
+                    }}
+                    onPressOut = {()=>{
+                        this._handlePressOut()
+                    }}
+                    activeOpacity = {1}
+                    disabled = {this.state.disabled}>
+                    {this.props.children}
+                </TouchableOpacity>
+
+                <View style = {{height:this.state.depth}}/>
+            </View>
+        </View>
     )
 }
 }
