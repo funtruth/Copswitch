@@ -26,7 +26,7 @@ constructor(props) {
 
     this.state ={
         disabled:false,
-        depth:4
+        depth:6
     }
 
     
@@ -34,7 +34,7 @@ constructor(props) {
       
 _handlePressIn(){
     this.setState({
-        depth:2
+        depth:3
     })
 }
 
@@ -45,7 +45,7 @@ _handlePressOut(){
 _buttonPress() {
     this.setState({
         disabled:true,
-        depth:4
+        depth:6
     })
     this.timer = setTimeout(() => this.setState({disabled: false}), 50);
 }
@@ -68,7 +68,7 @@ render() {
             marginBottom:this.props.margin
         }}>
             <View style = {[{
-                marginTop:4-this.state.depth,
+                marginTop:6-this.state.depth,
                 flex:this.props.horizontal,
                 backgroundColor: this.props.backgroundColor || colors.dead,
                 borderRadius:15
@@ -91,7 +91,7 @@ render() {
                         this._handlePressOut()
                     }}
                     activeOpacity = {1}
-                    disabled = {this.state.disabled}>
+                    disabled = {this.props.disabled || this.state.disabled}>
                     {this.props.children}
                 </TouchableOpacity>
 

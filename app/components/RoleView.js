@@ -12,6 +12,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Foundation from 'react-native-vector-icons/Foundation';
 import { CustomButton } from './CustomButton.js';
+import { Alert } from './Alert.js';
+import { Modal } from '../parents/Modal.js';
+import { Desc } from './Desc.js';
 
 import Rolesheet from '../misc/roles.json';
 import firebase from '../firebase/FirebaseController.js';
@@ -29,17 +32,21 @@ export class RoleView extends Component {
         super(props);
 
         this.state = {
-            townlist: [],
-            mafialist: [],
-            roleid:   'a',
-            index: 0,
-            descVisible: false,
+            townlist:       [],
+            mafialist:      [],
 
-            showtown:    true,
+            roleid:         'a',
+            desc:           false,
+
+            showtown:       true,
+            showpool:       false,
+
+            info:           true,
+            change:         true,
         }
 
-        this.height = Dimensions.get('window').height;
-        this.width = Dimensions.get('window').width;
+        this.height         = Dimensions.get('window').height;
+        this.width          = Dimensions.get('window').width;
     }
 
     componentWillMount() {
@@ -70,19 +77,24 @@ export class RoleView extends Component {
         })  
     }
 
+    _rolePress(key){
+        if(this.state.info){
+            this.setState({desc:true, roleid:key})
+        }
+    }
 
     _renderItem(item){
         return <CustomButton
             vertical = {0.35}
             horizontal = {0.9}
             margin = {10}
-            onPress = {() => this.props.rolepress(item.key)}
+            onPress = {() => this._rolePress(item.key)}
         ><Text numberOfLines = {1} style = {styles.charfont}>{item.name}</Text>
         </CustomButton>
     }
 
     render(){
-        return <View style = {{backgroundColor:colors.background}}>
+        return <View style = {{flex:1, backgroundColor:colors.background}}>
 
             <View style = {{ marginBottom:10, justifyContent:'center', flexDirection:'row' }}>
                 
@@ -93,7 +105,7 @@ export class RoleView extends Component {
                         borderBottomRightRadius:0,
                         borderTopRightRadius:0,
                     }}
-                    opacity={this.state.showtown?1:0.4}
+                    opacity={this.state.showtown?1:0.6}
                     onPress = {()=>{ this.setState({ showtown:true }) }}
                 >
                     <Foundation name='shield'
@@ -104,18 +116,31 @@ export class RoleView extends Component {
                     vertical = {0.16}
                     horizontal = {1}
                     style = {{
-                        borderBottomLeftRadius:0,
-                        borderTopLeftRadius:0,
+                        borderRadius:0
                     }}
-                    opacity={this.state.showtown?0.4:1}
+                    opacity={this.state.showtown?0.6:1}
                     onPress = {()=>{ this.setState({ showtown:false }) }}
                 >
                     <Foundation name='skull'
                         style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
                 </CustomButton>
+
+                <CustomButton
+                    vertical = {0.16}
+                    horizontal = {1}
+                    style = {{
+                        borderBottomLeftRadius:0,
+                        borderTopLeftRadius:0,
+                    }}
+                    opacity={this.state.showpool?1:0.6}
+                    onPress = {()=>{ this.setState({ showpool:!this.state.showpool }) }}
+                >
+                    <Foundation name='star'
+                        style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                </CustomButton>
             </View>
 
-            <View style = {{height:this.height/2}}>
+            <View>
                 <FlatList
                     data={this.state.showtown?this.state.townlist:this.state.mafialist}
                     renderItem={({item}) => this._renderItem(item)}
@@ -124,6 +149,84 @@ export class RoleView extends Component {
                     numColumns={2}
                     keyExtractor={item => item.key}/>
             </View>
+
+            <View style = {{ position:'absolute', width:this.width*0.14, right:0, top:0, bottom:0}}>
+                
+                <View style = {{flex:0.03}}/>
+
+                <CustomButton
+                    vertical = {0.11}
+                    horizontal = {1}
+                    margin = {10}
+                    style = {{
+                        borderBottomRightRadius:0,
+                        borderTopRightRadius:0,
+                    }}
+                    opacity={this.state.info?1:0.6}
+                    onPress = {()=> this.setState({ info:true })}
+                >
+                    <Foundation name='info'
+                        style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                </CustomButton>
+
+                <View style = {{flex:0.03}}/>
+
+                <CustomButton
+                        vertical = {0.11}
+                        horizontal = {1}
+                        margin = {10}
+                        style = {{
+                            borderBottomRightRadius:0,
+                            borderTopRightRadius:0,
+                        }}
+                        opacity={!this.state.info && this.state.change?1:0.6}
+                        onPress = {()=> this.setState({ info:false, change:true }) }
+                    >
+                        <FontAwesome name='plus'
+                            style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                </CustomButton>
+
+                <CustomButton
+                    vertical = {0.11}
+                    horizontal = {1}
+                    margin = {10}
+                    style = {{
+                        borderBottomRightRadius:0,
+                        borderTopRightRadius:0,
+                    }}
+                    opacity={!this.state.info && !this.state.change?1:0.6}
+                    onPress = {()=> this.setState({ info:false, change:false }) }
+                >
+                    <FontAwesome name='minus'
+                        style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                </CustomButton>
+                
+                <View style = {{flex:0.05}}/>
+
+                <CustomButton
+                    vertical = {0.11}
+                    horizontal = {1}
+                    margin = {10}
+                    style = {{
+                        borderBottomRightRadius:0,
+                        borderTopRightRadius:0,
+                    }}
+                    opacity={this.state.desc?1:0.6}
+                    onPress = {()=> this.setState({ desc:false }) }
+                    disabled = {!this.state.desc}
+                >
+                    <FontAwesome name='eye-slash'
+                        style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                </CustomButton>
+
+            </View>
+            
+            <Modal visible = {this.state.desc} flex = {0.3} style = {{bottom:10}}>
+                <Desc
+                    roleid = {this.state.roleid}
+                    close = {() => this.setState({desc:false})}
+                />
+            </Modal>
 
         </View>
 

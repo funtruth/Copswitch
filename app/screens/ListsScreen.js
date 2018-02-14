@@ -20,7 +20,6 @@ import { CustomButton } from '../components/CustomButton.js';
 import { Slide } from '../parents/Slide.js';
 import { Header } from '../components/Header.js';
 import { Pager } from '../components/Pager.js';
-import { Desc } from '../components/Desc.js';
 import { RoleView } from '../components/RoleView.js';
 
 import { StackNavigator } from 'react-navigation';
@@ -91,26 +90,11 @@ export class Roles extends Component {
 
     constructor(props) {
         super(props);
-
-        this.state = {
-            roleid: 'A',
-            descVisible:false
-        }
-    }
-
-    _roleBtnPress(key) {
-        this.setState({roleid:key, descVisible:true})
     }
 
     render(){
-        return <View>
-            <RoleView rolepress = {(key)=> this._roleBtnPress(key)}/>
-            
-            <Desc
-                roleid = {this.state.roleid}
-                visible = {this.state.descVisible}
-                onClose = {val => this.setState({descVisible:val})}
-            />
+        return <View style = {{flex:1}}>
+            <RoleView/>
         </View>
     }
 }

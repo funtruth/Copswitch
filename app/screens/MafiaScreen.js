@@ -32,7 +32,6 @@ const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
-import { Status } from '../components/Status';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;

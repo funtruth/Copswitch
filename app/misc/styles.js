@@ -42,34 +42,27 @@ export default styles = StyleSheet.create({
         margin:4,
     },
     descFont: {
-        fontFamily:'ConcertOne-Regular',
+        fontFamily:'FredokaOne-Regular',
         fontSize: 18,
         color: colors.font,
         alignSelf:'center',
         lineHeight: 20
     },
-    centeredBtn: {
-        fontFamily:'FredokaOne-Regular',
-        fontSize: 18,
-        color: colors.font,
-        alignSelf:'center',
-    },
-    centeredBtnPressed: {
-        fontFamily:'FredokaOne-Regular',
-        fontSize: 18,
-        color: colors.font,
-        alignSelf:'center',
-    },
     flatListBtn : {
-        fontFamily:'ConcertOne-Regular',
+        fontFamily:'FredokaOne-Regular',
         fontSize: 25,
         color: colors.font,
         alignSelf:'center',
         marginTop:10,
         marginBottom:10
     },
+    title: {
+        fontFamily:'LuckiestGuy-Regular',
+        fontSize: 25,
+        color: colors.striker,
+    },
     titleFont: {
-        fontFamily:'ConcertOne-Regular',
+        fontFamily:'LuckiestGuy-Regular',
         fontSize: 25,
         color: colors.main,
     },
@@ -105,7 +98,7 @@ export default styles = StyleSheet.create({
     },
     link: {
         color:colors.font,
-        fontFamily: 'ConcertOne-Regular',
+        fontFamily: 'FredokaOne-Regular',
         fontSize:17,
         lineHeight: 25,
         alignSelf:'center',
@@ -126,13 +119,6 @@ export default styles = StyleSheet.create({
         alignSelf:'center',
         color:colors.font,
         margin:4,
-    },
-    pagerButton: {
-        fontSize: 15,
-        fontFamily: 'FredokaOne-Regular',
-        color: colors.shadow,
-        marginTop:5,
-        marginBottom:5,
     },
     choiceButton: {
         fontFamily:'FredokaOne-Regular',
@@ -158,7 +144,7 @@ export default styles = StyleSheet.create({
     },
     hidden: {
         fontSize: 15,
-        fontFamily: 'ConcertOne-Regular',
+        fontFamily: 'FredokaOne-Regular',
         textAlign:'center',
         color: colors.gameback,
         marginLeft: 40,
@@ -262,7 +248,7 @@ export default styles = StyleSheet.create({
     },
     lfont: {
         fontSize:17,
-        fontFamily:'FredokaOne-Regular',
+        fontFamily:'LuckiestGuy-Regular',
         color:colors.font,
     },
     counterfont: {
