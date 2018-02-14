@@ -1,26 +1,8 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
 
-export class CustomButton extends React.Component {
+export class Button extends React.Component {
 
-/*
-This button is specifically designed for more customization
-
-USED IN:
-HOME SCREEN wifi button
-*/
-
-
-/*DEPRECATED: LOCATIONS
-
-Alert
-Console
-Pager
-
-ListsScreen
-LobbyScreen
-
-*/
 constructor(props) {
     super(props);
 
@@ -71,7 +53,7 @@ render() {
                 marginTop:6-this.state.depth,
                 flex:this.props.horizontal,
                 backgroundColor: this.props.backgroundColor || colors.dead,
-                borderRadius:15
+                borderRadius:15,
             },
                 this.props.style
             ]}>

@@ -3,7 +3,7 @@ import { View, Text, Dimensions } from 'react-native';
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
-import { CustomButton } from './CustomButton';
+import { Button } from './Button';
 
 export class Pager extends React.Component {
 
@@ -30,24 +30,24 @@ render() {
     return ( 
         <View style = {{position:'absolute', bottom:0, left:0, right:0, height:this.height*0.1, flexDirection:'row'}}>
             <View style = {{width:this.width*0.25}}>
-                {this.firstpage?null:<CustomButton
+                {this.firstpage?null:<Button
                     size = {1}
                     flex = {0.8}
                     backgroundColor = {colors.font}
                     onPress = {this.props.goBack}
                 ><Text style = {styles.pagerButton}>Prev</Text>
-                </CustomButton>}
+                </Button>}
             </View>
 
             <View style = {{width:this.width*0.25}}>
-                {this.lastpage?null:<CustomButton
+                {this.lastpage?null:<Button
                     size = {1}
                     flex = {0.8}
                     backgroundColor = {colors.font}
                     onPress = {this.props.goForward}
                     disabled = {this.forwardDisabled}
                 ><Text style = {styles.pagerButton}>Next</Text>
-                </CustomButton>}
+                </Button>}
             </View>
         </View>
     )

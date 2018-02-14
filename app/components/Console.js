@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { View, Text, Animated, Dimensions } from 'react-native';
 
 import colors from '../misc/colors.js';
-import { CustomButton } from './CustomButton';
+import { Button } from './Button';
 
 const FADEOUT_ANIM = 200;
 const BLINK_ANIM = 50;
@@ -178,13 +178,13 @@ render() {
                 }), 
                 opacity:this.state.optionOneOpacity, 
                 justifyContent:'center', alignItems:'center'}}>
-                <CustomButton
+                <Button
                     size = {0.8}
                     flex = {0.8}
                     backgroundColor = {colors.shadow}
                     onPress = {()=> this.optionOne() }
                 ><Text style = {styles.choiceButton}>{this.props.okay}</Text>
-                </CustomButton>
+                </Button>
             </Animated.View>
 
             <Animated.View style = {{
@@ -195,13 +195,13 @@ render() {
                 }),  
                 opacity:this.state.optionTwoOpacity, 
                 justifyContent:'center', alignItems:'center'}}>
-                <CustomButton
+                <Button
                     size = {0.8}
                     flex = {0.8}
                     backgroundColor = {colors.shadow}
                     onPress = {()=>this.optionTwo()}
                     ><Text style = {styles.choiceButton}>{this.props.cancel}</Text>
-                </CustomButton>
+                </Button>
             </Animated.View>
 
             <Animated.View style = {{
@@ -212,13 +212,13 @@ render() {
                 }), 
                 opacity:this.state.backOpacity, 
                 alignItems:'center'}}>
-                <CustomButton
+                <Button
                     size = {0.8}
                     flex = {0.8}
                     backgroundColor = {colors.shadow}
                     onPress = {()=>this.optionBack()}
                     ><Text style = {styles.choiceButton}>CANCEL</Text>
-                </CustomButton>
+                </Button>
             </Animated.View>
 
         </Animated.View>

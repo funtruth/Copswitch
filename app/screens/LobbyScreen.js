@@ -24,7 +24,7 @@ import * as Animatable from 'react-native-animatable';
 
 import { RoleView } from '../components/RoleView.js';
 
-import { CustomButton } from '../components/CustomButton.js';
+import { Button } from '../components/Button.js';
 import { Alert } from '../components/Alert.js';
 import { Slide } from '../parents/Slide.js';
 
@@ -85,12 +85,12 @@ export class Build1 extends Component {
 
         return <View>
 
-            <CustomButton
+            <Button
                 horizontal={0.4}
                 onPress={()=>this._createRoom()}
             >
                 <Text style = {styles.create}>Create Room</Text>
-            </CustomButton>
+            </Button>
 
         </View>
     }
@@ -213,7 +213,8 @@ export class Lobby extends Component {
             if(snap.exists()){
                 if(snap.val() == 2){
 
-                    AsyncStorage.setItem('GAME-KEY',this.state.roomname);
+                    //TODO set up real game starting
+                    //AsyncStorage.setItem('GAME-KEY',this.state.roomname);
                     this._transition(true);
 
                 } else if(snap.val == 3){
@@ -269,50 +270,55 @@ export class Lobby extends Component {
             this.ownerRef.off();
         }
     }
-
-    _startCheck() {
-        this.counterRef.update(2).then(()=>{
-
-        })
-    }
-
+    
     _startGame() {
-        this._handOutRoles().then(val=>{
-
-            alert(val)
-            this.counterRef.set(3).then(()=>{
-                this.props.screenProps.navigateP('Mafia',this.state.roomname)
-            })
-
-        })
+        this._handOutRoles()
+        
+        /*this.counterRef.set(3).then(()=>{
+            this.props.screenProps.navigateP('Mafia',this.state.roomname)
+        })*/
     }
 
     _handOutRoles() {
         
-        var randomstring = '';
 
-        this.rolesRef.once('value',snap=>{
+        this.roomRef.once('value',snap=>{
 
-            snap.forEach((child)=>{
+            var randomstring = '';
+            snap.child('roles').forEach((child)=>{
                 for(i=0;i<child.val();i++){
                     randomstring += randomize('?', 1, {chars: child.key})
                 }
             })
 
-            var max = randomstring.length - 1
+            if(snap.child('lobby').numChildren() != randomstring.length){
+
+                alert('break')
+            
+            } else {
+                var rnumber = 0
+
+                var count = 0
+                var listshot = []
+                snap.child('lobby').forEach((child)=>{
+                    listshot.push({
+                        name: child.val().name,
+                        uid: child.key
+                    })
+                    count++
+                })
+
+                for(i=0;i<count;i++){
+                    rnumber = Math.floor(Math.random() * randomstring.length);
+                    listshot[i].roleid = randomstring.charAt(rnumber)
+                    randomstring = randomstring.slice(0,rnumber) + randomstring.slice(rnumber+1)
+                }
     
-            for(i=0;i<this.namelist.length;i++){
-                var randomnumber = Math.floor(Math.random() * (max + 1));
-                this.namelist[roleid] = randomstring.charAt(randomnumber-1)
-                randomstring = randomstring.slice(0,randomnumber-1) + randomstring.slice(randomnumber);
-                max--
+                this.roomRef.child('list').set(listshot)
             }
 
-            this.roomRef.child('list').set(this.namelist)
-
-            return true
-
         })
+
     }
 
     _leaveRoom() {
@@ -327,9 +333,9 @@ export class Lobby extends Component {
         }
     }
 
-    _rolePress(key){
+    _rolePress(key,change){
         this.rolesRef.child(key).transaction(count=>{
-            return count+1
+            return change?count+1:count-1
         })
     }
 
@@ -354,7 +360,7 @@ export class Lobby extends Component {
                 </Alert>
 
                 <Alert visible = {this.state.showroles} flex={0.6}>
-                    <RoleView rolepress = {(key)=>this._rolePress(key)}/>
+                    <RoleView rolepress = {(key,change)=>this._rolePress(key,change)}/>
                 </Alert>
             </View>
 

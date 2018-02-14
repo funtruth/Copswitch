@@ -16,7 +16,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Foundation from 'react-native-vector-icons/Foundation';
-import { CustomButton } from '../components/CustomButton.js';
+import { Button } from '../components/Button.js';
 import { Slide } from '../parents/Slide.js';
 import { Header } from '../components/Header.js';
 import { Pager } from '../components/Pager.js';
@@ -56,31 +56,31 @@ class General extends Component {
     render(){
         return <View>
 
-            <CustomButton
+            <Button
                 horizontal = {0.4}
                 margin = {10}
                 onPress = {()=>
                     this.props.navigation.navigate('Roles')
                 }
                 ><Text style = {styles.listfont}>Roles</Text>
-            </CustomButton>
+            </Button>
                 
-            <CustomButton
+            <Button
                 horizontal = {0.4}
                 margin = {10}
                 onPress = {()=>
                     this.props.navigation.navigate('Menu',{menu:'rules'}) 
                 }
                 ><Text style = {styles.listfont}>Rulebook</Text>
-            </CustomButton>
+            </Button>
 
-            <CustomButton
+            <Button
                 horizontal = {0.4}
                 onPress = {()=>{ 
                     this.props.navigation.navigate('InfoPage',{section:'about'})
                 }}
                 ><Text style = {styles.listfont}>About</Text>
-            </CustomButton>
+            </Button>
             
         </View>
     }
@@ -133,14 +133,14 @@ class Menu extends Component {
     }
 
     _renderMenuButton(item) {
-        return <CustomButton
+        return <Button
             horizontal = {0.4}
             margin = {10}
             onPress = {()=>{item.type==1?
                 this.props.navigation.navigate('Menu',{menu:item.route}) 
                 :this.props.navigation.navigate('InfoPage',{section:item.route}) 
             }}><Text numberOfLines={1} style = {styles.listfont}>{item.desc}</Text>
-        </CustomButton>
+        </Button>
         
     }
 
@@ -190,10 +190,10 @@ class InfoPage extends Component {
                 <Text style = {styles.comment}>{item.desc}</Text>
             </View>
         } else if (item.type == 3){
-            return <View style = {styles.linkContainer}><CustomButton size = {0.15} backgroundColor = {colors.link}
+            return <View style = {styles.linkContainer}><Button size = {0.15} backgroundColor = {colors.link}
                 onPress = {()=>{this.props.navigation.navigate('InfoPage',{section:item.route})}}>
                 <Text style = {styles.link}>{item.desc}</Text>
-            </CustomButton></View>
+            </Button></View>
         }
     }
 
