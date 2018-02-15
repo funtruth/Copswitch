@@ -17,7 +17,6 @@ export class Helper extends React.Component {
     constructor(props) {
         super(props);
 
-        this.screen = 'Loading'
         this.radiusScale = new Animated.Value(5)
         
         this.width = Dimensions.get('window').width;
@@ -83,7 +82,6 @@ export class Helper extends React.Component {
                 this.navigation.navigate(screen)
             }
 
-            this.screen = screen
             console.log("Navigating Screens");
         },400)
 
@@ -127,7 +125,6 @@ export class Helper extends React.Component {
                 this.navigation.navigate(screen,{ roomname:param })
             }
 
-            this.screen = screen
         },400)
 
         setTimeout(()=>{

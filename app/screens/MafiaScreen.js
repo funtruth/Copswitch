@@ -21,6 +21,7 @@ import { Console } from '../components/Console.js';
 import { Rolecard } from '../components/Rolecard.js';
 import { Events } from '../components/Events.js';
 import { General } from '../components/General.js';
+import { InfoPage, Roles } from './ListsScreen.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -228,15 +229,12 @@ componentWillMount() {
     this.counterRef.on('value',snap=>{
         if(snap.exists()){
 
-            const phase = snap.val() % 3 + 1
+            const phase = snap.val() % 3
 
             this.setState({
                 counter: snap.val(),
                 phase:phase,
                 phasename: (Phases[phase]).name,
-                message: (Phases[phase]).message,
-                btn1: (Phases[phase]).btn1,
-                btn2: (Phases[phase]).btn2,
             })
                 
         }
@@ -665,17 +663,21 @@ _nameBtnPress(item){
     }
 }
 
-_optionOnePress() {
+_first() {
 
     this._buttonPress();
 
-    if (this.state.phase == 2){
+    if(this.state.phase == 1){
+        this.setState({section:'list'})
+    } else if (this.state.phase == 2){
         this.setState({message:'You voted INNOCENT.'})
         this.choiceRef.child(this.state.place).set(false).then(()=>{this.myReadyRef.set(true)})
+    } else if (this.state.phase == 0){
+        this.setState({section:'list'})
     }
 }
 
-_optionTwoPress() {
+_second() {
     
     this._buttonPress();
 
@@ -685,7 +687,7 @@ _optionTwoPress() {
     } else if (this.state.phase == 2){
         this.setState({message:'You voted GUILTY.'})
         this.choiceRef.child(this.state.place).set(true).then(()=>{this.myReadyRef.set(true)})
-    } else if (this.state.phase == 3){
+    } else if (this.state.phase == 0){
         this.setState({message:'You stayed home.'})
         this.choiceRef.child(this.state.place).set(-1).then(()=>{this.myReadyRef.set(true)})
     }
@@ -694,7 +696,6 @@ _optionTwoPress() {
 _resetOptionPress() {
 
     this._buttonPress();
-    this.setState({message:Phases[this.state.phase].message})
 
     if(this.state.phase == 1){
         this.choiceRef.child(this.state.place).set(null).then(()=>{this.myReadyRef.set(false)})
@@ -739,19 +740,12 @@ _viewCover(cover){
 }
 
 //TODO MOVE Playerlist to 'List.js' component to animate staggered
-_renderListComponent(){
-
-    return <View style = {{
-        position:'absolute', left:0, top:MARGIN*2, bottom:MARGIN*2, right:0,
-        borderRadius:5,
-    }}>
-        <FlatList
-            data={this.namelist}
-            renderItem={({item}) => (this._renderItem(item))}
-            keyExtractor={item => item.uid}
-        />
-    </View>
-    
+_renderList(){
+    return <FlatList
+        data={this.namelist}
+        renderItem={({item}) => (this._renderItem(item))}
+        keyExtractor={item => item.uid}
+    />
 }
 
 _renderItem(item){
@@ -777,70 +771,31 @@ _renderItem(item){
     </TouchableOpacity>
 }
 
-//background info
-//TODO turn into component
-_renderInfo(section){
-    if(section == 'Role'){
-        return <Rolecard
-            roleid={this.state.myroleid}
-            amimafia={this.state.amimafia}
-            mafialist={this.state.mafialist}
-        />
-    } else if (section == 'Notes'){
-        return <Events
-            msglist={this.state.msglist}
-            notlist={this.notlist}
-        />
-    } else if (section == 'News') {
-        return <General
-            gmsglist={this.state.gmsglist}
-        />
-    } else if (section == 'Menu') {
-        return null
-    } else if (section) {
-        return null
-    }
-}
+_renderWaiting(){
+    return <View>
 
-
-_renderWaiting(flex){
-    return <View style = {{flex:flex, justifyContent:'center'}}>
         <View style = {{
-            position:'absolute', left:this.width*0.04, height:this.height*0.04, width:this.width*0.15,
             borderRadius:15,
             backgroundColor:colors.progressd, justifyContent:'center', alignItems:'center'
         }}> 
             <Text style = {styles.plainfont}>6/10</Text>
         </View>
         
-        <View style = {{
-            position:'absolute', right:this.width*0.04, height:this.height*0.02, width:this.width*0.7,
-            borderRadius:10,
-            backgroundColor:colors.progressd
-        }}>
-            <View style = {{
-                position:'absolute', left:0,
-                height:this.height*0.02, width:this.width*0.5*5/7,
-                borderRadius:10,
-                backgroundColor:colors.progressbar
-            }}/>
-        </View>
     </View>
 }
 
 _renderNav(){
-    return <View style = {{position:'absolute',bottom:MARGIN,left:0,right:0,
-        height:this.height*0.1, flexDirection:'row', justifyContent:'center'}}>
+    return <Animated.View style = {{flex:0.1, flexDirection:'row', justifyContent:'center'}}>
 
         <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15, bottom:MARGIN/2}}
-            onPress = {()=>this.setState({ section:'Role'}) }>
+            onPress = {()=>this.setState({ section:'role'}) }>
             <FontAwesome name='user'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
             <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Role</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.17, bottom:MARGIN/2}}
-            onPress = {()=>this.setState({ section:'News'}) }>
+            onPress = {()=>this.setState({ section:'news'}) }>
             <FontAwesome name='globe'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
             <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>News</Text>
@@ -853,48 +808,72 @@ _renderNav(){
         </TouchableOpacity>
 
         <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.17, bottom:MARGIN/2}}
-            onPress = {()=>this.setState({ section:'Notes'}) }>
+            onPress = {()=>this.setState({ section:'notes'}) }>
             <MaterialIcons name='notifications'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
             <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Notes</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15, bottom:MARGIN/2}}
-            onPress = {()=>this.setState({ section:'Menu' }) }>
+            onPress = {()=>this.setState({ section:'menu' }) }>
             <FontAwesome name='book'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
             <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Menu</Text>
         </TouchableOpacity>
-    </View>
+    </Animated.View>
 }
 
 /*<Image source = {require('../../assets/images/night.png')} 
 style = {{flex:1, alignSelf:'stretch', width:null}}>*/
 render() {
 
-return <View style = {{flex:1,backgroundColor:colors.gameback}}>
-    <View style = {{flex:1,backgroundColor:'rgba(0, 0, 0, 0.3)',alignItems:'center'}}>
+return <View style = {{flex:1, justifyContent:'center'}}>
 
-        {this._renderInfo(this.state.section)}
+        <Alert flex = {0.1} visible = {this.state.section == 'role'}>
+            <Rolecard
+                roleid={this.state.myroleid}
+                amimafia={this.state.amimafia}
+                mafialist={this.state.mafialist}
+            />
+        </Alert>
+
+        <Alert flex = {0.3} visible = {this.state.section == 'news'}>
+            <Events
+                msglist={this.state.msglist}
+                notlist={this.notlist}
+            />
+        </Alert>
+
+        <Alert flex = {0.3} visible = {!this.state.section}>
+            <Console
+                title = {(this.state.phase == 1 || this.state.phase == 3)?
+                    this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
+                    :this.state.phasename}
+                phase = {this.state.phase}
+                first = {() => this._first()}
+                second = {() => this._second()}
+            />
+        </Alert>
+
+        <Alert flex = {0.5} visible = {this.state.section == 'list'}>
+            {this._renderList()}
+        </Alert>
+
+        <Alert flex = {0.2} visible = {this.state.section == 'ready'}>
+            {this._renderWaiting()}
+        </Alert>
+
+        <Alert flex = {0.5} visible = {this.state.section == 'notes'}>
+            <General
+                gmsglist={this.state.gmsglist}
+            />
+        </Alert>
+
+        <Alert flex = {0.5} visible = {this.state.section == 'menu'}>
+            <RuleBook />
+        </Alert>
+        
         {this._renderNav()}
-
-        <Console
-            title = {(this.state.phase == 1 || this.state.phase == 3)?
-                this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
-                :this.state.phasename}
-            section = {this.state.section}
-            phase = {this.state.phase}
-            okay = {this.state.btn1}
-            cancel = {this.state.btn2}
-            ready = {this.state.ready}
-            onOne = {() => this._optionOnePress()}
-            onTwo = {() => this._optionTwoPress()}
-            onBack = {() => this._resetOptionPress()}
-        >
-            {this._renderListComponent()}
-        </Console>
-
-    </View>
 
 </View>
 }

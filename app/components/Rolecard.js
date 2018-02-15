@@ -55,8 +55,7 @@ render() {
                     outputRange: [0, this.height*0.03, this.height*0.05],
                 })
             }],
-            position:'absolute', left:0, right:this.height*0.08, 
-            bottom:this.height*0.33, height:this.height*0.56 }}>
+        }}>
             <Text style = {styles.lfont}>YOU ARE A:</Text>
             <Text style = {styles.title}>{Rolesheet[this.props.roleid].name}</Text>
             <Text style = {styles.lfont}>AT NIGHT YOU:</Text>

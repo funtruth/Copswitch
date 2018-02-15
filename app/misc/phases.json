@@ -1,4 +1,11 @@
 {
+    "0" : {
+        "name" : "NIGHT",
+        "message" : "Visit another Player",
+        "btn1" : "VISIT",
+        "btn2" : "STAY HOME",
+        "continue" : -2
+    },
     "1" : {
         "name" : "DAY",
         "message" : "Choose an Option",
@@ -14,25 +21,6 @@
         "btn2" : "GUILTY",
         "continue" : -1,
         "trigger" : 1
-    },
-    "3" : {
-        "name" : "NIGHT",
-        "message" : "Visit another Player",
-        "btn1" : "VISIT",
-        "btn2" : "STAY HOME",
-        "continue" : -2
-    },
-    "6" : {
-        "name" : "TOWN WIN",
-        "message" : null,
-        "btn1" : "PLAY AGAIN",
-        "btn2" : "QUIT",
-    },
-    "7" : {
-        "name" : "MAFIA WIN",
-        "message" : null,
-        "btn1" : "PLAY AGAIN",
-        "btn2" : "QUIT",
     }
   }
   

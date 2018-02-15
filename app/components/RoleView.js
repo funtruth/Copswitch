@@ -87,7 +87,7 @@ export class RoleView extends Component {
 
     _renderItem(item){
         return <Button
-            vertical = {0.35}
+            flex = {0.35}
             horizontal = {0.9}
             margin = {10}
             onPress = {() => this._rolePress(item.key)}
@@ -101,7 +101,7 @@ export class RoleView extends Component {
             <View style = {{ marginBottom:10, justifyContent:'center', flexDirection:'row' }}>
                 
                 <Button
-                    vertical = {0.16}
+                    flex = {0.16}
                     horizontal = {1}
                     style = {{
                         borderBottomRightRadius:0,
@@ -115,7 +115,7 @@ export class RoleView extends Component {
                 </Button>
                 
                 <Button
-                    vertical = {0.16}
+                    flex = {0.16}
                     horizontal = {1}
                     style = {{
                         borderRadius:0
@@ -128,7 +128,7 @@ export class RoleView extends Component {
                 </Button>
 
                 <Button
-                    vertical = {0.16}
+                    flex = {0.16}
                     horizontal = {1}
                     style = {{
                         borderBottomLeftRadius:0,
@@ -146,18 +146,18 @@ export class RoleView extends Component {
                 <FlatList
                     data={this.state.showtown?this.state.townlist:this.state.mafialist}
                     renderItem={({item}) => this._renderItem(item)}
-                    showsVerticalScrollIndicator = {false}
+                    showsflexScrollIndicator = {false}
                     columnWrapperStyle = {{alignSelf:'center'}}
                     numColumns={2}
                     keyExtractor={item => item.key}/>
             </View>
 
-            <View style = {{ position:'absolute', width:this.width*0.14, right:0, top:0, bottom:0}}>
+            <View style = {{ position:'absolute', width:this.width*0.14, right:0, top:0, bottom:0 ,
+                justifyContent:'center'}}>
                 
-                <View style = {{flex:0.03}}/>
 
                 <Button
-                    vertical = {0.11}
+                    flex = {0.14}
                     horizontal = {1}
                     margin = {10}
                     style = {{
@@ -174,7 +174,7 @@ export class RoleView extends Component {
                 <View style = {{flex:0.03}}/>
 
                 <Button
-                        vertical = {0.11}
+                        flex = {0.14}
                         horizontal = {1}
                         margin = {10}
                         style = {{
@@ -189,7 +189,7 @@ export class RoleView extends Component {
                 </Button>
 
                 <Button
-                    vertical = {0.11}
+                    flex = {0.14}
                     horizontal = {1}
                     margin = {10}
                     style = {{
@@ -203,10 +203,10 @@ export class RoleView extends Component {
                         style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
                 </Button>
                 
-                <View style = {{flex:0.05}}/>
+                <View style = {{flex:0.03}}/>
 
                 <Button
-                    vertical = {0.11}
+                    flex = {0.14}
                     horizontal = {1}
                     margin = {10}
                     style = {{
@@ -223,7 +223,7 @@ export class RoleView extends Component {
 
             </View>
             
-            <Modal visible = {this.state.desc} flex = {0.3} style = {{bottom:10}}>
+            <Modal visible = {this.state.desc} flex = {0.2} style = {{bottom:10}}>
                 <Desc
                     roleid = {this.state.roleid}
                     close = {() => this.setState({desc:false})}

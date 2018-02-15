@@ -158,7 +158,7 @@ class Menu extends Component {
     }
 }
 
-class InfoPage extends Component {
+export class InfoPage extends Component {
     
     constructor(props) {
         super(props);

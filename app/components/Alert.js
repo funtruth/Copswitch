@@ -44,11 +44,11 @@ render() {
         <Animated.View style = {{
             justifyContent:'center',
             opacity:this.nav.interpolate({
-                inputRange:[0,0.5,1],
+                inputRange:[0,0.7,1],
                 outputRange:[0,0,1]
             }),
             height:this.nav.interpolate({
-                inputRange:[0,0.5,1],
+                inputRange:[0,0.7,1],
                 outputRange:[0,this.height*this.props.flex,this.height*this.props.flex]
             }),
             width:this.width

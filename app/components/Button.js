@@ -43,7 +43,7 @@ render() {
 
     return (
         <View style = {{
-            flex:this.props.vertical,
+            flex:this.props.flex,
             opacity:this.props.opacity,
             flexDirection:'row',
             justifyContent:'center',

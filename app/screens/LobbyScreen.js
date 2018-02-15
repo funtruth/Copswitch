@@ -51,9 +51,8 @@ export class Build1 extends Component {
 
     _createRoom() {
 
-        AsyncStorage.setItem('ROOM-KEY', this.state.roomname).then(()=>{
-            this.props.navigate(this.state.roomname)
-        })
+        AsyncStorage.setItem('ROOM-KEY', this.state.roomname)
+        .then(()=>{ this.props.navigate(this.state.roomname) })
     }
 
     componentWillReceiveProps(newProps){
@@ -75,7 +74,7 @@ export class Build1 extends Component {
                 
                 firebase.database().ref('rooms/').child(roomname).set({
                     owner: firebase.auth().currentUser.uid,
-                    counter:1,
+                    counter:0,
                 })
             }) 
         }
@@ -114,7 +113,7 @@ export class Join1 extends Component {
     _continue(roomname) {
         if(roomname.length==4){
             firebase.database().ref('rooms/' + roomname).once('value', snap => {
-                if(snap.exists() && (snap.val().counter == 1)){
+                if(snap.exists() && (snap.val().counter == 0)){
                     this._joinRoom(roomname)
                 } else if (snap.exists() && (snap.val().counter > 0)) {
                     setTimeout(()=>{
@@ -210,17 +209,8 @@ export class Lobby extends Component {
     
     componentWillMount() {
         this.counterRef.on('value',snap=>{
-            if(snap.exists()){
-                if(snap.val() == 2){
-
-                    //TODO set up real game starting
-                    //AsyncStorage.setItem('GAME-KEY',this.state.roomname);
-                    this._transition(true);
-
-                } else if(snap.val == 3){
-
-                    this.props.screenProps.navigate('Mafia',this.state.roomname)
-                }
+            if(snap.exists() && snap.val() == 1){
+                this.props.screenProps.navigateP('Mafia',this.state.roomname)
             }
         })
 
@@ -272,15 +262,6 @@ export class Lobby extends Component {
     }
     
     _startGame() {
-        this._handOutRoles()
-        
-        /*this.counterRef.set(3).then(()=>{
-            this.props.screenProps.navigateP('Mafia',this.state.roomname)
-        })*/
-    }
-
-    _handOutRoles() {
-        
 
         this.roomRef.once('value',snap=>{
 
@@ -293,7 +274,14 @@ export class Lobby extends Component {
 
             if(snap.child('lobby').numChildren() != randomstring.length){
 
-                alert('break')
+                this.setState(prevState => ({
+                    namelist: [{
+                        name: 'Error: ',
+                        message: 'Improper set-up',
+                        key:this.mcount
+                    }, ...prevState.namelist]
+                }))
+                this.mcount++
             
             } else {
                 var rnumber = 0
@@ -314,7 +302,10 @@ export class Lobby extends Component {
                     randomstring = randomstring.slice(0,rnumber) + randomstring.slice(rnumber+1)
                 }
     
-                this.roomRef.child('list').set(listshot)
+                this.roomRef.child('list').set(listshot).then(()=>{
+                    this.counterRef.set(1)
+                })
+
             }
 
         })
@@ -322,15 +313,17 @@ export class Lobby extends Component {
     }
 
     _leaveRoom() {
-        if(this.state.owner){
-            this.roomRef.remove().then(()=>{
-                this.props.screenProps.navigate('Home')
-            })
-        } else {
-            this.myInfoRef.remove().then(()=>{
-                this.props.screenProps.navigate('Home')
-            })
-        }
+        AsyncStorage.removeItem('ROOM-KEY').then(()=>{
+            if(this.state.owner){
+                this.roomRef.remove().then(()=>{
+                    this.props.screenProps.navigate('Home')
+                })
+            } else {
+                this.myInfoRef.remove().then(()=>{
+                    this.props.screenProps.navigate('Home')
+                })
+            }
+        })
     }
 
     _rolePress(key,change){
@@ -359,7 +352,7 @@ export class Lobby extends Component {
                     <Players list = {this.state.namelist}/>
                 </Alert>
 
-                <Alert visible = {this.state.showroles} flex={0.6}>
+                <Alert visible = {this.state.showroles} flex={0.5}>
                     <RoleView rolepress = {(key,change)=>this._rolePress(key,change)}/>
                 </Alert>
             </View>

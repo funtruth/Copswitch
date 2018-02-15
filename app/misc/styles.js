@@ -122,7 +122,7 @@ export default styles = StyleSheet.create({
     },
     choiceButton: {
         fontFamily:'FredokaOne-Regular',
-        color: colors.font,
+        color: colors.shadow,
         fontSize: 17,
         alignSelf: 'center',
     },

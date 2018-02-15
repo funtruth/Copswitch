@@ -11,17 +11,9 @@ import {
     TouchableOpacity
 }   from 'react-native';
 
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
-
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import randomize from 'randomatic';
-
-const QUICK_ANIM    = 400;
-const MED_ANIM      = 600;
-const SLOW_ANIM     = 1000;
-
-const MARGIN = 10;
 
 import { Alert } from '../components/Alert.js';
 import { Join1, Build1 } from './LobbyScreen.js';
@@ -40,17 +32,11 @@ export class Home extends React.Component {
         super(props);
         
         this.state = {
-            nav: new Animated.Value(1),
             wiggle: new Animated.Value(0),
 
-            crea: false,
-            join: false,
-            menu: false,
+            section: null,
         }
 
-        this.width = Dimensions.get('window').width
-        this.height = Dimensions.get('window').height
-        
     }
 
     _bounce(){
@@ -64,43 +50,16 @@ export class Home extends React.Component {
         Animated.loop(animation).start()
     }
 
-    _stop(){
-        const animation = Animated.timing(
-            this.state.wiggle, {
-                toValue:1,
-                duration:5000
-            }
-        )
-        
-        Animated.loop(animation).stop()
-    }
-
-    _navPress(crea,join,menu){
-        this.setState({
-            crea:crea?!this.state.crea:false,
-            join:join?!this.state.join:false,
-            menu:menu?!this.state.menu:false,
-        })
-    }
-
-    componentWillMount(){
-        //this._bounce()
+    _navPress(section){
+        this.setState({ section:section })
     }
 
     _renderNav(){
-        return <Animated.View style = {{
-            transform: [{
-                scale:this.state.wiggle.interpolate({
-                    inputRange: [0,0.5,1],
-                    outputRange: [1,1.05,1]
-                })
-            }],
-            height:this.height*0.1, flexDirection:'row', justifyContent:'center'
-        }}>
+        return <Animated.View style = {{ flex:0.1, flexDirection:'row', justifyContent:'center' }}>
     
             <TouchableOpacity style = {{
                 justifyContent:'center', alignItems:'center', flex:0.2}}
-                onPress = {()=> this._navPress(true,false,false) }>
+                onPress = {()=> this._navPress('crea') }>
                 <FontAwesome name='cloud'
                     style={{color:colors.font,fontSize:30,textAlign:'center'}}/>
                 <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Create</Text>
@@ -108,7 +67,7 @@ export class Home extends React.Component {
     
             <TouchableOpacity style = {{
                 justifyContent:'center', alignItems:'center', flex:0.25}}
-                onPress = {()=> this._navPress(false,true,false) }>
+                onPress = {()=> this._navPress('join') }>
                 <FontAwesome name='key'
                     style={{color:colors.font,fontSize:40,textAlign:'center'}}/>
                 <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Join</Text>
@@ -116,7 +75,7 @@ export class Home extends React.Component {
     
             <TouchableOpacity style = {{
                 justifyContent:'center', alignItems:'center', flex:0.2}}
-                onPress = {()=> this._navPress(false,false,true) }>
+                onPress = {()=> this._navPress('menu') }>
                 <FontAwesome name='book'
                     style={{color:colors.font,fontSize:30,textAlign:'center'}}/>
                 <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Menu</Text>
@@ -127,19 +86,18 @@ export class Home extends React.Component {
 
     render() {
 
-        return <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
-            justifyContent:'center', alignItems:'center'}}>
+        return <View style = {{flex:1, justifyContent:'center', alignItems:'center'}}>
 
-            <Alert flex = {0.1} visible = {this.state.crea}>
-                <Build1 visible = {this.state.crea}
+            <Alert flex = {0.1} visible = {this.state.section == 'crea'}>
+                <Build1 visible = {this.state.section == 'crea'}
                     navigate = {(val)=> this.props.screenProps.navigateP('Lobby',val)}/>
             </Alert>
 
-            <Alert flex = {0.3} visible = {this.state.join}>
+            <Alert flex = {0.3} visible = {this.state.section == 'join'}>
                 <Join1 navigate = {(val)=> this.props.screenProps.navigateP('Lobby',val)}/>
             </Alert>
 
-            <Alert flex = {0.6} visible = {this.state.menu}>
+            <Alert flex = {0.5} visible = {this.state.section == 'menu'}>
                 <RuleBook />
             </Alert>
             
@@ -155,20 +113,34 @@ export class Loading extends React.Component {
         super(props);
     }
 
+    reset(){
+        AsyncStorage.removeItem('GAME-KEY')
+        AsyncStorage.removeItem('ROOM-KEY')
+    }
+
     componentWillMount() {
+
+        if(!firebase.auth().currentUser){
+            firebase.auth().signInAnonymously()
+        }
+
+        //this.reset()
+
         this.props.screenProps.passNavigation(this.props.navigation)
 
         AsyncStorage.getItem('GAME-KEY',(error,result)=>{
+
             if(result != null){
                 this.props.screenProps.navigateP('Mafia',result)
             } else {
-                if(firebase.auth().currentUser){
-                    this.props.screenProps.navigate('Home')
-                } else {
-                    firebase.auth().signInAnonymously().then(() => {
+                AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+                    if(result != null){
+                        this.props.screenProps.navigateP('Lobby',result)
+                    } else {
                         this.props.screenProps.navigate('Home')
-                    }).catch(function(error){alert(error)})
-                }
+                    }
+                })
+                    
             }
         })
     }
