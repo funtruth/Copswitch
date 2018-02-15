@@ -48,6 +48,7 @@ render() {
 
     return (
         <Animated.View style = {{ 
+            justifyContent:'center',
             opacity: this.state.opacity,
             transform: [{
                 translateX: this.state.opacity.interpolate({
@@ -55,6 +56,7 @@ render() {
                     outputRange: [0, this.height*0.03, this.height*0.05],
                 })
             }],
+            width: this.width*0.7
         }}>
             <Text style = {styles.lfont}>YOU ARE A:</Text>
             <Text style = {styles.title}>{Rolesheet[this.props.roleid].name}</Text>

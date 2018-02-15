@@ -37,6 +37,8 @@ export class Home extends React.Component {
             section: null,
         }
 
+        this.height = Dimensions.get('window').height
+
     }
 
     _bounce(){
@@ -55,7 +57,7 @@ export class Home extends React.Component {
     }
 
     _renderNav(){
-        return <Animated.View style = {{ flex:0.1, flexDirection:'row', justifyContent:'center' }}>
+        return <Animated.View style = {{ height:this.height*0.1, flexDirection:'row', justifyContent:'center' }}>
     
             <TouchableOpacity style = {{
                 justifyContent:'center', alignItems:'center', flex:0.2}}

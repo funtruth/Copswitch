@@ -17,11 +17,12 @@ import Rolesheet from '../misc/roles.json';
 import Screens from '../misc/screens.json';
 import Phases from '../misc/phases.json';
 
+import { Alert } from '../components/Alert.js';
 import { Console } from '../components/Console.js';
 import { Rolecard } from '../components/Rolecard.js';
 import { Events } from '../components/Events.js';
 import { General } from '../components/General.js';
-import { InfoPage, Roles } from './ListsScreen.js';
+import { RuleBook, InfoPage, Roles } from './ListsScreen.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -77,8 +78,6 @@ constructor(props) {
         amiowner:           false,
 
         nominate:           '',
-
-        radiusScale:        new Animated.Value(0.25),
         gameover:           false,
     };
     
@@ -111,16 +110,14 @@ componentWillMount() {
 
     this.myReadyRef.on('value',snap=>{
         if(snap.exists()){
-            
-            this._viewCover(false)
-            this.setState({ ready:snap.val() })
+
+            this.setState({ ready:snap.val(), section:snap.val()?'ready':null })
 
         } else {
 
-            this._viewCover(true)
-            this.setState({ ready:false })
+            this.setState({ ready:false, section:null })
 
-            //PERFORM ACTIONS HERE BEFORE SUBMITTING TRUE
+            //TODO PERFORM ACTIONS HERE BEFORE SUBMITTING TRUE
 
             setTimeout(()=>{
                 this.myReadyRef.once('value',snap=>{
@@ -714,6 +711,10 @@ _eNot(message){
     this.eNotRef.push(message)
 }
 
+_game(){
+    this.setState({section:this.state.ready?'ready':null})
+}
+
 //TODO Handling Game Ending
 _gameOver() {
     AsyncStorage.removeItem('ROOM-KEY');
@@ -728,15 +729,6 @@ _gameOver() {
     })
     
     this.props.screenProps.navigate('Home')
-}
-
-_viewCover(cover){
-    Animated.timing(
-        this.state.radiusScale, {
-            duration: FADEOUT_ANIM,
-            toValue: cover?5:0.25
-        }
-    ).start()
 }
 
 //TODO MOVE Playerlist to 'List.js' component to animate staggered
@@ -778,16 +770,17 @@ _renderWaiting(){
             borderRadius:15,
             backgroundColor:colors.progressd, justifyContent:'center', alignItems:'center'
         }}> 
-            <Text style = {styles.plainfont}>6/10</Text>
+            <Text style = {styles.plainfont}>{'/' + this.state.playernum}</Text>
         </View>
         
     </View>
 }
 
 _renderNav(){
-    return <Animated.View style = {{flex:0.1, flexDirection:'row', justifyContent:'center'}}>
+    return <Animated.View style = {{position:'absolute', bottom:0, left:0, right:0,
+        height:this.height*0.1, flexDirection:'row', justifyContent:'center'}}>
 
-        <TouchableOpacity style = {{justifyContent:'center', alignItems:'center', flex:0.15, bottom:MARGIN/2}}
+        <TouchableOpacity style = {{alignItems:'center', flex:0.15, bottom:MARGIN/2}}
             onPress = {()=>this.setState({ section:'role'}) }>
             <FontAwesome name='user'
                 style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
@@ -802,7 +795,7 @@ _renderNav(){
         </TouchableOpacity>
 
         <TouchableOpacity style = {{alignItems:'center',flex:0.2, bottom:0}}
-            onPress = {()=>this.setState({ section:null}) }>
+            onPress = {()=> this._game() }>
             <FontAwesome name='gamepad'
                 style={{color:colors.font,fontSize:40,textAlign:'center'}}/>
         </TouchableOpacity>
@@ -829,7 +822,7 @@ render() {
 
 return <View style = {{flex:1, justifyContent:'center'}}>
 
-        <Alert flex = {0.1} visible = {this.state.section == 'role'}>
+        <Alert flex = {0.4} visible = {this.state.section == 'role'}>
             <Rolecard
                 roleid={this.state.myroleid}
                 amimafia={this.state.amimafia}
@@ -837,14 +830,14 @@ return <View style = {{flex:1, justifyContent:'center'}}>
             />
         </Alert>
 
-        <Alert flex = {0.3} visible = {this.state.section == 'news'}>
+        <Alert flex = {0.5} visible = {this.state.section == 'news'}>
             <Events
                 msglist={this.state.msglist}
                 notlist={this.notlist}
             />
         </Alert>
 
-        <Alert flex = {0.3} visible = {!this.state.section}>
+        <Alert flex = {0.2} visible = {!this.state.section}>
             <Console
                 title = {(this.state.phase == 1 || this.state.phase == 3)?
                     this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
@@ -859,7 +852,7 @@ return <View style = {{flex:1, justifyContent:'center'}}>
             {this._renderList()}
         </Alert>
 
-        <Alert flex = {0.2} visible = {this.state.section == 'ready'}>
+        <Alert flex = {0.5} visible = {this.state.section == 'ready'}>
             {this._renderWaiting()}
         </Alert>
 

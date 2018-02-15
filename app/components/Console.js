@@ -22,29 +22,28 @@ export class Console extends React.Component {
         return ( 
             <Animated.View>
                     
-                <Text style = {{
-                    fontSize:30,
-                    fontFamily:'LuckiestGuy-Regular',
-                    color:colors.font
-                }}>{this.props.title}</Text>
+                <Text style = {{ fontSize:30, fontFamily:'LuckiestGuy-Regular', 
+                    color:colors.font, alignSelf:'center' }}>{this.props.title}</Text>
 
                 <View style = {{
                     flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
 
                     <Button
                         flex = {0.25}
+                        horizontal = {1}
                         backgroundColor = {colors.dead}
-                        onPress = {this.props.second}
-                    ><Text style = {styles.choiceButton}>{Phases[this.props.phase].btn1}</Text>
+                        onPress = {this.props.first}
+                    ><Text style = {styles.choiceButton}>{this.props.phase?Phases[this.props.phase].btn1:''}</Text>
                     </Button>
 
                     <Text style = {styles.choiceButton}>OR</Text>
 
                     <Button
                         flex = {0.25}
+                        horizontal = {1}
                         backgroundColor = {colors.dead}
                         onPress = {this.props.second}
-                        ><Text style = {styles.choiceButton}>{Phases[this.props.phase].btn2}</Text>
+                        ><Text style = {styles.choiceButton}>{this.props.phase?Phases[this.props.phase].btn2:''}</Text>
                     </Button>
                 </View>
 
