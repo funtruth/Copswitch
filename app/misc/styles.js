@@ -241,23 +241,6 @@ export default styles = StyleSheet.create({
     },
 
     //General
-    dfont: {
-        fontSize:15,
-        fontFamily:'FredokaOne-Regular',
-        color:colors.shadow,
-        alignSelf: 'center',
-    },
-    lfont: {
-        fontSize:17,
-        fontFamily:'LuckiestGuy-Regular',
-        color:colors.font,
-    },
-    counterfont: {
-        fontSize:17,
-        fontFamily:'FredokaOne-Regular',
-        color:colors.font,
-        marginLeft:15,
-    },
     sfont: {
         fontFamily: 'FredokaOne-Regular',
         textAlign:'center',
@@ -269,12 +252,6 @@ export default styles = StyleSheet.create({
         color:colors.font,
         alignSelf: 'center',
     },
-    subfont: {
-        fontSize:17,
-        fontFamily:'FredokaOne-Regular',
-        color:colors.striker,
-        alignSelf: 'center',
-    },
     mfont: {
         fontSize: 19,
         fontFamily: 'FredokaOne-Regular',
@@ -283,11 +260,27 @@ export default styles = StyleSheet.create({
     },
     plainfont: {
         color: colors.font,
+        margin:5,
         fontFamily: 'FredokaOne-Regular',
     },
-    plaindfont: {
-        color: colors.background,
+
+    //GAME
+    roleFont: {
+        fontSize:17,
+        fontFamily:'LuckiestGuy-Regular',
+        color:colors.font,
+    },
+    player: {
+        fontSize: 16,
         fontFamily: 'FredokaOne-Regular',
+        color: colors.shadow,
+        margin:5,
+    },
+    cancelButton: {
+        fontSize: 16,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.shadow,
+        margin:5,
     }
 
 })

@@ -42,13 +42,14 @@ componentWillUnmount(){
 render() {
 
     return (
-        <View style = {{
+        <View style = {[{
             flex:this.props.flex,
             opacity:this.props.opacity,
             flexDirection:'row',
             justifyContent:'center',
-            marginBottom:this.props.margin
-        }}>
+            marginBottom:this.props.margin,
+            },this.props.containerStyle
+        ]}>
             <View style = {[{
                 marginTop:6-this.state.depth,
                 flex:this.props.horizontal,

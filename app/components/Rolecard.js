@@ -58,14 +58,14 @@ render() {
             }],
             width: this.width*0.7
         }}>
-            <Text style = {styles.lfont}>YOU ARE A:</Text>
+            <Text style = {styles.roleFont}>YOU ARE A:</Text>
             <Text style = {styles.title}>{Rolesheet[this.props.roleid].name}</Text>
-            <Text style = {styles.lfont}>AT NIGHT YOU:</Text>
+            <Text style = {styles.roleFont}>AT NIGHT YOU:</Text>
             <Text style = {styles.roleDesc}>{Rolesheet[this.props.roleid].rules}</Text>
-            <Text style = {styles.lfont}>you win when:</Text>
+            <Text style = {styles.roleFont}>you win when:</Text>
             <Text style = {styles.roleDesc}>{Rolesheet[this.props.roleid].win}</Text>
             {this.props.amimafia?<View>
-                <Text style = {styles.lfont}>YOUR TEAMMATES:</Text>
+                <Text style = {styles.roleFont}>YOUR TEAMMATES:</Text>
                 <FlatList
                     data={this.props.mafialist}
                     renderItem={({item}) => (

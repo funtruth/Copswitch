@@ -210,6 +210,7 @@ export class Lobby extends Component {
     componentWillMount() {
         this.counterRef.on('value',snap=>{
             if(snap.exists() && snap.val() == 1){
+                AsyncStorage.setItem('GAME-KEY',this.state.roomname)
                 this.props.screenProps.navigateP('Mafia',this.state.roomname)
             }
         })

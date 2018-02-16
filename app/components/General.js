@@ -17,12 +17,6 @@ export class General extends React.Component {
 constructor(props) {
     super(props);
 
-    this.state = {
-        role: 'A',
-        rules:'',
-        win:'',
-    }
-
     this.list = this.props.gmsglist
     
     this.opacity = []

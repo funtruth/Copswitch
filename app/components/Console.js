@@ -11,6 +11,7 @@ const FADEIN_ANIM = 600;
 
 const MARGIN = 10;
 
+
 export class Console extends React.Component {
         
     constructor(props) {
@@ -22,30 +23,23 @@ export class Console extends React.Component {
         return ( 
             <Animated.View>
                     
-                <Text style = {{ fontSize:30, fontFamily:'LuckiestGuy-Regular', 
+                <Text style = {{ fontSize:30, fontFamily:'FredokaOne-Regular', marginBottom:5, 
                     color:colors.font, alignSelf:'center' }}>{this.props.title}</Text>
 
-                <View style = {{
-                    flexDirection:'row', justifyContent:'center', alignItems:'center'}}>
+                <Button
+                    horizontal = {0.4}
+                    margin = {10}
+                    backgroundColor = {colors.dead}
+                    onPress = {this.props.first}
+                ><Text style = {styles.choiceButton}>{this.props.btn1}</Text>
+                </Button>
 
-                    <Button
-                        flex = {0.25}
-                        horizontal = {1}
-                        backgroundColor = {colors.dead}
-                        onPress = {this.props.first}
-                    ><Text style = {styles.choiceButton}>{this.props.phase?Phases[this.props.phase].btn1:''}</Text>
-                    </Button>
-
-                    <Text style = {styles.choiceButton}>OR</Text>
-
-                    <Button
-                        flex = {0.25}
-                        horizontal = {1}
-                        backgroundColor = {colors.dead}
-                        onPress = {this.props.second}
-                        ><Text style = {styles.choiceButton}>{this.props.phase?Phases[this.props.phase].btn2:''}</Text>
-                    </Button>
-                </View>
+                <Button
+                    horizontal = {0.4}
+                    backgroundColor = {colors.dead}
+                    onPress = {this.props.second}
+                    ><Text style = {styles.choiceButton}>{this.props.btn2}</Text>
+                </Button>
 
             </Animated.View>
         )

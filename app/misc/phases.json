@@ -1,26 +1,27 @@
-{
-    "0" : {
+[
+    {
         "name" : "NIGHT",
         "message" : "Visit another Player",
-        "btn1" : "VISIT",
-        "btn2" : "STAY HOME",
+        "btn1" : "Visit",
+        "btn2" : "Sleep",
         "continue" : -2
     },
-    "1" : {
+    {
         "name" : "DAY",
         "message" : "Choose an Option",
-        "btn1" : "VOTE",
-        "btn2" : "ABSTAIN",
+        "btn1" : "Vote",
+        "btn2" : "Abstain",
         "continue" : 2,
         "trigger" : 1
     },
-    "2" : {
+    {
         "name" : "LYNCHING",
         "message" : "has been nominated",
-        "btn1" : "INNOCENT",
-        "btn2" : "GUILTY",
+        "btn1" : "Innocent",
+        "btn2" : "Guilty",
         "continue" : -1,
         "trigger" : 1
     }
-  }
+]
+  
   
