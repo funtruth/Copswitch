@@ -810,9 +810,10 @@ return <View style = {{flex:1, justifyContent:'center'}}>
         </Alert>
 
         <Alert flex = {0.5} visible = {this.state.section == 'menu'}>
-            <RuleBook 
+            <RuleBook
                 screenProps = {{
-                    navigate: (val)=>this.props.screenProps.navigate(val)
+                    navigate: (val)=>this.props.screenProps.navigate(val),
+                    quit: true,
                 }}
                 
             />

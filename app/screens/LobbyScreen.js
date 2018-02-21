@@ -20,10 +20,8 @@ import Entypo from 'react-native-vector-icons/Entypo';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
-import * as Animatable from 'react-native-animatable';
 
 import { RoleView } from '../components/RoleView.js';
-
 import { Button } from '../components/Button.js';
 import { Alert } from '../components/Alert.js';
 import { Slide } from '../parents/Slide.js';
@@ -37,139 +35,6 @@ const MENU_ANIM = 200;
 const GAME_ANIM = 1000;
 import randomize from 'randomatic';
 
-export class Build1 extends Component {
-    
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            roomname:null,
-            message:'Almost there!',
-        };
-        
-    }
-
-    _createRoom() {
-
-        AsyncStorage.setItem('ROOM-KEY', this.state.roomname)
-        .then(()=>{ this.props.navigate(this.state.roomname) })
-    }
-
-    componentWillReceiveProps(newProps){
-
-        if(newProps.visible && !this.state.roomname){
-
-            var flag = false
-            var roomname = null
-    
-            firebase.database().ref('rooms').once('value',snap=>{
-
-                while(!flag){
-                    roomname = randomize('0',4);
-                    if(!snap.child(roomname).exists()){
-                        flag = true
-                        this.setState({roomname:roomname})
-                    }
-                }
-                
-                firebase.database().ref('rooms/').child(roomname).set({
-                    owner: firebase.auth().currentUser.uid,
-                    counter:0,
-                })
-            }) 
-        }
-    }
-
-    render() {
-
-        return <View>
-
-            <Button
-                horizontal={0.4}
-                onPress={()=>this._createRoom()}
-            >
-                <Text style = {styles.create}>Create Room</Text>
-            </Button>
-
-        </View>
-    }
-}
-
-export class Join1 extends Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            roomname:null,
-            errormessage:'Must be 4 Digits long',
-        };
-
-        this.height = Dimensions.get('window').height;
-        this.width = Dimensions.get('window').width;
-        
-    }
-
-    _continue(roomname) {
-        if(roomname.length==4){
-            firebase.database().ref('rooms/' + roomname).once('value', snap => {
-                if(snap.exists() && (snap.val().counter == 0)){
-                    this._joinRoom(roomname)
-                } else if (snap.exists() && (snap.val().counter > 0)) {
-                    setTimeout(()=>{
-                        this.setState({errormessage:'Game has already started'})
-                        this.refs.error.shake(800)
-                    },800)
-                } else {
-                    setTimeout(()=>{
-                        this.setState({errormessage:'Invalid Room Code'})
-                        this.refs.error.shake(800)
-                    },800)
-                        
-                }
-            })
-                
-        } else {
-            setTimeout(()=>{
-                this.setState({errormessage:'Code must be 4 Digits long'})
-                this.refs.error.shake(800)
-            },800)
-        }
-    }
-
-    _joinRoom(roomname) {
-        AsyncStorage.setItem('ROOM-KEY', roomname).then(()=>{
-            this.props.navigate(roomname)
-        })
-    }
-
-    render() {
-
-        return <View>
-
-            <Text style = {styles.roomcode}>CODE</Text>
-
-            <View style = {{justifyContent:'center', 
-            alignItems:'center', flexDirection:'row'}}>
-                <TextInput
-                    ref='textInput'
-                    keyboardType='numeric' 
-                    maxLength={4}   
-                    placeholder='9999'
-                    placeholderTextColor={colors.dead}
-                    value={this.state.roomname}
-                    style={[styles.textInput,{flex:0.5}]}
-                    onChangeText={val=>this.setState({roomname:val})}
-                    onSubmitEditing={event=>this._continue(event.nativeEvent.text)}
-                />
-            </View>
-
-            <Animatable.Text style = {[styles.sfont,{marginTop:10}]}ref='error'>
-                    {this.state.errormessage}</Animatable.Text>
-
-        </View>
-    }
-}
 
 export class Lobby extends Component {
     
@@ -289,11 +154,13 @@ export class Lobby extends Component {
 
                 var count = 0
                 var listshot = []
+                var readyshot = []
                 snap.child('lobby').forEach((child)=>{
                     listshot.push({
                         name: child.val().name,
                         uid: child.key
                     })
+                    readyshot.push(false)
                     count++
                 })
 
@@ -304,6 +171,8 @@ export class Lobby extends Component {
                 }
     
                 this.roomRef.child('list').set(listshot).then(()=>{
+                    this.roomRef.child('ready').set(readyshot)
+                }).then(()=>{
                     this.counterRef.set(1)
                 })
 

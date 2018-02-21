@@ -50,7 +50,18 @@ class General extends Component {
     _deleteRoom() {
         AsyncStorage.removeItem('ROOM-KEY');
         AsyncStorage.removeItem('GAME-KEY');
-        this.props.screenProps.quit();
+        this.props.screenProps.navigate('Home')
+    }
+
+    //TODO i don't like how this is done ew
+    _renderQuit(){
+        if(this.props.screenProps.quit){
+            return <Button
+                horizontal = {0.4}
+                onPress = {()=>{ this._deleteRoom() }}
+                ><Text style = {styles.listfont}>Quit</Text>
+            </Button>
+        } else return null
     }
 
     render(){
@@ -83,13 +94,7 @@ class General extends Component {
                 ><Text style = {styles.listfont}>About</Text>
             </Button>
 
-            <Button
-                horizontal = {0.4}
-                onPress = {()=>{ 
-                    this.props.screenProps.navigate('Home')
-                }}
-                ><Text style = {styles.listfont}>Quit</Text>
-            </Button>
+            {this._renderQuit()}
             
         </View>
     }
