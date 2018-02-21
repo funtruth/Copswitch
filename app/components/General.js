@@ -17,50 +17,15 @@ export class General extends React.Component {
 constructor(props) {
     super(props);
 
-    this.list = this.props.gmsglist
-    
-    this.opacity = []
-    for(i=0;i<this.list.length;i++){
-        this.list[i].index = i
-        this.opacity[i] = new Animated.Value(0)
-    }
 
     this.width = Dimensions.get('window').width;
     this.height = Dimensions.get('window').height;
     
 }
 
-componentDidMount(){
-    this.animate()
-}
-
-shouldComponentUpdate(nextProps, nextState){
-    return nextProps.gmsglist.length > this.props.gmsglist.length
-}
-
-componentWillUpdate(nextProps, nextState){
-    this.list = nextProps.gmsglist
-    for(i=0;i<this.list.length;i++){
-        this.list[i].index = i
-        this.opacity[i] = new Animated.Value(1)
-    }
-}
-
-animate () {
-    const animations = this.list.map((item) => {
-        return Animated.timing(
-        this.opacity[item.index],
-            {
-                toValue: 1,
-                duration: 150
-            }
-        )
-    })
-    Animated.stagger(80, animations).start()
-}
 
 
-_renderItem(item){
+_xenderItem(item){
     return <Animated.View style = {{ marginTop:5, opacity:this.opacity[item.index], width:this.width*0.76,
         transform: [{
             translateX: this.opacity[item.index].interpolate({
@@ -68,20 +33,29 @@ _renderItem(item){
                 outputRange: [0, this.height*0.03, this.height*0.05],
             }),
         }] }}>
-        <Text style = {styles.message}>{item.message}</Text>
+        <Text style = {styles.message}>{item.index}</Text>
     </Animated.View>
+}
+
+_renderItem(item){
+    return <View style = {item.type==1?styles.sectionContainer:styles.messageContainer}>
+        <Text style = {item.type==1?styles.section:styles.message}>{item.message}</Text>
+    </View>
 }
 
 render() {
  
     return (
         <FlatList
-            data={this.list}
+            data={this.props.data}
             renderItem={({item}) => (this._renderItem(item))}
+            contentContainerStyle={{
+                alignSelf:'center',
+                width:this.width*0.7
+            }}
             initialNumToRender={12}
-            inverted
             showsVerticalScrollIndicator={false}
-            keyExtractor={item => item.key}
+            keyExtractor={item => item.index}
         />
     )
 }

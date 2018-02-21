@@ -36,24 +36,26 @@ componentWillReceiveProps(newProps){
 
 render() {
 
-    if(this.props.unmount && !this.props.visible){
+    const { justify, flex, visible, unmount, children } = this.props
+
+    if(unmount && !visible){
         return null
     }
 
     return ( 
         <Animated.View style = {{
-            justifyContent:'center',
+            justifyContent:justify?'center':null,
             opacity:this.nav.interpolate({
                 inputRange:[0,0.7,1],
                 outputRange:[0,0,1]
             }),
             height:this.nav.interpolate({
                 inputRange:[0,0.7,1],
-                outputRange:[0,this.height*this.props.flex,this.height*this.props.flex]
+                outputRange:[0,this.height*flex,this.height*flex]
             }),
             width:this.width
             }}>
-            {this.props.children}
+            {children}
         </Animated.View>
     )
 }

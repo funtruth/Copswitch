@@ -63,6 +63,7 @@ constructor(props) {
 
         gmsglist:           [],
         msglist:            [],
+        newslist:           [],
 
         mafialist:          [],
         section:            null,
@@ -81,16 +82,17 @@ constructor(props) {
         gameover:           false,
     };
     
+    this.newslist           = [];
     this.namelist           = [];
     this.notlist            = [];
     this.readylist          = [];
 
     this.height             = Dimensions.get('window').height;
     this.width              = Dimensions.get('window').width;
-    this.icon               = this.width*0.15;
+    this.icon               = this.width*0.12;
     this.user               = firebase.auth().currentUser.uid;
 
-    this.roomRef            = firebase.database().ref('rooms/' + roomname);
+    this.roomRef            = firebase.database().ref('rooms').child(roomname);
     this.readyRef           = this.roomRef.child('ready');
     
     this.listRef            = this.roomRef.child('list');
@@ -102,19 +104,15 @@ constructor(props) {
     this.choiceRef          = this.roomRef.child('choice');
     this.loadedRef          = this.roomRef.child('loaded');
 
-    this.msgRef             = this.roomRef.child('msgs');
-    this.gMsgRef            = this.roomRef.child('gmsgs');
-    this.notRef             = this.roomRef.child('nots');
-    this.eNotRef            = this.roomRef.child('enots');
+    //Focusing on newsRef as main
+    this.newsRef            = this.roomRef.child('news');
 }
 
 componentWillMount() {
 
     this.readyRef.on('value',snap=>{
         if(snap.exists()){
-            snap.forEach((child)=>{
-                this.namelist[child.key].ready = child.val() 
-            })
+            this.readylist = snap.val()
         }
     })
 
@@ -133,9 +131,10 @@ componentWillMount() {
             for(i=0;i<this.namelist.length;i++){
 
                 this.namelist[i].key = i;
-
+                
                 //Generate my info
                 if(this.namelist[i].uid == this.user){
+                    
                     this.setState({
                         place:      i,
                         amidead:    this.namelist[i].dead,
@@ -149,7 +148,6 @@ componentWillMount() {
                     })
 
                     //Set reference
-                    this.myMsgRef       = this.msgRef.orderByChild('place').equalTo(i)
                     this.myReadyRef     = this.readyRef.child(i)
                 }
 
@@ -176,26 +174,11 @@ componentWillMount() {
                 }
             }
 
-            this.myMsgRef.on('value',msgsnap=>{
-                if(msgsnap.exists()){
-                    var msg = msgsnap.val();
-                    var msglist = [];
-                    for(i=0;i<msg.length;i++){
-                        msglist.push({
-                            message:msg[i].message,
-                            key:i
-                        })
-                    }
-                    this.setState({msglist:msglist.reverse()})
-                } else {
-                    this.setState({msglist:[]})
-                }
-            })
-
             this.myReadyRef.on('value',readysnap=>{
-                if(snap.exists()){
+
+                if(readysnap.exists()){
                     
-                    this.setState({ ready:snap.val(), section:snap.val() })
+                    this.setState({ ready:readysnap.val(), section:readysnap.val() })
         
                 } else {
         
@@ -250,41 +233,24 @@ componentWillMount() {
         }
     })
     
-    this.gMsgRef.on('value',snap=>{
-        if(snap.exists()){
-            var gmsgs = [];
-            snap.forEach((child)=>{
-                gmsgs.push({
-                    message:    child.val(),
-                    key:        child.key,
-                })
-            })
-            this.setState({gmsglist:gmsgs.reverse()})
-        } else {
-            this.setState({gmsglist:[]})
-        }
-    })
+    this.newsRef.on('child_added',snap=>{
 
-    this.notRef.on('child_added',snap=>{
-        if(snap.exists()){
-            
-            this.notlist.push({
-                message:    snap.val(),
-                key:        snap.key,
+        this.newslist.push({
+            type:1,
+            message:snap.key,
+            index:snap.key
+        })
+        for(i=0;i<snap.val().length;i++){
+            this.newslist.push({
+                type:2,
+                message:snap.val()[i],
+                index:snap.key+'-'+i,
             })
-        
         }
-    })
+        this.setState({
+            newslist:this.newslist
+        })
 
-    this.eNotRef.on('child_added',snap=>{
-        if(snap.exists() && this.state.amimafia){
-            
-            this.notlist.push({
-                message:    snap.val(),
-                key:        snap.key,
-            })
-        
-        }
     })
 
     this.choiceRef.on('value',snap=>{
@@ -337,8 +303,6 @@ componentWillMount() {
                 } else if(!flag && players >= this.state.playernum){
                     
                     this.choiceRef.remove();
-                    this.msgRef.remove();
-                    this.gMsgRef.remove();
                     this._resetDayStatuses();
                     this._changePhase(Phases[this.state.phase].continue);
                 }
@@ -544,9 +508,8 @@ componentWillMount() {
                     }
                 }
 
-                this.gMsgRef.remove();
                 this.listRef.update(playerArray)
-                this.msgRef.set(msgs)
+                this.newsRef.child(this.state.counter).set(msgs)
 
                 this._changePhase(Phases[this.state.phase].continue);
             }
@@ -586,9 +549,6 @@ componentWillUnmount() {
     if(this.myReadyRef){
         this.myReadyRef.off();
     }
-    if(this.myMsgRef){
-        this.myMsgRef.off();
-    }
     if(this.ownerRef){
         this.ownerRef.off();
     }
@@ -601,14 +561,8 @@ componentWillUnmount() {
     if(this.counterRef){
         this.counterRef.off();
     }
-    if(this.gMsgRef){
-        this.gMsgRef.off();
-    }
-    if(this.notRef){
-        this.notRef.off();
-    }
-    if(this.eNotRef){
-        this.eNotRef.off();
+    if(this.newsRef){
+        this.newsRef.off();
     }
 
     //Owner Listeners
@@ -691,10 +645,7 @@ _resetOptionPress() {
 
 //Creates a public notice message
 _gMsg(message){
-    this.gMsgRef.push(message)
-}
-_eNot(message){
-    this.eNotRef.push(message)
+    this.newsRef.child(this.state.counter).push(message)
 }
 
 _game(){
@@ -771,43 +722,48 @@ _renderWaiting(){
 }
 
 _renderNav(){
-    return <Animated.View style = {{position:'absolute', bottom:20, right:20}}>
+    return <Animated.View style = {{position:'absolute', bottom:0, right:0, 
+        width:this.width*0.37, height:this.width*0.37}}>
 
-        <TouchableOpacity style = {{position:'absolute', bottom: this.icon, right: this.icon,
-            justifyContent:'center', alignItems:'center',
-            height:this.icon, width:this.icon}}
-            onPress = {()=>this.setState({ section:'role'}) }>
-            <FontAwesome name='user'
-                style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
-            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Role</Text>
-        </TouchableOpacity>
+        <Button
+            horizontal = {1}
+            containerStyle = {{width:this.icon, position:'absolute', top:0, left:this.width*0.2}}
+            style = {{borderRadius:this.icon/2}}
+            touchStyle = {{height:this.icon, borderRadius:this.icon/2}}
+            onPress={()=>this.setState({ section:'news'})}
+        ><FontAwesome name='globe'
+            style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
+        </Button>
 
-        <TouchableOpacity style = {{position:'absolute', bottom: 80, right: 0,
-            justifyContent:'center', alignItems:'center',
-            height:this.icon, width:this.icon}}
-            onPress = {()=>this.setState({ section:'news'}) }>
-            <FontAwesome name='globe'
-                style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
-            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>News</Text>
-        </TouchableOpacity>
+        <Button
+            horizontal = {1}
+            containerStyle = {{width:this.icon, position:'absolute', left:25, top:25}}
+            style = {{borderRadius:this.icon/2}}
+            touchStyle = {{height:this.icon, borderRadius:this.icon/2}}
+            onPress={()=>this.setState({ section:'role'})}
+        ><FontAwesome name='user'
+            style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
+        </Button>
 
-        <TouchableOpacity style = {{position:'absolute', bottom: 0, right: 80,
-            justifyContent:'center', alignItems:'center',
-            height:this.icon, width:this.icon}}
-            onPress = {()=>this.setState({ section:'menu' }) }>
-            <FontAwesome name='book'
-                style={{color:colors.font,fontSize:20,textAlign:'center'}}/>
-            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Menu</Text>
-        </TouchableOpacity>
-        
-        <TouchableOpacity style = {{position:'absolute', bottom: 0, right: 0,
-            justifyContent:'center', alignItems:'center',
-            height:this.icon+15, width:this.icon}}
-            onPress = {()=> this._game() }>
-            <FontAwesome name='play-circle'
-                style={{color:colors.font,fontSize:50,textAlign:'center'}}/>
-            <Text style = {{color:colors.font,fontFamily:'FredokaOne-Regular'}}>Game</Text>
-        </TouchableOpacity>
+        <Button
+            horizontal = {1}
+            containerStyle = {{width:this.icon, position:'absolute', left:0, top:this.width*0.2}}
+            style = {{borderRadius:this.icon/2}}
+            touchStyle = {{height:this.icon, borderRadius:this.icon/2}}
+            onPress={()=>this.setState({ section:'menu'})}
+        ><FontAwesome name='book'
+            style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
+        </Button>
+
+        <Button
+            horizontal = {1}
+            containerStyle = {{width:this.icon+10, position:'absolute', right:15, bottom:13}}
+            style = {{borderRadius:this.icon/2+5}}
+            touchStyle = {{height:this.icon+10, borderRadius:this.icon/2+5}}
+            onPress={()=>this._game()}
+        ><FontAwesome name='home'
+            style={{color:colors.shadow,fontSize:30,textAlign:'center'}}/>
+        </Button>
 
     </Animated.View>
 }
@@ -826,9 +782,9 @@ return <View style = {{flex:1, justifyContent:'center'}}>
             />
         </Alert>
 
-        <Alert flex = {0.5} visible = {this.state.section == 'news'}>
+        <Alert flex = {0.8} visible = {this.state.section == 'news'}>
             <General
-                gmsglist={this.state.gmsglist}
+                data={this.state.newslist}
             />
         </Alert>
 
@@ -854,7 +810,12 @@ return <View style = {{flex:1, justifyContent:'center'}}>
         </Alert>
 
         <Alert flex = {0.5} visible = {this.state.section == 'menu'}>
-            <RuleBook />
+            <RuleBook 
+                screenProps = {{
+                    navigate: (val)=>this.props.screenProps.navigate(val)
+                }}
+                
+            />
         </Alert>
         
         {this._renderNav()}

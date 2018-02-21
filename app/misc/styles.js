@@ -136,12 +136,29 @@ export default styles = StyleSheet.create({
         marginTop:5,
         marginBottom:5,
     },
+    section: {
+        fontSize: 17,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.background,
+        marginTop:5,
+        marginBottom:5,
+        marginLeft:15
+    },
+    sectionContainer: {
+        backgroundColor: colors.font,
+        borderRadius:10,
+        marginTop:5,
+    },
     message: {
         fontSize: 15,
         fontFamily: 'FredokaOne-Regular',
-        color: colors.striker,
+        color: colors.font,
         marginTop:5,
         marginBottom:5,
+    },
+    messageContainer: {
+        marginTop:5,
+        alignItems:'center'
     },
     hidden: {
         fontSize: 15,

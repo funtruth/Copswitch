@@ -131,6 +131,8 @@ export class Loading extends React.Component {
         this.props.screenProps.passNavigation(this.props.navigation)
 
         AsyncStorage.getItem('GAME-KEY',(error,result)=>{
+            
+            result = '0028'
 
             if(result != null){
                 this.props.screenProps.navigateP('Mafia',result)

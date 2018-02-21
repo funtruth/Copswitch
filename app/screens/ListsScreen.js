@@ -76,10 +76,19 @@ class General extends Component {
 
             <Button
                 horizontal = {0.4}
+                margin = {10}
                 onPress = {()=>{ 
                     this.props.navigation.navigate('InfoPage',{section:'about'})
                 }}
                 ><Text style = {styles.listfont}>About</Text>
+            </Button>
+
+            <Button
+                horizontal = {0.4}
+                onPress = {()=>{ 
+                    this.props.screenProps.navigate('Home')
+                }}
+                ><Text style = {styles.listfont}>Quit</Text>
             </Button>
             
         </View>

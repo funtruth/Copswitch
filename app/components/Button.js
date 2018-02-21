@@ -64,7 +64,7 @@ render() {
                     backgroundColor: this.props.color || colors.font, 
                     borderRadius:15,
                 },
-                    this.props.style
+                    this.props.touchStyle || this.props.style
                 ]}
                     onPress = {this.props.onPress}
                     onPressIn = {()=>{
