@@ -92,11 +92,11 @@ export class Home extends React.Component {
 
             <Alert flex = {0.1} visible = {this.state.section == 'crea'}>
                 <Build1 visible = {this.state.section == 'crea'}
-                    navigate = {(val)=> this.props.screenProps.navigateP('Lobby',val)}/>
+                    navigate = {(val)=> this.props.screenProps.navigate('Lobby',val)}/>
             </Alert>
 
             <Alert flex = {0.3} visible = {this.state.section == 'join'}>
-                <Join1 navigate = {(val)=> this.props.screenProps.navigateP('Lobby',val)}/>
+                <Join1 navigate = {(val)=> this.props.screenProps.navigate('Lobby',val)}/>
             </Alert>
 
             <Alert flex = {0.5} visible = {this.state.section == 'menu'}>
@@ -135,11 +135,11 @@ export class Loading extends React.Component {
             result = '0028'
 
             if(result != null){
-                this.props.screenProps.navigateP('Mafia',result)
+                this.props.screenProps.navigate('Mafia',result)
             } else {
                 AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
                     if(result != null){
-                        this.props.screenProps.navigateP('Lobby',result)
+                        this.props.screenProps.navigate('Lobby',result)
                     } else {
                         this.props.screenProps.navigate('Home')
                     }

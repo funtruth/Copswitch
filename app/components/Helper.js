@@ -25,7 +25,7 @@ export class Helper extends React.Component {
         this.icon = this.height/9;
 
         this.state = {
-            helperY: this.width*5/6,
+            nav: new Animated.Value(0),
         }
     }
 
@@ -48,8 +48,8 @@ export class Helper extends React.Component {
 
     _showCover(show){
         Animated.timing(
-            this.radiusScale,{
-                toValue:show?5:0.25,
+            this.state.nav,{
+                toValue:show?1:0,
                 duration:400
             }
         ).start()
@@ -57,114 +57,64 @@ export class Helper extends React.Component {
 
     _navigate(screen,param){
 
-        console.log('Starting Animation')
-        Animated.parallel([
+        Animated.sequence([
             Animated.timing(
-                this.radiusScale,{
-                    toValue:5,
+                this.state.nav,{
+                    toValue:1,
                     duration:400
                 }
             ),
-        ]).start()
-            
-
-        setTimeout(()=>{
-            if(screen == 'Home'){
-                this.navigation.dispatch(
-                    NavigationActions.reset({
-                        index: 0,
-                        actions: [
-                        NavigationActions.navigate({ routeName: 'Home'})
-                        ]
-                    })
-                )
-            } else {
-                this.navigation.navigate(screen)
-            }
-
-            console.log("Navigating Screens");
-        },400)
-
-        setTimeout(()=>{
             Animated.timing(
-                this.radiusScale,{
-                    toValue:0.25,
-                    duration:500
+                this.state.nav,{
+                    toValue:0,
+                    duration:800
                 }
-            ).start()
-            console.log('Uncovering Screen')
-        },1500) 
-    }
-
-    _navigateP(screen,param){
-
-        Animated.parallel([
-            Animated.timing(
-                this.radiusScale,{
-                    toValue:5,
-                    duration:400
-                }
-            ),
+            )
         ]).start()
 
         setTimeout(()=>{
-
-            if(screen == 'Mafia'){
-                this.navigation.dispatch(
-                NavigationActions.reset({
-                    index: 0,
-                    actions: [
-                        NavigationActions.navigate({ 
-                            routeName: 'Mafia',
-                            params: { roomname:param }
-                        })
-                    ]
+            this.navigation.dispatch(
+            NavigationActions.reset({
+                index: 0,
+                actions: [
+                    NavigationActions.navigate({ 
+                        routeName: screen,
+                        params: { roomname:param }
                     })
-                )
-            } else {
-                this.navigation.navigate(screen,{ roomname:param })
-            }
-
+                ]
+                })
+            )
         },400)
 
-        setTimeout(()=>{
-            Animated.timing(
-                this.radiusScale,{
-                    toValue:0.25,
-                    duration:500
-                }
-            ).start()
-        },1500) 
     }
 
     render() {
 
         return (
-            <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0,
-                justifyContent:'center', alignItems:'center', backgroundColor:colors.background}}>
+            <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0, backgroundColor:colors.background}}>
 
-                <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0}}>
+                <Animated.View style = {{
+                    flex:1,
+                    opacity: this.state.nav.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [1, 0],
+                    }),
+                    transform: [{
+                        scale: this.state.nav.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [1,0.1],
+                        })
+                    }],
+                }}>
                     <Layout
                         screenProps={{
                             passNavigation:val=>{this._receiveNav(val)},
-                            navigate:val=>{
-                                this._navigate(val)
+                            navigate:(val,roomname)=>{
+                                this._navigate(val,roomname)
                             },
-                            navigateP:(val,roomname)=>{
-                                this._navigateP(val,roomname)
-                            },
-                            cover:val=>{this._showCover(val)},
                         }}
                     />
-                </View>
-
-                <Animated.View style = {{position:'absolute', elevation:0, left:this.state.helperY,
-                    height:this.icon*4, width:this.icon*4, borderRadius:this.icon*2, backgroundColor: colors.helper,
-                    justifyContent:'center', alignItems:'center',
-                    transform: [
-                        {scale:this.radiusScale}
-                    ],
-                }}/>
+                </Animated.View>
 
             </View>
         )
