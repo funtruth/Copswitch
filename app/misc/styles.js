@@ -241,10 +241,10 @@ export default styles = StyleSheet.create({
         borderRadius:10,
     },
     textInput: {
-        backgroundColor: colors.main,
+        backgroundColor: colors.background,
         fontFamily:'FredokaOne-Regular',
         fontSize: 25,
-        color:colors.background,
+        color:colors.font,
         textAlign:'center',
         borderRadius:30,
     },

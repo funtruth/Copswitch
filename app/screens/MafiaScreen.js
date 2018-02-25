@@ -270,13 +270,14 @@ componentWillMount() {
             if(this.state.phase == 1 && total>=this.state.triggernum){
 
                 var flag = false;
-                
+
                 for(i=0;i<this.state.triggernum;i++){
 
                     var count = 0;
                     var players = 0;
 
                     if(choiceArray[i] && choiceArray[i]!=-1){
+
                         for(j=0;j<this.state.playernum;j++){
                             if(choiceArray[i] == choiceArray[j]){
                                 count++
@@ -293,7 +294,7 @@ componentWillMount() {
                         players++;
                     }
 
-                    if(flag){break}
+                    if(flag) break
                 }
 
                 if(flag){
@@ -315,15 +316,9 @@ componentWillMount() {
                 for(i=0;i<this.state.playernum;i++){
                     if(choiceArray[i] == -1){
                         count++
-                        if(!names){
-                            names=this.namelist[i].name
-                        }
-                        else{
-                            names+=', '+this.namelist[i].name
-                        }
-                    } else {
-                        count--
-                    }
+                        if(!names)  names=this.namelist[i].name
+                        else        names+=', '+this.namelist[i].name
+                    } else count--
                 }
 
                 this._gMsg((names||'Nobody') + ' voted against ' + this.namelist[this.state.nominate].name + '.')
@@ -334,7 +329,7 @@ componentWillMount() {
                     })
 
                     this._gMsg(this.namelist[this.state.nominate].name + ' was hung.')
-                        
+
                     if(this.namelist[this.state.nominate].roleid == 'a' || this.namelist[this.state.nominate].roleid == 'b'){
 
                         //TODO NEW MURDERER LOGIC
@@ -399,6 +394,7 @@ componentWillMount() {
                             msgs.push([
                                 {message:'You framed ' + playerArray[choiceArray[i]].name + '.',place:i}
                             ])
+
                         }
 
                         //Spy
@@ -791,7 +787,7 @@ return <View style = {{flex:1, justifyContent:'center'}}>
         <Alert flex = {0.2} visible = {this.state.section == false}>
             <Console
                 title = {(this.state.phase == 1 || this.state.phase == 0)?
-                    this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3
+                    this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3+1
                     :this.state.phasename}
                 phase = {this.state.phase}
                 btn1 = {this.state.btn1}

@@ -18,8 +18,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Foundation from 'react-native-vector-icons/Foundation';
 import { Button } from '../components/Button.js';
 import { Slide } from '../parents/Slide.js';
-import { Header } from '../components/Header.js';
-import { Pager } from '../components/Pager.js';
 import { RoleView } from '../components/RoleView.js';
 
 import { StackNavigator } from 'react-navigation';
@@ -244,9 +242,14 @@ export class InfoPage extends Component {
     render(){
         return <View style = {{ flex:1, alignItems:'center' }}>
 
-            <Header title = {this.state.title} onPress = {()=>{
-                this.props.navigation.dispatch(NavigationActions.back());
-            }}/>
+            <View style = {{flexDirection:'row', alignSelf:'center'}}>
+                <TouchableOpacity onPress = { () => this.props.navigation.dispatch(NavigationActions.back()) }>
+                    <MaterialCommunityIcons name='chevron-left'
+                    style={styles.chevron}/>
+                </TouchableOpacity>
+                <Text style = {styles.header}>{this.state.title}</Text>
+                
+            </View>
             
             <View style = {{flex:1, width:this.width*0.8, backgroundColor:colors.font,borderRadius:15}}>
                 <FlatList

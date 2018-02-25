@@ -1,28 +1,15 @@
 import React, { Component } from 'react';
-import { View, Text, Animated, Dimensions, TouchableOpacity, BackHandler, Keyboard } from 'react-native';
+import { View, Text, Animated, BackHandler } from 'react-native';
 
 import colors from '../misc/colors.js';
-import styles from '../misc/styles.js';
 import { NavigationActions } from 'react-navigation';
 
 import { Layout } from "../../router";
-
-import Screens from '../misc/screens.json';
-
-const FAST_ANIM = 100;
-const MED_ANIM = 400;
 
 export class Helper extends React.Component {
         
     constructor(props) {
         super(props);
-
-        this.radiusScale = new Animated.Value(5)
-        
-        this.width = Dimensions.get('window').width;
-        this.height = Dimensions.get('window').height;
-        
-        this.icon = this.height/9;
 
         this.state = {
             nav: new Animated.Value(0),
@@ -102,7 +89,7 @@ export class Helper extends React.Component {
                     transform: [{
                         scale: this.state.nav.interpolate({
                             inputRange: [0, 1],
-                            outputRange: [1,0.1],
+                            outputRange: [1,0.8],
                         })
                     }],
                 }}>
