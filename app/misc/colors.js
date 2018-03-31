@@ -63,5 +63,6 @@ export default colors = {
     helper:                 '#7f7783',
     background:             '#403e3b',
     shadow:                 '#5f5d58',
+    box:                    '#636363',
 
 }

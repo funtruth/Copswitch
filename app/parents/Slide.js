@@ -21,7 +21,7 @@ export class Slide extends React.Component {
         Animated.timing(
             this.state.opacity, {
                 toValue:1,
-                duration:150
+                duration:500
             }
         ).start()
     }

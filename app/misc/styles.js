@@ -27,7 +27,7 @@ export default styles = StyleSheet.create({
     create: {
         fontSize: 19,
         fontFamily: 'FredokaOne-Regular',
-        color: colors.shadow,
+        color: colors.font,
         margin:4
     },
 

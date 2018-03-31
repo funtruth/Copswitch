@@ -89,7 +89,7 @@ export class Helper extends React.Component {
                     transform: [{
                         scale: this.state.nav.interpolate({
                             inputRange: [0, 1],
-                            outputRange: [1,0.8],
+                            outputRange: [1, 1],
                         })
                     }],
                 }}>

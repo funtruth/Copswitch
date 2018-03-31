@@ -24,6 +24,8 @@ import { About } from '../components/About.js';
 import { Button } from '../components/Button.js';
 import { RuleBook } from './ListsScreen.js';
 
+import { Slide } from '../parents/Slide.js';
+
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
 import Rolesheet from '../misc/roles.json';
@@ -37,27 +39,66 @@ export class Home extends React.Component {
         super(props);
         
         this.state = {
+            section: null,
             about: false,
         }
+
+        this.height = Dimensions.get('window').height;
+        this.width = Dimensions.get('window').width;
 
     }
 
     _renderMenu(){
         return <TouchableOpacity style = {{
+            opacity:0.5,
             flexDirection:'row', alignItems:'center',
             position:'absolute', top:20, left:20}}
-            onPress = {()=> this._navPress('menu') }>
-            <FontAwesome name='book'
+            onPress = {()=> {} }>
+            <FontAwesome name='gears'
                 style={{color:colors.font,fontSize:30}}/>
-            <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>How to Play</Text>
+            <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>Options</Text>
         </TouchableOpacity>
+    }
+
+    _renderChoice(){
+        return <View style = {{ alignItems:'center' }}>
+        
+            <TouchableOpacity style = {{ flexDirection:'row', alignItems:'center', justifyContent:'center',
+                backgroundColor:colors.box, borderRadius:5, marginBottom:5, height:this.height*0.07, width:this.width*0.97 }}
+                onPress = {()=> this.setState({section:'join'}) }>
+                <MaterialCommunityIcons name='human-greeting'
+                    style={{color:colors.font,fontSize:30}}/>
+                <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>
+                    Join a Room</Text>
+            </TouchableOpacity>
+            
+            <TouchableOpacity style = {{ flexDirection:'row', alignItems:'center', justifyContent:'center',
+                backgroundColor:colors.box, borderRadius:5, marginBottom:5, height:this.height*0.07, width:this.width*0.97 }}
+                onPress = {()=> this.setState({section:'create'}) }>
+                <FontAwesome name='edit'
+                    style={{color:colors.font,fontSize:30}}/>
+                <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>
+                    Create a Room</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style = {{ flexDirection:'row', alignItems:'center', justifyContent:'center',
+                backgroundColor:colors.box, borderRadius:5, marginBottom:5, height:this.height*0.07, width:this.width*0.97 }}
+                onPress = {()=> {} }>
+                <FontAwesome name='book'
+                    style={{color:colors.font,fontSize:30}}/>
+                <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>
+                    How to Play</Text>
+            </TouchableOpacity>
+
+        </View>
     }
 
     _renderAbout(){
         return <TouchableOpacity style = {{
+            opacity:0.3,
             flexDirection:'row', alignItems:'center',
             position:'absolute', bottom:20, left:20}}
-            onPress = {()=> this._navPress('menu') }>
+            onPress = {()=> {} }>
             <FontAwesome name='question-circle'
                 style={{color:colors.font,fontSize:30}}/>
             <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>About the App</Text>
@@ -66,26 +107,26 @@ export class Home extends React.Component {
 
     render() {
 
-        return <View style = {{flex:1, justifyContent:'center'}}>
+        return <View style = {{flex:1}}>
 
-            <Join navigate = {(val)=> this.props.screenProps.navigate('Lobby',val)}/>
+            <View style = {{flex:1, justifyContent:'center'}}>
+                <Alert visible = {this.state.section=='join'} flex = {0.3}>
+                    <Join navigate = {(val)=> this.props.screenProps.navigate('Lobby',val)}/>
+                </Alert>
 
-            <View style = {{flex:0.25}}/>
-
-            <Build navigate = {(val)=> this.props.screenProps.navigate('Lobby',val)}/>
-
+                <Alert justify visible = {this.state.section=='create'} flex = {0.3}>
+                    <Build navigate = {(val)=> this.props.screenProps.navigate('Lobby',val)}/>
+                </Alert>
+            </View>
 
             <Alert flex = {0.5} visible = {this.state.section == 'menu'}>
                 <RuleBook screenProps = {{ quit:false }}/>
             </Alert>
-            
-            <View style = {{flex:0.05}}/>
 
             {this._renderMenu()}
 
-            <About visible = {this.state.about} flex = {0.4}/>
+            {this._renderChoice()}
 
-            {this._renderAbout()}
 
         </View>
     }
@@ -183,6 +224,8 @@ class Build extends React.Component {
 
             <Button
                 horizontal={0.35}
+                color = {colors.dead}
+                backgroundColor = {colors.box}
                 onPress={()=>this._createRoom()}
             >
                 <Text style = {styles.create}>Go!</Text>
@@ -208,13 +251,9 @@ class Join extends React.Component {
             Keyboard.dismiss()
             firebase.database().ref('rooms').child(code).once('value', snap => {
                 if(snap.exists() && (snap.val().counter == 0)){
-                    AsyncStorage.setItem('ROOM-KEY', code).then(()=>{
-                        this.props.navigate(code)
-                    })
-                } else if (snap.exists() && (snap.val().counter > 0)) {
-                    this.setState({errormessage:'Game has already started'})
-                    this.refs.error.shake(800)
-                    this.refs.textInput.focus()
+                    AsyncStorage.setItem('ROOM-KEY', code)
+                    
+                    .then(()=>{ this.props.navigate(code) })
                 } else {
                     this.setState({errormessage:'Invalid Room Code'})
                     this.refs.error.shake(800)
