@@ -139,15 +139,16 @@ export default styles = StyleSheet.create({
     section: {
         fontSize: 17,
         fontFamily: 'FredokaOne-Regular',
-        color: colors.background,
-        marginTop:5,
-        marginBottom:5,
-        marginLeft:15
+        alignSelf:'center',
+        color: colors.shadow,
     },
     sectionContainer: {
-        backgroundColor: colors.font,
-        borderRadius:10,
+        backgroundColor:colors.card,
+        justifyContent:'center',
         marginTop:5,
+        marginLeft:5,
+        marginRight:5,
+        borderRadius:5
     },
     message: {
         fontSize: 15,
@@ -157,8 +158,7 @@ export default styles = StyleSheet.create({
         marginBottom:5,
     },
     messageContainer: {
-        marginTop:5,
-        alignItems:'center'
+        margin:5,
     },
     hidden: {
         fontSize: 15,

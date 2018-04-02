@@ -17,6 +17,7 @@ export default colors = {
 
     //Testing Palette
     font:       'white',
+    card:       '#eeeeee',
     dfont:      '#454a4a',
     main:       'white',
     

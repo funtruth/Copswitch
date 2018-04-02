@@ -23,6 +23,7 @@ import { Console } from '../components/Console.js';
 import { Rolecard } from '../components/Rolecard.js';
 import { Events } from '../components/Events.js';
 import { General } from '../components/General.js';
+import { Private } from '../components/Private.js';
 import { RuleBook, InfoPage, Roles } from './ListsScreen.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -764,27 +765,12 @@ _renderNav(){
     </Animated.View>
 }
 
-/*<Image source = {require('../../assets/images/night.png')} 
-style = {{flex:1, alignSelf:'stretch', width:null}}>*/
-render() {
+    render() {
 
-return <View style = {{flex:1, justifyContent:'center'}}>
+        return <View style = {{flex:1}}>
 
-        <Alert flex = {0.4} visible = {this.state.section == 'role'}>
-            <Rolecard
-                roleid={this.state.myroleid}
-                amimafia={this.state.amimafia}
-                mafialist={this.state.mafialist}
-            />
-        </Alert>
+            <General data={this.state.newslist} />
 
-        <Alert flex = {0.8} visible = {this.state.section == 'news'}>
-            <General
-                data={this.state.newslist}
-            />
-        </Alert>
-
-        <Alert flex = {0.2} visible = {this.state.section == false}>
             <Console
                 title = {(this.state.phase == 1 || this.state.phase == 0)?
                     this.state.phasename + ' ' + (this.state.counter - this.state.counter%3)/3+1
@@ -795,29 +781,9 @@ return <View style = {{flex:1, justifyContent:'center'}}>
                 first = {() => this._first()}
                 second = {() => this._second()}
             />
-        </Alert>
 
-        <Alert flex = {0.5} visible = {this.state.section == 'list'}>
-            {this._renderList()}
-        </Alert>
+            <Private />
 
-        <Alert flex = {0.5} visible = {this.state.section == true}>
-            {this._renderWaiting()}
-        </Alert>
-
-        <Alert flex = {0.5} visible = {this.state.section == 'menu'}>
-            <RuleBook
-                screenProps = {{
-                    navigate: (val)=>this.props.screenProps.navigate(val),
-                    quit: true,
-                }}
-                
-            />
-        </Alert>
-        
-        {this._renderNav()}
-
-</View>
-}
-//</Image>
+        </View>
+    }
 }

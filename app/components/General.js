@@ -5,6 +5,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
 import Rolesheet from '../misc/roles.json';
+import { Message } from '..//parents/Message.js';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;
@@ -16,47 +17,33 @@ export class General extends React.Component {
     
 constructor(props) {
     super(props);
-
-
-    this.width = Dimensions.get('window').width;
-    this.height = Dimensions.get('window').height;
-    
-}
-
-
-
-_xenderItem(item){
-    return <Animated.View style = {{ marginTop:5, opacity:this.opacity[item.index], width:this.width*0.76,
-        transform: [{
-            translateX: this.opacity[item.index].interpolate({
-                inputRange: [0, 0.5, 1],
-                outputRange: [0, this.height*0.03, this.height*0.05],
-            }),
-        }] }}>
-        <Text style = {styles.message}>{item.index}</Text>
-    </Animated.View>
 }
 
 _renderItem(item){
-    return <View style = {item.type==1?styles.sectionContainer:styles.messageContainer}>
-        <Text style = {item.type==1?styles.section:styles.message}>{item.message}</Text>
-    </View>
+    if(item.type == 1){
+        return <Message style = {styles.sectionContainer}>
+            <Text style = {styles.section}>{item.message}</Text>
+        </Message>
+    } else {
+        return <Message style = {styles.messageContainer}>
+            <Text style = {styles.message}>{item.message}</Text>
+        </Message>
+    }
 }
 
 render() {
  
     return (
-        <FlatList
-            data={this.props.data}
-            renderItem={({item}) => (this._renderItem(item))}
-            contentContainerStyle={{
-                alignSelf:'center',
-                width:this.width*0.7
-            }}
-            initialNumToRender={12}
-            showsVerticalScrollIndicator={false}
-            keyExtractor={item => item.index}
-        />
+        <View style = {{flex:0.55}}>
+            <FlatList
+                data={this.props.data}
+                renderItem={({item}) => (this._renderItem(item))}
+                inverted
+                initialNumToRender={12}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={item => item.index}
+            />
+        </View>
     )
 }
 }
