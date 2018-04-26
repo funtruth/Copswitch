@@ -3,12 +3,12 @@
 import React from "react";
 import { StackNavigator } from "react-navigation";
 
-import { Home, Loading } from "./app/screens/RoomScreen";
+import { Lobby } from '../screens/LobbyScreen.js';
+import Home from '../home/BasicHomeScreen.js';
+import Loading from '../home/LoadingScreen.js';
+import Mafia from "../screens/MafiaScreen";
 
-import { Lobby } from './app/screens/LobbyScreen.js';
-import Mafia from "./app/screens/MafiaScreen";
-
-export const Layout = StackNavigator(
+const Router = StackNavigator(
       {
         Loading: {
           screen: Loading
@@ -29,3 +29,5 @@ export const Layout = StackNavigator(
         cardStyle: {backgroundColor:'transparent'}
       }
 );
+
+export default Router

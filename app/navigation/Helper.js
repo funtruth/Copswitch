@@ -4,7 +4,7 @@ import { View, Text, Animated, BackHandler } from 'react-native';
 import colors from '../misc/colors.js';
 import { NavigationActions } from 'react-navigation';
 
-import { Layout } from "../../router";
+import Router from "./router";
 
 export class Helper extends React.Component {
         
@@ -78,7 +78,7 @@ export class Helper extends React.Component {
     render() {
 
         return (
-            <View style = {{position:'absolute', left:0, right:0, bottom:0, top:0, backgroundColor:colors.background}}>
+            <View style = {styles.container}>
 
                 <Animated.View style = {{
                     flex:1,
@@ -93,7 +93,7 @@ export class Helper extends React.Component {
                         })
                     }],
                 }}>
-                    <Layout
+                    <Router
                         screenProps={{
                             passNavigation:val=>{this._receiveNav(val)},
                             navigate:(val,roomname)=>{
@@ -105,5 +105,16 @@ export class Helper extends React.Component {
 
             </View>
         )
+    }
+}
+
+const styles = {
+    container : {
+        position:'absolute',
+        left:0,
+        right:0,
+        bottom:0,
+        top:0,
+        backgroundColor:colors.background
     }
 }

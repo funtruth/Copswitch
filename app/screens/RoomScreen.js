@@ -32,6 +32,7 @@ import Rolesheet from '../misc/roles.json';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
+import firebaseService from '../firebase/firebaseService.js';
 
 export class Home extends React.Component {
 
@@ -74,7 +75,7 @@ export class Home extends React.Component {
             
             <TouchableOpacity style = {{ flexDirection:'row', alignItems:'center', justifyContent:'center',
                 backgroundColor:colors.box, borderRadius:5, marginBottom:5, height:this.height*0.07, width:this.width*0.97 }}
-                onPress = {()=> this.setState({section:'create'}) }>
+                onPress = {()=> firebaseService.createRoom() }>
                 <FontAwesome name='edit'
                     style={{color:colors.font,fontSize:30}}/>
                 <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>
@@ -111,11 +112,11 @@ export class Home extends React.Component {
 
             <View style = {{flex:1, justifyContent:'center'}}>
                 <Alert visible = {this.state.section=='join'} flex = {0.3}>
-                    <Join navigate = {(val)=> this.props.screenProps.navigate('Lobby',val)}/>
+                    <Join {...this.props.screenProps}/>
                 </Alert>
 
                 <Alert justify visible = {this.state.section=='create'} flex = {0.3}>
-                    <Build navigate = {(val)=> this.props.screenProps.navigate('Lobby',val)}/>
+                    <Build {...this.props.screenProps}/>
                 </Alert>
             </View>
 
@@ -180,40 +181,11 @@ export class Loading extends React.Component {
 class Build extends React.Component {
     
     constructor(props) {
-        super(props);
-
-        this.state = {
-            message:'Almost there!',
-        };
-        
+        super(props);   
     }
 
     _createRoom(){
-
-        var flag = false
-        var roomname = null
-
-        firebase.database().ref('rooms').once('value',snap=>{
-
-            while(!flag){
-                roomname = randomize('0',4);
-                if(!snap.child(roomname).exists()){
-                    flag = true
-                    this.setState({roomname:roomname})
-                }
-            }
-            
-            firebase.database().ref('rooms/').child(roomname).set({
-                owner: firebase.auth().currentUser.uid,
-                counter:0,
-            })
-
-            .then(()=>{
-                AsyncStorage.setItem('ROOM-KEY', roomname)
-            })
-
-            .then(()=>{ this.props.navigate(roomname) })
-        }) 
+        firebaseService.createRoom()
     }
 
     render() {
@@ -253,7 +225,7 @@ class Join extends React.Component {
                 if(snap.exists() && (snap.val().counter == 0)){
                     AsyncStorage.setItem('ROOM-KEY', code)
                     
-                    .then(()=>{ this.props.navigate(code) })
+                    .then(()=>{ this.props.navigate('Lobby',code) })
                 } else {
                     this.setState({errormessage:'Invalid Room Code'})
                     this.refs.error.shake(800)
