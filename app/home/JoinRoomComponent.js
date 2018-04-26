@@ -23,7 +23,7 @@ class JoinRoomComponent extends Component {
         
     }
 
-    _text(code){
+    onChange(code){
         if(code.length == 4){
             Keyboard.dismiss()
             firebase.database().ref('rooms').child(code).once('value', snap => {
@@ -55,7 +55,7 @@ class JoinRoomComponent extends Component {
                     placeholder='9999'
                     placeholderTextColor={colors.dead}
                     style={styles.textInput}
-                    onChangeText={val=>this._text(val)}
+                    onChangeText={val=>this.onChange(val)}
                 />
             </View>
 

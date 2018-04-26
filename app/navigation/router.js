@@ -3,7 +3,7 @@
 import React from "react";
 import { StackNavigator } from "react-navigation";
 
-import { Lobby } from '../screens/LobbyScreen.js';
+import Lobby from '../lobby/BasicLobbyScreen.js';
 import Home from '../home/BasicHomeScreen.js';
 import Loading from '../home/LoadingScreen.js';
 import Mafia from "../screens/MafiaScreen";

@@ -12,6 +12,7 @@ class FirebaseService{
 
     }
 
+    //Initialize firebase uid
     findUser() {
         if(!firebase.auth().currentUser){
             firebase.auth().signInAnonymously()

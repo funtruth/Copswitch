@@ -6,12 +6,10 @@ import {
     AsyncStorage,
 }   from 'react-native';
 
-
 import { Button } from '../components/Button.js';
 
 import randomize from 'randomatic';
 import colors from '../misc/colors.js';
-import Rolesheet from '../misc/roles.json';
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
