@@ -10,7 +10,8 @@ import {
 import * as Animatable from 'react-native-animatable';
 
 import colors from '../misc/colors.js';
-import firebase from '../firebase/FirebaseController.js';
+
+import firebaseService from '../firebase/firebaseService.js';
 
 class JoinRoomComponent extends Component {
 
@@ -18,26 +19,54 @@ class JoinRoomComponent extends Component {
         super(props);
 
         this.state = {
+            loading:false,
+            statusMessage:'Enter Roomcode',
             errorMessage:'Must be 4 Digits long',
         };
         
     }
 
+    //Valid roomcode format
     onChange(code){
-        if(code.length == 4){
+
+        if(!this.state.loading && code.length == 4){
+
             Keyboard.dismiss()
-            firebase.database().ref('rooms').child(code).once('value', snap => {
-                if(snap.exists() && (snap.val().counter == 0)){
-                    AsyncStorage.setItem('ROOM-KEY', code)
-                    
-                    .then(()=>{ this.props.navigate('Lobby',code) })
-                } else {
-                    this.setState({errorMessage:'Invalid Room Code'})
-                    this.refs.error.shake(800)
-                    this.refs.textInput.focus()
-                }
+            this.setState({
+                loading:true,
+                statusMessage:'Checking Room',
             })
+            this.checkRoom(code)
+
         }
+    }
+
+    async checkRoom(code){
+
+        const { valid, message } = await firebaseService.checkRoom(code);
+
+        this.setState({ statusMessage:message })
+
+        if(valid){
+            AsyncStorage.setItem('ROOM-KEY', code)
+            .then(()=>{
+
+                firebaseService.joinRoom(code)
+                this.props.navigate('Lobby',code)
+                
+                this.setState({ errorMessage:'Must be 4 Digits long' })
+                
+            })
+        } else {
+            this.refs.error.shake(800)
+            this.refs.textInput.focus()
+        }
+
+        this.setState({
+            loading:false,
+            statusMessage:'Enter Roomcode'
+        })
+
     }
 
     render() {
@@ -45,7 +74,7 @@ class JoinRoomComponent extends Component {
         return <View>
 
             <Text style = {styles.title}>JOIN</Text>
-            <Text style = {styles.subtitle}>Enter Roomcode</Text>
+            <Text style = {styles.subtitle}>{this.state.statusMessage}</Text>
 
             <View style = {{justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
                 <TextInput

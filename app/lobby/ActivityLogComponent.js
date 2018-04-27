@@ -2,46 +2,33 @@
 import React, { Component } from 'react';
 import {
     Text,
-    View,
     FlatList,
-    Dimensions,
 }   from 'react-native';
 
 import { Slide } from '../parents/Slide.js';
 
-import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
 
-class PlayerListComponent extends Component {
+class ActivityLogComponent extends Component {
 
     constructor(props) {
         super(props);
-
-        this.width = Dimensions.get('window').width,
-        this.height = Dimensions.get('window').height
-
-        this.state = {
-            list:[]
-        }
-    }
-
-    componentWillReceiveProps(newProps){
-        this.setState({
-            list:newProps.list
-        })
     }
 
     _renderItem(item){
-        return <Slide><Text style = {styles.playerList}>{item.name + item.message}</Text></Slide>
+        return <Slide>
+            <Text style = {styles.playerList}>{item.message}</Text>
+        </Slide>
     }
 
     render() {
 
         return <FlatList
-            data={this.state.list}
+            data={this.props.data}
             renderItem={({item}) => this._renderItem(item)}
             keyExtractor={item => item.key}
         />
+
     }
 }
 
@@ -56,4 +43,4 @@ const styles = {
     },
 }
 
-export default PlayerListComponent
+export default ActivityLogComponent

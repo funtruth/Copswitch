@@ -1,20 +1,14 @@
-
 import React, { Component } from 'react';
 import {
     View,
-    Image,
-    AsyncStorage,
     Text,
-    Keyboard,
-    Animated,
     Dimensions,
     TouchableOpacity,
-    TextInput
 }   from 'react-native';
 
 import { Alert } from '../components/Alert.js';
 import { Button } from '../components/Button.js';
-import { RuleBook } from '../screens/ListsScreen.js';
+import { RuleBook } from '../menu/ListsScreen.js';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -22,10 +16,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Join from './JoinRoomComponent';
 import Create from './CreateRoomComponent'
 
-import { Slide } from '../parents/Slide.js';
-
 import colors from '../misc/colors.js';
-import styles from '../misc/styles.js';
+import firebaseService from '../firebase/firebaseService.js';
 
 class BasicHomeScreen extends Component {
 
@@ -77,7 +69,7 @@ class BasicHomeScreen extends Component {
 
             <TouchableOpacity style = {{ flexDirection:'row', alignItems:'center', justifyContent:'center',
                 backgroundColor:colors.box, borderRadius:5, marginBottom:5, height:this.height*0.07, width:this.width*0.97 }}
-                onPress = {()=> {} }>
+                onPress = {()=> firebaseService.joinPlayerList() }>
                 <FontAwesome name='book'
                     style={{color:colors.font,fontSize:30}}/>
                 <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>

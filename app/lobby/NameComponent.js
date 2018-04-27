@@ -11,9 +11,11 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
-import firebase from '../firebase/FirebaseController.js';
+import firebaseService from '../firebase/firebaseService.js';
+
 import colors from '../misc/colors.js';
 
+const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ';
 
 class NameComponent extends Component {
     
@@ -28,6 +30,16 @@ class NameComponent extends Component {
 
     }
 
+    checkName(name){
+
+        if(!name || name.length > 12){
+            //too long
+        }
+
+        firebaseService.updateUsername(name)
+        
+    }
+
     render() {
         return <View style = {{height:this.height*0.1,flexDirection:'row'}}>
 
@@ -39,11 +51,9 @@ class NameComponent extends Component {
                 autoCapitalize='words'
                 placeholder='Nickname'
                 placeholderTextColor={colors.dead}
-                maxLength={10}
+                maxLength={12}
                 style={[styles.nameInput,{width:this.width*0.4}]}
-                onSubmitEditing = {(event)=>{
-                    this.props.name(event.nativeEvent.text.trim());
-                }}
+                onSubmitEditing = { (event) => this.checkName(event.nativeEvent.text.trim()) }
             />
 
             <AnimatedOpacity

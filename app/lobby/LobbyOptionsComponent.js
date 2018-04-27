@@ -11,8 +11,8 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
-import firebase from '../firebase/FirebaseController.js';
 import colors from '../misc/colors.js';
+import firebaseService from '../firebase/firebaseService.js';
 
 class LobbyOptionsComponent extends Component {
 
@@ -24,6 +24,20 @@ class LobbyOptionsComponent extends Component {
 
     }
 
+    _leaveRoom() {
+
+        firebaseService.leaveLobby()
+
+        this.props.navigate('Home')
+        
+    }
+
+    _startGame() {
+
+        firebaseService.startGame()
+        
+    }
+
     render(){
         return <Animated.View style = {{
             height:this.height*0.1, 
@@ -31,7 +45,7 @@ class LobbyOptionsComponent extends Component {
     
                 <AnimatedOpacity
                     style = {{alignItems:'center', flex:0.17}}
-                    onPress = {this.props.leave}>
+                    onPress = {() => this._leaveRoom()}>
                     <FontAwesome name='close'
                         style={{color:colors.font, fontSize:25}}/>
                     <Text style = {styles.font}>Leave</Text>
@@ -39,8 +53,9 @@ class LobbyOptionsComponent extends Component {
 
                 <AnimatedOpacity
                     style = {{alignItems:'center', flex:0.20}}
-                    onPress = {this.props.start}
-                    disabled = {!this.props.owner}>
+                    onPress = {() => this._startGame()}
+                    //disabled = {!this.props.owner}
+                >
                     <FontAwesome name={this.props.owner?'check':'lock'}
                         style={{color:this.props.owner?colors.font:colors.dead, fontSize:35}}/>
                     <Text style = {[styles.font,{color:this.props.owner?colors.font:colors.dead}]}>Start</Text>

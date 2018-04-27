@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import {
     View,
@@ -8,44 +7,34 @@ import {
 
 import { Button } from '../components/Button.js';
 
-import randomize from 'randomatic';
 import colors from '../misc/colors.js';
 
-//Firebase
-import firebase from '../firebase/FirebaseController.js';
 import firebaseService from '../firebase/firebaseService.js';
 
 class CreateRoomComponent extends Component {
     
     constructor(props) {
-        super(props);   
+        super(props);
+
+        this.state = {
+            loading:false
+        }
     }
 
-    _createRoom() {
-        var flag = false
-        var roomname = null
+    async _createRoom() {
+        
+        this.setState({
+            loading:true
+        })
 
-        firebase.database().ref('rooms').once('value',snap=>{
+        const roomId = await firebaseService.createRoom()
+        
+        this.props.navigate('Lobby',roomId)
 
-            while(!flag){
-                roomname = randomize('0',4);
-                if(!snap.child(roomname).exists()){
-                    flag = true
-                }
-            }
-            
-            firebase.database().ref('rooms/').child(roomname).set({
-                owner: firebase.auth().currentUser.uid,
-                counter:0,
-            })
+        this.setState({
+            loading:false
+        })
 
-            .then(()=>{
-                AsyncStorage.setItem('ROOM-KEY', roomname)
-                firebaseService.createRoom(roomname)
-            })
-
-            .then(()=>{ this.props.navigate('Lobby',roomname) })
-        }) 
     }
 
     render() {
@@ -58,7 +47,7 @@ class CreateRoomComponent extends Component {
                 horizontal={0.35}
                 color = {colors.dead}
                 backgroundColor = {colors.box}
-                onPress={()=>this._createRoom()}
+                onPress={()=> this._createRoom() }
             >
                 <Text style = {styles.buttonText}>Go!</Text>
             </Button>

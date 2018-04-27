@@ -24,6 +24,7 @@ class LoadingScreen extends Component {
 
         //Create an anonymous account if it doesn't exist already
         firebaseService.findUser()
+        firebaseService.initUser()
 
         //Debugging
         //this.reset()
@@ -35,13 +36,13 @@ class LoadingScreen extends Component {
         //Sends user to correct screen
         AsyncStorage.getItem('GAME-KEY',(error,result)=>{
             
-            //result = '0028'
-
             if(result != null){
+                firebaseService.initRoom(result)
                 this.props.screenProps.navigate('Mafia',result)
             } else {
                 AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
                     if(result != null){
+                        firebaseService.initRoom(result)
                         this.props.screenProps.navigate('Lobby',result)
                     } else {
                         this.props.screenProps.navigate('Home')

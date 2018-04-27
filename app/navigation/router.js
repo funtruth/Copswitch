@@ -3,10 +3,10 @@
 import React from "react";
 import { StackNavigator } from "react-navigation";
 
-import Lobby from '../lobby/BasicLobbyScreen.js';
-import Home from '../home/BasicHomeScreen.js';
-import Loading from '../home/LoadingScreen.js';
-import Mafia from "../screens/MafiaScreen";
+import Loading from '../home/LoadingScreen';
+import Home from '../home/BasicHomeScreen';
+import Lobby from '../lobby/BasicLobbyScreen';
+import Mafia from "../game/MafiaScreen";
 
 const Router = StackNavigator(
       {

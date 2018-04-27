@@ -24,7 +24,7 @@ import { Rolecard } from '../components/Rolecard.js';
 import { Events } from '../components/Events.js';
 import { General } from '../components/General.js';
 import { Private } from '../components/Private.js';
-import { RuleBook, InfoPage, Roles } from './ListsScreen.js';
+import { RuleBook, InfoPage, Roles } from '../menu/ListsScreen.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
