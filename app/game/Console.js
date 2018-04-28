@@ -1,18 +1,16 @@
 import React, { Component } from 'react';
-import { View, Text, Animated, Dimensions } from 'react-native';
+import { 
+    View, 
+    Text, 
+    Animated, 
+    Dimensions 
+} from 'react-native';
 
-import colors from '../misc/colors.js';
-import Phases from '../misc/phases.json';
-import { Button } from './Button';
-
-const FADEOUT_ANIM = 200;
-const BLINK_ANIM = 50;
-const FADEIN_ANIM = 600;
-
-const MARGIN = 10;
+import Phases from './phases.json';
+import { Button } from '../components/Button';
 
 
-export class Console extends React.Component {
+class Console extends Component {
         
     constructor(props) {
         super(props);
@@ -46,4 +44,16 @@ export class Console extends React.Component {
         )
     }
 }
+
+const styles = {
+    choiceButton: {
+        fontFamily:'FredokaOne-Regular',
+        fontSize: 17,
+        alignSelf: 'center',
+        color: colors.shadow,
+        margin:4,
+    },
+}
+
+export default Console
 

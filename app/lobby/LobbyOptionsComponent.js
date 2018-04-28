@@ -50,11 +50,8 @@ class LobbyOptionsComponent extends Component {
 
     _exit() {
 
-        if(this.ownerFlag){
-            firebaseService.deleteRoom()
-        } else {
-            firebaseService.leaveLobby()
-        }
+        if(this.state.ownerFlag) firebaseService.deleteRoom()
+        else firebaseService.leaveLobby()
 
         this.props.navigate('Home')
         
@@ -62,7 +59,7 @@ class LobbyOptionsComponent extends Component {
 
     _startGame() {
 
-        if(this.ownerFlag){
+        if(this.state.ownerFlag){
             firebaseService.startGame()
         }
 

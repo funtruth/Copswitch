@@ -13,17 +13,20 @@ class FirebaseService{
 
         this.roomId = null
 
-        //Basic refs
+        //Basic
         this.roomRef = null
-        this.roomInfoRef = null
-        this.roomInfoRolesRef = null
-        this.myRoomInfoRef = null
 
-        //Lobby refs
-        this.roomInfoLobbyRef = null
-        this.roomInfoLogRef = null
+        //Room Info
+        this.roomInfoRef = null
         this.roomInfoOwnerRef = null
         this.roomInfoStatusRef = null
+
+        this.roomInfoLobbyRef = null
+        this.roomInfoLogRef = null
+        this.roomInfoRolesRef = null
+
+        this.myRoomInfoRef = null
+
 
     }
 
@@ -61,17 +64,42 @@ class FirebaseService{
 
         this.roomId = roomId
 
+        //Basic
         this.roomRef = firebase.database().ref(`rooms/${roomId}`)
 
-        this.myRoomInfoRef = firebase.database().ref(`roomInfo/${roomId}/lobby/${this.uid}`)
-
+        //Room Info
         this.roomInfoRef = firebase.database().ref(`roomInfo/${roomId}`)
-        this.roomInfoRolesRef = firebase.database().ref(`roomInfo/${roomId}/roles`)
+        this.roomInfoOwnerRef = firebase.database().ref(`roomInfo/${this.roomId}/owner`)
+        this.roomInfoStatusRef = firebase.database().ref(`roomInfo/${this.roomId}/status`)
 
         this.roomInfoLobbyRef = firebase.database().ref(`roomInfo/${this.roomId}/lobby`)
         this.roomInfoLogRef = firebase.database().ref(`roomInfo/${this.roomId}/log`)
-        this.roomInfoOwnerRef = firebase.database().ref(`roomInfo/${this.roomId}/owner`)
-        this.roomInfoStatusRef = firebase.database().ref(`roomInfo/${this.roomId}/status`)
+        this.roomInfoRolesRef = firebase.database().ref(`roomInfo/${roomId}/roles`)
+
+        this.myRoomInfoRef = firebase.database().ref(`roomInfo/${roomId}/lobby/${this.uid}`)
+
+    }
+
+    wipeRoom(){
+
+        this.roomId = null
+
+        //Basic
+        this.roomRef = null
+
+        //Room Info
+        this.roomInfoRef = null
+        this.roomInfoOwnerRef = null
+        this.roomInfoStatusRef = null
+
+        this.roomInfoLobbyRef = null        
+        this.roomInfoLogRef = null
+        this.roomInfoRolesRef = null
+
+        this.myRoomInfoRef = null
+
+        AsyncStorage.removeItem('ROOM-KEY')
+        AsyncStorage.removeItem('GAME-KEY')
 
     }
 
@@ -128,10 +156,10 @@ class FirebaseService{
 
         return {
             roomId: this.roomId,
-            ownerRef: this.roomInfoOwnerRef,
-            myInfoRef: this.myRoomInfoRef,
-            logRef: this.roomInfoLogRef,
-            statusRef: this.roomInfoStatusRef,
+            statusRef: this.roomInfoStatusRef, //room status 
+            ownerRef: this.roomInfoOwnerRef, //room owner
+            logRef: this.roomInfoLogRef, //activity log
+            myInfoRef: this.myRoomInfoRef, //my name
         }
 
     }
@@ -145,11 +173,7 @@ class FirebaseService{
 
         this.myRoomInfoRef.remove()
 
-        this.roomId = null
-
-        this.roomRef = null
-        this.roomInfoRef = null
-        this.myRoomInfoRef = null
+        this.wipeRoom()
 
     }
 
@@ -162,11 +186,7 @@ class FirebaseService{
 
         this.roomRef.remove()
 
-        this.roomId = null
-
-        this.roomRef = null
-        this.roomInfoRef = null
-        this.myRoomInfoRef = null
+        this.wipeRoom()
 
     }
 
@@ -232,13 +252,23 @@ class FirebaseService{
             })
 
             this.roomRef.child('list').set(listshot)
-                .then(()=>{ 
-                    this.roomRef.child('ready').set(readyshot) 
-                })
-                    .then(()=>{ 
-                        this.roomInfoRef.child('status').set('Starting') 
-                    })
+            .then(()=>{ 
+                this.roomRef.child('ready').set(readyshot) 
+            })
+            .then(()=>{ 
+                this.roomInfoRef.child('status').set('Starting') 
+            })
 
+        }
+
+    }
+
+    //In game
+    fetchGameListeners() {
+
+        return {
+            roomId: this.roomId,
+            roomRef: this.roomRef
         }
 
     }

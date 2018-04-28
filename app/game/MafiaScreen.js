@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { Component } from 'react';
 import {
     View,
     Image,
@@ -12,30 +12,29 @@ import {
 }   from 'react-native';
 
 import colors from '../misc/colors.js';
-import styles from '../misc/styles.js';
 import Rolesheet from '../misc/roles.json';
 import Screens from '../misc/screens.json';
-import Phases from '../misc/phases.json';
+import Phases from './phases.json';
 
 import { Alert } from '../components/Alert.js';
 import { Button } from '../components/Button.js';
-import { Console } from '../components/Console.js';
+import { Console } from './Console.js';
 import { Rolecard } from '../components/Rolecard.js';
 import { Events } from '../components/Events.js';
-import { General } from '../components/General.js';
-import { Private } from '../components/Private.js';
+import { General } from './General.js';
+import { Private } from './Private.js';
 import { RuleBook, InfoPage, Roles } from '../menu/ListsScreen.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import randomize from 'randomatic';
 import * as Animatable from 'react-native-animatable';
 const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 
 //Firebase
 import firebase from '../firebase/FirebaseController.js';
+import firebaseService from '../firebase/firebaseService.js';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;
@@ -43,7 +42,7 @@ const FADEIN_ANIM = 600;
 
 const MARGIN = 10;
 
-export default class Mafia_Screen extends React.Component {
+class MafiaScreen extends Component {
 
 constructor(props) {
     super(props);
@@ -110,6 +109,8 @@ constructor(props) {
 }
 
 componentWillMount() {
+
+    const { roomId, roomRef } = firebaseService.fetchGameListeners()
 
     this.readyRef.on('value',snap=>{
         if(snap.exists()){
@@ -782,8 +783,30 @@ _renderNav(){
                 second = {() => this._second()}
             />
 
-            <Private />
+            <Private {...this.props.screenProps}/>
 
         </View>
     }
 }
+
+const styles = {
+    player: {
+        fontSize: 16,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.shadow,
+        margin:5,
+    },
+    plainfont: {
+        color: colors.font,
+        margin:5,
+        fontFamily: 'FredokaOne-Regular',
+    },
+    cancelButton: {
+        fontSize: 16,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.shadow,
+        margin:5,
+    }
+}
+
+export default MafiaScreen
