@@ -60,6 +60,10 @@ class FirebaseService{
         this.roomInfoRolesRef = firebase.database().ref(`roomInfo/${roomId}/roles`)
         this.myRoomInfoRef = firebase.database().ref(`roomInfo/${roomId}/lobby/${this.uid}`)
 
+        this.roomInfoLobbyRef = firebase.database().ref(`roomInfo/${this.roomId}/lobby`)
+        this.roomInfoLogRef = firebase.database().ref(`roomInfo/${this.roomId}/log`)
+        this.roomInfoStatusRef = firebase.database().ref(`roomInfo/${this.roomId}/status`)
+
     }
 
     //Home
@@ -111,11 +115,7 @@ class FirebaseService{
     }
 
     //Lobby
-    turnOnLobbyListeners(){
-
-        this.roomInfoLobbyRef = firebase.database().ref(`roomInfo/${this.roomId}/lobby`)
-        this.roomInfoLogRef = firebase.database().ref(`roomInfo/${this.roomId}/log`)
-        this.roomInfoStatusRef = firebase.database().ref(`roomInfo/${this.roomId}/status`)
+    fetchLobbyListeners(){
 
         return {
             roomId: this.roomId,
