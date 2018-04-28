@@ -9,10 +9,42 @@ import { Slide } from '../parents/Slide.js';
 
 import colors from '../misc/colors.js';
 
+import firebaseService from '../firebase/firebaseService';
+
 class ActivityLogComponent extends Component {
 
     constructor(props) {
         super(props);
+
+        this.state = {
+            activityLog: []
+        }
+
+        this.infoRef = null
+    }
+
+    componentWillMount() {
+
+        //import all listeners
+        const { logRef } = firebaseService.fetchLobbyListeners()
+
+        this.infoRef = logRef
+
+        this.infoRef.on('child_added',snap=>{
+            if(snap.exists()){
+                this.setState(prevState => ({
+                    activityLog: [{
+                        message: snap.val(),
+                        key: snap.key
+                    }, ...prevState.activityLog]
+                }))
+            }
+        })
+
+    }
+
+    componentWillUnmount() {
+        if(this.infoRef) this.infoRef.off()
     }
 
     _renderItem(item){
@@ -24,8 +56,9 @@ class ActivityLogComponent extends Component {
     render() {
 
         return <FlatList
-            data={this.props.data}
+            data={this.state.activityLog}
             renderItem={({item}) => this._renderItem(item)}
+            initialNumToRender={15}
             keyExtractor={item => item.key}
         />
 

@@ -25,18 +25,14 @@ class BasicLobbyScreen extends Component {
 
         this.state = {
 
-            owner:false,
-
             showroles:false,
-            activityLog: [],
 
         };
 
         //firebase
         this.roomId = null
-        this.roomInfoLobbyRef = null
-        this.roomInfoLogRef = null
-        this.roomInfoStatusRef = null
+
+        this.infoRef = null
 
         this.width          = Dimensions.get('window').width;
         this.height         = Dimensions.get('window').height;
@@ -48,38 +44,22 @@ class BasicLobbyScreen extends Component {
     componentWillMount() {
 
         //import all listeners
-        const { 
-            roomId,
-            lobbyRef, 
-            logRef,
-            statusRef 
-        } = firebaseService.fetchLobbyListeners()
+        const { roomId, statusRef } = firebaseService.fetchLobbyListeners()
 
         this.roomId = roomId
-        this.roomInfoLobbyRef = lobbyRef
-        this.roomInfoLogRef = logRef
-        this.roomInfoStatusRef = statusRef
-        
-        this.roomInfoLogRef.on('child_added',snap=>{
-            this.setState(prevState => ({
-                activityLog: [{
-                    message: snap.val(),
-                    key: snap.key
-                }, ...prevState.activityLog]
-            }))
-        })
 
-        this.roomInfoStatusRef.on('value',snap=>{
-            if(snap.val() == 'Starting') this.startGame()
+        this.infoRef = statusRef
+
+        this.infoRef.on('value',snap=>{
+            if(snap.exists()){
+                if(snap.val() == 'Starting') this.startGame()
+            }
         })
 
     }
 
-    componentWillUnmount(){
-
-        if(this.roomInfoStatusRef) this.roomStatusRef.off()
-        if(this.roomInfoLogRef) this.roomInfoLobbyRef.off()
-
+    componentWillUnmount() {
+        if(this.infoRef) this.infoRef.off()
     }
 
     startGame(){
@@ -102,7 +82,7 @@ class BasicLobbyScreen extends Component {
 
             <View style = {{height:this.height*0.6}}>
                 <Alert visible = {!this.state.showroles} flex={0.6}>
-                    <ActivityLog data = {this.state.activityLog}/>
+                    <ActivityLog />
                 </Alert>
 
                 <Alert visible = {this.state.showroles} flex={0.5}>
@@ -112,7 +92,6 @@ class BasicLobbyScreen extends Component {
 
             <LobbyOptions
                 {...this.props.screenProps}
-                owner = {this.state.owner}
                 menu  = {()=> this.setState({showroles:!this.state.showroles})}
             />
         </View>

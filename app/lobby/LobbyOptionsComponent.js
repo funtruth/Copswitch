@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import {
     Text,
@@ -19,14 +18,43 @@ class LobbyOptionsComponent extends Component {
     constructor(props) {
         super(props);
 
+        this.state = {
+            ownerFlag: false
+        }
+
         this.width = Dimensions.get('window').width,
         this.height = Dimensions.get('window').height
 
     }
 
-    _leaveRoom() {
+    componentWillMount() {
 
-        firebaseService.leaveLobby()
+        //import all listeners
+        const { ownerRef } = firebaseService.fetchLobbyListeners()
+
+        this.infoRef = ownerRef
+        
+        this.infoRef.on('value',snap=>{
+            if(snap.exists()){
+                this.setState({
+                    ownerFlag: snap.val() == firebaseService.getUid()
+                })
+            }
+        })
+
+    }
+
+    componentWillUnmount(){
+        if(this.infoRef) this.infoRef.off()
+    }
+
+    _exit() {
+
+        if(this.ownerFlag){
+            firebaseService.deleteRoom()
+        } else {
+            firebaseService.leaveLobby()
+        }
 
         this.props.navigate('Home')
         
@@ -34,8 +62,10 @@ class LobbyOptionsComponent extends Component {
 
     _startGame() {
 
-        firebaseService.startGame()
-        
+        if(this.ownerFlag){
+            firebaseService.startGame()
+        }
+
     }
 
     render(){
@@ -45,7 +75,7 @@ class LobbyOptionsComponent extends Component {
     
                 <AnimatedOpacity
                     style = {{alignItems:'center', flex:0.17}}
-                    onPress = {() => this._leaveRoom()}>
+                    onPress = {() => this._exit()}>
                     <FontAwesome name='close'
                         style={{color:colors.font, fontSize:25}}/>
                     <Text style = {styles.font}>Leave</Text>
@@ -54,11 +84,11 @@ class LobbyOptionsComponent extends Component {
                 <AnimatedOpacity
                     style = {{alignItems:'center', flex:0.20}}
                     onPress = {() => this._startGame()}
-                    //disabled = {!this.props.owner}
+                    disabled = {!this.state.ownerFlag}
                 >
-                    <FontAwesome name={this.props.owner?'check':'lock'}
-                        style={{color:this.props.owner?colors.font:colors.dead, fontSize:35}}/>
-                    <Text style = {[styles.font,{color:this.props.owner?colors.font:colors.dead}]}>Start</Text>
+                    <FontAwesome name={this.state.ownerFlag?'check':'lock'}
+                        style={{color:this.state.ownerFlag?colors.font:colors.dead, fontSize:35}}/>
+                    <Text style = {[styles.font,{color:this.state.ownerFlag?colors.font:colors.dead}]}>Start</Text>
                 </AnimatedOpacity>
 
                 <AnimatedOpacity

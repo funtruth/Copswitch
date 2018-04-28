@@ -3,40 +3,107 @@ import React, { Component } from 'react';
 import {
     TextInput,
     View,
-    Animated,
     TouchableOpacity,
     Dimensions,
 }   from 'react-native';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
 import firebaseService from '../firebase/firebaseService.js';
 
 import colors from '../misc/colors.js';
 
 const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ';
+const maxCharLen = 12;
 
 class NameComponent extends Component {
     
     constructor(props) {
         super(props);
 
-        this.width = Dimensions.get('window').width,
+        this.state = {
+            name:null
+        }
+
+        this.invalidChars = []
+        this.infoRef = null
+
+        this.width = Dimensions.get('window').width
         this.height = Dimensions.get('window').height
     }
 
-    componentWillReceiveProps(newProps){
+    componentWillMount() {
 
+        //import all listeners
+        const { myInfoRef } = firebaseService.fetchLobbyListeners()
+
+        this.infoRef = myInfoRef
+        
+        this.infoRef.on('value',snap=>{
+            if(snap.exists()){
+                this.setState({
+                    name: snap.val().name
+                })
+            }
+        })
+
+    }
+
+    componentWillUnmount(){
+        if(this.infoRef) this.infoRef.off()
+    }
+
+    onChange(name){
+        this.setState({
+            name:name
+        })
     }
 
     checkName(name){
 
-        if(!name || name.length > 12){
+        this.invalidChars = []
+
+        if(!name){
+            //must give a name
+            return
+        } 
+        
+        if(name.length > maxCharLen){
             //too long
+            return
         }
 
-        firebaseService.updateUsername(name)
+        for(var i=0; i<name.length; i++){
+
+            var isCharValid = false
+
+            for(var j=0; j<allowedChars.length; j++){
+
+                if(name.charAt(i) === allowedChars.charAt(j)) {
+
+                    isCharValid = true
+                    break
+
+                }
+
+            }
+
+            if(!isCharValid){
+                this.invalidChars.push( name.charAt(i) )
+            }
+
+        }
+
+        if(this.invalidChars.length > 0){
+
+            alert('not a valid name.')
+            return
+
+        } else {
+
+            firebaseService.updateUsername(name)
+            
+        }
         
     }
 
@@ -49,19 +116,21 @@ class NameComponent extends Component {
                 ref = 'alias'
                 keyboardType='default'
                 autoCapitalize='words'
+                value = {this.state.name}
                 placeholder='Nickname'
                 placeholderTextColor={colors.dead}
-                maxLength={12}
+                maxLength={maxCharLen}
                 style={[styles.nameInput,{width:this.width*0.4}]}
+                onChangeText = { (text) => this.onChange(text) }
                 onSubmitEditing = { (event) => this.checkName(event.nativeEvent.text.trim()) }
             />
 
-            <AnimatedOpacity
+            <TouchableOpacity
                 style = {{alignItems:'center', justifyContent:'center', width:45}}
                 onPress = {()=> this.refs.alias.focus() }>
                 <FontAwesome name='pencil'
                     style={{color:colors.font, fontSize:30}}/>
-            </AnimatedOpacity>
+            </TouchableOpacity>
 
         </View>
     }

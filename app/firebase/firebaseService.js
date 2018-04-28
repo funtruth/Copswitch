@@ -2,6 +2,7 @@ import firebase from './FirebaseController'
 
 import { AsyncStorage } from 'react-native'
 import randomize from 'randomatic';
+import { Messages, Errors } from '../commands/strings';
 
 class FirebaseService{
 
@@ -9,7 +10,6 @@ class FirebaseService{
 
         this.uid = null
         this.ign = null
-        this.owner = false
 
         this.roomId = null
 
@@ -22,6 +22,7 @@ class FirebaseService{
         //Lobby refs
         this.roomInfoLobbyRef = null
         this.roomInfoLogRef = null
+        this.roomInfoOwnerRef = null
         this.roomInfoStatusRef = null
 
     }
@@ -36,6 +37,11 @@ class FirebaseService{
         return firebase.database().ref(path).once('value').then(snap => {
             return snap;
         });
+    }
+
+    //Fetch
+    getUid(){
+        return this.uid
     }
 
     //Loading
@@ -56,12 +62,15 @@ class FirebaseService{
         this.roomId = roomId
 
         this.roomRef = firebase.database().ref(`rooms/${roomId}`)
+
+        this.myRoomInfoRef = firebase.database().ref(`roomInfo/${roomId}/lobby/${this.uid}`)
+
         this.roomInfoRef = firebase.database().ref(`roomInfo/${roomId}`)
         this.roomInfoRolesRef = firebase.database().ref(`roomInfo/${roomId}/roles`)
-        this.myRoomInfoRef = firebase.database().ref(`roomInfo/${roomId}/lobby/${this.uid}`)
 
         this.roomInfoLobbyRef = firebase.database().ref(`roomInfo/${this.roomId}/lobby`)
         this.roomInfoLogRef = firebase.database().ref(`roomInfo/${this.roomId}/log`)
+        this.roomInfoOwnerRef = firebase.database().ref(`roomInfo/${this.roomId}/owner`)
         this.roomInfoStatusRef = firebase.database().ref(`roomInfo/${this.roomId}/status`)
 
     }
@@ -119,34 +128,39 @@ class FirebaseService{
 
         return {
             roomId: this.roomId,
-            lobbyRef: this.roomInfoLobbyRef,
+            ownerRef: this.roomInfoOwnerRef,
+            myInfoRef: this.myRoomInfoRef,
             logRef: this.roomInfoLogRef,
             statusRef: this.roomInfoStatusRef,
         }
 
     }
 
-    turnOffLobbyListeners(){
+    leaveLobby(){
 
-        //placeholder
-        if(this.roomInfoLobbyRef){
-            this.roomInfoLobbyRef.off()
-        }
-        if(this.roomStatusRef){
-            this.roomStatusRef.off()
-        }
+        this.activityLog(this.ign + Messages.LEAVE_ROOM)
+
+        //If already left lobby, don't do anything
+        if(!this.roomRef) return
+
+        this.myRoomInfoRef.remove()
+
+        this.roomId = null
+
+        this.roomRef = null
+        this.roomInfoRef = null
+        this.myRoomInfoRef = null
 
     }
 
-    leaveLobby(){
+    deleteRoom() {
 
-        this.activityLog(this.ign + ' left the room')
+        this.activityLog(this.ign + Messages.DELETE_ROOM)
 
-        if(this.owner){
-            this.roomRef.remove()
-        } else {
-            this.myRoomInfoRef.remove()
-        }
+        //If already left lobby, don't do anything
+        if(!this.roomRef) return
+
+        this.roomRef.remove()
 
         this.roomId = null
 
@@ -164,7 +178,7 @@ class FirebaseService{
             name:newName,
         })
 
-        this.activityLog(newName + ' joined the room')
+        this.activityLog(newName + Messages.JOIN_ROOM)
     }
 
     activityLog(message){
