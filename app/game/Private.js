@@ -15,7 +15,7 @@ class Private extends Component {
 
     debug(){
 
-        firebaseService.wipeRoom()
+        firebaseService.wipeRefs()
         this.props.navigate('Home')
 
     }

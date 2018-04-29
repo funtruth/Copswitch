@@ -44,11 +44,9 @@ class BasicLobbyScreen extends Component {
     componentWillMount() {
 
         //import all listeners
-        const { roomId, statusRef } = firebaseService.fetchLobbyListeners()
-
-        this.roomId = roomId
-
-        this.infoRef = statusRef
+        this.infoRef = firebaseService.fetchRoomInfoListener('status')
+    
+        this.roomId = firebaseService.getRoomId()
 
         this.infoRef.on('value',snap=>{
             if(snap.exists()){

@@ -18,11 +18,11 @@ import Phases from './phases.json';
 
 import { Alert } from '../components/Alert.js';
 import { Button } from '../components/Button.js';
-import { Console } from './Console.js';
+import Console from './Console.js';
 import { Rolecard } from '../components/Rolecard.js';
 import { Events } from '../components/Events.js';
-import { General } from './General.js';
-import { Private } from './Private.js';
+import General from './General.js';
+import Private from './Private.js';
 import { RuleBook, InfoPage, Roles } from '../menu/ListsScreen.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -47,11 +47,7 @@ class MafiaScreen extends Component {
 constructor(props) {
     super(props);
 
-    const { params } = this.props.navigation.state;
-    const roomname = params.roomname;
-
     this.state = {
-        roomname:           params.roomname,
         counter:            '',
         phase:              null,
         phasename:          '',
@@ -90,9 +86,33 @@ constructor(props) {
     this.height             = Dimensions.get('window').height;
     this.width              = Dimensions.get('window').width;
     this.icon               = this.width*0.12;
-    this.user               = firebase.auth().currentUser.uid;
 
-    this.roomRef            = firebase.database().ref('rooms').child(roomname);
+    this.user               = null
+
+    this.roomRef            = null
+    this.myReadyRef         = null
+    this.readyRef           = null
+    
+    this.listRef            = null
+    this.nominationRef      = null
+    this.ownerRef           = null
+    this.counterRef         = null
+
+    //Owner Listening
+    this.choiceRef          = null
+    this.loadedRef          = null
+
+    //Focusing on newsRef as main
+    this.newsRef            = null
+}
+
+componentWillMount() {
+
+    const { roomRef }       = firebaseService.fetchGameListener('')
+    this.user               = firebaseService.getUid()
+
+    this.roomRef            = roomRef
+
     this.readyRef           = this.roomRef.child('ready');
     
     this.listRef            = this.roomRef.child('list');
@@ -106,11 +126,6 @@ constructor(props) {
 
     //Focusing on newsRef as main
     this.newsRef            = this.roomRef.child('news');
-}
-
-componentWillMount() {
-
-    const { roomId, roomRef } = firebaseService.fetchGameListeners()
 
     this.readyRef.on('value',snap=>{
         if(snap.exists()){
@@ -133,7 +148,7 @@ componentWillMount() {
             for(i=0;i<this.namelist.length;i++){
 
                 this.namelist[i].key = i;
-                
+
                 //Generate my info
                 if(this.namelist[i].uid == this.user){
                     
@@ -591,36 +606,6 @@ _resetDayStatuses() {
 
 }
 
-//Pressing any name button
-_nameBtnPress(item){
-
-    if(this.state.phase == 1){ 
-        if(this.state.amidead){
-            this.setState({message:'You are Dead.'})
-        } else if (item.dead){
-            this.setState({message:'That player is Dead.'})
-        } else if (item.immune){
-            this.setState({message:'That player is Immune'})
-        } else {
-            this.setState({message:'You have selected ' + item.name + '.'})
-            this.choiceRef.child(this.state.place).set(item.key).then(()=>{this.myReadyRef.set(true)})
-        }
-    } else if (this.state.phase == 0) {
-        
-        if(this.state.amidead){
-            this.setState({message:'You are Dead.'})
-        } else if (this.state.targettown && item.type != 2){
-            this.setState({message:'Select a Town Player.'})
-        } else if (this.state.targetdead && !item.dead){
-            this.setState({message:'Select a Dead player.'})
-        } else {
-            this.setState({message:'You have selected ' + item.name + '.'})
-            this.choiceRef.child(this.state.place).set(item.key).then(()=>{this.myReadyRef.set(true)})
-        }
-    }
-    
-}
-
 _first() {
 
     if(this.state.phase == 1){
@@ -666,39 +651,6 @@ _gameOver() {
     this.props.screenProps.navigate('Home')
 }
 
-//TODO MOVE Playerlist to 'List.js' component to animate staggered
-_renderList(){
-    return <FlatList
-        data={this.namelist}
-        contentContainerStyle={{alignSelf:'center', width:this.width*0.8}}
-        renderItem={({item}) => (this._renderItem(item))}
-        numColumns={2}
-        keyExtractor={item => item.uid}
-    />
-}
-
-_renderItem(item){
-    return <Button
-        flex = {0.5}
-        horizontal = {0.9}
-        opacity = {item.dead?0.6:1}
-        onPress = {() => { this._nameBtnPress(item) }}
-    >
-        <View style = {{flexDirection:'row'}}>
-            <View style = {{flex:0.3,justifyContent:'center',alignItems:'center'}}>
-            <MaterialCommunityIcons name={item.dead?'skull':item.readyvalue?
-                'check-circle':(item.immune?'needle':(item.status?item.statusname:null))}
-                style={{color:colors.shadow, fontSize:15, alignSelf:'center'}}/>
-            </View>
-            <View style = {{flex:0.7, justifyContent:'center'}}>
-                <Text style = {styles.player}>{false?item.name + ' (' + Rolesheet[item.roleid].name + ') ':
-                    item.name}</Text>
-            </View>
-        </View>
-    
-    </Button>
-
-}
 
 _renderWaiting(){
     return <View>

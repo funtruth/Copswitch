@@ -26,6 +26,7 @@ class NameComponent extends Component {
         }
 
         this.invalidChars = []
+        this.uid = null
         this.infoRef = null
 
         this.width = Dimensions.get('window').width
@@ -35,9 +36,8 @@ class NameComponent extends Component {
     componentWillMount() {
 
         //import all listeners
-        const { myInfoRef } = firebaseService.fetchLobbyListeners()
-
-        this.infoRef = myInfoRef
+        this.uid = firebaseService.getUid()
+        this.infoRef = firebaseService.fetchRoomInfoListener(`lobby/${this.uid}`)
         
         this.infoRef.on('value',snap=>{
             if(snap.exists()){

@@ -18,13 +18,6 @@ class FirebaseService{
 
         //Room Info
         this.roomInfoRef = null
-        this.roomInfoOwnerRef = null
-        this.roomInfoStatusRef = null
-
-        this.roomInfoLobbyRef = null
-        this.roomInfoLogRef = null
-        this.roomInfoRolesRef = null
-
         this.myRoomInfoRef = null
 
 
@@ -47,6 +40,10 @@ class FirebaseService{
         return this.uid
     }
 
+    getRoomId(){
+        return this.roomId
+    }
+
     //Loading
     findUser() {
         if(!firebase.auth().currentUser){
@@ -60,7 +57,9 @@ class FirebaseService{
         })
     }
 
-    initRoom(roomId){
+    initRefs(roomId){
+
+        if(!roomId) return
 
         this.roomId = roomId
 
@@ -69,18 +68,11 @@ class FirebaseService{
 
         //Room Info
         this.roomInfoRef = firebase.database().ref(`roomInfo/${roomId}`)
-        this.roomInfoOwnerRef = firebase.database().ref(`roomInfo/${this.roomId}/owner`)
-        this.roomInfoStatusRef = firebase.database().ref(`roomInfo/${this.roomId}/status`)
-
-        this.roomInfoLobbyRef = firebase.database().ref(`roomInfo/${this.roomId}/lobby`)
-        this.roomInfoLogRef = firebase.database().ref(`roomInfo/${this.roomId}/log`)
-        this.roomInfoRolesRef = firebase.database().ref(`roomInfo/${roomId}/roles`)
-
         this.myRoomInfoRef = firebase.database().ref(`roomInfo/${roomId}/lobby/${this.uid}`)
 
     }
 
-    wipeRoom(){
+    wipeRefs(){
 
         this.roomId = null
 
@@ -89,13 +81,6 @@ class FirebaseService{
 
         //Room Info
         this.roomInfoRef = null
-        this.roomInfoOwnerRef = null
-        this.roomInfoStatusRef = null
-
-        this.roomInfoLobbyRef = null        
-        this.roomInfoLogRef = null
-        this.roomInfoRolesRef = null
-
         this.myRoomInfoRef = null
 
         AsyncStorage.removeItem('ROOM-KEY')
@@ -116,10 +101,10 @@ class FirebaseService{
 
     joinRoom(roomId){
 
-        this.initRoom(roomId)
+        this.initRefs(roomId)
 
-        firebase.database().ref(`roomInfo/${this.roomId}/lobby/${this.uid}`).set({
-            name:'placeholder',
+        this.myRoomInfoRef.update({
+            joined:true,
         })
 
     }
@@ -138,7 +123,7 @@ class FirebaseService{
         }
         
         firebase.database().ref(`roomInfo/${roomId}`).set({
-            owner: firebase.auth().currentUser.uid,
+            owner: this.uid,
             status:'Lobby',
         })
 
@@ -152,15 +137,10 @@ class FirebaseService{
     }
 
     //Lobby
-    fetchLobbyListeners(){
 
-        return {
-            roomId: this.roomId,
-            statusRef: this.roomInfoStatusRef, //room status 
-            ownerRef: this.roomInfoOwnerRef, //room owner
-            logRef: this.roomInfoLogRef, //activity log
-            myInfoRef: this.myRoomInfoRef, //my name
-        }
+    fetchRoomInfoListener(path){
+
+        return firebase.database().ref(`roomInfo/${this.roomId}/`+path)
 
     }
 
@@ -173,20 +153,20 @@ class FirebaseService{
 
         this.myRoomInfoRef.remove()
 
-        this.wipeRoom()
+        this.wipeRefs()
 
     }
 
     deleteRoom() {
 
-        this.activityLog(this.ign + Messages.DELETE_ROOM)
+        this.activityLog(Messages.DELETE_ROOM)
 
         //If already left lobby, don't do anything
         if(!this.roomRef) return
 
-        this.roomRef.remove()
+        this.roomInfoRef.remove()
 
-        this.wipeRoom()
+        this.wipeRefs()
 
     }
 
@@ -194,7 +174,7 @@ class FirebaseService{
 
         this.ign = newName
 
-        firebase.database().ref(`roomInfo/${this.roomId}/lobby/${this.uid}`).set({
+        firebase.database().ref(`roomInfo/${this.roomId}/lobby/${this.uid}`).update({
             name:newName,
         })
 
@@ -206,7 +186,7 @@ class FirebaseService{
     }
 
     changeRoleCount(key,change){
-        this.roomInfoRolesRef.child(key).transaction(count=>{
+        this.roomInfoRef.child('roles').child(key).transaction(count=>{
             return change?count+1:count-1
         })
     }
@@ -264,12 +244,9 @@ class FirebaseService{
     }
 
     //In game
-    fetchGameListeners() {
+    fetchGameListener(path) {
 
-        return {
-            roomId: this.roomId,
-            roomRef: this.roomRef
-        }
+        return firebase.database().ref(`rooms/${this.roomId}` + path)
 
     }
 

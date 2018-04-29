@@ -42,7 +42,7 @@ export class Helper extends React.Component {
         ).start()
     }
 
-    _navigate(screen,param){
+    _navigate(screen){
 
         Animated.sequence([
             Animated.timing(
@@ -61,16 +61,15 @@ export class Helper extends React.Component {
 
         setTimeout(()=>{
             this.navigation.dispatch(
-            NavigationActions.reset({
-                index: 0,
-                actions: [
-                    NavigationActions.navigate({ 
-                        routeName: screen,
-                        params: { roomname:param }
+                NavigationActions.reset({
+                    index: 0,
+                    actions: [
+                        NavigationActions.navigate({ 
+                            routeName: screen,
+                        })
+                    ]
                     })
-                ]
-                })
-            )
+                )
         },400)
 
     }
@@ -96,8 +95,8 @@ export class Helper extends React.Component {
                     <Router
                         screenProps={{
                             passNavigation:val=>{this._receiveNav(val)},
-                            navigate:(val,roomname)=>{
-                                this._navigate(val,roomname)
+                            navigate:(val)=>{
+                                this._navigate(val)
                             },
                         }}
                     />

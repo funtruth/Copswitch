@@ -26,9 +26,7 @@ class ActivityLogComponent extends Component {
     componentWillMount() {
 
         //import all listeners
-        const { logRef } = firebaseService.fetchLobbyListeners()
-
-        this.infoRef = logRef
+        this.infoRef = firebaseService.fetchRoomInfoListener('log')
 
         this.infoRef.on('child_added',snap=>{
             if(snap.exists()){

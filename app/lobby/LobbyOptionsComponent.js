@@ -30,9 +30,7 @@ class LobbyOptionsComponent extends Component {
     componentWillMount() {
 
         //import all listeners
-        const { ownerRef } = firebaseService.fetchLobbyListeners()
-
-        this.infoRef = ownerRef
+        this.infoRef = firebaseService.fetchRoomInfoListener('owner')
         
         this.infoRef.on('value',snap=>{
             if(snap.exists()){

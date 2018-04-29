@@ -5,14 +5,15 @@ import {
     AsyncStorage,
 }   from 'react-native';
 
-//Firebase
-import firebase from '../firebase/FirebaseController.js';
 import firebaseService from '../firebase/firebaseService.js';
 
 class LoadingScreen extends Component {
     
     constructor(props) {
         super(props);
+
+        this.route = 'Home'
+        this.roomId = null
     }
 
     reset(){
@@ -32,25 +33,21 @@ class LoadingScreen extends Component {
         //Pass navigation
         this.props.screenProps.passNavigation(this.props.navigation)
 
-        //TODO clean-up logic
-        //Sends user to correct screen
-        AsyncStorage.getItem('GAME-KEY',(error,result)=>{
-            
-            if(result != null){
-                firebaseService.initRoom(result)
-                this.props.screenProps.navigate('Mafia',result)
-            } else {
-                AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
-                    if(result != null){
-                        firebaseService.initRoom(result)
-                        this.props.screenProps.navigate('Lobby',result)
-                    } else {
-                        this.props.screenProps.navigate('Home')
-                    }
-                })
-                    
-            }
+        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
+            this.route = result?'Lobby':'Home'
+            this.roomId = result
         })
+        .then(()=>{
+            AsyncStorage.getItem('GAME-KEY',(error,result)=>{
+                this.route = result?'Mafia':'Home'
+                this.roomId = result
+            })
+        })
+        .then(()=>{
+            firebaseService.initRefs(this.roomId)
+            this.props.screenProps.navigate(this.route)
+        })
+
     }
 
     render() {
