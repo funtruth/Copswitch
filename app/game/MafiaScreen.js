@@ -14,15 +14,15 @@ import {
 import colors from '../misc/colors.js';
 import Rolesheet from '../misc/roles.json';
 import Screens from '../misc/screens.json';
-import Phases from './phases.json';
+import Phases from '../misc/phases.json';
 
 import { Alert } from '../components/Alert.js';
 import { Button } from '../components/Button.js';
-import Console from './Console.js';
+import Console from './components/Console.js';
 import { Rolecard } from '../components/Rolecard.js';
 import { Events } from '../components/Events.js';
-import General from './General.js';
-import Private from './Private.js';
+import General from './components/General.js';
+import Private from './components/Private.js';
 import { RuleBook, InfoPage, Roles } from '../menu/ListsScreen.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -32,9 +32,9 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import * as Animatable from 'react-native-animatable';
 const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 
-//Firebase
-import firebase from '../firebase/FirebaseController.js';
-import firebaseService from '../firebase/firebaseService.js';
+import firebaseService from '../firebase/firebaseService';
+import playerActions from './mods/playerActions';
+import ownerModule from './mods/ownerModule';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;
@@ -48,9 +48,6 @@ constructor(props) {
     super(props);
 
     this.state = {
-        counter:            '',
-        phase:              null,
-        phasename:          '',
         message:            '',
 
         myroleid:           'A',
@@ -108,16 +105,17 @@ constructor(props) {
 
 componentWillMount() {
 
-    const { roomRef }       = firebaseService.fetchGameListener('')
-    this.user               = firebaseService.getUid()
+    playerActions.initGame()
 
-    this.roomRef            = roomRef
+    this.roomRef            = firebaseService.fetchGameListener('')
+    this.user               = firebaseService.getUid()
 
     this.readyRef           = this.roomRef.child('ready');
     
     this.listRef            = this.roomRef.child('list');
     this.nominationRef      = this.roomRef.child('nominate');
-    this.ownerRef           = this.roomRef.child('owner');
+
+    this.ownerRef           = firebaseService.fetchRoomInfoListener('owner')
     this.counterRef         = this.roomRef.child('counter');
 
     //Owner Listening
@@ -134,7 +132,11 @@ componentWillMount() {
     })
 
     this.ownerRef.on('value',snap=>{
-        this.setState({amiowner:snap.val() == this.user})
+
+        if(snap.exists()){
+            ownerModule.ownerMode( snap.val() === this.user )
+        }
+
     })
 
     this.listRef.on('value',snap=>{
@@ -166,6 +168,7 @@ componentWillMount() {
 
                     //Set reference
                     this.myReadyRef     = this.readyRef.child(i)
+                    playerActions.setPlace(i)
                 }
 
                 //Mafialist
@@ -229,24 +232,6 @@ componentWillMount() {
     this.nominationRef.on('value',snap=>{
         if(snap.exists()){
             this.setState({nominate: snap.val()})
-        }
-    })
-
-    //Phases are 1-Day, 2-Lynching, 3-Night
-    //Day counter starts at 3
-    this.counterRef.on('value',snap=>{
-        if(snap.exists()){
-
-            const phase = snap.val() % 3
-            
-            this.setState({
-                counter: snap.val(),
-                phase:phase,
-                btn1: Phases[phase].btn1,
-                btn2: Phases[phase].btn2,
-                phasename: Phases[phase].name,
-            })
-                
         }
     })
     
@@ -604,22 +589,6 @@ _resetDayStatuses() {
         })
     }
 
-}
-
-_first() {
-
-    if(this.state.phase == 1){
-        this.setState({section:'list'})
-    } else if (this.state.phase == 2){
-        this.setState({message:'You voted INNOCENT.'})
-        this.choiceRef.child(this.state.place).set(1).then(()=>{this.myReadyRef.set(true)})
-    } else if (this.state.phase == 0){
-        this.setState({section:'list'})
-    }
-}
-
-_second() {
-    this.choiceRef.child(this.state.place).set(-1).then(()=>{this.myReadyRef.set(true)})
 }
 
 _resetOptionPress() {

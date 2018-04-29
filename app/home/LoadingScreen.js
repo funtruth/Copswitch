@@ -6,6 +6,7 @@ import {
 }   from 'react-native';
 
 import firebaseService from '../firebase/firebaseService.js';
+import playerActions from '../game/mods/playerActions.js';
 
 class LoadingScreen extends Component {
     
@@ -33,20 +34,27 @@ class LoadingScreen extends Component {
         //Pass navigation
         this.props.screenProps.passNavigation(this.props.navigation)
 
-        AsyncStorage.getItem('ROOM-KEY',(error,result)=>{
-            this.route = result?'Lobby':'Home'
-            this.roomId = result
+        AsyncStorage.getItem('ROOM-KEY',(error,roomKey)=>{
+            if(roomKey){
+                this.route = 'Lobby'
+                this.roomId = roomKey
+            }
         })
         .then(()=>{
-            AsyncStorage.getItem('GAME-KEY',(error,result)=>{
-                this.route = result?'Mafia':'Home'
-                this.roomId = result
+            AsyncStorage.getItem('GAME-KEY',(error,gameKey)=>{
+                if(gameKey){
+                    this.route = 'Mafia'
+                    this.roomId = gameKey
+                }
+                
+            })
+            .then(()=>{
+                firebaseService.initRefs(this.roomId)
+                playerActions.initGame(this.roomId)
+                this.props.screenProps.navigate(this.route)
             })
         })
-        .then(()=>{
-            firebaseService.initRefs(this.roomId)
-            this.props.screenProps.navigate(this.route)
-        })
+        
 
     }
 

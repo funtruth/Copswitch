@@ -9,8 +9,8 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import colors from '../misc/colors.js';
-import { Message } from '../parents/Message.js';
+import colors from '../../misc/colors.js';
+import { Message } from '../../parents/Message.js';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;

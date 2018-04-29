@@ -231,13 +231,20 @@ class FirebaseService{
                 
             })
 
+            //Set-up more safely
             this.roomRef.child('list').set(listshot)
             .then(()=>{ 
                 this.roomRef.child('ready').set(readyshot) 
             })
             .then(()=>{ 
+                this.roomRef.update({
+                    counter: 3
+                }) 
+            })
+            .then(()=>{ 
                 this.roomInfoRef.child('status').set('Starting') 
             })
+
 
         }
 
@@ -246,7 +253,7 @@ class FirebaseService{
     //In game
     fetchGameListener(path) {
 
-        return firebase.database().ref(`rooms/${this.roomId}` + path)
+        return firebase.database().ref(`rooms/${this.roomId}/` + path)
 
     }
 

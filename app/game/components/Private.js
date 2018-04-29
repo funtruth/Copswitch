@@ -4,8 +4,8 @@ import {
     Text,
 } from 'react-native';
 
-import { Button } from '../components/Button.js';
-import firebaseService from '../firebase/firebaseService.js';
+import { Button } from '../../components/Button.js';
+import firebaseService from '../../firebase/firebaseService.js';
 
 class Private extends Component {
     
