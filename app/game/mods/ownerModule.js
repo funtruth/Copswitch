@@ -18,10 +18,13 @@ class ownerModule{
 
         this.phase = null
         this.counter = null
-        this.playerNum = null
-        this.triggerNum = null
+        this.playerNum = 1000
+        this.triggerNum = 1000
 
     }
+
+    //TODO
+    //Balance check - end game
 
     async initGame(){
 
@@ -66,6 +69,13 @@ class ownerModule{
 
         this.phase = phase
         this.counter = counter
+
+    }
+
+    updatePlayerNum(playerNum){
+
+        this.playerNum = playerNum
+        this.triggerNum = ((playerNum - playerNum%2)/2) + 1
 
     }
 

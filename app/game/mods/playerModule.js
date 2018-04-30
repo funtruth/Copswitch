@@ -23,8 +23,6 @@ class playerModule{
         this.myReadyRef = null
         this.myInfoRef = null
 
-        this.namelist = []
-
         //game statuses
         this.playerRoleId = null
         this.playerAlive = true
@@ -63,8 +61,6 @@ class playerModule{
         this.myReadyRef = null
         this.myInfoRef = null
 
-        this.namelist = []
-
         //game statuses
         this.playerRoleId = null
         this.playerAlive = true
@@ -79,22 +75,6 @@ class playerModule{
         this.myReadyRef = firebase.database().ref(`rooms/${this.roomId}/ready/${place}`)
         this.myLoadedRef = firebase.database().ref(`rooms/${this.roomId}/loaded${this.uid}`)
         this.myInfoRef = firebase.database().ref(`rooms/${this.roomId}/list/${place}`)
-
-    }
-
-    selectChoice(choice){
-
-        this.myChoiceRef.set(choice)
-        
-        .then(()=>{
-            this.myReadyRef.set(choice?true:false)
-        })
-
-    }
-
-    loaded(){
-
-        this.myLoadedRef.set(true)
 
     }
 
@@ -140,6 +120,32 @@ class playerModule{
     fetchMyReadyRef(){
 
         return firebase.database().ref(`rooms/${this.roomId}/ready/${this.place}`)
+
+    }
+
+    selectChoice(choice){
+
+        this.myChoiceRef.set(choice)
+        
+        .then(()=>{
+            this.myReadyRef.set(choice?true:false)
+        })
+
+    }
+
+    loaded(){
+
+        this.myLoadedRef.set(true)
+
+    }
+
+    notification(message){
+        //TODO
+    }
+
+    publishNews(message){
+
+
 
     }
 

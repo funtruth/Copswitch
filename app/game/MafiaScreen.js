@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import {
     View,
@@ -12,9 +11,6 @@ import {
 }   from 'react-native';
 
 import colors from '../misc/colors.js';
-import Rolesheet from '../misc/roles.json';
-import Screens from '../misc/screens.json';
-import Phases from '../misc/phases.json';
 
 import { Alert } from '../components/Alert.js';
 import { Button } from '../components/Button.js';
@@ -29,14 +25,9 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-import * as Animatable from 'react-native-animatable';
-const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
-
 import firebaseService from '../firebase/firebaseService';
 import playerModule from './mods/playerModule';
 import ownerModule from './mods/ownerModule';
-
-const MARGIN = 10;
 
 class MafiaScreen extends Component {
 
@@ -46,25 +37,11 @@ constructor(props) {
     this.state = {
         message:            '',
 
-        gmsglist:           [],
-        msglist:            [],
-        newslist:           [],
-
-        mafialist:          [],
         section:            null,
 
         ready:              false,
-        nReady:             5,
-
-        amidead:            true,
-        amimafia:           false,
-
-        gameover:           false,
     };
     
-    this.newslist           = [];
-    this.namelist           = [];
-    this.notlist            = [];
     this.readylist          = [];
 
     this.height             = Dimensions.get('window').height;
@@ -92,9 +69,11 @@ componentWillMount() {
 
     //Move this to proper component
     this.readyRef.on('value',snap=>{
+
         if(snap.exists()){
             this.readylist = snap.val()
         }
+        
     })
 
     this.ownerRef.on('value',snap=>{

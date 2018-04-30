@@ -1,23 +1,13 @@
 import React, { Component } from 'react';
 import { 
     View, 
-    Text, 
-    Animated, 
-    Dimensions, 
-    TouchableOpacity, 
+    Text,
     FlatList 
 } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import colors from '../../misc/colors.js';
 import { Message } from '../../parents/Message.js';
 import playerModule from '../mods/playerModule.js';
-
-const FADEOUT_ANIM = 300;
-const SIZE_ANIM = 500;
-const FADEIN_ANIM = 600;
-
-const MARGIN = 10;
 
 class General extends Component {
     
@@ -27,20 +17,26 @@ class General extends Component {
 
         this.newsRef = null
 
-        this.newsList = []
+        this.state = {
+            newsList: []
+        }
 
     }
 
     componentWillMount(){
 
         this.newsRef = playerModule.fetchGameRef('news')
+        
+        this.newsRef.on('child_added', snap=>{
 
-        this.newsRef.on('child_added',snap=>{
-
-            this.newslist.push({
-                message:snap.val(),
-                key:snap.key,
-            })
+            if(snap.exists()){
+                this.setState(prevState => ({
+                    newsList: [{
+                        message: snap.val(),
+                        key: snap.key
+                    }, ...prevState.newsList]
+                }))
+            }
     
         })
 
@@ -65,7 +61,7 @@ class General extends Component {
         return (
             <View style = {{flex:0.55}}>
                 <FlatList
-                    data={this.newsList}
+                    data={this.state.newsList}
                     renderItem={({item}) => (this._renderItem(item))}
                     inverted
                     initialNumToRender={12}

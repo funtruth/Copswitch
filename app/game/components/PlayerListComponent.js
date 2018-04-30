@@ -10,15 +10,12 @@ import firebaseService from '../../firebase/firebaseService.js';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import playerModule from '../mods/playerModule.js';
+import ownerModule from '../mods/ownerModule.js';
 
 class PlayerListComponent extends Component {
     
     constructor(props) {
         super(props);
-
-        this.state = {
-            message:null
-        }
 
         this.listRef = null
     }
@@ -32,6 +29,7 @@ class PlayerListComponent extends Component {
             if(snap.exists()){
     
                 this.namelist = snap.val();
+
                 var playernum = 0;
                 var balance = 0;
                 var mafialist = [];
@@ -49,35 +47,27 @@ class PlayerListComponent extends Component {
                             key:        i,
                         })
                     }
-    
-                    //player number and trigger number + gamestate
+
                     if(!this.namelist[i].dead){
-    
                         playernum++;
-    
-                        if(Rolesheet[this.namelist[i].roleid].type == 1){
-                            balance--;
-                        } else {
-                            balance++;
-                        }
                     }
+
                 }
     
-                
-    
-                /*this.setState({
-                    playernum:      playernum,
-                    triggernum:     ((playernum - playernum%2)/2)+1,
-                    gameover:       balance == playernum || balance <= 0,
-    
+                ownerModule.updatePlayerNum(playernum)
+
+                this.setState({
                     mafialist:      mafialist,
-                })*/
+                })
+
             }
         })
 
     }
 
     componentWillUnmount(){
+
+        if(this.listRef) this.listRef.off()
 
     }
     
@@ -107,10 +97,8 @@ class PlayerListComponent extends Component {
     //Pressing any name button
     _nameBtnPress(item){
 
-        this.setState({message:'You have selected ' + item.name + '.'})
-
-        //Set your choice to your child reference
-        //this.choiceRef.child(this.state.place).set(item.key).then(()=>{this.myReadyRef.set(true)})
+        playerModule.notification('You have selected ' + item.name + '.')
+        playerModule.selectChoice(item.key)
             
     }
     
