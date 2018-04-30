@@ -11,6 +11,7 @@ class FirebaseService{
         this.uid = null
         this.ign = 
         this.pushKey = null //push key upon entering room
+        this.place = null
 
         this.roomId = null
 
@@ -154,9 +155,31 @@ class FirebaseService{
 
     }
 
+    getRoomInfoPlace(){
+        
+        return new Promise (resolve => {
+
+            this.placeRef.once('value',snap => {
+            
+                var counter = 0
+    
+                snap.forEach((child)=>{
+                    if(child.val() === this.uid){
+                        this.place = counter
+                    }
+                    counter++
+                })
+
+                resolve(this.place)
+            })
+
+        })
+
+    }
+
     //Lobby
 
-    fetchRoomInfoListener(path){
+    fetchRoomInfoRef(path){
 
         return firebase.database().ref(`roomInfo/${this.roomId}/`+path)
 
@@ -272,13 +295,6 @@ class FirebaseService{
 
 
         }
-
-    }
-
-    //In game
-    fetchGameListener(path) {
-
-        return firebase.database().ref(`rooms/${this.roomId}/` + path)
 
     }
 

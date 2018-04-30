@@ -9,6 +9,7 @@ import { Button } from '../../components/Button.js';
 import firebaseService from '../../firebase/firebaseService.js';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import playerModule from '../mods/playerModule.js';
 
 class PlayerListComponent extends Component {
     
@@ -18,6 +19,66 @@ class PlayerListComponent extends Component {
         this.state = {
             message:null
         }
+
+        this.listRef = null
+    }
+
+    componentWillMount(){
+
+        this.listRef = playerModule.fetchGameRef('list')
+
+        this.listRef.on('value',snap=>{
+
+            if(snap.exists()){
+    
+                this.namelist = snap.val();
+                var playernum = 0;
+                var balance = 0;
+                var mafialist = [];
+    
+                for(i=0;i<this.namelist.length;i++){
+    
+                    this.namelist[i].key = i;
+    
+                    //Mafialist
+                    if(Rolesheet[this.namelist[i].roleid].type == 1 && this.namelist[i].uid != this.user){
+                        mafialist.push({
+                            name:       this.namelist[i].name,
+                            rolename:   Rolesheet[this.namelist[i].roleid].name,
+                            dead:       this.namelist[i].dead,
+                            key:        i,
+                        })
+                    }
+    
+                    //player number and trigger number + gamestate
+                    if(!this.namelist[i].dead){
+    
+                        playernum++;
+    
+                        if(Rolesheet[this.namelist[i].roleid].type == 1){
+                            balance--;
+                        } else {
+                            balance++;
+                        }
+                    }
+                }
+    
+                
+    
+                /*this.setState({
+                    playernum:      playernum,
+                    triggernum:     ((playernum - playernum%2)/2)+1,
+                    gameover:       balance == playernum || balance <= 0,
+    
+                    mafialist:      mafialist,
+                })*/
+            }
+        })
+
+    }
+
+    componentWillUnmount(){
+
     }
     
     renderItem(item){

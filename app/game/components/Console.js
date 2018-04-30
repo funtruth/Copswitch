@@ -10,6 +10,7 @@ import Phases from '../../misc/phases.json';
 import { Button } from '../../components/Button';
 import firebaseService from '../../firebase/firebaseService';
 import playerModule from '../mods/playerModule';
+import ownerModule from '../mods/ownerModule';
 
 
 class Console extends Component {
@@ -27,16 +28,21 @@ class Console extends Component {
 
             nominee: null,
 
+            ready: null,
+
         }
 
         this.counterRef = null
         this.nominationRef = null
+        this.myReadyRef = null
     }
 
     componentWillMount(){
 
-        this.counterRef = firebaseService.fetchGameListener('counter')
-        this.nominationRef = firebaseService.fetchGameListener('nomination')
+        this.counterRef = playerModule.fetchGameRef('counter')
+        this.nominationRef = playerModule.fetchGameRef('nomination')
+        this.myReadyRef = playerModule.fetchMyReadyRef()
+        this.loadedRef = playerModule.fetchGameRef('loaded')
 
         this.counterRef.on('value',snap=>{
             if(snap.exists()){
@@ -50,6 +56,8 @@ class Console extends Component {
                     buttonTwo: Phases[phase].btn2,
                     phaseName: Phases[phase].name,
                 })
+
+                ownerModule.passCounterInfo(phase, snap.val())
                     
             }
         })
@@ -60,12 +68,37 @@ class Console extends Component {
             }
         })
 
+        this.myReadyRef.on('value',snap=>{
+    
+            if(snap.exists()){
+                
+                this.setState({ ready:readysnap.val() })
+    
+            } else {
+    
+                this.setState({ ready:null  })
+    
+                //TODO PERFORM ACTIONS HERE BEFORE SUBMITTING TRUE
+    
+                setTimeout(()=>{
+                    this.myReadyRef.once('value',snap=>{
+                        if(snap.exists()){
+                            this.myReadyRef.remove();
+                        } else {
+                            playerModule.loaded()
+                        }
+                    })
+                },1500)
+            }
+        })
+
     }
 
     componentWillUnmount(){
 
         if(this.counterRef) this.counterRef.off()
         if(this.nominationRef) this.nominationRef.off()
+        if(this.myReadyRef) this.myReadyRef.off()
 
     }
 
@@ -78,10 +111,19 @@ class Console extends Component {
         } else if (this.state.phase == 0){
             this.setState({section:'list'})
         }
+
     }
     
     buttonTwoPress() {
+
         playerModule.selectChoice(-1)
+        
+    }
+
+    resetOptionPress() {
+        
+        playerModule.selectChoice(null)
+
     }
 
     render() {

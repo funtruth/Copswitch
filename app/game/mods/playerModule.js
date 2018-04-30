@@ -21,6 +21,7 @@ class playerModule{
 
         this.myChoiceRef = null
         this.myReadyRef = null
+        this.myInfoRef = null
 
         this.namelist = []
 
@@ -30,15 +31,15 @@ class playerModule{
 
     }
 
-    initGame(){
+    async initGame(){
 
         this.roomId = firebaseService.getRoomId()
-
-        this.uid = firebaseService.getUid()
-
         if(!this.roomId) return
 
         this.roomRef = firebase.database().ref(`rooms/${this.roomId}`)
+
+        this.uid = firebaseService.getUid()
+        this.setPlace( await firebaseService.getRoomInfoPlace() )
 
         this.turnOnListeners()
 
@@ -46,7 +47,27 @@ class playerModule{
 
     wipeGame(){
 
+        this.turnOffListeners()
 
+        this.roomId = null
+
+        this.uid = null
+        this.ign = null
+        this.place = null
+
+        this.roomRef = null
+
+        this.listeners = []
+
+        this.myChoiceRef = null
+        this.myReadyRef = null
+        this.myInfoRef = null
+
+        this.namelist = []
+
+        //game statuses
+        this.playerRoleId = null
+        this.playerAlive = true
 
     }
 
@@ -55,8 +76,9 @@ class playerModule{
         this.place = place
 
         this.myChoiceRef = firebase.database().ref(`rooms/${this.roomId}/choice/${place}`)
-        
         this.myReadyRef = firebase.database().ref(`rooms/${this.roomId}/ready/${place}`)
+        this.myLoadedRef = firebase.database().ref(`rooms/${this.roomId}/loaded${this.uid}`)
+        this.myInfoRef = firebase.database().ref(`rooms/${this.roomId}/list/${place}`)
 
     }
 
@@ -65,115 +87,35 @@ class playerModule{
         this.myChoiceRef.set(choice)
         
         .then(()=>{
-            this.myReadyRef.set(true)
+            this.myReadyRef.set(choice?true:false)
         })
+
+    }
+
+    loaded(){
+
+        this.myLoadedRef.set(true)
 
     }
 
     turnOnListeners(){
 
-        this.listListener()
-        this.roleListener()
+        this.myInfoListener()
 
     }
 
-    listListener(){
+    
+    myInfoListener(){
 
-        this.listRef = firebase.database().ref(`rooms/${this.roomId}/list`)
-        this.listeners.push(this.listRef)
-
-        this.listRef.on('value',snap=>{
-            if(snap.exists()){
-    
-                this.namelist = snap.val();
-                var playernum = 0;
-                var balance = 0;
-                var mafialist = [];
-    
-                for(i=0;i<this.namelist.length;i++){
-    
-                    this.namelist[i].key = i;
-    
-                    //Generate my info
-                    if(this.namelist[i].uid == this.uid){
-                        
-                        this.playerRoleId = this.namelist[i].roleid
-                        this.playerAlive = !this.namelist[i].dead
-                        this.playerMafia = Rolesheet[this.namelist[i].roleid].type == 1
-                        this.playerTargetDead = Rolesheet[this.namelist[i].roleid].targetdead?true:false,
-                        this.playerTargetTown = Rolesheet[this.namelist[i].roleid].targettown?true:false,
+        this.listeners.push(this.myInfoRef)
         
-                        this.setPlace(i)
+        this.myInfoRef.on('value',snap=>{
 
-                    }
-    
-                    //Mafialist
-                    if(Rolesheet[this.namelist[i].roleid].type == 1 && this.namelist[i].uid != this.user){
-                        mafialist.push({
-                            name:       this.namelist[i].name,
-                            rolename:   Rolesheet[this.namelist[i].roleid].name,
-                            dead:       this.namelist[i].dead,
-                            key:        i,
-                        })
-                    }
-    
-                    //player number and trigger number + gamestate
-                    if(!this.namelist[i].dead){
-    
-                        playernum++;
-    
-                        if(Rolesheet[this.namelist[i].roleid].type == 1){
-                            balance--;
-                        } else {
-                            balance++;
-                        }
-                    }
-                }
-    
-                this.myReadyRef.on('value',readysnap=>{
-    
-                    if(readysnap.exists()){
-                        
-                        //this.setState({ ready:readysnap.val(), section:readysnap.val() })
-            
-                    } else {
-            
-                        //this.setState({ ready:null, section:null })
-            
-                        //TODO PERFORM ACTIONS HERE BEFORE SUBMITTING TRUE
-            
-                        setTimeout(()=>{
-                            this.myReadyRef.once('value',snap=>{
-                                if(snap.exists()){
-                                    this.myReadyRef.remove();
-                                } else {
-                                    //this.loadedRef.child(this.user).set(true)
-                                }
-                            })
-                        },1500)
-                    }
-                })
-    
-                /*this.setState({
-                    playernum:      playernum,
-                    triggernum:     ((playernum - playernum%2)/2)+1,
-                    gameover:       balance == playernum || balance <= 0,
-    
-                    mafialist:      mafialist,
-                })*/
-            }
-        })
-
-    }
-    
-    roleListener(){
-
-        this.roleRef = firebase.database().ref(`rooms/${this.roomId}/list/${this.place}/role`)
-        this.listeners.push(this.roleRef)
-
-        this.roleRef.on('value',snap=>{
-
-
+            this.playerRoleId = snap.val().roleid
+            this.playerAlive = !snap.val().dead
+            this.playerMafia = Rolesheet[snap.val().roleid].type == 1
+            this.playerTargetDead = Rolesheet[snap.val().roleid].targetdead?true:false,
+            this.playerTargetTown = Rolesheet[snap.val().roleid].targettown?true:false
 
         })
 
@@ -182,12 +124,22 @@ class playerModule{
     turnOffListeners(){
 
         for(var i=0; i<this.listeners.length; i++){
-
             if(this.listeners[i]) {
                 this.listeners[i].off()
             }
-
         }
+
+    }
+
+    fetchGameRef(path){
+
+        return firebase.database().ref(`rooms/${this.roomId}/` + path)
+
+    }
+
+    fetchMyReadyRef(){
+
+        return firebase.database().ref(`rooms/${this.roomId}/ready/${this.place}`)
 
     }
 

@@ -16,8 +16,9 @@ class Private extends Component {
 
     debug(){
 
-        firebaseService.wipeRefs()
-        this.props.navigate('Home')
+        playerModule.turnOffListeners()
+        //firebaseService.wipeRefs()
+        //this.props.navigate('Home')
 
     }
 

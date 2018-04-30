@@ -37,7 +37,7 @@ class NameComponent extends Component {
 
         //import all listeners
         this.uid = firebaseService.getUid()
-        this.infoRef = firebaseService.fetchRoomInfoListener(`lobby/${this.uid}`)
+        this.infoRef = firebaseService.fetchRoomInfoRef(`lobby/${this.uid}`)
         
         this.infoRef.on('value',snap=>{
             if(snap.exists()){

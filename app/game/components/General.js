@@ -11,6 +11,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import colors from '../../misc/colors.js';
 import { Message } from '../../parents/Message.js';
+import playerModule from '../mods/playerModule.js';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;
@@ -21,19 +22,42 @@ const MARGIN = 10;
 class General extends Component {
     
     constructor(props) {
-        super(props);
+        
+        super(props)
+
+        this.newsRef = null
+
+        this.newsList = []
+
+    }
+
+    componentWillMount(){
+
+        this.newsRef = playerModule.fetchGameRef('news')
+
+        this.newsRef.on('child_added',snap=>{
+
+            this.newslist.push({
+                message:snap.val(),
+                key:snap.key,
+            })
+    
+        })
+
+    }
+
+    componentWillUnmount(){
+
+        if(this.newsRef) this.newsRef.off()
+
     }
 
     _renderItem(item){
-        if(item.type == 1){
-            return <Message style = {styles.sectionContainer}>
-                <Text style = {styles.section}>{item.message}</Text>
-            </Message>
-        } else {
-            return <Message style = {styles.messageContainer}>
-                <Text style = {styles.message}>{item.message}</Text>
-            </Message>
-        }
+
+        return <Message style = {styles.messageContainer}>
+            <Text style = {styles.message}>{item.message}</Text>
+        </Message>
+        
     }
 
     render() {
@@ -41,12 +65,12 @@ class General extends Component {
         return (
             <View style = {{flex:0.55}}>
                 <FlatList
-                    data={this.props.data}
+                    data={this.newsList}
                     renderItem={({item}) => (this._renderItem(item))}
                     inverted
                     initialNumToRender={12}
                     showsVerticalScrollIndicator={false}
-                    keyExtractor={item => item.index}
+                    keyExtractor={item => item.key}
                 />
             </View>
         )
@@ -54,20 +78,6 @@ class General extends Component {
 }
 
 const styles = {
-    section: {
-        fontSize: 17,
-        fontFamily: 'FredokaOne-Regular',
-        alignSelf:'center',
-        color: colors.shadow,
-    },
-    sectionContainer: {
-        backgroundColor:colors.card,
-        justifyContent:'center',
-        marginTop:5,
-        marginLeft:5,
-        marginRight:5,
-        borderRadius:5
-    },
     message: {
         fontSize: 15,
         fontFamily: 'FredokaOne-Regular',

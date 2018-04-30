@@ -44,7 +44,7 @@ class BasicLobbyScreen extends Component {
     componentWillMount() {
 
         //import all listeners
-        this.infoRef = firebaseService.fetchRoomInfoListener('status')
+        this.infoRef = firebaseService.fetchRoomInfoRef('status')
     
         this.roomId = firebaseService.getRoomId()
 
