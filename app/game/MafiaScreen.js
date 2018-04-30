@@ -19,6 +19,7 @@ import { Rolecard } from '../components/Rolecard.js';
 import { Events } from '../components/Events.js';
 import General from './components/General.js';
 import Private from './components/Private.js';
+import PlayerListComponent from './components/PlayerListComponent.js';
 import { RuleBook, InfoPage, Roles } from '../menu/ListsScreen.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -73,7 +74,7 @@ componentWillMount() {
         if(snap.exists()){
             this.readylist = snap.val()
         }
-        
+
     })
 
     this.ownerRef.on('value',snap=>{
@@ -178,6 +179,10 @@ _renderNav(){
     render() {
 
         return <View style = {{flex:1}}>
+
+            <Alert visible = {true} flex = {0.4}>
+                <PlayerListComponent />
+            </Alert>
 
             <General />
 

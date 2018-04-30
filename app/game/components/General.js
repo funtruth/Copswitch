@@ -15,26 +15,26 @@ class General extends Component {
         
         super(props)
 
-        this.newsRef = null
+        this.logRef = null
 
         this.state = {
-            newsList: []
+            log: []
         }
 
     }
 
     componentWillMount(){
 
-        this.newsRef = playerModule.fetchGameRef('news')
+        this.logRef = playerModule.fetchGameRef('log')
         
-        this.newsRef.on('child_added', snap=>{
+        this.logRef.on('child_added', snap=>{
 
             if(snap.exists()){
                 this.setState(prevState => ({
-                    newsList: [{
+                    log: [{
                         message: snap.val(),
                         key: snap.key
-                    }, ...prevState.newsList]
+                    }, ...prevState.log]
                 }))
             }
     
@@ -44,7 +44,7 @@ class General extends Component {
 
     componentWillUnmount(){
 
-        if(this.newsRef) this.newsRef.off()
+        if(this.logRef) this.logRef.off()
 
     }
 
@@ -61,7 +61,7 @@ class General extends Component {
         return (
             <View style = {{flex:0.55}}>
                 <FlatList
-                    data={this.state.newsList}
+                    data={this.state.log}
                     renderItem={({item}) => (this._renderItem(item))}
                     inverted
                     initialNumToRender={12}

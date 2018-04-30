@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 
 import { Button } from '../../components/Button.js';
+import Rolesheet from '../../misc/roles.json';
 import firebaseService from '../../firebase/firebaseService.js';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';

@@ -100,7 +100,7 @@ class ownerModule{
     
     }
 
-    _gMsg(message){
+    _globalMsg(message){
         this.roomRef.child('log').push(message)
     }
 
@@ -150,7 +150,7 @@ class ownerModule{
             if(snap.exists()){
 
                 var choiceArray = snap.val();
-                var playerArray = this.namelist;
+                var playerArray = null;
                 var msgs = [];
                 var gMsgs = [];
                 var total = 0;
