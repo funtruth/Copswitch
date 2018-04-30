@@ -9,7 +9,8 @@ class FirebaseService{
     constructor(){
 
         this.uid = null
-        this.ign = null
+        this.ign = 
+        this.pushKey = null //push key upon entering room
 
         this.roomId = null
 
@@ -69,6 +70,7 @@ class FirebaseService{
         //Room Info
         this.roomInfoRef = firebase.database().ref(`roomInfo/${roomId}`)
         this.myRoomInfoRef = firebase.database().ref(`roomInfo/${roomId}/lobby/${this.uid}`)
+        this.placeRef = firebase.database().ref(`roomInfo/${roomId}/place`)
 
     }
 
@@ -82,6 +84,7 @@ class FirebaseService{
         //Room Info
         this.roomInfoRef = null
         this.myRoomInfoRef = null
+        this.placeRef = null
 
         AsyncStorage.removeItem('ROOM-KEY')
         AsyncStorage.removeItem('GAME-KEY')
@@ -102,6 +105,7 @@ class FirebaseService{
     joinRoom(roomId){
 
         this.initRefs(roomId)
+        this.addPushKey()
 
         this.myRoomInfoRef.update({
             joined:true,
@@ -132,8 +136,22 @@ class FirebaseService{
         })
 
         this.joinRoom(roomId)
+
         return roomId
         
+    }
+
+    addPushKey(){
+
+        this.pushKey = this.placeRef.push().key
+        this.placeRef.child(this.pushKey).set(this.uid)
+
+    }
+
+    removePushKey(){
+
+        this.placeRef.child(this.pushKey).remove()
+
     }
 
     //Lobby
@@ -152,6 +170,7 @@ class FirebaseService{
         if(!this.roomRef) return
 
         this.myRoomInfoRef.remove()
+        this.removePushKey()
 
         this.wipeRefs()
 
@@ -167,6 +186,12 @@ class FirebaseService{
         this.roomInfoRef.remove()
 
         this.wipeRefs()
+
+    }
+
+    loadUsername(name){
+
+        this.ign = name
 
     }
 

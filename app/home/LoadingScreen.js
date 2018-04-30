@@ -6,7 +6,6 @@ import {
 }   from 'react-native';
 
 import firebaseService from '../firebase/firebaseService.js';
-import playerActions from '../game/mods/playerActions.js';
 
 class LoadingScreen extends Component {
     
@@ -50,7 +49,6 @@ class LoadingScreen extends Component {
             })
             .then(()=>{
                 firebaseService.initRefs(this.roomId)
-                playerActions.initGame(this.roomId)
                 this.props.screenProps.navigate(this.route)
             })
         })

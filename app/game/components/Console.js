@@ -9,7 +9,7 @@ import {
 import Phases from '../../misc/phases.json';
 import { Button } from '../../components/Button';
 import firebaseService from '../../firebase/firebaseService';
-import playerActions from '../mods/playerActions';
+import playerModule from '../mods/playerModule';
 
 
 class Console extends Component {
@@ -74,14 +74,14 @@ class Console extends Component {
         if(this.state.phase == 1){
             this.setState({section:'list'})
         } else if (this.state.phase == 2){
-            playerActions.selectChoice(1)
+            playerModule.selectChoice(1)
         } else if (this.state.phase == 0){
             this.setState({section:'list'})
         }
     }
     
     buttonTwoPress() {
-        playerActions.selectChoice(-1)
+        playerModule.selectChoice(-1)
     }
 
     render() {

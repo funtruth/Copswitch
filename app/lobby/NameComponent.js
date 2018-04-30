@@ -41,9 +41,13 @@ class NameComponent extends Component {
         
         this.infoRef.on('value',snap=>{
             if(snap.exists()){
+
                 this.setState({
                     name: snap.val().name
                 })
+
+                firebaseService.loadUsername(snap.val().name)
+                
             }
         })
 

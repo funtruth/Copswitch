@@ -33,7 +33,7 @@ import * as Animatable from 'react-native-animatable';
 const AnimatableIcon = Animatable.createAnimatableComponent(FontAwesome)
 
 import firebaseService from '../firebase/firebaseService';
-import playerActions from './mods/playerActions';
+import playerModule from './mods/playerModule';
 import ownerModule from './mods/ownerModule';
 
 const FADEOUT_ANIM = 300;
@@ -105,7 +105,8 @@ constructor(props) {
 
 componentWillMount() {
 
-    playerActions.initGame()
+    playerModule.initGame()
+    ownerModule.initGame()
 
     this.roomRef            = firebaseService.fetchGameListener('')
     this.user               = firebaseService.getUid()
@@ -168,7 +169,7 @@ componentWillMount() {
 
                     //Set reference
                     this.myReadyRef     = this.readyRef.child(i)
-                    playerActions.setPlace(i)
+                    playerModule.setPlace(i)
                 }
 
                 //Mafialist
@@ -514,32 +515,6 @@ componentWillMount() {
         }
     })
 
-    this.loadedRef.on('value',snap=>{
-        if(snap.exists() && this.state.amiowner){
-            if(snap.numChildren() >= this.state.playernum){
-                this.roomRef.child('nextcounter').once('value',nextcounter=>{
-                    this.roomRef.update({ counter:nextcounter.val() })
-                    .then(()=>{
-
-                        //TODO remove nextcounter ref
-
-                        var ready = []
-                        for(i=0;i<this.namelist.length;i++){
-                            ready[i] = false
-                        }
-
-                        this.readyRef.set(ready).then(()=>{
-                            this.loadedRef.remove()
-                        }).then(()=>{
-                            this.choiceRef.remove()
-                            this.roomRef.child('nextcounter').remove()
-                        })
-
-                    })
-                })
-            }
-        }
-    })
 }
 
 componentWillUnmount() {
@@ -566,9 +541,6 @@ componentWillUnmount() {
     //Owner Listeners
     if(this.choiceRef){
         this.choiceRef.off();
-    }
-    if(this.loadedRef){
-        this.loadedRef.off();
     }
 }
 
