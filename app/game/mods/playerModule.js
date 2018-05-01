@@ -1,7 +1,8 @@
 import firebase from '../../firebase/FirebaseController';
 import firebaseService from '../../firebase/firebaseService';
 
-import Rolesheet from '../../misc/roles.json'
+import Rolesheet from '../../misc/roles.json';
+import ownerModule from './ownerModule';
 
 class playerModule{
 
@@ -26,6 +27,8 @@ class playerModule{
         //game statuses
         this.playerRoleId = null
         this.playerAlive = true
+
+        this.playerList = []
 
     }
 
@@ -65,6 +68,8 @@ class playerModule{
         this.playerRoleId = null
         this.playerAlive = true
 
+        this.playerList = []
+
     }
 
     setPlace(place){
@@ -98,6 +103,12 @@ class playerModule{
             this.playerTargetTown = Rolesheet[snap.val().roleid].targettown?true:false
 
         })
+
+    }
+
+    passPlayerList(list){
+
+        this.playerList = list
 
     }
 

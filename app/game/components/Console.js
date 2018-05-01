@@ -105,11 +105,11 @@ class Console extends Component {
     buttonOnePress() {
 
         if(this.state.phase == 1){
-            this.setState({section:'list'})
+            this.props.viewList()
         } else if (this.state.phase == 2){
             playerModule.selectChoice(1)
         } else if (this.state.phase == 0){
-            this.setState({section:'list'})
+            this.props.viewList()
         }
 
     }
@@ -117,7 +117,7 @@ class Console extends Component {
     buttonTwoPress() {
 
         playerModule.selectChoice(-1)
-        
+
     }
 
     resetOptionPress() {

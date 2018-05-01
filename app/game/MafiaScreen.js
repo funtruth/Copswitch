@@ -12,6 +12,7 @@ import {
 
 import colors from '../misc/colors.js';
 
+import Modal from '../components/Modal';
 import { Alert } from '../components/Alert.js';
 import { Button } from '../components/Button.js';
 import Console from './components/Console.js';
@@ -19,7 +20,7 @@ import { Rolecard } from '../components/Rolecard.js';
 import { Events } from '../components/Events.js';
 import General from './components/General.js';
 import Private from './components/Private.js';
-import PlayerListComponent from './components/PlayerListComponent.js';
+import PlayerList from './components/PlayerList';
 import { RuleBook, InfoPage, Roles } from '../menu/ListsScreen.js';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
@@ -39,6 +40,7 @@ constructor(props) {
         message:            '',
 
         section:            null,
+        viewPlayerList:     false,
 
         ready:              false,
     };
@@ -180,15 +182,20 @@ _renderNav(){
 
         return <View style = {{flex:1}}>
 
-            <Alert visible = {true} flex = {0.4}>
-                <PlayerListComponent />
-            </Alert>
-
             <General />
 
-            <Console />
+            <Console 
+                viewList = {()=>this.setState({viewPlayerList:true})}
+            />
 
             <Private {...this.props.screenProps}/>
+
+            <Modal 
+                visible = {this.state.viewPlayerList}
+                closeModal = {()=>this.setState({viewPlayerList:false})}
+            >
+                <PlayerList />
+            </Modal>
 
         </View>
     }

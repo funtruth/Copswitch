@@ -3,6 +3,8 @@ import firebase from '../../firebase/FirebaseController';
 
 import randomize from 'randomatic';
 
+import Phases from '../../misc/phases';
+
 class ownerModule{
 
     constructor(){
@@ -20,6 +22,8 @@ class ownerModule{
         this.counter = null
         this.playerNum = 1000
         this.triggerNum = 1000
+
+        this.playerList = []
 
     }
 
@@ -72,10 +76,26 @@ class ownerModule{
 
     }
 
-    updatePlayerNum(playerNum){
+    passPlayerList(list){
 
-        this.playerNum = playerNum
-        this.triggerNum = ((playerNum - playerNum%2)/2) + 1
+        this.playerList = list
+
+        var playernum = 0;
+
+        for(i=0;i<this.playerList.length;i++){
+
+            this.playerList[i].key = i;
+
+            if(!this.playerList[i].dead){
+                playernum++;
+            }
+
+        }
+
+        if(playernum === 1) this.playerNum = 1000
+
+        this.playerNum = playernum
+        this.triggerNum = ((playernum - playernum%2)/2) + 1
 
     }
 
@@ -90,7 +110,7 @@ class ownerModule{
 
     _resetDayStatuses() {
 
-        for(i=0;i<this.namelist.length;i++){
+        for(i=0;i<this.playerList.length;i++){
             this.listRef.child(i).update({
                 immune:null,
                 status:null,
@@ -120,7 +140,7 @@ class ownerModule{
                             //TODO remove nextcounter ref
     
                             var ready = []
-                            for(i=0;i<this.namelist.length;i++){
+                            for(i=0;i<this.playerList.length;i++){
                                 ready[i] = false
                             }
     
@@ -179,7 +199,7 @@ class ownerModule{
                             if(count>=this.triggerNum){
                                 flag = true;
                                 this.roomRef.update({nominate:choiceArray[i]}).then(()=>
-                                    this._gMsg(this.namelist[choiceArray[i]].name + ' has been nominated.')
+                                    this._gMsg(this.playerList[choiceArray[i]].name + ' has been nominated.')
                                 )
                             }
 
@@ -201,28 +221,28 @@ class ownerModule{
                     }
                     
                 } else if (this.phase == 2 && total>=this.playerNum-1){
-                
+                    
                     var count = 0;
                     var names = null;
 
                     for(i=0;i<this.playerNum;i++){
                         if(choiceArray[i] == -1){
                             count++
-                            if(!names)  names=this.namelist[i].name
-                            else        names+=', '+this.namelist[i].name
+                            if(!names)  names=this.playerList[i].name
+                            else        names+=', '+this.playerList[i].name
                         } else count--
                     }
 
-                    this._gMsg((names||'Nobody') + ' voted against ' + this.namelist[this.nominate].name + '.')
+                    this._gMsg((names||'Nobody') + ' voted against ' + this.playerList[this.nominate].name + '.')
 
                     if(count>0){
                         this.listRef.child(this.nominate).update({dead:true}).then(()=>{
                             this._changePlayerCount(false);
                         })
 
-                        this._gMsg(this.namelist[this.nominate].name + ' was hung.')
+                        this._gMsg(this.playerList[this.nominate].name + ' was hung.')
 
-                        if(this.namelist[this.nominate].roleid == 'a' || this.namelist[this.nominate].roleid == 'b'){
+                        if(this.playerList[this.nominate].roleid == 'a' || this.playerList[this.nominate].roleid == 'b'){
 
                             //TODO NEW MURDERER LOGIC
 
@@ -232,7 +252,7 @@ class ownerModule{
                         this._changePhase(Phases[this.phase].trigger)
                         
                     } else {
-                        this._gMsg(this.namelist[this.nominate].name + ' was not hung.')
+                        this._gMsg(this.playerList[this.nominate].name + ' was not hung.')
                         this.listRef.child(this.nominate).update({immune:true})
                         this._changePhase(Phases[this.phase].continue)
                     }

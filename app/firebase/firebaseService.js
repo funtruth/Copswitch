@@ -161,6 +161,8 @@ class FirebaseService{
 
             this.placeRef.once('value',snap => {
             
+                if(!snap) resolve()
+
                 var counter = 0
     
                 snap.forEach((child)=>{
