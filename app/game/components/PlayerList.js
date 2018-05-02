@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 
 import PlayerButton from './PlayerButton';
-import Rolesheet from '../../misc/roles.json';
+import { Roles } from '../../misc/roles.js';
 
 import playerModule from '../mods/playerModule.js';
 import ownerModule from '../mods/ownerModule.js';
@@ -40,10 +40,10 @@ class PlayerList extends Component {
                 playerlist[i].key = i;
     
                 //Mafialist
-                if(Rolesheet[playerlist[i].roleid].type == 1 && playerlist[i].uid != this.user){
+                if(Roles[playerlist[i].roleid].type == 1 && playerlist[i].uid != this.user){
                     mafialist.push({
                         name:       playerlist[i].name,
-                        rolename:   Rolesheet[playerlist[i].roleid].name,
+                        rolename:   Roles[playerlist[i].roleid].name,
                         dead:       playerlist[i].dead,
                         key:        i,
                     })

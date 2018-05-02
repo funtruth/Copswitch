@@ -1,9 +1,9 @@
 import firebaseService from '../../firebase/firebaseService';
 import firebase from '../../firebase/FirebaseController';
 
+import { Phases } from '../../misc/phases.js';
 import randomize from 'randomatic';
 
-import Phases from '../../misc/phases';
 
 class ownerModule{
 
@@ -17,6 +17,10 @@ class ownerModule{
         this.readyRef = null
         this.loadedRef = null
         this.choiceRef = null
+
+        this.listRef = null
+        this.logRef = null
+        this.eventsRef = null
 
         this.phase = null
         this.counter = null
@@ -39,6 +43,10 @@ class ownerModule{
         this.readyRef = firebase.database().ref(`rooms/${this.roomId}/ready`)
         this.loadedRef = firebase.database().ref(`rooms/${this.roomId}/loaded`)
         this.choiceRef = firebase.database().ref(`rooms/${this.roomId}/choice`)
+
+        this.listRef = firebase.database().ref(`rooms/${this.roomId}/list`)
+        this.logRef = firebase.database().ref(`rooms/${this.roomId}/log`)
+        this.eventsRef = firebase.database().ref(`rooms/${this.roomId}/events`)
 
     }
 
@@ -183,7 +191,7 @@ class ownerModule{
 
                     var flag = false;
 
-                    for(i=0;i<this.triggerNum;i++){
+                    for(var i=0;i<this.triggerNum;i++){
 
                         var count = 0;
                         var players = 0;
@@ -417,7 +425,7 @@ class ownerModule{
                     }
 
                     this.listRef.update(playerArray)
-                    this.newsRef.child(this.counter).set(msgs)
+                    this.eventsRef.child(this.counter).set(msgs)
 
                     this._changePhase(Phases[this.phase].continue);
                 }

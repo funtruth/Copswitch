@@ -1,7 +1,7 @@
 import firebase from '../../firebase/FirebaseController';
 import firebaseService from '../../firebase/firebaseService';
 
-import Rolesheet from '../../misc/roles.json';
+import { Roles } from '../../misc/roles.js';
 import ownerModule from './ownerModule';
 
 class playerModule{
@@ -98,9 +98,9 @@ class playerModule{
 
             this.playerRoleId = snap.val().roleid
             this.playerAlive = !snap.val().dead
-            this.playerMafia = Rolesheet[snap.val().roleid].type == 1
-            this.playerTargetDead = Rolesheet[snap.val().roleid].targetdead?true:false,
-            this.playerTargetTown = Rolesheet[snap.val().roleid].targettown?true:false
+            this.playerMafia = Roles[snap.val().roleid].type == 1
+            this.playerTargetDead = Roles[snap.val().roleid].targetdead?true:false,
+            this.playerTargetTown = Roles[snap.val().roleid].targettown?true:false
 
         })
 

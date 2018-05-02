@@ -23,7 +23,7 @@ import { RoleView } from '../components/RoleView.js';
 import { StackNavigator } from 'react-navigation';
 import { NavigationActions } from 'react-navigation';
 
-import Rolesheet from '../misc/roles.json';
+import { Roles } from '../misc/roles.js';
 import Rules from '../misc/rules.json';
 import Menus from '../misc/menus.json';
 import firebase from '../firebase/FirebaseController.js';
@@ -98,7 +98,7 @@ class General extends Component {
     }
 }
 
-export class Roles extends Component {
+export class RolesComponent extends Component {
 
     constructor(props) {
         super(props);
@@ -275,7 +275,7 @@ export const RuleBook = StackNavigator(
         screen: General,
       },
       Roles: {
-        screen: Roles,
+        screen: RolesComponent,
       },
       Menu: {
         screen: Menu,

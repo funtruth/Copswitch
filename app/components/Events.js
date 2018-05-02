@@ -4,7 +4,6 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
-import Rolesheet from '../misc/roles.json';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;

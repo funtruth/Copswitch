@@ -16,7 +16,7 @@ import { Alert } from './Alert.js';
 import { Modal } from '../parents/Modal.js';
 import { Desc } from './Desc.js';
 
-import Rolesheet from '../misc/roles.json';
+import { Roles } from '../misc/roles.js';
 import firebase from '../firebase/FirebaseController.js';
 
 import colors from '../misc/colors.js';
@@ -51,22 +51,22 @@ export class RoleView extends Component {
 
     componentWillMount() {
 
-        var keys = Object.keys(Rolesheet).sort()
+        var keys = Object.keys(Roles).sort()
         
         var townlist = [];
         var mafialist = [];
 
         keys.forEach(function(key){
-            if(Rolesheet[key].type == 1){
+            if(Roles[key].type == 1){
                 mafialist.push({
-                    name:           Rolesheet[key].name,
-                    index:          Rolesheet[key].index,
+                    name:           Roles[key].name,
+                    index:          Roles[key].index,
                     key:            key,
                 })
-            } else if (Rolesheet[key].type == 2) {
+            } else if (Roles[key].type == 2) {
                 townlist.push({
-                    name:           Rolesheet[key].name,
-                    index:          Rolesheet[key].index,
+                    name:           Roles[key].name,
+                    index:          Roles[key].index,
                     key:            key,
                 })
             }

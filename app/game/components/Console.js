@@ -6,7 +6,7 @@ import {
     Dimensions 
 } from 'react-native';
 
-import Phases from '../../misc/phases.json';
+import { Phases } from '../../misc/phases.js';
 import { Button } from '../../components/Button';
 import firebaseService from '../../firebase/firebaseService';
 import playerModule from '../mods/playerModule';
@@ -72,7 +72,7 @@ class Console extends Component {
     
             if(snap.exists()){
                 
-                this.setState({ ready:readysnap.val() })
+                this.setState({ ready:snap.val() })
     
             } else {
     

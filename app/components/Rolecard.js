@@ -4,7 +4,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import colors from '../misc/colors.js';
 import styles from '../misc/styles.js';
-import Rolesheet from '../misc/roles.json';
+import { Roles } from '../misc/roles.js';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;
@@ -59,11 +59,11 @@ render() {
             width: this.width*0.7
         }}>
             <Text style = {styles.roleFont}>YOU ARE A:</Text>
-            <Text style = {styles.title}>{Rolesheet[this.props.roleid].name}</Text>
+            <Text style = {styles.title}>{Roles[this.props.roleid].name}</Text>
             <Text style = {styles.roleFont}>AT NIGHT YOU:</Text>
-            <Text style = {styles.roleDesc}>{Rolesheet[this.props.roleid].rules}</Text>
+            <Text style = {styles.roleDesc}>{Roles[this.props.roleid].rules}</Text>
             <Text style = {styles.roleFont}>you win when:</Text>
-            <Text style = {styles.roleDesc}>{Rolesheet[this.props.roleid].win}</Text>
+            <Text style = {styles.roleDesc}>{Roles[this.props.roleid].win}</Text>
             {this.props.amimafia?<View>
                 <Text style = {styles.roleFont}>YOUR TEAMMATES:</Text>
                 <FlatList
