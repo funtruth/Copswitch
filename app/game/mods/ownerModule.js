@@ -1,7 +1,6 @@
 import firebaseService from '../../firebase/firebaseService';
 import firebase from '../../firebase/FirebaseController';
 
-import { Phases } from '../../misc/phases.js';
 import randomize from 'randomatic';
 
 
@@ -15,12 +14,13 @@ class ownerModule{
 
         this.roomRef = null
         this.readyRef = null
-        this.loadedRef = null
-        this.choiceRef = null
+        this.counterRef = null
 
         this.listRef = null
         this.logRef = null
         this.eventsRef = null
+
+        this.listeners = []
 
         this.phase = null
         this.counter = null
@@ -41,8 +41,7 @@ class ownerModule{
 
         this.roomRef = firebase.database().ref(`rooms/${this.roomId}`)
         this.readyRef = firebase.database().ref(`rooms/${this.roomId}/ready`)
-        this.loadedRef = firebase.database().ref(`rooms/${this.roomId}/loaded`)
-        this.choiceRef = firebase.database().ref(`rooms/${this.roomId}/choice`)
+        this.counterRef = firebase.database().ref(`rooms/${this.roomId}/counter`)
 
         this.listRef = firebase.database().ref(`rooms/${this.roomId}/list`)
         this.logRef = firebase.database().ref(`rooms/${this.roomId}/log`)
@@ -51,6 +50,8 @@ class ownerModule{
     }
 
     wipeGame(){
+
+
 
     }
 
@@ -67,13 +68,17 @@ class ownerModule{
         
         this.loadedListener()
         this.choiceListener()
+        this.voteListener()
 
     }
 
     turnOffListeners() {
 
-        if(this.loadedRef) this.loadedRef.off()
-        if(this.choiceRef) this.choiceRef.off()
+        for(var i=0; i<this.listeners.length; i++){
+            if(this.listeners[i]) {
+                this.listeners[i].off()
+            }
+        }
 
     }
 
@@ -107,12 +112,9 @@ class ownerModule{
 
     }
 
-    _changePhase(change){
+    _changePhase(){
 
-        this.roomRef.child('nextCounter').set(this.counter + change)
-        .then(()=>{
-            this.roomRef.child('ready').remove()
-        })
+        this.roomRef.child('ready').remove()
 
     }
 
@@ -129,39 +131,40 @@ class ownerModule{
     }
 
     _globalMsg(message){
+
         this.roomRef.child('log').push(message)
+
     }
 
     loadedListener(){
+        
+        const ref = firebaseService.fetchRoomRef('loaded')
+        this.listeners.push(ref)
 
-        this.loadedRef.on('value',snap=>{
+        ref.on('value',snap=>{
 
             if(snap.exists()){
 
                 if(snap.numChildren() >= this.playerNum){
 
-                    this.roomRef.child('nextCounter').once('value',nextCounter=>{
+                    this.counterRef.update(this.counter + 1)
 
-                        this.roomRef.update({ counter:nextCounter.val() })
-                        .then(()=>{
-    
-                            //TODO remove nextcounter ref
-    
-                            var ready = []
-                            for(i=0;i<this.playerList.length;i++){
-                                ready[i] = false
-                            }
-    
-                            this.readyRef.set(ready).then(()=>{
-                                this.loadedRef.remove()
-                            }).then(()=>{
-                                this.choiceRef.remove()
-                                this.roomRef.child('nextCounter').remove()
-                            })
-    
+                    .then(()=>{
+                        
+                        var ready = []
+                        for(i=0;i<this.playerList.length;i++){
+                            ready[i] = false
+                        }
+
+                        this.readyRef.set(ready).then(()=>{
+                            //this.loadedRef.remove()
+                        }).then(()=>{
+                            //this.choiceRef.remove()
                         })
 
                     })
+
+                    
 
                 }
 
@@ -173,7 +176,10 @@ class ownerModule{
 
     choiceListener(){
 
-        this.choiceRef.on('value',snap=>{
+        const ref = firebaseService.fetchRoomRef('choice')
+        this.listeners.push(ref)
+
+        ref.on('value',snap=>{
 
             if(snap.exists()){
 
@@ -187,7 +193,7 @@ class ownerModule{
                     if(choiceArray[i]) total++
                 }
 
-                if(this.phase == 1 && total>=this.triggerNum){
+                if(this.phase == 0 && total>=this.triggerNum){
 
                     var flag = false;
 
@@ -207,7 +213,7 @@ class ownerModule{
                             if(count>=this.triggerNum){
                                 flag = true;
                                 this.roomRef.update({nominate:choiceArray[i]}).then(()=>
-                                    this._gMsg(this.playerList[choiceArray[i]].name + ' has been nominated.')
+                                    this._globalMsg(this.playerList[choiceArray[i]].name + ' has been nominated.')
                                 )
                             }
 
@@ -215,57 +221,22 @@ class ownerModule{
                         }
 
                         if(flag) break
+
                     }
 
                     if(flag){
-                        this.choiceRef.remove();
-                        this._changePhase(Phases[this.phase].trigger);
+
+                        ref.remove();
 
                     } else if(!flag && players >= this.playerNum){
                         
-                        this.choiceRef.remove();
+                        ref.remove();
                         this._resetDayStatuses();
-                        this._changePhase(Phases[this.phase].continue);
+                        this._changePhase();
+
                     }
                     
-                } else if (this.phase == 2 && total>=this.playerNum-1){
-                    
-                    var count = 0;
-                    var names = null;
-
-                    for(i=0;i<this.playerNum;i++){
-                        if(choiceArray[i] == -1){
-                            count++
-                            if(!names)  names=this.playerList[i].name
-                            else        names+=', '+this.playerList[i].name
-                        } else count--
-                    }
-
-                    this._gMsg((names||'Nobody') + ' voted against ' + this.playerList[this.nominate].name + '.')
-
-                    if(count>0){
-                        this.listRef.child(this.nominate).update({dead:true}).then(()=>{
-                            this._changePlayerCount(false);
-                        })
-
-                        this._gMsg(this.playerList[this.nominate].name + ' was hung.')
-
-                        if(this.playerList[this.nominate].roleid == 'a' || this.playerList[this.nominate].roleid == 'b'){
-
-                            //TODO NEW MURDERER LOGIC
-
-                        } 
-                        
-                        this._resetDayStatuses();
-                        this._changePhase(Phases[this.phase].trigger)
-                        
-                    } else {
-                        this._gMsg(this.playerList[this.nominate].name + ' was not hung.')
-                        this.listRef.child(this.nominate).update({immune:true})
-                        this._changePhase(Phases[this.phase].continue)
-                    }
-                    
-                } else if (this.phase == 0 && total>=this.playerNum){
+                } else if (this.phase == 1 && total>=this.playerNum){
 
                     for(i=0;i<choiceArray.length;i++){
                         //ROLE BLOCKING
@@ -427,10 +398,83 @@ class ownerModule{
                     this.listRef.update(playerArray)
                     this.eventsRef.child(this.counter).set(msgs)
 
-                    this._changePhase(Phases[this.phase].continue);
+                    this._changePhase();
                 }
             }
         })
+    }
+
+    voteListener(){
+
+        const ref = firebaseService.fetchRoomRef('vote')
+        this.listeners.push(ref)
+
+        ref.on('value',snap=>{
+
+            if(snap.exists()){
+
+                var choiceArray = snap.val();
+                var playerArray = null;
+                var msgs = [];
+                var gMsgs = [];
+                var total = 0;
+
+                for(i=0;i<choiceArray.length;i++){
+                    if(choiceArray[i]) total++
+                }
+
+                if(total >= this.playerNum - 1){
+
+                    var count = 0
+                    var names = []
+                    var nameString = ''
+
+                    for(var i=0; i<this.playerNum; i++){
+
+                        if(choiceArray[i] == -1){
+                            names.push(this.playerList[i].name)
+                            count++
+                        } else {
+                            count--
+                        }
+
+                    }
+
+                    for(var i=0; i<names.length; i++){
+
+                        nameString += names[i]
+
+                    }
+
+                    this._globalMsg((nameString || 'Nobody') + ' voted against ' + this.playerList[this.nominate].name + '.')
+
+                    if(count>0){
+
+                        firebaseService.fetchRoomRef('list').child(this.nominate).update({dead:true})
+
+                        this._globalMsg(this.playerList[this.nominate].name + ' was hung.')
+
+                        if(this.playerList[this.nominate].roleid == 'a' || this.playerList[this.nominate].roleid == 'b'){
+
+                            //TODO NEW MURDERER LOGIC
+
+                        } 
+                        
+                        this._resetDayStatuses();
+                        
+                    } else {
+
+                        this._globalMsg(this.playerList[this.nominate].name + ' was not hung.')
+                        firebaseService.fetchRoomRef('nominate').remove()
+
+                    }
+
+                }
+
+            }
+
+        })
+
     }
 
     gameOver(){

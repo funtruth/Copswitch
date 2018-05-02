@@ -66,8 +66,8 @@ componentWillMount() {
 
     this.user               = firebaseService.getUid()
 
-    this.roomRef            = playerModule.fetchGameRef('')
-    this.readyRef           = playerModule.fetchGameRef('ready');
+    this.roomRef            = firebaseService.fetchRoomRef('')
+    this.readyRef           = firebaseService.fetchRoomRef('ready');
     this.ownerRef           = firebaseService.fetchRoomInfoRef('owner')
 
     //Move this to proper component

@@ -10,6 +10,7 @@ import { Roles } from '../../misc/roles.js';
 
 import playerModule from '../mods/playerModule.js';
 import ownerModule from '../mods/ownerModule.js';
+import firebaseService from '../../firebase/firebaseService';
 
 class PlayerList extends Component {
     
@@ -28,7 +29,7 @@ class PlayerList extends Component {
 
     componentWillMount(){
 
-        this.listRef = playerModule.fetchGameRef('list')
+        this.listRef = firebaseService.fetchRoomRef('list')
 
         this.listRef.on('value',snap=>{
 

@@ -6,98 +6,68 @@ import {
     Dimensions 
 } from 'react-native';
 
-import { Phases } from '../../misc/phases.js';
 import { Button } from '../../components/Button';
-
-import firebaseService from '../../firebase/firebaseService';
 import playerModule from '../mods/playerModule';
-import ownerModule from '../mods/ownerModule';
+import firebaseService from '../../firebase/firebaseService';
 
 
-class Console extends Component {
+class Nomination extends Component {
         
     constructor(props) {
         super(props);
 
         this.state = {
 
-            counter: null,
-            phase:null,
-            dayNum:null,
-            buttonOne: null,
-            buttonTwo: null,
-            phaseName: null,
-
-            nominee: null,
-
-            ready: null,
+            nominee:null,
 
         }
 
-        this.counterRef = null
         this.nominationRef = null
         this.myReadyRef = null
     }
 
-    componentWillMount(){
+    on(show){
 
-        this.counterRef = firebaseService.fetchRoomRef('counter')
+        
+
+
+    }
+
+    componentWillMount(){
+        
         this.nominationRef = firebaseService.fetchRoomRef('nomination')
         this.myReadyRef = playerModule.fetchMyReadyRef()
-        this.loadedRef = firebaseService.fetchRoomRef('loaded')
-
-        this.counterRef.on('value',snap=>{
-            if(snap.exists()){
-
-                const phase = snap.val() % 2
-                
-                this.setState({
-                    counter: snap.val(),
-                    phase:phase,
-                    dayNum: (snap.val() - snap.val() % 2)/2 + 1,
-                    buttonOne: Phases[phase].buttonOne,
-                    buttonTwo: Phases[phase].buttonTwo,
-                    phaseName: Phases[phase].name,
-                })
-
-                ownerModule.passCounterInfo(phase, snap.val())
-                    
-            }
-        })
 
         this.nominationRef.on('value',snap=>{
             if(snap.exists()){
-                this.setState({nominee: snap.val()})
+                
+                this.setState({
+                    nominee: playerModule.getUserNameUsingPlace(snap.val())
+                })
+
+                this.on(true)
+
             }
         })
 
         this.myReadyRef.on('value',snap=>{
     
-            if(snap.exists()){
+            if(snap.exists() && snap.val()){
                 
-                this.setState({ ready:snap.val() })
+                this.setState({
+                    nominee: null
+                })
+
+                this.on(false)
     
-            } else {
-    
-                this.setState({ ready:null  })
-    
-                setTimeout(()=>{
-                    this.myReadyRef.once('value',snap=>{
-                        if(snap.exists()){
-                            this.myReadyRef.remove();
-                        } else {
-                            playerModule.loaded()
-                        }
-                    })
-                },1500)
             }
+
         })
 
     }
 
     componentWillUnmount(){
 
-        if(this.counterRef) this.counterRef.off()
         if(this.nominationRef) this.nominationRef.off()
         if(this.myReadyRef) this.myReadyRef.off()
 
@@ -105,7 +75,7 @@ class Console extends Component {
 
     buttonOnePress() {
 
-        this.props.viewList()
+        playerModule.selectChoice(1)
 
     }
     
@@ -115,18 +85,12 @@ class Console extends Component {
 
     }
 
-    resetOptionPress() {
-        
-        playerModule.selectChoice(null)
-
-    }
-
     render() {
 
         return ( 
             <Animated.View style = {styles.console}>
                     
-                <Text style = {styles.phase}>{this.state.phaseName + ' ' + this.state.dayNum}</Text>
+                <Text style = {styles.phase}>is now on Trial</Text>
 
                 <Button
                     horizontal = {0.4}
@@ -172,5 +136,5 @@ const styles = {
     },
 }
 
-export default Console
+export default Nomination
 

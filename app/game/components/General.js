@@ -25,7 +25,7 @@ class General extends Component {
 
     componentWillMount(){
 
-        this.logRef = playerModule.fetchGameRef('log')
+        this.logRef = firebaseService.fetchRoomRef('log')
         
         this.logRef.on('child_added', snap=>{
 

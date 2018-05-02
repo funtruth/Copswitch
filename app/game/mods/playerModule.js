@@ -112,6 +112,14 @@ class playerModule{
 
     }
 
+    getUserNameUsingPlace(place){
+
+        return this.playerList[place].name
+
+    }
+
+    
+
     turnOffListeners(){
 
         for(var i=0; i<this.listeners.length; i++){
@@ -119,12 +127,6 @@ class playerModule{
                 this.listeners[i].off()
             }
         }
-
-    }
-
-    fetchGameRef(path){
-
-        return firebase.database().ref(`rooms/${this.roomId}/` + path)
 
     }
 

@@ -179,11 +179,15 @@ class FirebaseService{
 
     }
 
-    //Lobby
-
     fetchRoomInfoRef(path){
 
         return firebase.database().ref(`roomInfo/${this.roomId}/`+path)
+
+    }
+
+    fetchRoomRef(path){
+
+        return firebase.database().ref(`rooms/${this.roomId}/` + path)
 
     }
 
