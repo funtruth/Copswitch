@@ -155,30 +155,6 @@ class FirebaseService{
 
     }
 
-    getRoomInfoPlace(){
-        
-        return new Promise (resolve => {
-
-            this.placeRef.once('value',snap => {
-            
-                if(!snap) resolve()
-
-                var counter = 0
-    
-                snap.forEach((child)=>{
-                    if(child.val() === this.uid){
-                        this.place = counter
-                    }
-                    counter++
-                })
-
-                resolve(this.place)
-            })
-
-        })
-
-    }
-
     fetchRoomInfoRef(path){
 
         return firebase.database().ref(`roomInfo/${this.roomId}/`+path)

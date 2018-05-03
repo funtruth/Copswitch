@@ -6,7 +6,8 @@ import { StackNavigator } from "react-navigation";
 import Loading from '../home/LoadingScreen';
 import Home from '../home/BasicHomeScreen';
 import Lobby from '../lobby/BasicLobbyScreen';
-import Mafia from "../game/MafiaScreen";
+import Pregame from "../game/PregameScreen";
+import Game from "../game/GameScreen";
 
 const Router = StackNavigator(
       {
@@ -19,8 +20,11 @@ const Router = StackNavigator(
         Lobby: {
           screen: Lobby
         },
-        Mafia: {
-          screen: Mafia
+        Pregame:{
+          screen: Pregame
+        },
+        Game: {
+          screen: Game
         },
       },
       {

@@ -64,7 +64,7 @@ class BasicLobbyScreen extends Component {
         
         AsyncStorage.setItem('GAME-KEY', this.roomId)
         .then(()=>{
-            this.props.screenProps.navigate('Mafia')
+            this.props.screenProps.navigate('Pregame')
         })
 
     }

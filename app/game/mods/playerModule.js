@@ -9,20 +9,16 @@ class playerModule{
     constructor(){
 
         this.roomId = null
+        this.listeners = []
 
         this.uid = null
-
         this.ign = null
-
         this.place = null
-
-        this.roomRef = null
-
-        this.listeners = []
 
         this.myChoiceRef = null
         this.myReadyRef = null
         this.myInfoRef = null
+        this.myLoadedRef = null
 
         //game statuses
         this.playerRoleId = null
@@ -37,18 +33,43 @@ class playerModule{
         this.roomId = firebaseService.getRoomId()
         if(!this.roomId) return
 
-        this.roomRef = firebase.database().ref(`rooms/${this.roomId}`)
-
         this.uid = firebaseService.getUid()
-        this.setPlace( await firebaseService.getRoomInfoPlace() )
+        this.place = await this.getRoomInfoPlace()
+        this.setPlace(this.place)
 
         this.turnOnListeners()
+
+    }
+
+    getRoomInfoPlace(){
+        
+        return new Promise (resolve => {
+
+            const ref = firebaseService.fetchRoomInfoRef('place')
+            ref.once('value',snap => {
+            
+                if(!snap) resolve()
+
+                var counter = 0
+    
+                snap.forEach((child)=>{
+                    if(child.val() === this.uid){
+                        this.place = counter
+                    }
+                    counter++
+                })
+
+                resolve(this.place)
+            })
+
+        })
 
     }
 
     wipeGame(){
 
         this.turnOffListeners()
+        this.listeners = []
 
         this.roomId = null
 
@@ -56,13 +77,10 @@ class playerModule{
         this.ign = null
         this.place = null
 
-        this.roomRef = null
-
-        this.listeners = []
-
         this.myChoiceRef = null
         this.myReadyRef = null
         this.myInfoRef = null
+        this.myLoadedRef = null
 
         //game statuses
         this.playerRoleId = null
@@ -78,8 +96,8 @@ class playerModule{
 
         this.myChoiceRef = firebase.database().ref(`rooms/${this.roomId}/choice/${place}`)
         this.myReadyRef = firebase.database().ref(`rooms/${this.roomId}/ready/${place}`)
-        this.myLoadedRef = firebase.database().ref(`rooms/${this.roomId}/loaded${this.uid}`)
         this.myInfoRef = firebase.database().ref(`rooms/${this.roomId}/list/${place}`)
+        this.myLoadedRef = firebase.database().ref(`rooms/${this.roomId}/loaded/${this.uid}`)
 
     }
 

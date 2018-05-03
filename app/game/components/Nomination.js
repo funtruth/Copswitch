@@ -22,14 +22,20 @@ class Nomination extends Component {
 
         }
 
+        this.nav = new Animated.Value(0)
+
         this.nominationRef = null
         this.myReadyRef = null
     }
 
-    on(show){
+    _on(view){
 
-        
-
+        Animated.timing(
+            this.nav,{
+                toValue:view?1:0,
+                duration:500
+            }
+        ).start()
 
     }
 
@@ -42,10 +48,11 @@ class Nomination extends Component {
             if(snap.exists()){
                 
                 this.setState({
-                    nominee: playerModule.getUserNameUsingPlace(snap.val())
+                    nominee: playerModule.getUserNameUsingPlace(snap.val()),
+                    visible: true
                 })
 
-                this.on(true)
+                this._on(true)
 
             }
         })
@@ -55,10 +62,11 @@ class Nomination extends Component {
             if(snap.exists() && snap.val()){
                 
                 this.setState({
-                    nominee: null
+                    nominee: null,
+                    visible: false
                 })
 
-                this.on(false)
+                this._on(false)
     
             }
 
@@ -73,22 +81,28 @@ class Nomination extends Component {
 
     }
 
-    buttonOnePress() {
+    buttonPress(choice) {
 
-        playerModule.selectChoice(1)
-
-    }
-    
-    buttonTwoPress() {
-
-        playerModule.selectChoice(-1)
+        playerModule.selectChoice(choice)
 
     }
 
     render() {
 
+        const { visible, buttonOne, buttonTwo } = this.state
+
+        if(!visible) return null
+
         return ( 
-            <Animated.View style = {styles.console}>
+            <Animated.View style = {[
+                styles.console,
+                {
+                    opacity:this.nav.interpolate({
+                        inputRange:[0,0.7,1],
+                        outputRange:[0,0,1]
+                    })
+                }
+            ]}>
                     
                 <Text style = {styles.phase}>is now on Trial</Text>
 
@@ -96,15 +110,15 @@ class Nomination extends Component {
                     horizontal = {0.4}
                     margin = {10}
                     backgroundColor = {colors.dead}
-                    onPress = {() => this.buttonOnePress()}
-                ><Text style = {styles.choiceButton}>{this.state.buttonOne}</Text>
+                    onPress = {() => this.buttonPress(1)}
+                ><Text style = {styles.choiceButton}>Innocent</Text>
                 </Button>
 
                 <Button
                     horizontal = {0.4}
                     backgroundColor = {colors.dead}
-                    onPress = {() => this.buttonTwoPress()}
-                ><Text style = {styles.choiceButton}>{this.state.buttonTwo}</Text>
+                    onPress = {() => this.buttonPress(-1)}
+                ><Text style = {styles.choiceButton}>Guilty</Text>
                 </Button>
 
             </Animated.View>
@@ -118,7 +132,12 @@ const styles = {
         margin:5,
         borderRadius:5,
         backgroundColor:colors.card,
-        justifyContent:'center'
+        justifyContent:'center',
+        position:'absolute',
+        top:0,
+        bottom:0,
+        left:0,
+        right:0
     },
     phase:{
         fontSize:30,

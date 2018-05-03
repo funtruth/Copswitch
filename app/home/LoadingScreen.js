@@ -42,7 +42,7 @@ class LoadingScreen extends Component {
         .then(()=>{
             AsyncStorage.getItem('GAME-KEY',(error,gameKey)=>{
                 if(gameKey){
-                    this.route = 'Mafia'
+                    this.route = 'Pregame'
                     this.roomId = gameKey
                 }
                 

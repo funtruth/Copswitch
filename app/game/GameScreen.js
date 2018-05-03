@@ -13,7 +13,7 @@ import {
 import colors from '../misc/colors.js';
 
 import Modal from '../components/Modal';
-import { Alert } from '../components/Alert.js';
+import Nomination from './components/Nomination.js';
 import { Button } from '../components/Button.js';
 import Console from './components/Console.js';
 import { Rolecard } from '../components/Rolecard.js';
@@ -31,7 +31,7 @@ import firebaseService from '../firebase/firebaseService';
 import playerModule from './mods/playerModule';
 import ownerModule from './mods/ownerModule';
 
-class MafiaScreen extends Component {
+class GameScreen extends Component {
 
 constructor(props) {
     super(props);
@@ -47,13 +47,11 @@ constructor(props) {
     
     this.readylist          = [];
 
-    this.height             = Dimensions.get('window').height;
     this.width              = Dimensions.get('window').width;
     this.icon               = this.width*0.12;
 
     this.user               = null
 
-    this.roomRef            = null
     this.readyRef           = null
     this.ownerRef           = null
 
@@ -61,12 +59,8 @@ constructor(props) {
 
 componentWillMount() {
 
-    playerModule.initGame()
-    ownerModule.initGame()
-
     this.user               = firebaseService.getUid()
 
-    this.roomRef            = firebaseService.fetchRoomRef('')
     this.readyRef           = firebaseService.fetchRoomRef('ready');
     this.ownerRef           = firebaseService.fetchRoomInfoRef('owner')
 
@@ -197,6 +191,8 @@ _renderNav(){
                 <PlayerList />
             </Modal>
 
+            <Nomination />
+
         </View>
     }
 }
@@ -221,4 +217,4 @@ const styles = {
     }
 }
 
-export default MafiaScreen
+export default GameScreen
