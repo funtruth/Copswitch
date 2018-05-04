@@ -35,34 +35,13 @@ class playerModule{
 
         this.uid = firebaseService.getUid()
         this.place = await this.getRoomInfoPlace()
-        this.setPlace(this.place)
+
+        this.myChoiceRef = firebase.database().ref(`rooms/${this.roomId}/choice/${this.place}`)
+        this.myReadyRef = firebase.database().ref(`rooms/${this.roomId}/ready/${this.place}`)
+        this.myInfoRef = firebase.database().ref(`rooms/${this.roomId}/list/${this.place}`)
+        this.myLoadedRef = firebase.database().ref(`rooms/${this.roomId}/loaded/${this.uid}`)
 
         this.turnOnListeners()
-
-    }
-
-    getRoomInfoPlace(){
-        
-        return new Promise (resolve => {
-
-            const ref = firebaseService.fetchRoomInfoRef('place')
-            ref.once('value',snap => {
-            
-                if(!snap) resolve()
-
-                var counter = 0
-    
-                snap.forEach((child)=>{
-                    if(child.val() === this.uid){
-                        this.place = counter
-                    }
-                    counter++
-                })
-
-                resolve(this.place)
-            })
-
-        })
 
     }
 
@@ -90,14 +69,46 @@ class playerModule{
 
     }
 
-    setPlace(place){
+    getRoomInfoPlace(){
+        
+        return new Promise (resolve => {
 
-        this.place = place
+            const ref = firebaseService.fetchRoomInfoRef('place')
+           
+            ref.once('value')
+            .then((snap)=>{
 
-        this.myChoiceRef = firebase.database().ref(`rooms/${this.roomId}/choice/${place}`)
-        this.myReadyRef = firebase.database().ref(`rooms/${this.roomId}/ready/${place}`)
-        this.myInfoRef = firebase.database().ref(`rooms/${this.roomId}/list/${place}`)
-        this.myLoadedRef = firebase.database().ref(`rooms/${this.roomId}/loaded/${this.uid}`)
+                if(!snap) resolve()
+
+                var counter = 0
+    
+                snap.forEach((child)=>{
+                    if(child.val() === this.uid){
+                        this.place = counter
+                    }
+                    counter++
+                })
+
+                resolve(this.place)
+
+            })
+
+        })
+
+    }
+
+    loadPlayerList(){
+
+        return new Promise (resolve => {
+
+            firebaseService.fetchRoomRef('list').on('value', snap => {
+
+                this.playerList = snap.val()
+                resolve(true)
+
+            })
+
+        })
 
     }
 
@@ -136,8 +147,6 @@ class playerModule{
 
     }
 
-    
-
     turnOffListeners(){
 
         for(var i=0; i<this.listeners.length; i++){
@@ -150,7 +159,7 @@ class playerModule{
 
     fetchMyReadyRef(){
 
-        return firebase.database().ref(`rooms/${this.roomId}/ready/${this.place}`)
+        return this.myReadyRef
 
     }
 
@@ -159,7 +168,7 @@ class playerModule{
         this.myChoiceRef.set(choice)
         
         .then(()=>{
-            this.myReadyRef.set(choice?true:false)
+            this.myReadyRef.set(choice != null ? true : false)
         })
 
     }

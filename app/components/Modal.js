@@ -43,7 +43,9 @@ class Modal extends Component {
 
     render() {
 
-        const { children, closeModal } = this.props
+        const { visible, children, closeModal } = this.props
+
+        if(!visible) return null
 
         return ( 
             <Animated.View style = {{
@@ -53,13 +55,10 @@ class Modal extends Component {
                 left:0,
                 right:0,
                 top:0,
-                bottom:this.on.interpolate({
-                    inputRange:[0,0.7,1],
-                    outputRange:[this.height,0,0]
-                }),
+                bottom:0,
                 opacity:this.on.interpolate({
-                    inputRange:[0,0.7,1],
-                    outputRange:[0,0,1]
+                    inputRange:[0,1],
+                    outputRange:[0,1]
                 }),
                 backgroundColor: 'black',
                 }}>

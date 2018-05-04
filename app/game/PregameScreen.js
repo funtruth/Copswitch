@@ -22,6 +22,7 @@ componentWillMount() {
 
     Promise.all([
         playerModule.initGame(),
+        playerModule.loadPlayerList(),
         ownerModule.initGame(),
     ]).then(()=>{
         this.props.screenProps.navigate('Game')

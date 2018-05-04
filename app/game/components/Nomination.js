@@ -46,7 +46,7 @@ class Nomination extends Component {
 
         this.nominationRef.on('value',snap=>{
             if(snap.exists()){
-                
+
                 this.setState({
                     nominee: playerModule.getUserNameUsingPlace(snap.val()),
                     visible: true
@@ -59,14 +59,25 @@ class Nomination extends Component {
 
         this.myReadyRef.on('value',snap=>{
     
-            if(snap.exists() && snap.val()){
+            if(snap.exists()){
                 
-                this.setState({
-                    nominee: null,
-                    visible: false
-                })
+                if(snap.val()){
 
-                this._on(false)
+                    this.setState({
+                        visible: false
+                    })
+
+                    this._on(false)
+
+                } else {
+
+                    this.setState({
+                        visible: true
+                    })
+    
+                    this._on(true)
+
+                }
     
             }
 

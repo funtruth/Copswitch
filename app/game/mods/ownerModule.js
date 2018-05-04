@@ -93,22 +93,20 @@ class ownerModule{
 
         this.playerList = list
 
-        var playernum = 0;
+        var alive = 0;
 
         for(i=0;i<this.playerList.length;i++){
 
             this.playerList[i].key = i;
 
             if(!this.playerList[i].dead){
-                playernum++;
+                alive++;
             }
 
         }
 
-        if(playernum === 1) this.playerNum = 1000
-
-        this.playerNum = playernum
-        this.triggerNum = ((playernum - playernum%2)/2) + 1
+        this.playerNum = alive
+        this.triggerNum = ((alive - alive%2)/2) + 1
 
     }
 
@@ -231,7 +229,7 @@ class ownerModule{
                     } else if(!flag && players >= this.playerNum){
                         
                         ref.remove();
-                        this._resetDayStatuses();
+                        //this._resetDayStatuses();
                         this._changePhase();
 
                     }
@@ -395,7 +393,7 @@ class ownerModule{
                         }
                     }
 
-                    this.listRef.update(playerArray)
+                    //this.listRef.update(playerArray)
                     this.eventsRef.child(this.counter).set(msgs)
 
                     this._changePhase();
@@ -459,8 +457,6 @@ class ownerModule{
                             //TODO NEW MURDERER LOGIC
 
                         } 
-                        
-                        this._resetDayStatuses();
                         
                     } else {
 
