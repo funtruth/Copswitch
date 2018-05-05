@@ -10,7 +10,8 @@ class actionModule{
         this.choices = null
         this.players = null
 
-        this.news = null
+        this.news = []
+        this.alive = []
         this.events = []
 
     }
@@ -20,8 +21,9 @@ class actionModule{
         this.choices = null
         this.players = null
 
-        this.news = null
-        this.events = null
+        this.news = []
+        this.alive = []
+        this.events = []
 
     }
 
@@ -34,6 +36,16 @@ class actionModule{
     passPlayers(players){
 
         this.players = players
+
+    }
+
+    updateAlive(){
+
+        for(var i=0; i<this.players.length; i++){
+
+            if(!this.players.dead) this.alive.push(i)
+
+        }
 
     }
 
@@ -74,6 +86,7 @@ class actionModule{
         for(i=0;i<this.choices.length;i++){
         
             //Checking for Tags
+            //TODO can I store all the LFTags in an array?
             if(this.players[ this.choices[i] ].watch){
 
                 this.events.push([
@@ -94,40 +107,17 @@ class actionModule{
                 
             }
 
-            //Player Tags
-            if(this.players[i].stab){
+            //Handle deaths better
+            if(this.players[i].proc){
 
-                if(this.players[ this.choices[i] ].heal){
-
-                    this.events.push([
-                        {message: Defaults.healedByDoctor, place: this.choices[i]},
-                        {message: Defaults.healedYourTarget, place: this.players[i].heal}
-                    ])
-
-
-                } else {
-
-                    this.news.push( this.players[ this.choices[i] ].name + Defaults.killedByMafia)
-
-                }
-                
-            }
-
-            if(this.players[i].shoot){
-
-                if(this.players[ this.choices[i] ].heal){
-
-                    this.events.push([
-                        {message: Defaults.healedByDoctor, place: this.choices[i]},
-                        {message: Defaults.healedYourTarget, place: this.players[i].heal}
-                    ])
-
-
-                } else {
-
-                    this.news.push( this.players[ this.choices[i] ].name + Defaults.shotByHunter)
-
-                }
+                this.events.push(
+                    Roles[ this.players[i].roleid ].proc( 
+                        this.players[i],
+                        i,
+                        this.choices[i],
+                        (this.players[ this.choices[i] ])[this.players[i].proc]
+                    )
+                )
 
             }
 
@@ -164,7 +154,7 @@ class actionModule{
 
     uniqueAction(){
 
-
+        
 
     }
 
@@ -173,6 +163,22 @@ class actionModule{
         for(var i=0; i<this.players.length; i++){
 
             this.players.stab = null //etc
+
+        }
+
+    }
+
+    checkNews(){
+
+        for(var i=0; i<this.alive.length; i++){
+
+            if(this.players[ this.alive[i] ].dead){
+
+                this.news.push(
+                    this.players[ this.alive[i] ].name + Defaults.died
+                )
+
+            }
 
         }
 

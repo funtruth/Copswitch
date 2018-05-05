@@ -240,12 +240,14 @@ class ownerModule{
 
                     actionModule.passChoices(choiceArray)
                     actionModule.passPlayers(this.playerList)
+                    actionModule.updateAlive()
 
                     actionModule.prepareNight()
                     actionModule.prepareRoles()
                     actionModule.doNight()
 
                     actionModule.cleanUpPlayerState()
+                    actionModule.checkNews()
                     actionModule.pushToDatabase()
 
                     //TODO wait for a promise or somehitng

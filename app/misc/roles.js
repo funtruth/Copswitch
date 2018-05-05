@@ -1,3 +1,5 @@
+import { Defaults } from '../commands/announcerPack';
+
 export const Roles = {
 
     a : {
@@ -7,12 +9,17 @@ export const Roles = {
         sus : true,
         targetTown : true,
         type : 1,
+        proc : "name", //always procs
+        events : function(player,key,choice,proc){
+            return {message: Defaults.informantRole + Role[player.roleid].name, place:key}
+        },
     },
     b : {
         index : 1,
         name : "Fugitive",
         rules : "Does not know the mafia, and the mafia do not know who he is. Can attack a player once per game.",
         sus : true,
+        tag : "stab",
         recipientMsg : 'You were stabbed!',
         targetTown : true,
         type : 1,
@@ -21,6 +28,7 @@ export const Roles = {
         index : 2,
         name : "Assassin",
         rules : "Choose a player to kill. If inspected by the Detective, the Assassin will not appear suspicious.",
+        tag : "stab",
         recipientMsg : 'You were stabbed!',
         targetTown : true,
         type : 1,
@@ -30,6 +38,7 @@ export const Roles = {
         name : "Ninja",
         rules : "Choose a player to kill.",
         sus : true,
+        tag : "stab",
         recipientMsg : 'You were stabbed!',
         targetTown : true,
         type : 1,
@@ -39,6 +48,7 @@ export const Roles = {
         name : "Murderer",
         rules : "Choose a player to kill.",
         sus : true,
+        tag : "stab",
         recipientMsg : 'You were stabbed!',
         targetTown : true,
         type : 1,
@@ -49,9 +59,6 @@ export const Roles = {
         rules : "This role does not perform any actions.",
         sus : true,
         type : 1,
-        hello : function(value){
-            alert(value)
-        }
     },
     g : {
         index : 6,
@@ -164,6 +171,7 @@ export const Roles = {
         index : 7,
         name : "Hunter",
         rules : "Choose a player to shoot.",
+        tag : "shot",
         recipientMsg : "You were shot last night!",
         type : 2,
     },
@@ -186,6 +194,13 @@ export const Roles = {
         rules : "Choose someone to take care of. If they are attacked by the mafia that night, they will not die.",
         tag : "heal",
         type : 2,
+        proc : "dead",
+        events : function(player,key,choice,proc){
+            return [
+                {message: Defaults.healedByDoctor, place: choice},
+                {message: Defaults.healedYourTarget, place: player[choice].heal}
+            ]
+        }
     },
     L : {
         index : 11,
@@ -256,6 +271,6 @@ export const Roles = {
         name : "Apprentice",
         rules : "Visit a player to begin learning their trade.",
         type : 2,
-    },
+    }
       
 }
