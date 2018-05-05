@@ -1,5 +1,13 @@
 export const Roles = {
 
+    e : {
+        index : 4,
+        name : "Informant",
+        rules : "Choose a player and find out what their role is.",
+        sus : true,
+        targetTown : true,
+        type : 1,
+    },
     a : {
         index : 0,
         name : "Assassin",
@@ -32,14 +40,6 @@ export const Roles = {
         targetTown : true,
         type : 1,
         "visits" : true
-    },
-    e : {
-        index : 4,
-        name : "Spy",
-        rules : "Choose a player and find out what their role is.",
-        sus : true,
-        targetTown : true,
-        type : 1,
     },
     ed : {
         index : 5,
@@ -100,6 +100,7 @@ export const Roles = {
         name : "Escort",
         rules : "Choose a player and stop them from performing their action.",
         type : 2,
+        roleblock: true,
     },
     G : {
         index : 5,

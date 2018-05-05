@@ -2,7 +2,7 @@ import firebaseService from '../../firebase/firebaseService';
 import firebase from '../../firebase/FirebaseController';
 
 import randomize from 'randomatic';
-
+import actionModule from './actionModule';
 
 class ownerModule{
 
@@ -236,166 +236,19 @@ class ownerModule{
                     
                 } else if (this.phase == 1 && total>=this.playerNum){
 
-                    for(i=0;i<choiceArray.length;i++){
-                        //ROLE BLOCKING
-                        if(playerArray[i].roleid == 'E'){
-                            //Add rb immunity later
-                            choiceArray[choiceArray[i]] = -1
-                        }
-                        //KILLING
-                        //TODO add cloud function to respond to player deaths
-                        else if (playerArray[i].roleid == 'a' || playerArray[i].roleid == 'b'){
-                            playerArray[choiceArray[i]].dead == true
-                        }
-                        else if (playerArray[i].roleid == 'J'){
-                            playerArray[choiceArray[i]].dead == true
-                        }
-                        //FRAMING
-                        else if (playerArray[i].roleid == 'd'){
-                            playerArray[choiceArray[i]].suspicious == true
-                        }
-                    }
+                    actionModule.clear()
 
-                    for(i=0;i<choiceArray.length;i++){
-                        if(choiceArray[i] != -1){
-                            if (playerArray[i].roleid == 'a') {
+                    actionModule.passChoices(choiceArray)
+                    actionModule.passPlayers(this.playerList)
 
-                                msgs.push([
-                                    {message:'You were stabbed.',place:choiceArray[i]},
-                                    {message:'You stabbed ' + playerArray[choiceArray[i]].name + '.',place:i}
-                                ])
+                    actionModule.prepareNight()
+                    actionModule.prepareRoles()
+                    actionModule.doNight()
 
-                            }
+                    actionModule.cleanUpPlayerState()
+                    actionModule.pushToDatabase()
 
-                            //Murderer 
-                            else if (playerArray[i].roleid == 'b') {
-
-                                msgs.push([
-                                    {message:'You were stabbed.',place:choiceArray[i]},
-                                    {message:'You stabbed ' + playerArray[choiceArray[i]].name + '.',place:i}
-                                ])
-
-                            }
-
-                            //Schemer
-                            else if (playerArray[i].roleid == 'c') {
-
-                                msgs.push([
-                                    {message:'You framed ' + playerArray[choiceArray[i]].name + '.',place:i}
-                                ])
-
-                            }
-
-                            //Spy
-                            else if (playerArray[i].roleid == 'd') {
-
-                                msgs.push([
-                                    {message: 'You spied on ' + playerArray[choiceArray[i]].name + '. They are a'
-                                    + Rolesheet[playerArray[choiceArray[i]].roleid].name, place:i}
-                                ])
-
-                            }
-                            //Silencer
-                            else if (playerArray[i].roleid == 'f') {
-
-                                playerArray[choiceArray[i]].status = 'volume-mute'
-
-                                msgs.push([
-                                    {message:'You were silenced.',place:choiceArray[i]},
-                                    {message:'You silenced ' + playerArray[choiceArray[i]].name + '.',place:i}
-                                ])
-
-                            }
-                            //Detective
-                            else if (playerArray[i].roleid == 'A') {
-
-                                msgs.push([
-                                    {message: playerArray[choiceArray[i]].name + 
-                                    Rolesheet[playerArray[choiceArray[i]].roleid].suspicious?
-                                    ' is suspicious.':' is not suspicious', place:i}
-                                ])
-
-                            }
-                            //Investigator
-                            else if (playerArray[i].roleid == 'B') {
-                                
-                            }
-                            //Villager
-                            else if (playerArray[i].roleid == 'C') {
-
-                                if(Rolesheet[playerArray[choiceArray[i]].roleid].type != 1){
-                                    //TODO Promote logic
-                                    playerArray[choiceArray[i]].raise += playerArray[choiceArray[i]].roleid
-                                }
-
-                                msgs.push([
-                                    {message:'You learned from ' + playerArray[choiceArray[i]].name + '.',place:i}
-                                ])
-                            }
-                            //Doctor
-                            else if (playerArray[i].roleid == 'D') {
-                                
-                                if(playerArray[choiceArray[i]].dead){
-                                    msgs.push([
-                                        {message:'You were healed!',place:choiceArray[i]},
-                                        {message:'You healed ' + playerArray[choiceArray[i]].name + '!',place:i}
-                                    ])
-                                } else {
-                                    msgs.push([
-                                        {message:'You visited ' + playerArray[choiceArray[i]].name + '.',place:i}
-                                    ])
-                                }
-
-                            }
-                            //Escort
-                            else if (playerArray[i].roleid == 'E') {
-
-                                msgs.push([
-                                    {message:'You were distracted.',place:choiceArray[i]},
-                                    {message:'You distracted ' + playerArray[choiceArray[i]].name + '.',place:i}
-                                ])     
-
-                            }
-                            //Warden
-                            else if (playerArray[i].roleid == 'G') {
-
-                                for(j=0;j<choiceArray.length;j++){
-                                    if(i!=j && choiceArray[i] == choiceArray[j]){
-                                        msgs.push([
-                                            {message:'Someone visited the house you were watching.',place:i},
-                                        ]) 
-                                    }
-                                }
-
-                            }
-                            //Hunter - out of ammo
-                            else if (playerArray[i].roleid == 'H') {
-                                
-                            }
-                            //Overseer
-                            else if (playerArray[i].roleid == 'I') {
-                                
-                            }
-                            //Hunter
-                            else if (playerArray[i].roleid == 'J') {
-                                
-                                playerArray[i].roleid = 'H'
-
-                                msgs.push([
-                                    {message:'You were shot.',place:choiceArray[i]},
-                                    {message:'You shot ' + playerArray[choiceArray[i]].name + '.',place:i}
-                                ])
-                            }
-                            //Disguiser
-                            else if (playerArray[i].roleid == 'K') {
-                                
-                            }
-                        }
-                    }
-
-                    //this.listRef.update(playerArray)
-                    this.eventsRef.child(this.counter).set(msgs)
-
+                    //TODO wait for a promise or somehitng
                     this._changePhase();
                 }
             }
