@@ -21,7 +21,9 @@ import { Events } from '../components/Events.js';
 import General from './components/General.js';
 import Private from './components/Private.js';
 import PlayerList from './components/PlayerList';
-import { RuleBook, InfoPage, Roles } from '../menu/ListsScreen.js';
+import RuleBook from '../menu/ListNavigator';
+import InfoPage from '../menu/InfoPageScreen';
+import Roles from '../menu/RoleScreen';
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';

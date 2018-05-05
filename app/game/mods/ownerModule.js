@@ -28,6 +28,7 @@ class ownerModule{
         this.triggerNum = 1000
 
         this.playerList = []
+        this.nominate = null
 
     }
 
@@ -110,6 +111,12 @@ class ownerModule{
 
     }
 
+    passNominate(nominate){
+
+        this.nominate = nominate
+
+    }
+
     _changePhase(){
 
         this.roomRef.child('ready').remove()
@@ -146,7 +153,6 @@ class ownerModule{
                 if(snap.numChildren() >= this.playerNum){
 
                     this.counterRef.update(this.counter + 1)
-
                     .then(()=>{
                         
                         var ready = []
@@ -154,10 +160,10 @@ class ownerModule{
                             ready[i] = false
                         }
 
-                        this.readyRef.set(ready).then(()=>{
-                            //this.loadedRef.remove()
-                        }).then(()=>{
-                            //this.choiceRef.remove()
+                        this.roomRef.update({
+                            ready: {ready},
+                            loaded: null,
+                            choice: null
                         })
 
                     })
@@ -181,14 +187,10 @@ class ownerModule{
 
             if(snap.exists()){
 
-                var choiceArray = snap.val();
-                var playerArray = null;
-                var msgs = [];
-                var gMsgs = [];
                 var total = 0;
 
-                for(i=0;i<choiceArray.length;i++){
-                    if(choiceArray[i]) total++
+                for(i=0;i<snap.val().length;i++){
+                    if(snap.val()[i]) total++
                 }
 
                 if(this.phase == 0 && total>=this.triggerNum){
@@ -200,18 +202,18 @@ class ownerModule{
                         var count = 0;
                         var players = 0;
 
-                        if(choiceArray[i] && choiceArray[i]!=-1){
+                        if(snap.val()[i] && snap.val()[i]!=-1){
 
                             for(j=0;j<this.playerNum;j++){
-                                if(choiceArray[i] == choiceArray[j]){
+                                if(snap.val()[i] == snap.val()[j]){
                                     count++
                                 }
                             }
 
                             if(count>=this.triggerNum){
-                                flag = true;
-                                this.roomRef.update({nominate:choiceArray[i]}).then(()=>
-                                    this._globalMsg(this.playerList[choiceArray[i]].name + ' has been nominated.')
+                                flag = true
+                                this.roomRef.update({nominate:snap.val()[i]}).then(()=>
+                                    this._globalMsg(this.playerList[snap.val()[i]].name + ' has been nominated.')
                                 )
                             }
 
@@ -238,13 +240,14 @@ class ownerModule{
 
                     actionModule.clear()
 
-                    actionModule.passChoices(choiceArray)
+                    actionModule.passChoices(snap.val())
                     actionModule.passPlayers(this.playerList)
                     actionModule.updateAlive()
 
                     actionModule.prepareNight()
                     actionModule.prepareRoles()
                     actionModule.doNight()
+                    actionModule.postMortem()
 
                     actionModule.cleanUpPlayerState()
                     actionModule.checkNews()
@@ -266,14 +269,10 @@ class ownerModule{
 
             if(snap.exists()){
 
-                var choiceArray = snap.val();
-                var playerArray = null;
-                var msgs = [];
-                var gMsgs = [];
                 var total = 0;
 
-                for(i=0;i<choiceArray.length;i++){
-                    if(choiceArray[i]) total++
+                for(i=0;i<snap.val().length;i++){
+                    if(snap.val()[i]) total++
                 }
 
                 if(total >= this.playerNum - 1){
@@ -284,7 +283,7 @@ class ownerModule{
 
                     for(var i=0; i<this.playerNum; i++){
 
-                        if(choiceArray[i] == -1){
+                        if(snap.val()[i] == -1){
                             names.push(this.playerList[i].name)
                             count++
                         } else {

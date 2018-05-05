@@ -53,8 +53,11 @@ class actionModule{
 
         for(i=0;i<this.choices.length;i++){
 
-            //TODO roleblock immunity
-            if(this.choices[i] && this.players[i].roleblock){
+            //TODO does this work for each night phase?
+            while(this.choices[i]) i++
+
+            //Roleblockers are immune to roleblock - they should have a proc : 'roleblock' as well
+            if(this.choices[i] && this.players[i].roleblock && !this.players[ this.choice[i] ].roleblock){
                 
                 this.choices[ this.choices[i] ] = -1
                 
@@ -72,7 +75,8 @@ class actionModule{
             if( this.choices[i] != -1 && Roles[ this.players[i].roleid ].tag ){
 
                 //Set the tag to the player PLACE for future events
-                ( this.players[ this.choices[i] ] )[ Roles[ this.players[i].roleid ].tag ] = i
+                //TODO check how push acts : need this to stack tags
+                ( this.players[ this.choices[i] ] )[ Roles[ this.players[i].roleid ].tag ].push(i)
 
             }
 
@@ -90,7 +94,7 @@ class actionModule{
             if(this.players[ this.choices[i] ].watch){
 
                 this.events.push([
-                    {message: this.players[i].name + Defaults.caughtByWarden, place: this.players[i].watch},
+                    {message: this.players[i].name + Defaults._seenByWarden, place: this.players[i].watch},
                 ])
 
             }
@@ -152,6 +156,24 @@ class actionModule{
 
     }
 
+    postMortem(){
+
+        for(i=0;i<this.choices.length;i++){
+
+            //If player has a POSTMORTEM ability -> after alive check is done
+            if( Roles[ this.players[i].roleid ].mortem ){
+
+                //Private
+                //Survivor
+                //Any player with Prayer tag given by Priest
+                //Ritualist -> if survived
+
+            }
+
+        }
+
+    }
+
     uniqueAction(){
 
         
@@ -162,7 +184,7 @@ class actionModule{
 
         for(var i=0; i<this.players.length; i++){
 
-            this.players.stab = null //etc
+            this.players.heal = null //etc
 
         }
 
@@ -175,7 +197,7 @@ class actionModule{
             if(this.players[ this.alive[i] ].dead){
 
                 this.news.push(
-                    this.players[ this.alive[i] ].name + Defaults.died
+                    this.players[ this.alive[i] ].name + Defaults._died
                 )
 
             }
@@ -186,12 +208,13 @@ class actionModule{
 
     pushToDatabase(){
 
-        //TODO do this in one step
-        firebaseService.fetchRoomRef('news').update(this.news)
-        firebaseService.fetchRoomRef('events').update(this.events)
-        firebaseService.fetchRoomRef('list').update(this.players)
-        firebaseService.fetchRoomRef('choice').remove()
-
+        firebaseService.fetchRoomRef('').update({
+            news: this.news,
+            events: this.events,
+            list: this.players,
+            choice: null
+        })
+        
     }
 
 

@@ -28,7 +28,6 @@ componentWillMount() {
         this.props.screenProps.navigate('Game')
     })
 
-
 }
 
 componentWillUnmount() {

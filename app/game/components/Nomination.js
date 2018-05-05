@@ -9,6 +9,7 @@ import {
 import { Button } from '../../components/Button';
 import playerModule from '../mods/playerModule';
 import firebaseService from '../../firebase/firebaseService';
+import ownerModule from '../mods/ownerModule';
 
 
 class Nomination extends Component {
@@ -51,6 +52,8 @@ class Nomination extends Component {
                     nominee: playerModule.getUserNameUsingPlace(snap.val()),
                     visible: true
                 })
+
+                ownerModule.passNominate(snap.val())
 
                 this._on(true)
 

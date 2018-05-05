@@ -8,7 +8,7 @@ import {
 
 import { Alert } from '../components/Alert.js';
 import { Button } from '../components/Button.js';
-import { RuleBook } from '../menu/ListsScreen.js';
+import RuleBook from '../menu/ListNavigator';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';

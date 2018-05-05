@@ -16,18 +16,18 @@ export const Death = [
 export const Defaults = {
 
     youStayedHome       : 'You stayed home last night.',
-    died                : ' was killed last night.',
+    _died               : ' was killed last night.',
     youVisitedTarget    : 'You visited your target last night',
-    killedByMafia       : ' was murdered by a member of the Mafia.',
+    //_killedByMafia      : ' was murdered by a member of the Mafia.',
 
-    caughtByWarden      : ' visited your target last night!',
-    shotByHunter        : ' was shot by a Hunter.',
+    _seenByWarden       : ' visited your target last night!',
+    //_shotByHunter       : ' was shot by a Hunter.',
     shotBySoldier       : 'You were shot by the Soldier you visited!',
     shotWithSoldier     : 'You shot someone who visited you last night!',
     healedByDoctor      : 'You were healed by a Doctor last night!',
     healedYourTarget    : 'Your healed your target last night!',
 
-    informantRole       : 'Your target is a ',
+    informantRole_      : 'Your target is a ',
     
 
 }
