@@ -1,4 +1,3 @@
-import firebase from '../../firebase/FirebaseController';
 import firebaseService from '../../firebase/firebaseService';
 
 import { Roles } from '../../misc/roles.js';
@@ -66,17 +65,10 @@ class actionModule{
 
             }
 
-            //TODO stab
-            if(Roles[ this.players[i].roleid ].stab){
+            //TODO heal
+            if(Roles[ this.players[i].roleid ].heal){
 
-                this.players[ this.choices[i] ].stab = true
-
-            }
-
-            //TODO shoot
-            if(Roles[ this.players[i].roleid ].shoot){
-
-                this.players[ this.choices[i] ].dead = true
+                this.players[ this.choices[i] ].heal = i
 
             }
 
@@ -100,8 +92,10 @@ class actionModule{
 
     doRoles(){
 
+        //Possibly do these in a random order?
         for(i=0;i<this.choices.length;i++){
         
+            //Checking for Tags
             if(this.players[ this.choices[i] ].watched){
 
                 
@@ -114,34 +108,51 @@ class actionModule{
                 
             }
 
-            if(this.players[i].heal && this.players[ this.choices[i] ].dead){
+            //Player Tags
+            if(this.players[i].stab){
 
-
-
-            }
-
-            if(this.players[i].heal && this.players[ this.choices[i] ].dead){
-
-                
-
-            }
-
-            if(this.choices[i] == -1){
-
-                //TODO stayingHome Message
-                if(Roles[ this.players[i].roleid ].stayingHome){
+                if(this.players[ this.choices[i] ].heal){
 
                     this.events.push([
-                        {message: Roles[ this.players[i].roleid ].stayingHome, place: i}
+                        {message: Defaults.healedByDoctor, place: this.choices[i]},
+                        {message: Defaults.healedYourTarget, place: this.players[i].heal}
                     ])
+
 
                 } else {
 
-                    this.events.push([
-                        {message: Defaults.youStayedHome, place: i}
-                    ])
+                    this.news.push( this.players[ this.choices[i] ].name + Defaults.killedByMafia)
 
                 }
+                
+            }
+
+            if(this.players[i].shoot){
+
+                if(this.players[ this.choices[i] ].heal){
+
+                    this.events.push([
+                        {message: Defaults.healedByDoctor, place: this.choices[i]},
+                        {message: Defaults.healedYourTarget, place: this.players[i].heal}
+                    ])
+
+
+                } else {
+
+                    this.news.push( this.players[ this.choices[i] ].name + Defaults.shotByHunter)
+
+                }
+
+            }
+
+            //General
+            if(this.choices[i] == -1){
+
+                //TODO stayingHome Message test if this works lol
+                this.events.push([
+                    {message: Roles[ this.players[i].roleid ].stayingHome || Defaults.youStayedHome, place: i}
+                ])
+
 
             } else {
 
