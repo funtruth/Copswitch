@@ -48,7 +48,10 @@ export const Roles = {
         name : "Thug",
         rules : "This role does not perform any actions.",
         sus : true,
-        type : 1
+        type : 1,
+        hello : function(value){
+            alert(value)
+        }
     },
     g : {
         index : 6,

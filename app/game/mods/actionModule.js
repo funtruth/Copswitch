@@ -74,15 +74,23 @@ class actionModule{
         for(i=0;i<this.choices.length;i++){
         
             //Checking for Tags
-            if(this.players[ this.choices[i] ].watched){
+            if(this.players[ this.choices[i] ].watch){
 
-                
+                this.events.push([
+                    {message: this.players[i].name + Defaults.caughtByWarden, place: this.players[i].watch},
+                ])
 
             }
 
             if(this.players[ this.choices[i] ].alert){
 
+                //TODO Unstoppable attack? should healing stack up?
+                this.players[i].dead = true
 
+                this.events.push([
+                    {message: Defaults.shotBySoldier, place: i},
+                    {message: Defaults.shotWithSoldier, place: this.choices[i]},
+                ])
                 
             }
 
