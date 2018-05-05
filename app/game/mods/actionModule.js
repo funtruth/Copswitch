@@ -40,11 +40,9 @@ class actionModule{
     prepareNight(){
 
         for(i=0;i<this.choices.length;i++){
-        
-            //TODO might need to check if this.choices[i] exists
 
-            //TODO roleblock
-            if(this.players[i].roleblock){
+            //TODO roleblock immunity
+            if(this.choices[i] && this.players[i].roleblock){
                 
                 this.choices[ this.choices[i] ] = -1
                 
@@ -57,32 +55,12 @@ class actionModule{
     prepareRoles(){
 
         for(i=0;i<this.choices.length;i++){
-        
-            //TODO frame
-            if(Roles[ this.players[i].roleid ].frame){
-                
-                this.players[ this.choices[i] ].sus = true
 
-            }
+            //If player isn't staying home AND player has a TAG ability
+            if( this.choices[i] != -1 && Roles[ this.players[i].roleid ].tag ){
 
-            //TODO heal
-            if(Roles[ this.players[i].roleid ].heal){
-
-                this.players[ this.choices[i] ].heal = i
-
-            }
-
-            //TODO watched
-            if(Roles[ this.players[i].roleid ].watched){
-                
-                this.players[ this.choices[i] ].watched = i
-                
-            }
-
-            //TODO alert
-            if(Roles[ this.players[i].roleid ].alert){
-
-                if(this.choices[i] == i) this.players[ this.choices[i] ].alert = true
+                //Set the tag to the player PLACE for future events
+                ( this.players[ this.choices[i] ] )[ Roles[ this.players[i].roleid ].tag ] = i
 
             }
 
@@ -156,18 +134,18 @@ class actionModule{
 
             } else {
 
-                //TODO delivery message
-                if(Roles[ this.players[i].roleid ].deliveryMsg){
+                //TODO recipient message
+                if(Roles[ this.players[i].roleid ].recipientMsg){
 
                     this.events.push([
-                        {message: Roles[ this.players[i].roleid ].deliveryMsg, place: this.choices[i]}
+                        {message: Roles[ this.players[i].roleid ].recipientMsg, place: this.choices[i]}
                     ])
 
                 }
 
                 //TODO visiting Message
                 this.events.push([
-                    {message: Roles[ this.players[i].roleid ].visitingMsg, place: i}
+                    {message: Roles[ this.players[i].roleid ].visitingMsg || Defaults.youVisitedTarget, place: i}
                 ])
 
             }

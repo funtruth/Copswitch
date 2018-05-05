@@ -13,6 +13,7 @@ export const Death = {
 export const Defaults = {
 
     youStayedHome       = 'You stayed home last night.',
+    youVisitedTarget    = 'You visited your target last night',
     killedByMafia       = ' was murdered by a member of the Mafia.',
 
     shotByHunter        = ' was shot by a Hunter.',
