@@ -8,7 +8,6 @@ import {
     TouchableOpacity } from 'react-native';
 
 import colors from '../misc/colors.js';
-import styles from '../misc/styles.js';
 
 import { Slide } from '../parents/Slide.js';
 import { Roles } from '../misc/roles.js';
@@ -40,4 +39,26 @@ export class Desc extends React.Component {
             </ScrollView>
         )
     }
+}
+
+const styles = {
+
+    title: {
+        fontFamily:'LuckiestGuy-Regular',
+        fontSize: 25,
+        color: colors.striker,
+    },
+    lfont: {
+        fontFamily:'LuckiestGuy-Regular',
+        fontSize: 25,
+        color: colors.striker,
+    },
+    roleDesc: {
+        fontSize: 15,
+        fontFamily: 'FredokaOne-Regular',
+        color: colors.striker,
+        marginTop:5,
+        marginBottom:5,
+    },
+
 }

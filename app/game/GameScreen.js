@@ -17,7 +17,6 @@ import Nomination from './components/Nomination.js';
 import { Button } from '../components/Button.js';
 import Console from './components/Console.js';
 import { Rolecard } from '../components/Rolecard.js';
-import { Events } from '../components/Events.js';
 import General from './components/General.js';
 import Private from './components/Private.js';
 import PlayerList from './components/PlayerList';

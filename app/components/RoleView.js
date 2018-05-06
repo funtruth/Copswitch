@@ -20,7 +20,6 @@ import { Roles } from '../misc/roles.js';
 import firebase from '../firebase/FirebaseController.js';
 
 import colors from '../misc/colors.js';
-import styles from '../misc/styles.js';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 100;
@@ -233,4 +232,14 @@ export class RoleView extends Component {
         </View>
 
     }
+}
+
+const styles = {
+    charfont: {
+        fontSize: 17,
+        fontFamily: 'FredokaOne-Regular',
+        textAlign:'center',
+        color: colors.shadow,
+        margin:4,
+    },
 }
