@@ -1,5 +1,3 @@
-import { Defaults } from '../commands/announcerPack';
-
 export const Roles = {
 
     a : {
@@ -9,10 +7,7 @@ export const Roles = {
         sus : true,
         targetTown : true,
         type : 1,
-        proc : "name", //always procs
-        events : function(player,key,choice,proc){
-            return {message: Defaults.informantRole_ + Role[player.roleid].name, place:key}
-        },
+        proc : "name",
     },
     b : {
         index : 1,
@@ -20,7 +15,6 @@ export const Roles = {
         rules : "Does not know the mafia, and the mafia do not know who he is. Can attack a player once per game.",
         sus : true,
         tag : "dead",
-        recipientMsg : 'You were stabbed!',
         targetTown : true,
         type : 1,
     },
@@ -29,7 +23,6 @@ export const Roles = {
         name : "Assassin",
         rules : "Choose a player to kill. If inspected by the Detective, the Assassin will not appear suspicious.",
         tag : "dead",
-        recipientMsg : 'You were stabbed!',
         targetTown : true,
         type : 1,
     },
@@ -39,7 +32,6 @@ export const Roles = {
         rules : "Choose a player to kill.",
         sus : true,
         tag : "dead",
-        recipientMsg : 'You were stabbed!',
         targetTown : true,
         type : 1,
     },
@@ -49,7 +41,6 @@ export const Roles = {
         rules : "Choose a player to kill.",
         sus : true,
         tag : "dead",
-        recipientMsg : 'You were stabbed!',
         targetTown : true,
         type : 1,
     },
@@ -65,7 +56,6 @@ export const Roles = {
         name : "Consort",
         rules : "This role does not perform any actions.",
         sus : true,
-        recipientMsg : 'You were distracted last night!',
         roleblock : true,
         type : 1
     },
@@ -153,6 +143,7 @@ export const Roles = {
         index : 4,
         name : "Nostalgic",
         rules : "Choose to learn the ability of a deceased town member.",
+        proc : "roleid",
         type : 2,
     },
     F : {
@@ -193,14 +184,8 @@ export const Roles = {
         name : "Doctor",
         rules : "Choose someone to take care of. If they are attacked by the mafia that night, they will not die.",
         tag : "heal",
-        type : 2,
         proc : "dead",
-        events : function(player,key,choice,proc){
-            return [
-                {message: Defaults.healedByDoctor, place: choice},
-                {message: Defaults.healedYourTarget, place: player[choice].heal}
-            ]
-        }
+        type : 2,
     },
     L : {
         index : 11,
@@ -245,6 +230,7 @@ export const Roles = {
         name : "Ritualist",
         rules : "Sacrifice yourself during the night to resurrect a town member.",
         recipientMsg : "You were raised from the dead!",
+        proc : 'name',
         type : 2,
     },
     S : {
@@ -252,6 +238,7 @@ export const Roles = {
         name : "Mayor",
         rules : "Choose to demote a player to a villager or thug.",
         recipientMsg : "You were demoted by the Mayor. You lost your job!",
+        proc : 'name',
         type : 2,
     },
     T : {

@@ -27,7 +27,18 @@ export const Defaults = {
     healedByDoctor      : 'You were healed by a Doctor last night!',
     healedYourTarget    : 'Your healed your target last night!',
 
-    informantRole_      : 'Your target is a ',
+    resultsSus          : 'Your target is suspicious. They are a member of the mafia!',
+    resultsNotSus       : 'Your target is not suspicious.',
+    resultsNost_        : 'You remembered your old friend, you are now a ',
+    resultsNotNost      : 'You could not remember who you were thinking about.',
+    resultsRit          : 'You raised your target from the dead!',
+    resultsNotRit       : 'You were interrupted during your ritual.',
+    resultsRevived      : 'You were raised from the dead!',
+    resultsMayor        : 'You demoted your target to a villager.',
+    resultsDemoted      : 'You were demoted by a Mayor. You lost your job!',
+
+    gettingRole_        : 'Your target is a ',
+    silenced            : 'You were silenced! You cannot communicate with anyone today.',
     
 
 }

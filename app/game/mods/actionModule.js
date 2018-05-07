@@ -99,7 +99,7 @@ class actionModule{
 
             }
 
-            if(this.players[ this.choices[i] ].alert){
+            if(this.players[ this.choices[i] ].alert && this.players[i].alert != i){
 
                 //TODO Unstoppable attack? should healing stack up?
                 this.players[i].dead = true
@@ -111,46 +111,107 @@ class actionModule{
                 
             }
 
-            //Handle deaths better
-            if(this.players[i].proc){
+            //If role has a proc tag ...  
+            if( Roles[ this.players[i].roleid ].proc ){
 
-                this.events.push(
-                    Roles[ this.players[i].roleid ].proc( 
-                        this.players[i],
-                        i,
-                        this.choices[i],
-                        (this.players[ this.choices[i] ])[this.players[i].proc]
-                    )
+                // ... search for proc tag on target and run corresponding code
+                this.proc(
+                    this.players[i].roleid, //roleid
+                    ( this.players[ this.choices[i] ] )[ Roles[ this.players[i].roleid ].proc ], //proc
+                    i, //place
+                    this.players[i], //player
+                    this.choices[i] //choice
                 )
 
             }
 
-            //General
-            if(this.choices[i] == -1){
+        }
 
-                //TODO stayingHome Message test if this works lol
-                this.events.push([
-                    {message: Roles[ this.players[i].roleid ].stayingHome || Defaults.youStayedHome, place: i}
-                ])
+    }
 
+    proc(roleid, proc, i, player, choice){
 
-            } else {
+        switch(roleid){
 
-                //TODO recipient message
-                if(Roles[ this.players[i].roleid ].recipientMsg){
+            case 'a':
+                this.events.push(
+                    {message: Defaults.gettingRole_ + Role[player.roleid].name, place: i}
+                )
+                break
+            case 'b':
+            case 'c':
+            case 'd':
+            case 'e':
+                if(proc){
 
-                    this.events.push([
-                        {message: Roles[ this.players[i].roleid ].recipientMsg, place: this.choices[i]}
-                    ])
-
+                } else {
+                    this.events.push(
+                        
+                    )
                 }
-
-                //TODO visiting Message
-                this.events.push([
-                    {message: Roles[ this.players[i].roleid ].visitingMsg || Defaults.youVisitedTarget, place: i}
-                ])
-
-            }
+                break
+            case 'l':
+                this.events.push(
+                    {message: Defaults.silenced, place: choice}
+                )
+                break
+            case 'A':
+                if(proc){
+                    this.events.push(
+                        {message: Defaults.resultsSus, place: i} 
+                    )
+                } else {
+                    this.events.push(
+                        {message: Defaults.resultsNotSus, place: i}
+                    )
+                }
+                break
+            case 'E':
+                if( Roles[ this.players[ choice ].roleid ].type === 2 ){
+                    this.events.push(
+                        {message: Defaults.resultsNost + Roles[ this.players[ choice ].roleid ].name, place: i}
+                    )
+                    this.players[i].roleid = this.players[ choice ].roleid
+                } else {
+                    this.events.push(
+                        {message: Defaults.resultsNotNost, place: i}
+                    )
+                }
+                break
+            case 'K':
+                if(proc){
+                    this.events.push(
+                        {message: Defaults.healedByDoctor, place: choice},
+                        {message: Defaults.healedYourTarget, place: i}
+                    )
+                }
+                break
+            case 'R':
+                if( !player.dead ){
+                    this.events.push(
+                        {message: Defaults.resultsRit, place: i},
+                        {message: Defaults.resultsRevived, place: choice}
+                    )
+                    this.players[i].dead = true
+                    this.players[ choice ].dead = false
+                } else {
+                    this.events.push(
+                        {message: Defaults.resultsNotRit, place: i}
+                    )
+                }
+                break
+            case 'S':
+                if( Roles [ this.players [ choice ].roleid ].name != 'Villager' ){
+                    this.events.push(
+                        {message: Defaults.resultsMayor, place: i},
+                        {message: Defaults.resultsDemoted, place: choice}
+                    )
+                } else {
+                    this.events.push(
+                        {message: Defaults.resultsMayor, place: i},
+                    )
+                }
+                break
 
         }
 
@@ -171,12 +232,6 @@ class actionModule{
             }
 
         }
-
-    }
-
-    uniqueAction(){
-
-        
 
     }
 
