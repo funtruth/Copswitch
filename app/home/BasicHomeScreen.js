@@ -5,6 +5,8 @@ import {
     Dimensions,
     TouchableOpacity,
 }   from 'react-native';
+import { connect } from 'react-redux';
+import { changeSection } from './HomeReducer';
 
 import { Alert } from '../components/Alert.js';
 import { Button } from '../components/Button.js';
@@ -23,11 +25,6 @@ class BasicHomeScreen extends Component {
 
     constructor(props) {
         super(props);
-        
-        this.state = {
-            section: null,
-            about: false,
-        }
 
         this.height = Dimensions.get('window').height;
         this.width = Dimensions.get('window').width;
@@ -51,7 +48,7 @@ class BasicHomeScreen extends Component {
         
             <TouchableOpacity style = {{ flexDirection:'row', alignItems:'center', justifyContent:'center',
                 backgroundColor:colors.box, borderRadius:5, marginBottom:5, height:this.height*0.07, width:this.width*0.97 }}
-                onPress = {()=> this.setState({section:'join'}) }>
+                onPress = { () => this.props.changeSection('join') }>
                 <MaterialCommunityIcons name='human-greeting'
                     style={{color:colors.font,fontSize:30}}/>
                 <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>
@@ -60,7 +57,7 @@ class BasicHomeScreen extends Component {
             
             <TouchableOpacity style = {{ flexDirection:'row', alignItems:'center', justifyContent:'center',
                 backgroundColor:colors.box, borderRadius:5, marginBottom:5, height:this.height*0.07, width:this.width*0.97 }}
-                onPress = {()=> this.setState({section:'create'}) }>
+                onPress = { () => this.props.changeSection('create') }>
                 <FontAwesome name='edit'
                     style={{color:colors.font,fontSize:30}}/>
                 <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>
@@ -96,16 +93,16 @@ class BasicHomeScreen extends Component {
         return <View style = {{flex:1}}>
 
             <View style = {{flex:1, justifyContent:'center'}}>
-                <Alert visible = {this.state.section=='join'} flex = {0.3}>
+                <Alert visible = {this.props.section=='join'} flex = {0.3}>
                     <Join {...this.props.screenProps}/>
                 </Alert>
 
-                <Alert justify visible = {this.state.section=='create'} flex = {0.3}>
+                <Alert justify visible = {this.props.section=='create'} flex = {0.3}>
                     <Create {...this.props.screenProps}/>
                 </Alert>
             </View>
 
-            <Alert flex = {0.5} visible = {this.state.section == 'menu'}>
+            <Alert flex = {0.5} visible = {this.props.section == 'menu'}>
                 <RuleBook screenProps = {{ quit:false }}/>
             </Alert>
 
@@ -118,4 +115,11 @@ class BasicHomeScreen extends Component {
     }
 }
 
-export default BasicHomeScreen
+export default connect(
+    state => ({
+        section: state.home.section
+    }),
+    {
+        changeSection    
+    }
+)(BasicHomeScreen)
