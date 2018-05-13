@@ -6,7 +6,7 @@ import {
     TouchableOpacity,
 } from 'react-native';
 
-import { Button } from '../components/Button';
+import { Button } from '../../components/Button';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 class InfoPageScreen extends Component {

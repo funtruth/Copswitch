@@ -1,7 +1,7 @@
-import BasicMenu from './BasicMenuScreen';
-import Roles from './RoleScreen';
-import Menus from './MenuScreen';
-import InfoPage from './InfoPageScreen';
+import BasicMenu from './common/BasicMenuScreen';
+import Roles from './common/RoleScreen';
+import Menus from './common/MenuScreen';
+import InfoPage from './common/InfoPageScreen';
 
 import { StackNavigator } from 'react-navigation';
 

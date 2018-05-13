@@ -29,7 +29,7 @@ class CreateRoomComponent extends Component {
 
         const roomId = await firebaseService.createRoom()
         
-        this.props.navigate('Lobby',roomId)
+        this.props.screenProps.navigate('Lobby',roomId)
 
         this.setState({
             loading:false

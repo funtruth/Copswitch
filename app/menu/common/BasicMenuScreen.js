@@ -4,9 +4,9 @@ import {
     View,
 }   from 'react-native';
 
-import { Button } from '../components/Button.js';
+import { Button } from '../../components/Button.js';
 
-import colors from '../misc/colors.js';
+import colors from '../../misc/colors.js';
 
 
 class BasicMenuScreen extends Component {
@@ -24,13 +24,13 @@ class BasicMenuScreen extends Component {
 
     //TODO i don't like how this is done ew
     _renderQuit(){
-        if(this.props.screenProps.quit){
+        /*if(this.props.screenProps.quit){
             return <Button
                 horizontal = {0.4}
                 onPress = {()=>{ this._deleteRoom() }}
                 ><Text style = {styles.listfont}>Quit</Text>
             </Button>
-        } else return null
+        } else return null*/
     }
 
     render(){

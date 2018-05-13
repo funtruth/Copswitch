@@ -94,11 +94,11 @@ class BasicHomeScreen extends Component {
 
             <View style = {{flex:1, justifyContent:'center'}}>
                 <Alert visible = {this.props.section=='join'} flex = {0.3}>
-                    <Join {...this.props.screenProps}/>
+                    <Join {...this.props}/>
                 </Alert>
 
                 <Alert justify visible = {this.props.section=='create'} flex = {0.3}>
-                    <Create {...this.props.screenProps}/>
+                    <Create {...this.props}/>
                 </Alert>
             </View>
 
@@ -110,7 +110,6 @@ class BasicHomeScreen extends Component {
 
             {this._renderChoice()}
 
-
         </View>
     }
 }
@@ -119,7 +118,9 @@ export default connect(
     state => ({
         section: state.home.section
     }),
-    {
-        changeSection    
+    dispatch => {
+        return {
+            changeSection: () => dispatch(changeSection())  
+        } 
     }
 )(BasicHomeScreen)

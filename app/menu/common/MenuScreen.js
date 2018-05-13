@@ -5,7 +5,7 @@ import {
     FlatList,
 } from 'react-native';
 
-import { Button } from '../components/Button';
+import { Button } from '../../components/Button';
 
 class MenuScreen extends Component {
     

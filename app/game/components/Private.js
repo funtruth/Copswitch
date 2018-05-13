@@ -40,4 +40,14 @@ class Private extends Component {
     }
 }
 
+const styles = {
+    choiceButton: {
+        fontFamily:'FredokaOne-Regular',
+        fontSize: 17,
+        alignSelf: 'center',
+        color: colors.shadow,
+        margin:4,
+    },
+}
+
 export default Private

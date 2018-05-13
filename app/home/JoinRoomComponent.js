@@ -52,7 +52,7 @@ class JoinRoomComponent extends Component {
             .then(()=>{
 
                 firebaseService.joinRoom(code)
-                this.props.navigate('Lobby',code)
+                this.props.screenProps.navigate('Lobby',code)
                 
                 this.setState({ errorMessage:'Must be 4 Digits long' })
                 

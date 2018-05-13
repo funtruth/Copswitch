@@ -3,7 +3,7 @@
 import React from "react";
 import { StackNavigator } from "react-navigation";
 
-import Loading from '../home/LoadingScreen';
+import Loading from '../splash/LoadingScreen';
 import Home from '../home/BasicHomeScreen';
 import Lobby from '../lobby/BasicLobbyScreen';
 import Pregame from "../game/PregameScreen";

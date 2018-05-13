@@ -1,15 +1,19 @@
 import React, { Component } from 'react';
-import { AppRegistry } from 'react-native';
-import { Helper } from './app/components/Helper.js';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 
-export default class App extends React.Component {
+import { Helper } from './navigation/Helper.js';
+
+class App extends Component {
     constructor(props) {
         super(props);
-      }
+    }
 
     render(){
-        return <Helper/>
+        return <Provider store = {store}>
+            <Helper/>
+        </Provider>
     }
 }
 
-AppRegistry.registerComponent('Huddle', () => App);
+export default App

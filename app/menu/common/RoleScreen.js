@@ -4,7 +4,7 @@ import {
     View
 } from 'react-native';
 
-import { RoleView } from '../components/RoleView'; 
+import { RoleView } from '../../components/RoleView'; 
 
 class RoleScreen extends Component {
 

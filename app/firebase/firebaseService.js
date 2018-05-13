@@ -50,12 +50,14 @@ class FirebaseService{
     findUser() {
         if(!firebase.auth().currentUser){
             firebase.auth().signInAnonymously()
+            console.log('New user created.')
         }
     }
 
     initUser(){
         firebase.auth().onAuthStateChanged( user =>{
             if(user) this.uid = user.uid
+            console.log('User is is ' + user.uid)
         })
     }
 
