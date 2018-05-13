@@ -1,14 +1,37 @@
 import React, { Component } from 'react';
-import Menu from './ListNavigator';
+import { View } from 'react-native';
+import { connect } from 'react-redux';
+import { changeSection, toggleMenu } from './MenuReducer';
+
+import ListNavigator from './ListNavigator';
+import MenuButton from './common/MenuButton';
+
 
 class Overlord extends Component {
 
     render() {
-        return <Menu>
-            {this.props.children}
-        </Menu>
+
+        const { visible, section, toggleMenu } = this.props
+
+        if( visible ) return <ListNavigator onClose = {() => toggleMenu(visible)}/>
+        
+        return <MenuButton onPress = {() => toggleMenu(visible)}/>
     }
 
 }
 
-export default Overlord
+export default connect(
+
+    state => ({
+        visible: state.menu.visible,
+        section: state.menu.section
+    }),
+
+    dispatch => {
+        return {
+            toggleMenu: (payload) => dispatch(toggleMenu(payload)),
+            changeSection: () => dispatch(changeSection())
+        }
+    }
+
+) (Overlord)

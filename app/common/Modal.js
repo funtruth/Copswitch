@@ -6,7 +6,8 @@ import {
     Dimensions
 } from 'react-native';
 
-import CloseButton from './CloseButton';
+import CloseButton from '../components/CloseButton';
+import Card from './Card';
 
 const { height, width } = Dimensions.get("window")
 
@@ -18,9 +19,6 @@ class Modal extends Component {
 
         this.on = new Animated.Value(0);
         this.opacity = new Animated.Value(0);
-
-        this.width = Dimensions.get('window').width;
-        this.height = Dimensions.get('window').height;
         
     }
 
@@ -45,23 +43,28 @@ class Modal extends Component {
 
     render() {
 
-        const { visible, children, closeModal } = this.props
+        const { visible, children, onClose } = this.props
 
         if(!visible) return null
 
         return ( 
             <Animated.View style = {{
+                justifyContent:'center',
                 height,
                 width,
                 opacity:this.on.interpolate({
                     inputRange:[0,1],
                     outputRange:[0,1]
                 }),
-                backgroundColor: 'black',
+                backgroundColor: 'transparent',
+            }}>
+                <Card cardStyle = {{
+                    height:0.8*height,
+                    width:0.85*width
                 }}>
-                
-                {children}
-                <CloseButton onPress = {closeModal} />
+                    {children}
+                </Card>
+                <CloseButton onPress = {onClose} />
             </Animated.View>
         )
     }

@@ -16,7 +16,7 @@ export default colors = {
     linkshadow: '#2595b1',
 
     //Testing Palette
-    font:       'white',
+    font:       '#403e3b',
     card:       '#eeeeee',
     dfont:      '#454a4a',
     main:       'white',
@@ -62,8 +62,8 @@ export default colors = {
     iconcolor:              '#5f5374',
 
     helper:                 '#7f7783',
-    background:             '#403e3b',
+    background:             '#c8c7cc',
     shadow:                 '#5f5d58',
-    box:                    '#636363',
+    box:                    'white',
 
 }

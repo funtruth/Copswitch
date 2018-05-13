@@ -4,9 +4,11 @@ import {
     Text,
     FlatList,
     TouchableOpacity,
+    Dimensions
 } from 'react-native';
 
 import { Button } from '../../components/Button';
+import { Rules } from '../../misc/rules.json';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 class InfoPageScreen extends Component {

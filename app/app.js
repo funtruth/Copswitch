@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
+import { View } from 'react-native';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 
-import Overlord from './menu/Overlord';
 import { Helper } from './navigation/Helper.js';
+import Overlord from './menu/Overlord';
 
 class App extends Component {
     constructor(props) {
@@ -12,9 +13,10 @@ class App extends Component {
 
     render(){
         return <Provider store = {store}>
-            <Overlord>
-                <Helper/>
-            </Overlord>
+            <View style = {{flex:1}}>
+                <Helper />
+                <Overlord />
+            </View>
         </Provider>
     }
 }

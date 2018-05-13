@@ -31,18 +31,6 @@ class BasicHomeScreen extends Component {
 
     }
 
-    _renderMenu(){
-        return <TouchableOpacity style = {{
-            opacity:0.5,
-            flexDirection:'row', alignItems:'center',
-            position:'absolute', top:20, left:20}}
-            onPress = {()=> {} }>
-            <FontAwesome name='gears'
-                style={{color:colors.font,fontSize:30}}/>
-            <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>Options</Text>
-        </TouchableOpacity>
-    }
-
     _renderChoice(){
         return <View style = {{ alignItems:'center' }}>
         
@@ -67,25 +55,13 @@ class BasicHomeScreen extends Component {
             <TouchableOpacity style = {{ flexDirection:'row', alignItems:'center', justifyContent:'center',
                 backgroundColor:colors.box, borderRadius:5, marginBottom:5, height:this.height*0.07, width:this.width*0.97 }}
                 onPress = {()=> firebaseService.joinPlayerList() }>
-                <FontAwesome name='book'
+                <FontAwesome name='question-circle'
                     style={{color:colors.font,fontSize:30}}/>
                 <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>
-                    How to Play</Text>
+                    About the App</Text>
             </TouchableOpacity>
 
         </View>
-    }
-
-    _renderAbout(){
-        return <TouchableOpacity style = {{
-            opacity:0.3,
-            flexDirection:'row', alignItems:'center',
-            position:'absolute', bottom:20, left:20}}
-            onPress = {()=> {} }>
-            <FontAwesome name='question-circle'
-                style={{color:colors.font,fontSize:30}}/>
-            <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>About the App</Text>
-        </TouchableOpacity>
     }
 
     render() {
@@ -101,12 +77,6 @@ class BasicHomeScreen extends Component {
                     <Create {...this.props}/>
                 </Alert>
             </View>
-
-            <Alert flex = {0.5} visible = {this.props.section == 'menu'}>
-                <RuleBook screenProps = {{ quit:false }}/>
-            </Alert>
-
-            {this._renderMenu()}
 
             {this._renderChoice()}
 

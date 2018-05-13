@@ -1,3 +1,7 @@
 import Card from './Card'
+import Modal from './Modal'
 
-export const Card
+export {
+    Card,
+    Modal
+}
