@@ -2,18 +2,14 @@ import React, { Component } from 'react';
 import {
     View,
     Text,
-    Dimensions,
     TouchableOpacity,
 }   from 'react-native';
 import { connect } from 'react-redux';
 import { changeSection } from './HomeReducer';
 
 import { Alert } from '../components/Alert.js';
-import { Button } from '../components/Button.js';
-import RuleBook from '../menu/ListNavigator';
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Join from './JoinRoomComponent';
 import Create from './CreateRoomComponent'
@@ -23,64 +19,96 @@ import firebaseService from '../firebase/firebaseService.js';
 
 class BasicHomeScreen extends Component {
 
-    constructor(props) {
-        super(props);
+    _renderSectionButton(section, text, round){
 
-        this.height = Dimensions.get('window').height;
-        this.width = Dimensions.get('window').width;
-
-    }
-
-    _renderChoice(){
-        return <View style = {{ alignItems:'center' }}>
-        
-            <TouchableOpacity style = {{ flexDirection:'row', alignItems:'center', justifyContent:'center',
-                backgroundColor:colors.box, borderRadius:5, marginBottom:5, height:this.height*0.07, width:this.width*0.97 }}
-                onPress = { () => this.props.changeSection('join') }>
-                <MaterialCommunityIcons name='human-greeting'
-                    style={{color:colors.font,fontSize:30}}/>
-                <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>
-                    Join a Room</Text>
+        return (
+            <TouchableOpacity 
+                style = {[styles.choiceButton,round?{borderTopRightRadius:15}:null]} 
+                onPress = {() => this.props.changeSection(section)}
+                activeOpacity = {0.9}
+            >
+                <Text style = {styles.titleStyle}>{text}</Text>
             </TouchableOpacity>
-            
-            <TouchableOpacity style = {{ flexDirection:'row', alignItems:'center', justifyContent:'center',
-                backgroundColor:colors.box, borderRadius:5, marginBottom:5, height:this.height*0.07, width:this.width*0.97 }}
-                onPress = { () => this.props.changeSection('create') }>
-                <FontAwesome name='edit'
-                    style={{color:colors.font,fontSize:30}}/>
-                <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>
-                    Create a Room</Text>
-            </TouchableOpacity>
+        )
 
-            <TouchableOpacity style = {{ flexDirection:'row', alignItems:'center', justifyContent:'center',
-                backgroundColor:colors.box, borderRadius:5, marginBottom:5, height:this.height*0.07, width:this.width*0.97 }}
-                onPress = {()=> firebaseService.joinPlayerList() }>
-                <FontAwesome name='question-circle'
-                    style={{color:colors.font,fontSize:30}}/>
-                <Text style = {{marginLeft:15, color:colors.font,fontFamily:'FredokaOne-Regular'}}>
-                    About the App</Text>
-            </TouchableOpacity>
-
-        </View>
     }
 
     render() {
 
-        return <View style = {{flex:1}}>
+        return <View style = {{flex:1, justifyContent:'center'}}>
 
-            <View style = {{flex:1, justifyContent:'center'}}>
-                <Alert visible = {this.props.section=='join'} flex = {0.3}>
-                    <Join {...this.props}/>
-                </Alert>
+            <View style = {styles.container}>
 
-                <Alert justify visible = {this.props.section=='create'} flex = {0.3}>
-                    <Create {...this.props}/>
-                </Alert>
+                <View style = {{flex:0.6, flexDirection:'row'}}>
+
+                    <View style = {styles.descContainer}>
+
+                    </View>
+
+                    <View style = {{flex:0.4}}>
+                        {this._renderSectionButton('join','JOIN',true)}
+                        {this._renderSectionButton('create','CREATE')}
+                    </View>
+
+                </View>
+
+                <View style = {styles.titleContainer}>
+                    <Text style = {styles.labelStyle}>Title Text</Text>
+                    <Text style = {styles.sublabelStyle}>Subtitle Text goes here!</Text>
+                </View>
+
             </View>
 
-            {this._renderChoice()}
-
         </View>
+    }
+}
+
+const styles = {
+    container:{
+        flex:0.35,
+        //backgroundColor: 'white',
+        //borderRadius:2,
+        margin:5,
+        //elevation:2
+    },
+    descContainer:{
+        flex:0.6,
+        backgroundColor:'white',
+        margin:2,
+        borderRadius:2,
+        borderTopLeftRadius:15
+    },
+    choiceButton:{
+        flex: 0.5,
+        justifyContent: 'center',
+        alignItems:'center',
+        borderRadius:2,
+        margin:2,
+        elevation:2,
+        backgroundColor:'white'
+    },
+    titleContainer:{
+        flex:0.4,
+        justifyContent:'center',
+        margin:2,
+        backgroundColor:'white',
+        borderRadius: 2,
+        elevation:2,
+        borderBottomLeftRadius:15,
+        borderBottomRightRadius:15
+    },
+    titleStyle:{
+        fontSize:18,
+        fontWeight:'bold'
+    },
+    labelStyle:{
+        fontSize:20,
+        fontWeight:'bold',
+        marginLeft:20
+    },
+    sublabelStyle:{
+        fontSize:16,
+        marginLeft:20
     }
 }
 
@@ -90,7 +118,7 @@ export default connect(
     }),
     dispatch => {
         return {
-            changeSection: () => dispatch(changeSection())  
+            changeSection: (payload) => dispatch(changeSection(payload))  
         } 
     }
 )(BasicHomeScreen)

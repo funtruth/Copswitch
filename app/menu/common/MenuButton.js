@@ -29,16 +29,17 @@ const styles = {
         alignItems:'center',
         position:'absolute',
         top:20,
-        left:30
+        left:20
     },
     iconStyle:{
         color:colors.font,
-        fontSize:30
+        fontSize:25
     },
     fontStyle:{
         marginLeft:15,
         color:colors.font,
-        fontFamily:'FredokaOne-Regular'
+        fontFamily:'FredokaOne-Regular',
+        fontSize: 18
     }
 }
 

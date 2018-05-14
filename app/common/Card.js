@@ -32,6 +32,7 @@ const styles = {
         margin:5,
         borderRadius:2,
         alignSelf:'center',
+        elevation: 4,
     }
 }
 
