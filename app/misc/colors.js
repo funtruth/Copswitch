@@ -62,8 +62,15 @@ export default colors = {
     iconcolor:              '#5f5374',
 
     helper:                 '#7f7783',
-    background:             '#454545',
+    background:             'rgba(255,255,255,1)',
     shadow:                 '#5f5d58',
     box:                    'white',
+
+    null:                   'rgba(255,255,255,1)',
+    lightgrey:              'rgba(239,239,239,1)',
+    grey:                   'rgba(181,181,181,1)',
+    darkgrey:               'rgba(130,130,130,1)',
+    background:             '#383C51',
+
 
 }
