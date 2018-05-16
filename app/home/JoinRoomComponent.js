@@ -4,7 +4,8 @@ import {
     AsyncStorage,
     Text,
     TextInput,
-    Keyboard
+    Keyboard,
+    Animated
 }   from 'react-native';
 
 import * as Animatable from 'react-native-animatable';
@@ -20,9 +21,10 @@ class JoinRoomComponent extends Component {
 
         this.state = {
             loading:false,
-            statusMessage:'Enter Roomcode',
+            status:'Enter Roomcode',
             errorMessage:'Must be 4 Digits long',
         };
+        this.nav = new Animated.Value(0)
         
     }
 
@@ -34,7 +36,7 @@ class JoinRoomComponent extends Component {
             Keyboard.dismiss()
             this.setState({
                 loading:true,
-                statusMessage:'Checking Room',
+                status:'Checking Room',
             })
             this.checkRoom(code)
 
@@ -45,7 +47,7 @@ class JoinRoomComponent extends Component {
 
         const { valid, message } = await firebaseService.checkRoom(code);
 
-        this.setState({ statusMessage:message })
+        this.setState({ status:message })
 
         if(valid){
             AsyncStorage.setItem('ROOM-KEY', code)
@@ -58,72 +60,71 @@ class JoinRoomComponent extends Component {
                 
             })
         } else {
-            this.refs.error.shake(800)
-            this.refs.textInput.focus()
+            this.refs.roomCode.focus()
         }
 
         this.setState({
             loading:false,
-            statusMessage:'Enter Roomcode'
+            status:'Enter Roomcode'
         })
 
     }
 
+    componentWillReceiveProps(newProps){
+        if ( newProps.section !== this.props.section ) {
+            this._show( newProps.section === 'join' )
+        }
+    }
+
+    _show(view){
+        Animated.timing(
+            this.nav,{
+                toValue: view?1:0,
+                duration: 600
+            }
+        ).start()
+
+        if ( view ){
+            this.refs.roomCode.focus()
+        } else {
+            Keyboard.dismiss()
+        }
+    }
+
     render() {
-
-        return <View>
-
-            <Text style = {styles.title}>JOIN</Text>
-            <Text style = {styles.subtitle}>{this.state.statusMessage}</Text>
-
-            <View style = {{justifyContent:'center', alignItems:'center', flexDirection:'row'}}>
+        return (
+            <Animated.View style = {{
+                opacity: this.nav.interpolate({
+                    inputRange:[0, 0.5, 1],
+                    outputRange:[0, 0, 1]
+                }),
+                height: this.nav.interpolate({
+                    inputRange:[0,0.5,1],
+                    outputRange:[0, 50, 50]
+                }),
+                justifyContent: 'center'
+            }}>
                 <TextInput
-                    ref='textInput'
+                    ref='roomCode'
                     keyboardType='numeric' 
                     maxLength={4}   
-                    placeholder='9999'
+                    placeholder='Enter your 4 digit code'
                     placeholderTextColor={colors.dead}
                     style={styles.textInput}
                     onChangeText={val=>this.onChange(val)}
                 />
-            </View>
-
-            <Animatable.Text style = {styles.errorMessage} ref='error'>
-                    {this.state.errorMessage}</Animatable.Text>
-
-        </View>
+            </Animated.View>
+        )
     }
 }
 
 const styles = {
-    title: {
-        fontSize: 30,
-        fontFamily: 'FredokaOne-Regular',
-        textAlign:'center',
-        color: colors.striker
-    },
-    subtitle: {
-        fontSize: 18,
-        fontFamily: 'FredokaOne-Regular',
-        textAlign:'center',
-        color:colors.font, 
-        marginBottom:5
-    },
     textInput: {
-        flex: 0.4,
-        backgroundColor: colors.background,
+        fontSize: 20,
+        color: colors.shadow,
         fontFamily:'FredokaOne-Regular',
-        fontSize: 25,
-        color:colors.font,
-        textAlign:'center',
-        borderRadius:30,
-    },
-    errorMessage: {
-        fontFamily: 'FredokaOne-Regular',
-        textAlign:'center',
-        color: colors.font,
-        marginTop: 10
-    },
+        textAlign:'center'
+    }
 }
 
 export default JoinRoomComponent

@@ -7,9 +7,7 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 class MenuButton extends Component {
-
     render() {
-
         return(
             <TouchableOpacity 
                 style = {styles.container}
@@ -18,9 +16,7 @@ class MenuButton extends Component {
                 <Text style = {styles.fontStyle}>Menu</Text>
             </TouchableOpacity>
         )
-
     }
-
 }
 
 const styles = {

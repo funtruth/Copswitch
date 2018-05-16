@@ -8,16 +8,15 @@ import MenuButton from './common/MenuButton';
 
 
 class Overlord extends Component {
-
     render() {
-
         const { visible, section, toggleMenu } = this.props
-
-        if( visible ) return <ListNavigator onClose = {() => toggleMenu(visible)}/>
-        
-        return <MenuButton onPress = {() => toggleMenu(visible)}/>
+        return (
+            <View>
+                {visible?<ListNavigator onClose = {() => toggleMenu(visible)}/>:null}
+                <MenuButton onPress = {() => toggleMenu(visible)}/>
+            </View>
+        )
     }
-
 }
 
 export default connect(

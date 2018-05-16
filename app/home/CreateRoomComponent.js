@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
     View,
     Text,
-    AsyncStorage,
+    ActivityIndicator,
+    Animated
 }   from 'react-native';
 
 import { Button } from '../components/Button.js';
@@ -19,6 +20,7 @@ class CreateRoomComponent extends Component {
         this.state = {
             loading:false
         }
+        this.nav = new Animated.Value(0)
     }
 
     async _createRoom() {
@@ -37,40 +39,47 @@ class CreateRoomComponent extends Component {
 
     }
 
+    componentWillReceiveProps(newProps){
+        if ( newProps.section !== this.props.section ) {
+            this._show( newProps.section === 'create' )
+        }
+    }
+
+    _show(view){
+        Animated.timing(
+            this.nav,{
+                toValue: view?1:0,
+                duration: 600
+            }
+        ).start()
+    }
+
     render() {
-
-        return <View>
-
-            <Text style = {styles.title}>CREATE</Text>
-
-            <Button
-                horizontal={0.35}
-                color = {colors.dead}
-                backgroundColor = {colors.box}
-                onPress={()=> this._createRoom() }
-            >
-                <Text style = {styles.buttonText}>Go!</Text>
-            </Button>
-
-        </View>
+        return(
+            <Animated.View style = {{
+                opacity: this.nav.interpolate({
+                    inputRange:[0, 0.5, 1],
+                    outputRange:[0, 0, 1]
+                }),
+                height: this.nav.interpolate({
+                    inputRange:[0,0.5,1],
+                    outputRange:[0, 50, 50]
+                })
+            }}>
+                <ActivityIndicator 
+                    size = "large"
+                    color = { colors.shadow }
+                    style = { styles.indicator }
+                />
+            </Animated.View>
+        )
     }
 }
 
 const styles = {
-    title: {
-        fontSize: 30,
-        fontFamily: 'FredokaOne-Regular',
-        textAlign:'center',
-        color: colors.striker,
-        marginBottom: 10
-    },
-    buttonText: {
-        fontSize: 19,
-        fontFamily: 'FredokaOne-Regular',
-        color: colors.font,
-        margin:4
-    },
-
+    indicator:{
+        margin: 10
+    }
 }
 
 export default CreateRoomComponent

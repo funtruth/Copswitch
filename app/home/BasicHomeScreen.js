@@ -7,108 +7,81 @@ import {
 import { connect } from 'react-redux';
 import { changeSection } from './HomeReducer';
 
-import { Alert } from '../components/Alert.js';
-
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import Join from './JoinRoomComponent';
 import Create from './CreateRoomComponent'
 
 import colors from '../misc/colors.js';
-import firebaseService from '../firebase/firebaseService.js';
 
 class BasicHomeScreen extends Component {
 
-    _renderSectionButton(section, text, round){
+    constructor(props){
+        super(props)
+    }
 
+    _renderSectionButton(section, icon, title, subtitle){
         return (
             <TouchableOpacity 
-                style = {[styles.choiceButton,round?{borderTopRightRadius:15}:null]} 
+                style = {styles.container} 
                 onPress = {() => this.props.changeSection(section)}
                 activeOpacity = {0.9}
             >
-                <Text style = {styles.titleStyle}>{text}</Text>
+                <View style = {{ margin: 10 }}>
+                    <View style = {styles.titleContainer}>
+                        <FontAwesome name = {icon} style = {styles.iconStyle} />
+                        <Text style = {styles.titleStyle}>{title}</Text>
+                    </View>
+                    {this._renderSection(section)}
+                    <Text style = {styles.subtitleStyle}>{subtitle}</Text>
+                </View>
             </TouchableOpacity>
         )
+    }
 
+    _renderSection(section){
+        if ( section === 'join' ) {
+            return <Join {...this.props}/>
+        } else {
+            return <Create {...this.props}/>
+        }
     }
 
     render() {
-
-        return <View style = {{flex:1, justifyContent:'center'}}>
-
-            <View style = {styles.container}>
-
-                <View style = {{flex:0.6, flexDirection:'row'}}>
-
-                    <View style = {styles.descContainer}>
-
-                    </View>
-
-                    <View style = {{flex:0.4}}>
-                        {this._renderSectionButton('join','JOIN',true)}
-                        {this._renderSectionButton('create','CREATE')}
-                    </View>
-
-                </View>
-
-                <View style = {styles.titleContainer}>
-                    <Text style = {styles.labelStyle}>Title Text</Text>
-                    <Text style = {styles.sublabelStyle}>Subtitle Text goes here!</Text>
-                </View>
-
+        return( 
+            <View style = {{flex:1, justifyContent:'center'}}>
+                {this._renderSectionButton('join', 'star', 'Join', 'Ask the room owner for the code!')}
+                {this._renderSectionButton('create', 'edit', 'Create', 'Customize your own room!')}
+                <View style = {{ flex:0.2 }} />
             </View>
-
-        </View>
+        )
     }
 }
 
 const styles = {
     container:{
-        flex:0.35,
-        //backgroundColor: 'white',
-        //borderRadius:2,
-        margin:5,
-        //elevation:2
-    },
-    descContainer:{
-        flex:0.6,
-        backgroundColor:'white',
-        margin:2,
-        borderRadius:2,
-        borderTopLeftRadius:15
-    },
-    choiceButton:{
-        flex: 0.5,
-        justifyContent: 'center',
-        alignItems:'center',
-        borderRadius:2,
-        margin:2,
-        elevation:2,
-        backgroundColor:'white'
-    },
-    titleContainer:{
-        flex:0.4,
         justifyContent:'center',
         margin:2,
         backgroundColor:'white',
         borderRadius: 2,
-        elevation:2,
-        borderBottomLeftRadius:15,
-        borderBottomRightRadius:15
+        elevation:2
+    },
+    iconStyle:{
+        fontSize: 25
+    },
+    titleContainer:{
+        flexDirection:'row',
+        alignItems:'center',
+        justifyContent:'center',
+        marginTop:5
     },
     titleStyle:{
-        fontSize:18,
-        fontWeight:'bold'
-    },
-    labelStyle:{
         fontSize:20,
-        fontWeight:'bold',
-        marginLeft:20
+        fontFamily: 'FredokaOne-Regular'
     },
-    sublabelStyle:{
+    subtitleStyle:{
         fontSize:16,
-        marginLeft:20
+        alignSelf:'center'
     }
 }
 

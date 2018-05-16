@@ -4,8 +4,8 @@ import MenuReducer from '../menu/MenuReducer';
 import HomeReducer from '../home/HomeReducer';
 
 const reducers = {
-    home: HomeReducer,
-    menu: MenuReducer
+    menu: MenuReducer,
+    home: HomeReducer
 }
 
 export default combineReducers( reducers )
