@@ -12,6 +12,7 @@ const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
 import colors from '../misc/colors.js';
 import firebaseService from '../firebase/firebaseService.js';
+import NavigationTool from '../navigation/NavigationTool.js';
 
 class LobbyOptionsComponent extends Component {
 
@@ -51,7 +52,7 @@ class LobbyOptionsComponent extends Component {
         if(this.state.ownerFlag) firebaseService.deleteRoom()
         else firebaseService.leaveLobby()
 
-        this.props.navigate('Home')
+        NavigationTool.navigate('Home')
         
     }
 

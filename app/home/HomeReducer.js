@@ -1,14 +1,131 @@
+import { AsyncStorage } from 'react-native'
+import { NavigationActions } from 'react-navigation'
+import firebase from '../firebase/FirebaseController'
+import randomize from 'randomatic'
+
+import firebaseService from '../firebase/firebaseService'
+import navigationTool from '../navigation/NavigationTool'
+
 const initialState = {
-    section: null,
+    joinId: null,
+    loading: false,
+    errorText: null,
 }
 
-const SECTION_CHANGED = 'home/section_changed'
+const ON_CHANGE_CODE = 'home/on_change_code'
+const LOADING_STATUS = 'home/loading_status'
+const ERROR_MESSAGE = 'home/error_message'
+const RESET = 'home/reset'
 
-export function changeSection(payload){
-    return (dispatch) => {
+//keeps track of changes in TextInput for JOINING rooms
+export function onChangeCode(payload){
+    return (dispatch, getState) => {
+        let { loading } = getState()
         dispatch({
-            type: SECTION_CHANGED,
+            type: ON_CHANGE_CODE,
             payload: payload
+        })
+        if( !loading &&  payload.length === 4 ) {
+            dispatch(checkRoom(payload))
+        }
+    }
+}
+
+//checks validity of roomId
+function checkRoom(roomId){
+    return async (dispatch) => {
+        dispatch({
+            type: LOADING_STATUS,
+            payload: true
+        })
+
+        //Takes a snap of the corresponding room
+        const roomInfo = await firebaseService.get(`roomInfo/${roomId}`)
+        let valid = false
+
+        //If the room does not exist ... invalid code
+        if(!roomInfo){
+            dispatch({
+                type: ERROR_MESSAGE,
+                payload: 'Invalid Room Code'
+            })
+        //If the room status is not Lobby ... game has started
+        } else if (roomInfo.status !== 'Lobby'){
+            dispatch({
+                type: ERROR_MESSAGE,
+                payload: 'Game has already Started.'
+            })
+        //Otherwise, join the room
+        } else {
+            dispatch({
+                type: ERROR_MESSAGE,
+                payload: 'Success!'
+            })
+            valid = true
+        }
+
+        //Set AsyncStorage
+        if (valid) {
+            AsyncStorage.setItem('ROOM-KEY', roomId)
+            .then(()=>{
+                //Initialize references in firebaseService
+                firebaseService.joinRoom(roomId)
+                //Move to next screen
+                dispatch(moveToLobby(roomId))
+            })
+        }
+
+        dispatch({
+            type: LOADING_STATUS,
+            payload: false
+        })
+    }
+}
+
+//Creating a room process
+export function createRoom(){
+    return async (dispatch) => {
+        dispatch({
+            type: LOADING_STATUS,
+            payload: true
+        })
+
+        //Takes a snap of all rooms
+        const allRoomInfo = await firebaseService.get(`roomInfo`)
+
+        let flag = false
+        let roomId = null
+
+        //Loop until we find a roomId that is NOT taken
+        while(!flag){
+            roomId = randomize('0',4);
+            if(!allRoomInfo) flag = true
+            else if(!allRoomInfo[roomId]) flag = true
+        }
+        
+        //Write owner and room status to the database
+        firebase.database().ref(`roomInfo/${roomId}`).set({
+            owner: firebaseService.getUid(),
+            status:'Lobby',
+        })
+        //Set AsyncStorage
+        .then(()=>{
+            AsyncStorage.setItem('ROOM-KEY', roomId)
+        })
+
+        //initialize references in firebaseService
+        firebaseService.joinRoom(roomId)
+        //Move to next screen
+        dispatch(moveToLobby(roomId))
+    }
+}
+
+//Navigates to Lobby and resets state
+function moveToLobby(roomId){
+    return (dispatch) => {
+        navigationTool.navigate("Lobby")
+        dispatch({
+            type: RESET
         })
     }
 }
@@ -16,8 +133,14 @@ export function changeSection(payload){
 export default (state = initialState, action) => {
 
     switch(action.type){
-        case SECTION_CHANGED:
-            return { ...state, section: action.payload }
+        case ON_CHANGE_CODE:
+            return { ...state, joinId: action.payload }
+        case LOADING_STATUS:
+            return { ...state, loading: action.payload }
+        case ERROR_MESSAGE:
+            return { ...state, errorText: action.payload }
+        case RESET:
+            return initialState
         default:
             return state;
     }

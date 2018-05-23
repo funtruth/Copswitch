@@ -8,112 +8,39 @@ import {
     ActivityIndicator
 }   from 'react-native';
 import { connect } from 'react-redux';
-import { changeSection } from './HomeReducer';
-
+import { onChangeCode, createRoom } from './HomeReducer';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
-import Join from './JoinRoomComponent';
-import Create from './CreateRoomComponent'
-
 import colors from '../misc/colors.js';
 import firebaseService from '../firebase/firebaseService';
 
 class BasicHomeScreen extends Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            loading:false,
-            errorMessage:'Must be 4 Digits long',
-        };
-        
-    }
-
-    //Valid roomcode format
-    onChange(code){
-
-        if(!this.state.loading && code.length == 4){
-
-            Keyboard.dismiss()
-            this.setState({
-                loading:true,
-                status:'Checking Room',
-            })
-            this.checkRoom(code)
-
-        }
-    }
-
-    async checkRoom(code){
-
-        const { valid, message } = await firebaseService.checkRoom(code);
-
-        this.setState({ status:message })
-
-        if(valid){
-            AsyncStorage.setItem('ROOM-KEY', code)
-            .then(()=>{
-
-                firebaseService.joinRoom(code)
-                this.props.screenProps.navigate('Lobby',code)
-                
-                this.setState({ errorMessage:'Must be 4 Digits long' })
-                
-            })
-        } else {
-            this.refs.roomCode.focus()
-        }
-
-        this.setState({
-            loading:false,
-            status:'Enter Roomcode'
-        })
-
-    }
-
-    _createRoom = async () => {
-        
-        this.setState({
-            loading:true
-        })
-
-        const roomId = await firebaseService.createRoom()
-        
-        this.props.screenProps.navigate('Lobby',roomId)
-
-        this.setState({
-            loading:false
-        })
-
-    }
-
     render() {
         return( 
             <View>
                 <View style = {{height:50}}/>
                 <View style = {styles.container}>
-                    <View style = {{ margin: 10 }}>
+                    <View style = {{margin: 10}}>
                         <View style = {styles.titleContainer}>
                             <FontAwesome name = 'star' style = {styles.iconStyle} />
                             <Text style = {styles.titleStyle}>Join</Text>
                         </View>
                         <TextInput
-                            ref='roomCode'
-                            keyboardType='numeric' 
-                            maxLength={4}   
-                            placeholder='Enter your 4 digit code'
-                            placeholderTextColor={colors.dead}
-                            style={styles.textInput}
-                            onChangeText={val=>this.onChange(val)}
+                            ref = 'roomCode'
+                            keyboardType = 'numeric' 
+                            maxLength = {4}   
+                            placeholder = 'Enter your 4 digit code'
+                            placeholderTextColor = {colors.dead}
+                            style = {styles.textInput}
+                            value = { this.props.joinId }
+                            onChangeText = { this.props.onChangeCode }
                         />
-                        <Text style = {styles.subtitleStyle}>Ask the room owner for the code!</Text>
+                        <Text style = {styles.subtitleStyle}>{this.props.errorText}</Text>
                     </View>
                 </View>
 
                 <TouchableOpacity 
                     style = {styles.container} 
-                    onPress = { this._createRoom }
+                    onPress = { this.props.createRoom }
                     activeOpacity = {0.9}
                 >
                     <View style = {{ margin: 10 }}>
@@ -121,7 +48,7 @@ class BasicHomeScreen extends Component {
                             <FontAwesome name = 'edit' style = {styles.iconStyle} />
                             <Text style = {styles.titleStyle}>Create</Text>
                             <ActivityIndicator
-                                animating = { this.state.loading } 
+                                animating = { this.props.loading } 
                                 size = "large"
                                 color = { colors.shadow }
                                 style = { styles.indicator }
@@ -173,11 +100,14 @@ const styles = {
 
 export default connect(
     state => ({
-        section: state.home.section
+        joinId: state.home.joinId,
+        loading: state.home.loading,
+        errorText: state.home.errorText
     }),
     dispatch => {
         return {
-            changeSection: (payload) => dispatch(changeSection(payload))  
+            onChangeCode: (payload) => dispatch(onChangeCode(payload)),
+            createRoom: () => dispatch(createRoom()) 
         } 
     }
 )(BasicHomeScreen)

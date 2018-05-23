@@ -5,6 +5,7 @@ import colors from '../misc/colors.js';
 import { NavigationActions } from 'react-navigation';
 
 import Router from "./router";
+import NavigationTool from './NavigationTool.js';
 
 export class Helper extends React.Component {
         
@@ -26,11 +27,6 @@ export class Helper extends React.Component {
 
     _onBackPress(){
         return true
-    }
-
-    //Prop Functions
-    _receiveNav(navigation){
-        this.navigation = navigation
     }
 
     _showCover(show){
@@ -93,11 +89,8 @@ export class Helper extends React.Component {
                     }],
                 }}>
                     <Router
-                        screenProps={{
-                            passNavigation:val=>{this._receiveNav(val)},
-                            navigate:(val)=>{
-                                this._navigate(val)
-                            },
+                        ref = {navigatorRef => {
+                            NavigationTool.setContainer(navigatorRef)
                         }}
                     />
                 </Animated.View>

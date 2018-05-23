@@ -25,7 +25,7 @@ const Router = StackNavigator(
         },
         Game: {
           screen: Game
-        },
+        }
       },
       {
         headerMode: "none",

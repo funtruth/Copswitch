@@ -1,11 +1,12 @@
-
 import React, { Component } from 'react';
 import {
     View,
     AsyncStorage,
 }   from 'react-native';
 
-import firebaseService from '../firebase/firebaseService.js';
+import firebaseService from '../firebase/firebaseService.js'
+import NavigationTool from '../navigation/NavigationTool'
+import { joinRoom } from '../lobby/LobbyReducer'
 
 class LoadingScreen extends Component {
     
@@ -30,9 +31,6 @@ class LoadingScreen extends Component {
         //Debugging
         //this.reset()
 
-        //Pass navigation
-        this.props.screenProps.passNavigation(this.props.navigation)
-
         AsyncStorage.getItem('ROOM-KEY',(error,roomKey)=>{
             if(roomKey){
                 this.route = 'Lobby'
@@ -49,7 +47,7 @@ class LoadingScreen extends Component {
             })
             .then(()=>{
                 firebaseService.initRefs(this.roomId)
-                this.props.screenProps.navigate(this.route)
+                NavigationTool.navigate(this.route)
             })
         })
         

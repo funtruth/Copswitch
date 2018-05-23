@@ -6,6 +6,9 @@ import {
     Dimensions,
     AsyncStorage,
 }   from 'react-native';
+import { connect } from 'react-redux'
+
+import { joinRoom } from './LobbyReducer'
 
 import colors from '../misc/colors.js';
 
@@ -29,9 +32,6 @@ class BasicLobbyScreen extends Component {
 
         };
 
-        //firebase
-        this.roomId = null
-
         this.infoRef = null
 
         this.width          = Dimensions.get('window').width;
@@ -45,8 +45,8 @@ class BasicLobbyScreen extends Component {
 
         //import all listeners
         this.infoRef = firebaseService.fetchRoomInfoRef('status')
-    
-        this.roomId = firebaseService.getRoomId()
+
+        this.props.joinRoom(firebaseService.getRoomId())
 
         this.infoRef.on('value',snap=>{
             if(snap.exists()){
@@ -75,7 +75,7 @@ class BasicLobbyScreen extends Component {
         
             <View style = {{ height:this.height*0.1, justifyContent:'center', alignItems:'center' }}>
                 <Text style = {styles.title}>Room</Text>
-                <Text style = {styles.code}>{this.roomId}</Text>
+                <Text style = {styles.code}>{ this.props.roomId }</Text>
             </View>
 
             <NameField />
@@ -90,9 +90,7 @@ class BasicLobbyScreen extends Component {
                 </Alert>
             </View>
 
-            <LobbyOptions
-                {...this.props.screenProps}
-                menu  = {()=> this.setState({showroles:!this.state.showroles})}
+            <LobbyOptions menu  = {()=> this.setState({showroles:!this.state.showroles})}
             />
         </View>
     }
@@ -111,4 +109,13 @@ const styles = {
     },
 }
 
-export default BasicLobbyScreen
+export default connect(
+    state => ({
+        roomId: state.lobby.roomId
+    }),
+    dispatch => {
+        return {
+            joinRoom: (payload) => dispatch(joinRoom(payload))
+        }
+    }
+)(BasicLobbyScreen)

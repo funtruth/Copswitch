@@ -22,7 +22,6 @@ class FirebaseService{
         this.roomInfoRef = null
         this.myRoomInfoRef = null
 
-
     }
 
     //General
@@ -95,17 +94,6 @@ class FirebaseService{
 
     }
 
-    //Home
-    async checkRoom(roomId){
-
-        const roomInfo = await this.get(`roomInfo/${roomId}`)
-
-        if(!roomInfo) return { valid: false, message : 'Invalid Room Code' }
-        else if(roomInfo.status != 'Lobby') return { valid: false, message : 'Game has already Started' }
-        else return { valid: true, message : 'Success!' }
-
-    }
-
     joinRoom(roomId){
 
         this.initRefs(roomId)
@@ -115,34 +103,6 @@ class FirebaseService{
             joined:true,
         })
 
-    }
-
-    async createRoom(){
-        
-        const allRoomInfo = await this.get(`roomInfo`)
-
-        var flag = false
-        var roomId = null
-
-        while(!flag){
-            roomId = randomize('0',4);
-            if(!allRoomInfo) flag = true
-            else if(!allRoomInfo[roomId]) flag = true
-        }
-        
-        firebase.database().ref(`roomInfo/${roomId}`).set({
-            owner: this.uid,
-            status:'Lobby',
-        })
-
-        .then(()=>{
-            AsyncStorage.setItem('ROOM-KEY', roomId)
-        })
-
-        this.joinRoom(roomId)
-
-        return roomId
-        
     }
 
     addPushKey(){
