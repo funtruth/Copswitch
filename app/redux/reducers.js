@@ -3,13 +3,13 @@ import { combineReducers } from 'redux'
 import AppReducer from '../appState/AppReducer'
 import MenuReducer from '../menu/MenuReducer'
 import HomeReducer from '../home/HomeReducer'
-import LobbyReducer from '../lobby/LobbyReducer'
+import RoomReducer from '../lobby/RoomReducer'
 
 const reducers = {
     appState: AppReducer,
     menu: MenuReducer,
     home: HomeReducer,
-    lobby: LobbyReducer
+    room: RoomReducer
 }
 
 export default combineReducers( reducers )

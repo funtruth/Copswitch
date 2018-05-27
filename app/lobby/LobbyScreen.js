@@ -7,7 +7,7 @@ import {
     AsyncStorage,
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { newLobbyInfo } from './LobbyReducer'
+import { newLobbyInfo } from './RoomReducer'
 
 import NavigationTool from '../navigation/NavigationTool'
 import firebaseService from '../firebase/firebaseService.js';
@@ -41,7 +41,7 @@ class LobbyScreen extends Component {
     }
 
     lobbyListenerOn(listener,listenerPath,listenerType){
-        let listenerRef = firebaseService.fetchRoomInfoRef(listenerPath)
+        let listenerRef = firebaseService.fetchRoomRef(listenerPath)
         this.lobbyListeners.push(listenerRef)
         listenerRef.on(listenerType, snap => {
             this.props.newLobbyInfo(snap, listener)
@@ -105,9 +105,9 @@ const styles = {
 
 export default connect(
     state => ({
-        roomId: state.lobby.roomId,
-        username: state.lobby.username,
-        modalView: state.lobby.modalView
+        roomId: state.room.roomId,
+        username: state.room.username,
+        modalView: state.room.modalView
     }),
     dispatch => {
         return {

@@ -40,7 +40,7 @@ function checkRoom(roomId){
         })
 
         //Takes a snap of the corresponding room
-        const roomInfo = await firebaseService.get(`roomInfo/${roomId}`)
+        const roomInfo = await firebaseService.get(`room/${roomId}`)
         let valid = false
 
         //If the room does not exist ... invalid code
@@ -93,7 +93,7 @@ export function createRoom(){
         })
 
         //Takes a snap of all rooms
-        const allRoomInfo = await firebaseService.get(`roomInfo`)
+        const allRoomInfo = await firebaseService.get(`rooms`)
 
         let flag = false
         let roomId = null
@@ -106,7 +106,7 @@ export function createRoom(){
         }
         
         //Write owner and room status to the database
-        firebase.database().ref(`roomInfo/${roomId}`).set({
+        firebase.database().ref(`rooms/${roomId}`).set({
             owner: firebaseService.getUid(),
             status:'Lobby',
         })

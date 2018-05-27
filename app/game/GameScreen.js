@@ -60,7 +60,7 @@ componentWillMount() {
     this.user               = firebaseService.getUid()
 
     this.readyRef           = firebaseService.fetchRoomRef('ready');
-    this.ownerRef           = firebaseService.fetchRoomInfoRef('owner')
+    this.ownerRef           = firebaseService.fetchRoomRef('owner')
 
     //Move this to proper component
     this.readyRef.on('value',snap=>{

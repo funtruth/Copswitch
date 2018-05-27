@@ -14,10 +14,8 @@ class FirebaseService{
         this.pushKey = null //push key upon entering room
 
         this.roomId = null
-        this.roomInfoRef = null
         this.roomRef = null
-
-        this.myRoomInfoRef = null
+        this.myInfoRef = null
         this.placeRef = null
 
     }
@@ -63,20 +61,18 @@ class FirebaseService{
         if(!roomId) return
 
         this.roomId = roomId
-        this.roomInfoRef = firebase.database().ref(`roomInfo/${roomId}`)
         this.roomRef = firebase.database().ref(`rooms/${roomId}`)
 
-        this.myRoomInfoRef = firebase.database().ref(`roomInfo/${roomId}/lobby/${this.uid}`)
-        this.placeRef = firebase.database().ref(`roomInfo/${roomId}/place`)
+        this.myInfoRef = firebase.database().ref(`rooms/${roomId}/lobby/${this.uid}`)
+        this.placeRef = firebase.database().ref(`rooms/${roomId}/place`)
     }
 
     wipeRefs(){
 
         this.roomId = null
         this.roomRef = null
-        this.roomInfoRef = null
 
-        this.myRoomInfoRef = null
+        this.myInfoRef = null
         this.placeRef = null
 
         AsyncStorage.removeItem('ROOM-KEY')
@@ -87,7 +83,7 @@ class FirebaseService{
     joinRoom(roomId){
         this.addPushKey()
 
-        this.myRoomInfoRef.update({
+        this.myInfoRef.update({
             joined:true,
         })
     }
@@ -101,10 +97,6 @@ class FirebaseService{
         this.placeRef.child(this.pushKey).remove()
     }
 
-    fetchRoomInfoRef(path){
-        return firebase.database().ref(`roomInfo/${this.roomId}/${path}`)
-    }
-
     fetchRoomRef(path){
         return firebase.database().ref(`rooms/${this.roomId}/${path}`)
     }
@@ -116,7 +108,7 @@ class FirebaseService{
         //If already left lobby, don't do anything
         if(!this.roomRef) return
 
-        this.myRoomInfoRef.remove()
+        this.myInfoRef.remove()
         this.removePushKey()
 
         this.wipeRefs()
@@ -130,7 +122,7 @@ class FirebaseService{
         //If already left lobby, don't do anything
         if(!this.roomRef) return
 
-        this.roomInfoRef.remove()
+        this.roomRef.remove()
 
         this.wipeRefs()
 
@@ -138,7 +130,7 @@ class FirebaseService{
 
     updateUsername(newName){
 
-        firebase.database().ref(`roomInfo/${this.roomId}/lobby/${this.uid}`).update({
+        firebase.database().ref(`rooms/${this.roomId}/lobby/${this.uid}`).update({
             name:newName,
         })
 
@@ -146,11 +138,11 @@ class FirebaseService{
     }
 
     activityLog(message){
-        firebase.database().ref(`roomInfo/${this.roomId}/log`).push(message)
+        firebase.database().ref(`rooms/${this.roomId}/log`).push(message)
     }
 
     changeRoleCount(key,change){
-        this.roomInfoRef.child('roles').child(key).transaction(count=>{
+        this.roomRef.child('roles').child(key).transaction(count=>{
             return change?count+1:count-1
         })
     }
@@ -158,7 +150,7 @@ class FirebaseService{
     async startGame(){
 
         var randomstring = '';
-        const roomInfo = await this.getSnap(`roomInfo/${this.roomId}`)
+        const roomInfo = await this.getSnap(`rooms/${this.roomId}`)
 
         roomInfo.child('roles').forEach((child)=>{
             for(i=0;i<child.val();i++){
@@ -206,7 +198,7 @@ class FirebaseService{
                 }) 
             })
             .then(()=>{ 
-                this.roomInfoRef.child('status').set('Starting') 
+                this.roomRef.child('status').set('Starting') 
             })
 
 
