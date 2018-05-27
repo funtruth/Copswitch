@@ -23,7 +23,6 @@ class LoadingScreen extends Component {
     }
 
     componentWillMount() {
-
         //Create an anonymous account if it doesn't exist already
         firebaseService.findUser()
         firebaseService.initUser()

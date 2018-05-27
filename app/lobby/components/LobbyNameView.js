@@ -6,55 +6,26 @@ import {
     TouchableOpacity,
     Dimensions,
 }   from 'react-native';
-
+import { connect } from 'react-redux'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import firebaseService from '../../firebase/firebaseService.js';
 
-import firebaseService from '../firebase/firebaseService.js';
-
-import colors from '../misc/colors.js';
+import colors from '../../misc/colors.js';
+const { height, width } = Dimensions.get('window')
 
 const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ';
 const maxCharLen = 12;
 
-class NameComponent extends Component {
+class LobbyNameView extends Component {
     
     constructor(props) {
         super(props);
 
         this.state = {
-            name:null
+            username: props.username
         }
 
         this.invalidChars = []
-        this.uid = null
-        this.infoRef = null
-
-        this.width = Dimensions.get('window').width
-        this.height = Dimensions.get('window').height
-    }
-
-    componentWillMount() {
-
-        //import all listeners
-        this.uid = firebaseService.getUid()
-        this.infoRef = firebaseService.fetchRoomInfoRef(`lobby/${this.uid}`)
-        
-        this.infoRef.on('value',snap=>{
-            if(snap.exists()){
-
-                this.setState({
-                    name: snap.val().name
-                })
-
-                firebaseService.loadUsername(snap.val().name)
-                
-            }
-        })
-
-    }
-
-    componentWillUnmount(){
-        if(this.infoRef) this.infoRef.off()
     }
 
     onChange(name){
@@ -78,41 +49,29 @@ class NameComponent extends Component {
         }
 
         for(var i=0; i<name.length; i++){
-
             var isCharValid = false
-
             for(var j=0; j<allowedChars.length; j++){
-
                 if(name.charAt(i) === allowedChars.charAt(j)) {
-
                     isCharValid = true
                     break
-
                 }
-
             }
-
             if(!isCharValid){
                 this.invalidChars.push( name.charAt(i) )
             }
-
         }
 
         if(this.invalidChars.length > 0){
-
             alert('not a valid name.')
             return
-
         } else {
-
             firebaseService.updateUsername(name)
-            
         }
         
     }
 
     render() {
-        return <View style = {{height:this.height*0.1,flexDirection:'row'}}>
+        return <View style = {{height:height*0.1,flexDirection:'row'}}>
 
             <View style = {{width:45}}/>
 
@@ -124,7 +83,7 @@ class NameComponent extends Component {
                 placeholder='Nickname'
                 placeholderTextColor={colors.dead}
                 maxLength={maxCharLen}
-                style={[styles.nameInput,{width:this.width*0.4}]}
+                style={[styles.nameInput,{width:width*0.4}]}
                 onChangeText = { (text) => this.onChange(text) }
                 onSubmitEditing = { (event) => this.checkName(event.nativeEvent.text.trim()) }
             />
@@ -150,4 +109,8 @@ const styles = {
     },
 }
 
-export default NameComponent
+export default connect(
+    state => ({
+        username: state.lobby.username
+    })
+)(LobbyNameView)

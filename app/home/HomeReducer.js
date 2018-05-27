@@ -4,7 +4,7 @@ import firebase from '../firebase/FirebaseController'
 import randomize from 'randomatic'
 
 import firebaseService from '../firebase/firebaseService'
-import navigationTool from '../navigation/NavigationTool'
+import NavigationTool from '../navigation/NavigationTool'
 
 const initialState = {
     joinId: null,
@@ -69,6 +69,8 @@ function checkRoom(roomId){
             AsyncStorage.setItem('ROOM-KEY', roomId)
             .then(()=>{
                 //Initialize references in firebaseService
+                firebaseService.initRefs(roomId)
+                //enter the room - set PLACE
                 firebaseService.joinRoom(roomId)
                 //Move to next screen
                 dispatch(moveToLobby(roomId))
@@ -114,6 +116,8 @@ export function createRoom(){
         })
 
         //initialize references in firebaseService
+        firebaseService.initRefs(roomId)
+        //enter the room - set PLACE
         firebaseService.joinRoom(roomId)
         //Move to next screen
         dispatch(moveToLobby(roomId))
@@ -123,7 +127,7 @@ export function createRoom(){
 //Navigates to Lobby and resets state
 function moveToLobby(roomId){
     return (dispatch) => {
-        navigationTool.navigate("Lobby")
+        NavigationTool.navigate("Lobby")
         dispatch({
             type: RESET
         })

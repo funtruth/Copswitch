@@ -1,26 +1,25 @@
 import firebase from './FirebaseController'
 
 import { AsyncStorage } from 'react-native'
-import randomize from 'randomatic';
-import { Messages, Errors } from '../commands/strings';
+import randomize from 'randomatic'
+import { Messages, Errors } from '../commands/strings'
+
+import { newLobbyInfo } from '../lobby/LobbyReducer'
 
 class FirebaseService{
 
     constructor(){
 
         this.uid = null
-        this.ign = 
         this.pushKey = null //push key upon entering room
-        this.place = null
 
         this.roomId = null
-
-        //Basic
+        this.roomInfoRef = null
         this.roomRef = null
 
-        //Room Info
-        this.roomInfoRef = null
         this.myRoomInfoRef = null
+        this.placeRef = null
+        this.lobbyListeners = []
 
     }
 
@@ -62,30 +61,22 @@ class FirebaseService{
     }
 
     initRefs(roomId){
-
         if(!roomId) return
 
         this.roomId = roomId
-
-        //Basic
+        this.roomInfoRef = firebase.database().ref(`roomInfo/${roomId}`)
         this.roomRef = firebase.database().ref(`rooms/${roomId}`)
 
-        //Room Info
-        this.roomInfoRef = firebase.database().ref(`roomInfo/${roomId}`)
         this.myRoomInfoRef = firebase.database().ref(`roomInfo/${roomId}/lobby/${this.uid}`)
         this.placeRef = firebase.database().ref(`roomInfo/${roomId}/place`)
-
     }
 
     wipeRefs(){
 
         this.roomId = null
-
-        //Basic
         this.roomRef = null
-
-        //Room Info
         this.roomInfoRef = null
+
         this.myRoomInfoRef = null
         this.placeRef = null
 
@@ -95,44 +86,56 @@ class FirebaseService{
     }
 
     joinRoom(roomId){
-
-        this.initRefs(roomId)
         this.addPushKey()
 
         this.myRoomInfoRef.update({
             joined:true,
         })
-
     }
 
     addPushKey(){
-
         this.pushKey = this.placeRef.push().key
         this.placeRef.child(this.pushKey).set(this.uid)
-
     }
 
     removePushKey(){
-
         this.placeRef.child(this.pushKey).remove()
-
     }
 
     fetchRoomInfoRef(path){
-
-        return firebase.database().ref(`roomInfo/${this.roomId}/`+path)
-
+        return firebase.database().ref(`roomInfo/${this.roomId}/${path}`)
     }
 
     fetchRoomRef(path){
-
-        return firebase.database().ref(`rooms/${this.roomId}/` + path)
-
+        return firebase.database().ref(`rooms/${this.roomId}/${path}`)
     }
 
-    leaveLobby(){
+    turnOnLobbyListeners(){
+        this.lobbyListenerOn('owner','owner','value')
+        this.lobbyListenerOn('name',`lobby/${this.uid}`,'value')
+        this.lobbyListenerOn('log','log','child_added')
+        this.lobbyListenerOn('roles','roles','value')
+        this.lobbyListenerOn('status','status','value')
+    }
 
-        this.activityLog(this.ign + Messages.LEAVE_ROOM)
+    lobbyListenerOn(listener,listenerPath,listenerType){
+        let listenerRef = firebase.database().ref(`roomInfo/${this.roomId}/${listenerPath}`)
+        this.lobbyListeners.push(listenerRef)
+        listenerRef.on(listenerType, snap => {
+            newLobbyInfo(snap, listener)
+        })
+    }
+
+    lobbyListenerOff(){
+        for(var i=0; i<this.lobbyListeners; i++){
+            this.lobbyListeners[i].off()
+        }
+        this.lobbyListeners = null
+    }
+
+    leaveLobby(username){
+
+        this.activityLog(username + Messages.LEAVE_ROOM)
 
         //If already left lobby, don't do anything
         if(!this.roomRef) return
@@ -157,21 +160,13 @@ class FirebaseService{
 
     }
 
-    loadUsername(name){
-
-        this.ign = name
-
-    }
-
     updateUsername(newName){
-
-        this.ign = newName
 
         firebase.database().ref(`roomInfo/${this.roomId}/lobby/${this.uid}`).update({
             name:newName,
         })
 
-        this.activityLog(newName + Messages.JOIN_ROOM)
+        this.activityLog(newName + Messages.UPDATE_NAME)
     }
 
     activityLog(message){

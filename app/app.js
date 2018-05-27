@@ -7,17 +7,12 @@ import { Helper } from './navigation/Helper.js';
 import Overlord from './menu/Overlord';
 
 class App extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     render(){
-        return <Provider store = {store}>
-            <View style = {{flex:1}}>
+        return (
+            <Provider store = {store}>
                 <Helper />
-                <Overlord />
-            </View>
-        </Provider>
+            </Provider>
+        )
     }
 }
 

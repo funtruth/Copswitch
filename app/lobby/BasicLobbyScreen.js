@@ -9,12 +9,13 @@ import {
 import { connect } from 'react-redux'
 
 import { joinRoom } from './LobbyReducer'
+import NavigationTool from '../navigation/NavigationTool'
 
 import colors from '../misc/colors.js';
 
-import NameField from './NameComponent';
-import ActivityLog from './ActivityLogComponent';
-import LobbyOptions from './LobbyOptionsComponent';
+import NameView from './components/LobbyNameView';
+import ActivityLogView from './components/LobbyActivityLogView';
+import LobbyOptionView from './components/LobbyOptionView';
 
 import { RoleView } from '../components/RoleView.js';
 import { Alert } from '../components/Alert.js';
@@ -27,46 +28,23 @@ class BasicLobbyScreen extends Component {
         super(props);
 
         this.state = {
-
             showroles:false,
-
         };
 
         this.infoRef = null
 
         this.width          = Dimensions.get('window').width;
         this.height         = Dimensions.get('window').height;
-
-        
     }
 
     
-    componentWillMount() {
-
-        //import all listeners
-        this.infoRef = firebaseService.fetchRoomInfoRef('status')
-
-        this.props.joinRoom(firebaseService.getRoomId())
-
-        this.infoRef.on('value',snap=>{
-            if(snap.exists()){
-                if(snap.val() == 'Starting') this.startGame()
-            }
-        })
-
-    }
-
-    componentWillUnmount() {
-        if(this.infoRef) this.infoRef.off()
-    }
-
-    startGame(){
-        
-        AsyncStorage.setItem('GAME-KEY', this.roomId)
-        .then(()=>{
-            this.props.screenProps.navigate('Pregame')
-        })
-
+    componentWillReceiveProps(newProps){
+        if(newProps.status === 'Starting'){
+            AsyncStorage.setItem('GAME-KEY', this.roomId)
+            .then(()=>{
+                NavigationTool.navigate('Pregame')
+            })
+        }
     }
 
     render() {
@@ -78,11 +56,11 @@ class BasicLobbyScreen extends Component {
                 <Text style = {styles.code}>{ this.props.roomId }</Text>
             </View>
 
-            <NameField />
+            <NameView />
 
             <View style = {{height:this.height*0.6}}>
                 <Alert visible = {!this.state.showroles} flex={0.6}>
-                    <ActivityLog />
+                    <ActivityLogView />
                 </Alert>
 
                 <Alert visible = {this.state.showroles} flex={0.5}>
@@ -90,7 +68,7 @@ class BasicLobbyScreen extends Component {
                 </Alert>
             </View>
 
-            <LobbyOptions menu  = {()=> this.setState({showroles:!this.state.showroles})}
+            <LobbyOptionView menu  = {()=> this.setState({showroles:!this.state.showroles})}
             />
         </View>
     }
@@ -111,7 +89,8 @@ const styles = {
 
 export default connect(
     state => ({
-        roomId: state.lobby.roomId
+        roomId: state.lobby.roomId,
+        username: state.lobby.username
     }),
     dispatch => {
         return {

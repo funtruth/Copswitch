@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
     View,
     Text,
@@ -6,18 +6,16 @@ import {
     TextInput,
     Keyboard,
     ActivityIndicator
-}   from 'react-native';
-import { connect } from 'react-redux';
-import { onChangeCode, createRoom } from './HomeReducer';
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import colors from '../misc/colors.js';
-import firebaseService from '../firebase/firebaseService';
+}   from 'react-native'
+import { connect } from 'react-redux'
+import { onChangeCode, createRoom } from './HomeReducer'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import colors from '../misc/colors.js'
 
 class BasicHomeScreen extends Component {
     render() {
         return( 
-            <View>
-                <View style = {{height:50}}/>
+            <View style = {{justifyContent:'center'}}>
                 <View style = {styles.container}>
                     <View style = {{margin: 10}}>
                         <View style = {styles.titleContainer}>
