@@ -1,10 +1,10 @@
 import firebase from './FirebaseController'
 
 import { AsyncStorage } from 'react-native'
+import { connect } from 'react-redux'
+
 import randomize from 'randomatic'
 import { Messages, Errors } from '../commands/strings'
-
-import { newLobbyInfo } from '../lobby/LobbyReducer'
 
 class FirebaseService{
 
@@ -19,7 +19,6 @@ class FirebaseService{
 
         this.myRoomInfoRef = null
         this.placeRef = null
-        this.lobbyListeners = []
 
     }
 
@@ -108,29 +107,6 @@ class FirebaseService{
 
     fetchRoomRef(path){
         return firebase.database().ref(`rooms/${this.roomId}/${path}`)
-    }
-
-    turnOnLobbyListeners(){
-        this.lobbyListenerOn('owner','owner','value')
-        this.lobbyListenerOn('name',`lobby/${this.uid}`,'value')
-        this.lobbyListenerOn('log','log','child_added')
-        this.lobbyListenerOn('roles','roles','value')
-        this.lobbyListenerOn('status','status','value')
-    }
-
-    lobbyListenerOn(listener,listenerPath,listenerType){
-        let listenerRef = firebase.database().ref(`roomInfo/${this.roomId}/${listenerPath}`)
-        this.lobbyListeners.push(listenerRef)
-        listenerRef.on(listenerType, snap => {
-            newLobbyInfo(snap, listener)
-        })
-    }
-
-    lobbyListenerOff(){
-        for(var i=0; i<this.lobbyListeners; i++){
-            this.lobbyListeners[i].off()
-        }
-        this.lobbyListeners = null
     }
 
     leaveLobby(username){

@@ -3,10 +3,11 @@ import {
     View,
     AsyncStorage,
 }   from 'react-native';
+import { connect } from 'react-redux'
 
 import firebaseService from '../firebase/firebaseService.js'
 import NavigationTool from '../navigation/NavigationTool'
-import { joinRoom } from '../lobby/LobbyReducer'
+import { joinRoom, turnOnLobbyListeners } from '../lobby/LobbyReducer'
 
 class LoadingScreen extends Component {
     
@@ -22,7 +23,7 @@ class LoadingScreen extends Component {
         AsyncStorage.removeItem('ROOM-KEY')
     }
 
-    componentWillMount() {
+    componentDidMount() {
         //Create an anonymous account if it doesn't exist already
         firebaseService.findUser()
         firebaseService.initUser()
@@ -45,7 +46,9 @@ class LoadingScreen extends Component {
                 
             })
             .then(()=>{
+                //TODO this setup is garbgto
                 firebaseService.initRefs(this.roomId)
+                this.props.joinRoom(this.roomId)
                 NavigationTool.navigate(this.route)
             })
         })
@@ -58,4 +61,14 @@ class LoadingScreen extends Component {
     }
 }
 
-export default LoadingScreen
+export default connect(
+    state => ({
+        dummy: 'hi'
+    }),
+    dispatch => {
+        return {
+            joinRoom: (roomId) => dispatch(joinRoom(roomId)),
+            turnOnLobbyListeners: () => dispatch(turnOnLobbyListeners())
+        }
+    }
+)(LoadingScreen)

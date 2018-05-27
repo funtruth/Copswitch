@@ -6,6 +6,7 @@ import {
     Dimensions,
 }   from 'react-native';
 import { connect } from 'react-redux'
+import { changeModalView } from '../LobbyReducer'
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -31,14 +32,22 @@ class LobbyOptionView extends Component {
         }
     }
 
+    _toggleMenu = () => {
+        if(this.props.modalView){
+            this.props.changeModalView(null)
+        } else {
+            this.props.changeModalView('roles')
+        }
+    }
+
     render(){
         const { owner } = this.props
         return (
-            <Animated.View style = { styles.container }>
+            <View style = { styles.container }>
         
                 <TouchableOpacity
                     style = {{alignItems:'center', flex:0.17}}
-                    onPress = {() => this._exit}>
+                    onPress = {this._exit}>
                     <FontAwesome name='close'
                         style={{color:colors.font, fontSize:25}}/>
                     <Text style = {styles.font}>Leave</Text>
@@ -46,7 +55,7 @@ class LobbyOptionView extends Component {
 
                 <TouchableOpacity
                     style = {{alignItems:'center', flex:0.20}}
-                    onPress = {() => this._startGame}
+                    onPress = {this._startGame}
                     disabled = {!owner}
                 >
                     <FontAwesome name={owner?'check':'lock'}
@@ -56,13 +65,13 @@ class LobbyOptionView extends Component {
 
                 <TouchableOpacity
                     style = {{alignItems:'center', flex:0.17}}
-                    onPress = {this.props.menu}>
+                    onPress = {this._toggleMenu}>
                     <FontAwesome name='bars'
                         style={{color:colors.font, fontSize:25}}/>
                     <Text style = {styles.font}>Roles</Text>
                 </TouchableOpacity>
 
-            </Animated.View>
+            </View>
         )
     }
 }
@@ -87,7 +96,13 @@ const styles = {
 
 export default connect(
     state => ({
+        modalView: state.lobby.modalView,
         owner: state.lobby.owner,
         username: state.lobby.username
-    })
+    }),
+    dispatch => {
+        return {
+            changeModalView: (modalView) => dispatch(changeModalView(modalView))
+        }
+    }
 )(LobbyOptionView)
