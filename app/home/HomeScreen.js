@@ -12,7 +12,7 @@ import { onChangeCode, createRoom } from './HomeReducer'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import colors from '../misc/colors.js'
 
-class BasicHomeScreen extends Component {
+class HomeScreen extends Component {
     render() {
         return( 
             <View style = {{justifyContent:'center'}}>
@@ -108,4 +108,4 @@ export default connect(
             createRoom: () => dispatch(createRoom()) 
         } 
     }
-)(BasicHomeScreen)
+)(HomeScreen)
