@@ -1,14 +1,14 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
     View,
     Text,
-}   from 'react-native';
+}   from 'react-native'
+import colors from '../misc/colors.js'
 
-import colors from '../misc/colors.js';
-
-import firebaseService from '../firebase/firebaseService';
-import playerModule from './mods/playerModule';
-import ownerModule from './mods/ownerModule';
+import NavigationTool from '../navigation/NavigationTool'
+import firebaseService from '../firebase/firebaseService'
+import playerModule from './mods/playerModule'
+import ownerModule from './mods/ownerModule'
 
 class PregameScreen extends Component {
 
@@ -24,7 +24,7 @@ componentWillMount() {
         playerModule.loadPlayerList(),
         ownerModule.initGame(),
     ]).then(()=>{
-        this.props.screenProps.navigate('Game')
+        NavigationTool.navigate('Game')
     })
 
 }

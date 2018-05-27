@@ -1,4 +1,4 @@
-import Console from './Console'
+import ConsoleView from './ConsoleView'
 import General from './General'
 import Nomination from './Nomination'
 import PlayerButton from './PlayerButton'
@@ -6,7 +6,7 @@ import PlayerList from './PlayerList'
 import Private from './Private'
 
 export {
-    Console,
+    ConsoleView,
     General,
     Nomination,
     PlayerButton,

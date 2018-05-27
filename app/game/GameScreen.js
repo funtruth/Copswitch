@@ -17,7 +17,7 @@ import colors from '../misc/colors.js';
 import Modal from '../components/Modal';
 import { Button } from '../components/Button.js';
 import { Rolecard } from '../components/Rolecard.js';
-import { Console, General, Nomination, PlayerList, Private } from './components'
+import { ConsoleView, General, Nomination, PlayerList, Private } from './components'
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -32,119 +32,119 @@ const icon = 0.12 * width
 
 class GameScreen extends Component {
 
-constructor(props) {
-    super(props);
+    constructor(props) {
+        super(props);
 
-    this.state = {
-        section:            null,
-        viewPlayerList:     false,
-    };
+        this.state = {
+            section:            null,
+            viewPlayerList:     false,
+        };
 
-    this.listening = false
-}
+        this.listening = false
+    }
 
-componentWillMount() {
-    if(!this.listening) this.turnOnGameListeners()
-}
+    componentWillMount() {
+        if(!this.listening) this.turnOnGameListeners()
+    }
 
-turnOnRoomListeners(){
-    this.listening = true
-    this.RoomListenerOn('nomination','nomination','value')
-    this.RoomListenerOn('counter','counter','value')
-    this.RoomListenerOn('myReady',`ready/${this.props.place}`,'value')
-    this.RoomListenerOn('list','list','value')
-    this.RoomListenerOn('news','news','child_added')
-}
+    turnOnGameListeners(){
+        this.listening = true
+        this.GameListenerOn('nomination','nomination','value')
+        this.GameListenerOn('counter','counter','value')
+        this.GameListenerOn('myReady',`ready/${this.props.place}`,'value')
+        this.GameListenerOn('list','list','value')
+        this.GameListenerOn('news','news','child_added')
+    }
 
-RoomListenerOn(listener,listenerPath,listenerType){
-    let listenerRef = firebaseService.fetchRoomRef(listenerPath)
-    this.props.pushNewListener(listenerRef)
-    listenerRef.on(listenerType, snap => {
-        this.props.newRoomInfo(snap, listener)
-    })
-}
+    GameListenerOn(listener,listenerPath,listenerType){
+        let listenerRef = firebaseService.fetchRoomRef(listenerPath)
+        this.props.pushNewListener(listenerRef)
+        listenerRef.on(listenerType, snap => {
+            this.props.newRoomInfo(snap, listener)
+        })
+    }
 
-_game(){
-    this.setState({section:this.props.ready})
-}
+    _game(){
+        this.setState({section:this.props.ready})
+    }
 
-//TODO Handling Game Ending
-_gameOver() {
-    AsyncStorage.removeItem('ROOM-KEY');
-    AsyncStorage.removeItem('GAME-KEY');
+    //TODO Handling Game Ending
+    _gameOver() {
+        AsyncStorage.removeItem('ROOM-KEY');
+        AsyncStorage.removeItem('GAME-KEY');
 
-    playerModule.wipeGame()
-    ownerModule.gameOver()
-    
-    this.props.screenProps.navigate('Home')
-}
-
-
-_renderWaiting(){
-    return <View>
-
-        <View style = {{
-            borderRadius:15,
-            backgroundColor:colors.progressd, justifyContent:'center', alignItems:'center'
-        }}> 
-            <Text style = {styles.plainfont}>{'/' + this.state.playernum}</Text>
-        </View>
-
-        <Button
-            horizontal = {0.3}
-            onPress = {()=> this._resetOptionPress()}
-        ><Text style = {styles.cancelButton}>Cancel</Text>
-        </Button>
+        playerModule.wipeGame()
+        ownerModule.gameOver()
         
-    </View>
-}
+        this.props.screenProps.navigate('Home')
+    }
 
-_renderNav(){
-    return <Animated.View style = {{position:'absolute', bottom:0, right:0, 
-        width:width*0.37, height:width*0.37}}>
 
-        <Button
-            horizontal = {1}
-            containerStyle = {{width:icon, position:'absolute', top:0, left:width*0.2}}
-            style = {{borderRadius:icon/2}}
-            touchStyle = {{height:icon, borderRadius:icon/2}}
-            onPress={()=>this.setState({ section:'news'})}
-        ><FontAwesome name='globe'
-            style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
-        </Button>
+    _renderWaiting(){
+        return <View>
 
-        <Button
-            horizontal = {1}
-            containerStyle = {{width:icon, position:'absolute', left:25, top:25}}
-            style = {{borderRadius:icon/2}}
-            touchStyle = {{height:icon, borderRadius:icon/2}}
-            onPress={()=>this.setState({ section:'role'})}
-        ><FontAwesome name='user'
-            style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
-        </Button>
+            <View style = {{
+                borderRadius:15,
+                backgroundColor:colors.progressd, justifyContent:'center', alignItems:'center'
+            }}> 
+                <Text style = {styles.plainfont}>{'/' + this.state.playernum}</Text>
+            </View>
 
-        <Button
-            horizontal = {1}
-            containerStyle = {{width:icon, position:'absolute', left:0, top:width*0.2}}
-            style = {{borderRadius:icon/2}}
-            touchStyle = {{height:icon, borderRadius:icon/2}}
-            onPress={()=>this.setState({ section:'menu'})}
-        ><FontAwesome name='book'
-            style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
-        </Button>
+            <Button
+                horizontal = {0.3}
+                onPress = {()=> this._resetOptionPress()}
+            ><Text style = {styles.cancelButton}>Cancel</Text>
+            </Button>
+            
+        </View>
+    }
 
-        <Button
-            horizontal = {1}
-            containerStyle = {{width:icon+10, position:'absolute', right:15, bottom:13}}
-            style = {{borderRadius:icon/2+5}}
-            touchStyle = {{height:icon+10, borderRadius:icon/2+5}}
-            onPress={()=>this._game()}
-        ><FontAwesome name='home'
-            style={{color:colors.shadow,fontSize:30,textAlign:'center'}}/>
-        </Button>
+    _renderNav(){
+        return <Animated.View style = {{position:'absolute', bottom:0, right:0, 
+            width:width*0.37, height:width*0.37}}>
 
-    </Animated.View>
-}
+            <Button
+                horizontal = {1}
+                containerStyle = {{width:icon, position:'absolute', top:0, left:width*0.2}}
+                style = {{borderRadius:icon/2}}
+                touchStyle = {{height:icon, borderRadius:icon/2}}
+                onPress={()=>this.setState({ section:'news'})}
+            ><FontAwesome name='globe'
+                style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
+            </Button>
+
+            <Button
+                horizontal = {1}
+                containerStyle = {{width:icon, position:'absolute', left:25, top:25}}
+                style = {{borderRadius:icon/2}}
+                touchStyle = {{height:icon, borderRadius:icon/2}}
+                onPress={()=>this.setState({ section:'role'})}
+            ><FontAwesome name='user'
+                style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
+            </Button>
+
+            <Button
+                horizontal = {1}
+                containerStyle = {{width:icon, position:'absolute', left:0, top:width*0.2}}
+                style = {{borderRadius:icon/2}}
+                touchStyle = {{height:icon, borderRadius:icon/2}}
+                onPress={()=>this.setState({ section:'menu'})}
+            ><FontAwesome name='book'
+                style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
+            </Button>
+
+            <Button
+                horizontal = {1}
+                containerStyle = {{width:icon+10, position:'absolute', right:15, bottom:13}}
+                style = {{borderRadius:icon/2+5}}
+                touchStyle = {{height:icon+10, borderRadius:icon/2+5}}
+                onPress={()=>this._game()}
+            ><FontAwesome name='home'
+                style={{color:colors.shadow,fontSize:30,textAlign:'center'}}/>
+            </Button>
+
+        </Animated.View>
+    }
 
     render() {
 
@@ -152,7 +152,7 @@ _renderNav(){
 
             <General />
 
-            <Console 
+            <ConsoleView
                 viewList = {()=>this.setState({viewPlayerList:true})}
             />
 

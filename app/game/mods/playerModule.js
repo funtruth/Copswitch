@@ -73,7 +73,7 @@ class playerModule{
         
         return new Promise (resolve => {
 
-            const ref = firebaseService.fetchRoomInfoRef('place')
+            const ref = firebaseService.fetchRoomRef('place')
            
             ref.once('value')
             .then((snap)=>{

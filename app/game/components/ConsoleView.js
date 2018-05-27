@@ -14,8 +14,7 @@ import firebaseService from '../../firebase/firebaseService';
 import playerModule from '../mods/playerModule';
 import ownerModule from '../mods/ownerModule';
 
-
-class Console extends Component {
+class ConsoleView extends Component {
         
     buttonOnePress() {
         this.props.viewList()
@@ -31,6 +30,7 @@ class Console extends Component {
 
     render() {
         const { phase, dayNum } = this.props
+        alert(phase)
         return ( 
             <Animated.View style = {styles.console}>
                     
@@ -86,5 +86,5 @@ export default connect(
         dayNum: state.room.dayNum,
         place: state.room.place
     })
-)(Console)
+)(ConsoleView)
 

@@ -17,7 +17,7 @@ const initialState = {
 
     nomination: null,
     counter: null,
-    phase: null,
+    phase: 0,
     dayNum: null,
     myReady: null,
     playerList: [],
