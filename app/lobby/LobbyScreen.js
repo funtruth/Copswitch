@@ -7,7 +7,7 @@ import {
     AsyncStorage,
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { newLobbyInfo } from './RoomReducer'
+import { pushNewListener, newLobbyInfo } from './RoomReducer'
 
 import NavigationTool from '../navigation/NavigationTool'
 import firebaseService from '../firebase/firebaseService.js';
@@ -21,20 +21,18 @@ import { Alert } from '../components/Alert.js';
 const { height, width } = Dimensions.get('window')
 
 class LobbyScreen extends Component {
-    
-    lobbyListeners = []
+    listening = false
 
-    componentDidMount(){
-        this.turnOnLobbyListeners()
-    }
-
-    componentWillUnmount(){
-        this.turnOffLobbyListeners()
+    componentWillMount(){
+        if(!this.listening) this.turnOnLobbyListeners()
     }
 
     turnOnLobbyListeners(){
+        this.listening = true
         this.lobbyListenerOn('owner','owner','value')
         this.lobbyListenerOn('name',`lobby/${firebaseService.getUid()}`,'value')
+        this.lobbyListenerOn('lobby','lobby','value')
+        this.lobbyListenerOn('place','place','value')
         this.lobbyListenerOn('log','log','child_added')
         this.lobbyListenerOn('roles','roles','value')
         this.lobbyListenerOn('status','status','value')
@@ -42,18 +40,11 @@ class LobbyScreen extends Component {
 
     lobbyListenerOn(listener,listenerPath,listenerType){
         let listenerRef = firebaseService.fetchRoomRef(listenerPath)
-        this.lobbyListeners.push(listenerRef)
+        this.props.pushNewListener(listenerRef)
         listenerRef.on(listenerType, snap => {
             this.props.newLobbyInfo(snap, listener)
         })
     }
-
-    turnOfflobbyListeners(){
-        for(var i=0; i<this.lobbyListeners; i++){
-            this.lobbyListeners[i].off()
-        }
-        this.lobbyListeners = []
-    } 
     
     componentWillReceiveProps(newProps){
         if(newProps.status === 'Starting'){
@@ -111,6 +102,7 @@ export default connect(
     }),
     dispatch => {
         return {
+            pushNewListener: (listenerRef) => dispatch(pushNewListener(listenerRef)),
             newLobbyInfo: (snap, listener) => dispatch(newLobbyInfo(snap,listener))
         }
     }

@@ -1,73 +1,16 @@
 import React, { Component } from 'react';
 import { 
-    View, 
-    Text,
+    View,
     FlatList,
 } from 'react-native';
+import { connect } from 'react-redux'
 
 import PlayerButton from './PlayerButton';
-import { Roles } from '../../misc/roles.js';
-
-import playerModule from '../mods/playerModule.js';
-import ownerModule from '../mods/ownerModule.js';
-import firebaseService from '../../firebase/firebaseService';
 
 class PlayerList extends Component {
-    
-    constructor(props) {
-        super(props);
-
-        this.state = {
-
-            playerList: [],
-            mafiaList: [],
-
-        }
-
-        this.listRef = null
-    }
-
-    componentWillMount(){
-
-        this.listRef = firebaseService.fetchRoomRef('list')
-
-        this.listRef.on('value',snap=>{
-
-            var mafialist = []
-            var playerlist = snap.val()
-
-            for(i=0;i<snap.val().length;i++){
-
-                playerlist[i].key = i;
-    
-                //Mafialist
-                if(Roles[playerlist[i].roleid].type == 1 && playerlist[i].uid != this.user){
-                    mafialist.push({
-                        name:       playerlist[i].name,
-                        rolename:   Roles[playerlist[i].roleid].name,
-                        dead:       playerlist[i].dead,
-                        key:        i,
-                    })
-                }
-    
-            }
-    
-            playerModule.passPlayerList(playerlist)
-            ownerModule.passPlayerList(playerlist)
-    
-            this.setState({
-                playerList: playerlist,
-                mafialist: mafialist,
-            })
-
-        })
-
-    }
-    
     render() {
-    
         return <FlatList
-            data={this.state.playerList}
+            data={this.props.playerList}
             contentContainerStyle={{alignSelf:'center', width:this.width*0.8}}
             renderItem={({item}) => <PlayerButton item={item}/>}
             numColumns={2}
@@ -85,4 +28,8 @@ const styles = {
     },
 }
 
-export default PlayerList
+export default connect(
+    state => ({
+        playerList: state.room.playerList
+    })
+)(PlayerList)

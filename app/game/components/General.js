@@ -1,53 +1,17 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { 
     View, 
     Text,
     FlatList 
-} from 'react-native';
+} from 'react-native'
+import { connect } from 'react-redux'
 
-import colors from '../../misc/colors.js';
-import { Message } from '../../parents/Message.js';
-import playerModule from '../mods/playerModule.js';
-import firebaseService from '../../firebase/firebaseService';
+import colors from '../../misc/colors.js'
+import { Message } from '../../parents/Message.js'
+import playerModule from '../mods/playerModule.js'
+import firebaseService from '../../firebase/firebaseService'
 
 class General extends Component {
-    
-    constructor(props) {
-        
-        super(props)
-
-        this.logRef = null
-
-        this.state = {
-            log: []
-        }
-
-    }
-
-    componentWillMount(){
-
-        this.logRef = firebaseService.fetchRoomRef('log')
-        
-        this.logRef.on('child_added', snap=>{
-
-            if(snap.exists()){
-                this.setState(prevState => ({
-                    log: [{
-                        message: snap.val(),
-                        key: snap.key
-                    }, ...prevState.log]
-                }))
-            }
-    
-        })
-
-    }
-
-    componentWillUnmount(){
-
-        if(this.logRef) this.logRef.off()
-
-    }
 
     _renderItem(item){
 
@@ -58,11 +22,10 @@ class General extends Component {
     }
 
     render() {
-    
         return (
             <View style = {{flex:0.55}}>
                 <FlatList
-                    data={this.state.log}
+                    data={this.props.news}
                     renderItem={({item}) => (this._renderItem(item))}
                     inverted
                     initialNumToRender={12}
@@ -87,4 +50,8 @@ const styles = {
     },
 }
 
-export default General
+export default connect(
+    state => ({
+        news: state.room.news
+    })
+)(General)

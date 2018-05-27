@@ -40,61 +40,6 @@ class Nomination extends Component {
 
     }
 
-    componentWillMount(){
-        
-        this.nominationRef = firebaseService.fetchRoomRef('nomination')
-        this.myReadyRef = playerModule.fetchMyReadyRef()
-
-        this.nominationRef.on('value',snap=>{
-            if(snap.exists()){
-
-                this.setState({
-                    nominee: playerModule.getUserNameUsingPlace(snap.val()),
-                    visible: true
-                })
-
-                ownerModule.passNominate(snap.val())
-
-                this._on(true)
-
-            }
-        })
-
-        this.myReadyRef.on('value',snap=>{
-    
-            if(snap.exists()){
-                
-                if(snap.val()){
-
-                    this.setState({
-                        visible: false
-                    })
-
-                    this._on(false)
-
-                } else {
-
-                    this.setState({
-                        visible: true
-                    })
-    
-                    this._on(true)
-
-                }
-    
-            }
-
-        })
-
-    }
-
-    componentWillUnmount(){
-
-        if(this.nominationRef) this.nominationRef.off()
-        if(this.myReadyRef) this.myReadyRef.off()
-
-    }
-
     buttonPress(choice) {
 
         playerModule.selectChoice(choice)

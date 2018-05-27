@@ -9,17 +9,15 @@ import {
     Dimensions,
     TouchableOpacity
 }   from 'react-native';
+import { connect } from 'react-redux'
+import { pushNewListener, newRoomInfo } from './RoomReducer'
 
 import colors from '../misc/colors.js';
 
 import Modal from '../components/Modal';
-import Nomination from './components/Nomination.js';
 import { Button } from '../components/Button.js';
-import Console from './components/Console.js';
 import { Rolecard } from '../components/Rolecard.js';
-import General from './components/General.js';
-import Private from './components/Private.js';
-import PlayerList from './components/PlayerList';
+import { Console, General, Nomination, PlayerList, Private } from './components'
 
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -29,67 +27,45 @@ import firebaseService from '../firebase/firebaseService';
 import playerModule from './mods/playerModule';
 import ownerModule from './mods/ownerModule';
 
+const { height, width } = Dimensions.get('window')
+const icon = 0.12 * width
+
 class GameScreen extends Component {
 
 constructor(props) {
     super(props);
 
     this.state = {
-        message:            '',
-
         section:            null,
         viewPlayerList:     false,
-
-        ready:              false,
     };
-    
-    this.readylist          = [];
 
-    this.width              = Dimensions.get('window').width;
-    this.icon               = this.width*0.12;
-
-    this.user               = null
-
-    this.readyRef           = null
-    this.ownerRef           = null
-
+    this.listening = false
 }
 
 componentWillMount() {
-
-    this.user               = firebaseService.getUid()
-
-    this.readyRef           = firebaseService.fetchRoomRef('ready');
-    this.ownerRef           = firebaseService.fetchRoomRef('owner')
-
-    //Move this to proper component
-    this.readyRef.on('value',snap=>{
-
-        if(snap.exists()){
-            this.readylist = snap.val()
-        }
-
-    })
-
-    this.ownerRef.on('value',snap=>{
-
-        if(snap.exists()){
-            ownerModule.ownerMode( snap.val() === this.user )
-        }
-
-    })
-
+    if(!this.listening) this.turnOnGameListeners()
 }
 
-componentWillUnmount() {
+turnOnRoomListeners(){
+    this.listening = true
+    this.RoomListenerOn('nomination','nomination','value')
+    this.RoomListenerOn('counter','counter','value')
+    this.RoomListenerOn('myReady',`ready/${this.props.place}`,'value')
+    this.RoomListenerOn('list','list','value')
+    this.RoomListenerOn('news','news','child_added')
+}
 
-    if(this.readyRef) this.readyRef.off()
-    if(this.ownerRef) this.ownerRef.off()
-
+RoomListenerOn(listener,listenerPath,listenerType){
+    let listenerRef = firebaseService.fetchRoomRef(listenerPath)
+    this.props.pushNewListener(listenerRef)
+    listenerRef.on(listenerType, snap => {
+        this.props.newRoomInfo(snap, listener)
+    })
 }
 
 _game(){
-    this.setState({section:this.state.ready})
+    this.setState({section:this.props.ready})
 }
 
 //TODO Handling Game Ending
@@ -125,13 +101,13 @@ _renderWaiting(){
 
 _renderNav(){
     return <Animated.View style = {{position:'absolute', bottom:0, right:0, 
-        width:this.width*0.37, height:this.width*0.37}}>
+        width:width*0.37, height:width*0.37}}>
 
         <Button
             horizontal = {1}
-            containerStyle = {{width:this.icon, position:'absolute', top:0, left:this.width*0.2}}
-            style = {{borderRadius:this.icon/2}}
-            touchStyle = {{height:this.icon, borderRadius:this.icon/2}}
+            containerStyle = {{width:icon, position:'absolute', top:0, left:width*0.2}}
+            style = {{borderRadius:icon/2}}
+            touchStyle = {{height:icon, borderRadius:icon/2}}
             onPress={()=>this.setState({ section:'news'})}
         ><FontAwesome name='globe'
             style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
@@ -139,9 +115,9 @@ _renderNav(){
 
         <Button
             horizontal = {1}
-            containerStyle = {{width:this.icon, position:'absolute', left:25, top:25}}
-            style = {{borderRadius:this.icon/2}}
-            touchStyle = {{height:this.icon, borderRadius:this.icon/2}}
+            containerStyle = {{width:icon, position:'absolute', left:25, top:25}}
+            style = {{borderRadius:icon/2}}
+            touchStyle = {{height:icon, borderRadius:icon/2}}
             onPress={()=>this.setState({ section:'role'})}
         ><FontAwesome name='user'
             style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
@@ -149,9 +125,9 @@ _renderNav(){
 
         <Button
             horizontal = {1}
-            containerStyle = {{width:this.icon, position:'absolute', left:0, top:this.width*0.2}}
-            style = {{borderRadius:this.icon/2}}
-            touchStyle = {{height:this.icon, borderRadius:this.icon/2}}
+            containerStyle = {{width:icon, position:'absolute', left:0, top:width*0.2}}
+            style = {{borderRadius:icon/2}}
+            touchStyle = {{height:icon, borderRadius:icon/2}}
             onPress={()=>this.setState({ section:'menu'})}
         ><FontAwesome name='book'
             style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
@@ -159,9 +135,9 @@ _renderNav(){
 
         <Button
             horizontal = {1}
-            containerStyle = {{width:this.icon+10, position:'absolute', right:15, bottom:13}}
-            style = {{borderRadius:this.icon/2+5}}
-            touchStyle = {{height:this.icon+10, borderRadius:this.icon/2+5}}
+            containerStyle = {{width:icon+10, position:'absolute', right:15, bottom:13}}
+            style = {{borderRadius:icon/2+5}}
+            touchStyle = {{height:icon+10, borderRadius:icon/2+5}}
             onPress={()=>this._game()}
         ><FontAwesome name='home'
             style={{color:colors.shadow,fontSize:30,textAlign:'center'}}/>
@@ -180,7 +156,7 @@ _renderNav(){
                 viewList = {()=>this.setState({viewPlayerList:true})}
             />
 
-            <Private {...this.props.screenProps}/>
+            <Private />
 
             <Modal 
                 visible = {this.state.viewPlayerList}
@@ -215,4 +191,14 @@ const styles = {
     }
 }
 
-export default GameScreen
+export default connect(
+    state => ({
+        ready: state.room.myReady
+    }),
+    dispatch => {
+        return {
+            pushNewListener: (listenerRef) => dispatch(pushNewListener(listenerRef)),
+            newRoomInfo: (snap, listener) => dispatch(newRoomInfo(snap,listener))
+        }
+    }
+)(GameScreen)
