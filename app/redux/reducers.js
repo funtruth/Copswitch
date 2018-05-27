@@ -3,7 +3,7 @@ import { combineReducers } from 'redux'
 import AppReducer from '../appState/AppReducer'
 import MenuReducer from '../menu/MenuReducer'
 import HomeReducer from '../home/HomeReducer'
-import RoomReducer from '../lobby/RoomReducer'
+import RoomReducer from '../room/RoomReducer'
 
 const reducers = {
     appState: AppReducer,

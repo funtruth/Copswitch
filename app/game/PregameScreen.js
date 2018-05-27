@@ -19,7 +19,6 @@ constructor(props) {
 }
 
 componentWillMount() {
-
     Promise.all([
         playerModule.initGame(),
         playerModule.loadPlayerList(),

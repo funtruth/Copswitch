@@ -1,8 +1,9 @@
 import { AsyncStorage } from 'react-native'
 import { NavigationActions } from 'react-navigation'
+import { joinRoom } from '../room/RoomReducer'
+
 import firebase from '../firebase/FirebaseController'
 import randomize from 'randomatic'
-
 import firebaseService from '../firebase/firebaseService'
 import NavigationTool from '../navigation/NavigationTool'
 
@@ -131,6 +132,7 @@ function moveToLobby(roomId){
         dispatch({
             type: RESET
         })
+        dispatch(joinRoom(roomId))
     }
 }
 

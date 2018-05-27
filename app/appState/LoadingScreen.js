@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 
 import firebaseService from '../firebase/firebaseService.js'
 import NavigationTool from '../navigation/NavigationTool'
-import { joinRoom, turnOnLobbyListeners } from '../lobby/RoomReducer'
+import { joinRoom, turnOnLobbyListeners } from '../room/RoomReducer'
 
 class LoadingScreen extends Component {
     

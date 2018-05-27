@@ -7,7 +7,7 @@ import {
     AsyncStorage,
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { pushNewListener, newLobbyInfo } from './RoomReducer'
+import { pushNewListener, newLobbyInfo } from '../room/RoomReducer'
 
 import NavigationTool from '../navigation/NavigationTool'
 import firebaseService from '../firebase/firebaseService.js';
@@ -47,8 +47,8 @@ class LobbyScreen extends Component {
     }
     
     componentWillReceiveProps(newProps){
-        if(newProps.status === 'Starting'){
-            AsyncStorage.setItem('GAME-KEY', this.roomId)
+        if(newProps.roomStatus === 'Starting'){
+            AsyncStorage.setItem('GAME-KEY', newProps.roomId)
             .then(()=>{
                 NavigationTool.navigate('Pregame')
             })
@@ -98,7 +98,8 @@ export default connect(
     state => ({
         roomId: state.room.roomId,
         username: state.room.username,
-        modalView: state.room.modalView
+        modalView: state.room.modalView,
+        roomStatus: state.room.roomStatus
     }),
     dispatch => {
         return {

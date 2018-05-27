@@ -74,7 +74,7 @@ export function pushNewListener(listenerRef){
 
 export function clearListeners(){
     return (dispatch, getState) => {
-        const { activeListeners } = getState()
+        const { activeListeners } = getState().room
         for(var i=0; i<activeListeners.length; i++){
             activeListeners[i].off()
         }
@@ -120,6 +120,7 @@ export function newLobbyInfo(snap, listener){
                     type: PLACE_LISTENER,
                     payload: snap.val()
                 })
+                break
             case 'log':
                 dispatch({
                     type: ACTIVITY_LOG_LISTENER,

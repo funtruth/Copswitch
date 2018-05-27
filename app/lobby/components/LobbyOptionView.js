@@ -6,7 +6,7 @@ import {
     Dimensions,
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { changeModalView } from '../RoomReducer'
+import { clearListeners, changeModalView } from '../../room/RoomReducer'
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -19,6 +19,8 @@ class LobbyOptionView extends Component {
 
     _exit = () => {
         const { owner, username } = this.props
+
+        this.props.clearListeners()
 
         if(owner) firebaseService.deleteRoom()
         else firebaseService.leaveLobby(username)
@@ -102,6 +104,7 @@ export default connect(
     }),
     dispatch => {
         return {
+            clearListeners: () => dispatch(clearListeners()),
             changeModalView: (modalView) => dispatch(changeModalView(modalView))
         }
     }
