@@ -12,6 +12,7 @@ import firebaseService from '../../firebase/firebaseService';
 import playerModule from '../mods/playerModule';
 import ownerModule from '../mods/ownerModule';
 import Styler from '../../common/Styler.js';
+import Separator from '../../components/Separator.js';
 
 class ConsoleView extends Component {
         
@@ -43,7 +44,7 @@ class ConsoleView extends Component {
                         onPress = {this.buttonOnePress}
                     ><Text style = {[styles.choiceButton,Styler.fading]}>{Phases[phase].buttonOne}</Text>
                     </TouchableOpacity>
-                    <View style={{height:2, backgroundColor:'white', opacity:0.2, width: '50%'}}/>
+                    <Separator />
                     <TouchableOpacity
                         onPress = {this.buttonTwoPress}
                     ><Text style = {[styles.choiceButton,Styler.fading]}>{Phases[phase].buttonTwo}</Text>

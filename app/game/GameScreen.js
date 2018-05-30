@@ -17,7 +17,7 @@ import colors from '../misc/colors.js';
 import Modal from '../components/Modal';
 import { Button } from '../components/Button.js';
 import { Rolecard } from '../components/Rolecard.js';
-import { ConsoleView, General, Nomination, PlayerList, Private } from './components'
+import { ConsoleView, General, Nomination, PlayerListView, Private } from './components'
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -67,7 +67,7 @@ class GameScreen extends Component {
     render() {
         return (
             <View style = {{flex:1}}>
-                <ConsoleView />
+                <PlayerListView />
             </View>
         )
     }
