@@ -107,6 +107,6 @@ const styles = {
         right:0,
         bottom:0,
         top:0,
-        backgroundColor:colors.background
+        backgroundColor:'#5f5d58'
     }
 }

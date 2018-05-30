@@ -10,7 +10,7 @@ export const Phases = [
         name : 'NIGHT',
         message : 'Visit another Player',
         buttonOne : 'Visit',
-        buttonTwo : 'Sleep',
+        buttonTwo : 'sleep',
     }
     
 ]

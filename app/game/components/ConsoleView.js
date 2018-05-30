@@ -2,25 +2,24 @@ import React, { Component } from 'react';
 import { 
     View, 
     Text, 
-    Animated, 
-    Dimensions 
+    Animated,
+    TouchableOpacity
 } from 'react-native';
 import { connect } from 'react-redux'
-
 import { Phases } from '../../misc/phases.js';
-import { Button } from '../../components/Button';
 
 import firebaseService from '../../firebase/firebaseService';
 import playerModule from '../mods/playerModule';
 import ownerModule from '../mods/ownerModule';
+import Styler from '../../common/Styler.js';
 
 class ConsoleView extends Component {
         
-    buttonOnePress() {
-        this.props.viewList()
+    buttonOnePress = () => {
+        //this.props.viewList() do this in redux
     }
     
-    buttonTwoPress() {
+    buttonTwoPress = () => {
         playerModule.selectChoice(-1)
     }
 
@@ -31,59 +30,46 @@ class ConsoleView extends Component {
     render() {
         const { phase, dayNum } = this.props
         return ( 
-            <Animated.View style = {styles.console}>
-                    
-                <Text style = {styles.phase}>{Phases[phase].name + ' ' + dayNum}</Text>
+            <View style = {{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <Text style = {[styles.header,Styler.default]}>
+                    {Phases[phase].name+' '+dayNum}</Text>
 
-                <Button
-                    horizontal = {0.4}
-                    margin = {10}
-                    backgroundColor = {colors.dead}
-                    onPress = {() => this.buttonOnePress()}
-                ><Text style = {styles.choiceButton}>{Phases[phase].buttonOne}</Text>
-                </Button>
-
-                <Button
-                    horizontal = {0.4}
-                    backgroundColor = {colors.dead}
-                    onPress = {() => this.buttonTwoPress()}
-                ><Text style = {styles.choiceButton}>{Phases[phase].buttonTwo}</Text>
-                </Button>
-
-            </Animated.View>
+                <View style={{width:'50%', alignItems:'center', margin: 20}}>
+                    <TouchableOpacity
+                        onPress = {this.buttonOnePress}
+                    ><Text style = {[styles.choiceButton,Styler.fading]}>{Phases[phase].buttonOne}</Text>
+                    </TouchableOpacity>
+                    <View style={{height:2, backgroundColor:'white', opacity:0.2, width: '50%'}}/>
+                    <TouchableOpacity
+                        onPress = {this.buttonTwoPress}
+                    ><Text style = {[styles.choiceButton,Styler.fading]}>{Phases[phase].buttonTwo}</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
         )
     }
 }
 
 const styles = {
-    console:{
-        flex:0.3,
-        margin:5,
-        borderRadius:5,
-        backgroundColor:colors.card,
-        justifyContent:'center'
-    },
-    phase:{
+    header:{
         fontSize:30,
-        fontFamily:'Bonkers',
-        marginBottom:5, 
-        color:colors.shadow,
+        marginBottom:5,
         alignSelf:'center'
     },
     choiceButton: {
-        fontFamily:'PierSans-Regular',
         fontSize: 20,
-        alignSelf: 'center',
-        color: colors.shadow,
-        margin:4,
-    },
+        margin:4
+    }
 }
 
 export default connect(
     state => ({
         phase: state.game.phase,
-        dayNum: state.game.dayNum,
-        place: state.game.place
+        dayNum: state.game.dayNum
     })
 )(ConsoleView)
 

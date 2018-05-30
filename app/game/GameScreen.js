@@ -19,8 +19,6 @@ import { Button } from '../components/Button.js';
 import { Rolecard } from '../components/Rolecard.js';
 import { ConsoleView, General, Nomination, PlayerList, Private } from './components'
 
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import firebaseService from '../firebase/firebaseService';
@@ -32,16 +30,7 @@ const icon = 0.12 * width
 
 class GameScreen extends Component {
 
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            section:            null,
-            viewPlayerList:     false,
-        };
-
-        this.listening = false
-    }
+    listening = false
 
     componentWillMount() {
         if(!this.listening) this.turnOnGameListeners()
@@ -64,10 +53,6 @@ class GameScreen extends Component {
         })
     }
 
-    _game(){
-        this.setState({section:this.props.ready})
-    }
-
     //TODO Handling Game Ending
     _gameOver() {
         AsyncStorage.removeItem('ROOM-KEY');
@@ -79,95 +64,12 @@ class GameScreen extends Component {
         this.props.screenProps.navigate('Home')
     }
 
-
-    _renderWaiting(){
-        return <View>
-
-            <View style = {{
-                borderRadius:15,
-                backgroundColor:colors.progressd, justifyContent:'center', alignItems:'center'
-            }}> 
-                <Text style = {styles.plainfont}>{'/' + this.state.playernum}</Text>
-            </View>
-
-            <Button
-                horizontal = {0.3}
-                onPress = {()=> this._resetOptionPress()}
-            ><Text style = {styles.cancelButton}>Cancel</Text>
-            </Button>
-            
-        </View>
-    }
-
-    _renderNav(){
-        return <Animated.View style = {{position:'absolute', bottom:0, right:0, 
-            width:width*0.37, height:width*0.37}}>
-
-            <Button
-                horizontal = {1}
-                containerStyle = {{width:icon, position:'absolute', top:0, left:width*0.2}}
-                style = {{borderRadius:icon/2}}
-                touchStyle = {{height:icon, borderRadius:icon/2}}
-                onPress={()=>this.setState({ section:'news'})}
-            ><FontAwesome name='globe'
-                style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
-            </Button>
-
-            <Button
-                horizontal = {1}
-                containerStyle = {{width:icon, position:'absolute', left:25, top:25}}
-                style = {{borderRadius:icon/2}}
-                touchStyle = {{height:icon, borderRadius:icon/2}}
-                onPress={()=>this.setState({ section:'role'})}
-            ><FontAwesome name='user'
-                style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
-            </Button>
-
-            <Button
-                horizontal = {1}
-                containerStyle = {{width:icon, position:'absolute', left:0, top:width*0.2}}
-                style = {{borderRadius:icon/2}}
-                touchStyle = {{height:icon, borderRadius:icon/2}}
-                onPress={()=>this.setState({ section:'menu'})}
-            ><FontAwesome name='book'
-                style={{color:colors.shadow,fontSize:20,textAlign:'center'}}/>
-            </Button>
-
-            <Button
-                horizontal = {1}
-                containerStyle = {{width:icon+10, position:'absolute', right:15, bottom:13}}
-                style = {{borderRadius:icon/2+5}}
-                touchStyle = {{height:icon+10, borderRadius:icon/2+5}}
-                onPress={()=>this._game()}
-            ><FontAwesome name='home'
-                style={{color:colors.shadow,fontSize:30,textAlign:'center'}}/>
-            </Button>
-
-        </Animated.View>
-    }
-
     render() {
-
-        return <View style = {{flex:1}}>
-
-            <General />
-
-            <ConsoleView
-                viewList = {()=>this.setState({viewPlayerList:true})}
-            />
-
-            <Private />
-
-            <Modal 
-                visible = {this.state.viewPlayerList}
-                onClose = {()=>this.setState({viewPlayerList:false})}
-            >
-                <PlayerList />
-            </Modal>
-
-            <Nomination />
-
-        </View>
+        return (
+            <View style = {{flex:1}}>
+                <ConsoleView />
+            </View>
+        )
     }
 }
 
