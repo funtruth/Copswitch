@@ -185,8 +185,6 @@ class playerModule{
 
     publishNews(message){
 
-
-
     }
 
 }

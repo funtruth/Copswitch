@@ -10,7 +10,7 @@ import {
     TouchableOpacity
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { pushNewListener, newRoomInfo } from '../room/GameReducer'
+import { pushNewListener, newRoomInfo } from './GameReducer'
 
 import colors from '../misc/colors.js';
 

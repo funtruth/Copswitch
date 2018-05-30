@@ -6,7 +6,7 @@ import {
     Dimensions,
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { clearListeners, changeModalView } from '../../room/LobbyReducer'
+import { clearListeners, changeModalView } from '../LobbyReducer'
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 

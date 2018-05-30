@@ -7,7 +7,7 @@ import {
     AsyncStorage,
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { pushNewListener, newLobbyInfo } from '../room/LobbyReducer'
+import { pushNewListener, newLobbyInfo } from './LobbyReducer'
 
 import NavigationTool from '../navigation/NavigationTool'
 import firebaseService from '../firebase/firebaseService.js';

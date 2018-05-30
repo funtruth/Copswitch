@@ -30,7 +30,6 @@ class ConsoleView extends Component {
 
     render() {
         const { phase, dayNum } = this.props
-        alert(phase)
         return ( 
             <Animated.View style = {styles.console}>
                     
@@ -66,14 +65,14 @@ const styles = {
     },
     phase:{
         fontSize:30,
-        fontFamily:'FredokaOne-Regular',
+        fontFamily:'Bonkers',
         marginBottom:5, 
         color:colors.shadow,
         alignSelf:'center'
     },
     choiceButton: {
-        fontFamily:'FredokaOne-Regular',
-        fontSize: 17,
+        fontFamily:'PierSans-Regular',
+        fontSize: 20,
         alignSelf: 'center',
         color: colors.shadow,
         margin:4,

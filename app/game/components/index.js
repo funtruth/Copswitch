@@ -12,4 +12,4 @@ export {
     PlayerButton,
     PlayerList,
     Private
-};
+}

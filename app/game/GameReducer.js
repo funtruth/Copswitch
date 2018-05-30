@@ -88,16 +88,10 @@ export function newRoomInfo(snap, listener){
 export default (state = initialState, action) => {
 
     switch(action.type){
-        case JOIN_ROOM:
-            return { ...state, roomId: action.payload }
-        case CHANGE_MODAL:
-            return { ...state, modalView: action.payload }
         case PUSH_NEW_LISTENER:
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:
             return { ...state, activeListeners: [] }
-        case ACTIVITY_LOG_LISTENER:
-            return { ...state, activityLog: [{message: action.payload.val(), key: action.payload.key}, ...state.activityLog] }
         case NOMINATION_LISTENER:
             return { ...state, nomination: action.payload }
         case COUNTER_LISTENER:
