@@ -111,6 +111,6 @@ const styles = {
 
 export default connect(
     state => ({
-        username: state.room.username
+        username: state.game.username
     })
 )(LobbyNameView)

@@ -6,7 +6,7 @@ import {
     Dimensions,
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { clearListeners, changeModalView } from '../../room/RoomReducer'
+import { clearListeners, changeModalView } from '../../room/LobbyReducer'
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -98,9 +98,9 @@ const styles = {
 
 export default connect(
     state => ({
-        modalView: state.room.modalView,
-        owner: state.room.owner,
-        username: state.room.username
+        modalView: state.lobby.modalView,
+        owner: state.lobby.owner,
+        username: state.lobby.username
     }),
     dispatch => {
         return {

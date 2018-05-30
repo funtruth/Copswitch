@@ -10,7 +10,7 @@ import {
     TouchableOpacity
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { pushNewListener, newRoomInfo } from '../room/RoomReducer'
+import { pushNewListener, newRoomInfo } from '../room/GameReducer'
 
 import colors from '../misc/colors.js';
 
@@ -193,7 +193,7 @@ const styles = {
 
 export default connect(
     state => ({
-        ready: state.room.myReady
+        ready: state.game.myReady
     }),
     dispatch => {
         return {

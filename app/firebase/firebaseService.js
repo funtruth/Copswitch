@@ -1,7 +1,6 @@
 import firebase from './FirebaseController'
 
 import { AsyncStorage } from 'react-native'
-import { connect } from 'react-redux'
 
 import randomize from 'randomatic'
 import { Messages, Errors } from '../commands/strings'

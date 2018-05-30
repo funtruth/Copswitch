@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 
 import firebaseService from '../firebase/firebaseService.js'
 import NavigationTool from '../navigation/NavigationTool'
-import { joinRoom, turnOnLobbyListeners } from '../room/RoomReducer'
+import { joinRoom } from '../room/LobbyReducer'
 
 class LoadingScreen extends Component {
     
@@ -62,13 +62,10 @@ class LoadingScreen extends Component {
 }
 
 export default connect(
-    state => ({
-        dummy: 'hi'
-    }),
+    null,
     dispatch => {
         return {
             joinRoom: (roomId) => dispatch(joinRoom(roomId)),
-            turnOnLobbyListeners: () => dispatch(turnOnLobbyListeners())
         }
     }
 )(LoadingScreen)

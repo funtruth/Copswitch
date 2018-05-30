@@ -7,7 +7,7 @@ import {
     AsyncStorage,
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { pushNewListener, newLobbyInfo } from '../room/RoomReducer'
+import { pushNewListener, newLobbyInfo } from '../room/LobbyReducer'
 
 import NavigationTool from '../navigation/NavigationTool'
 import firebaseService from '../firebase/firebaseService.js';
@@ -96,10 +96,10 @@ const styles = {
 
 export default connect(
     state => ({
-        roomId: state.room.roomId,
-        username: state.room.username,
-        modalView: state.room.modalView,
-        roomStatus: state.room.roomStatus
+        roomId: state.lobby.roomId,
+        username: state.lobby.username,
+        modalView: state.lobby.modalView,
+        roomStatus: state.lobby.roomStatus
     }),
     dispatch => {
         return {

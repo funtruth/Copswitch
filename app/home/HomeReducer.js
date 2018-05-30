@@ -1,6 +1,6 @@
 import { AsyncStorage } from 'react-native'
 import { NavigationActions } from 'react-navigation'
-import { joinRoom } from '../room/RoomReducer'
+import { joinRoom } from '../room/LobbyReducer'
 
 import firebase from '../firebase/FirebaseController'
 import randomize from 'randomatic'

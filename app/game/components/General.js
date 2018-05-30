@@ -52,6 +52,6 @@ const styles = {
 
 export default connect(
     state => ({
-        news: state.room.news
+        news: state.game.news
     })
 )(General)

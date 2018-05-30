@@ -43,6 +43,6 @@ const styles = {
 
 export default connect(
     state => ({
-        activityLog: state.room.activityLog
+        activityLog: state.game.activityLog
     })
 )(LobbyActivityLogView)

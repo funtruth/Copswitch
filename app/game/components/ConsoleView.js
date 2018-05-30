@@ -82,9 +82,9 @@ const styles = {
 
 export default connect(
     state => ({
-        phase: state.room.phase,
-        dayNum: state.room.dayNum,
-        place: state.room.place
+        phase: state.game.phase,
+        dayNum: state.game.dayNum,
+        place: state.game.place
     })
 )(ConsoleView)
 

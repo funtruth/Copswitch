@@ -30,6 +30,6 @@ const styles = {
 
 export default connect(
     state => ({
-        playerList: state.room.playerList
+        playerList: state.game.playerList
     })
 )(PlayerList)
