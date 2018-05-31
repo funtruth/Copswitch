@@ -10,4 +10,4 @@ export {
     Nomination,
     PlayerListView,
     Private
-}
+};

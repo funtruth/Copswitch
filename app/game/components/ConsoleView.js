@@ -3,7 +3,8 @@ import {
     View, 
     Text, 
     Animated,
-    TouchableOpacity
+    TouchableOpacity,
+    Dimensions
 } from 'react-native';
 import { connect } from 'react-redux'
 import { Phases } from '../../misc/phases.js';
@@ -13,6 +14,8 @@ import playerModule from '../mods/playerModule';
 import ownerModule from '../mods/ownerModule';
 import Styler from '../../common/Styler.js';
 import Separator from '../../components/Separator.js';
+
+const { height, width } = Dimensions.get('window')
 
 class ConsoleView extends Component {
         
@@ -32,7 +35,8 @@ class ConsoleView extends Component {
         const { phase, dayNum } = this.props
         return ( 
             <View style = {{
-                flex: 1,
+                height,
+                width,
                 justifyContent: 'center',
                 alignItems: 'center'
             }}>

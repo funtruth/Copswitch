@@ -1,32 +1,20 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import {
     View,
-    Image,
     AsyncStorage,
-    Text,
-    FlatList,
     Animated,
-    Dimensions,
-    TouchableOpacity
-}   from 'react-native';
+    ScrollView
+}   from 'react-native'
 import { connect } from 'react-redux'
 import { pushNewListener, newRoomInfo } from './GameReducer'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 
-import colors from '../misc/colors.js';
-
-import Modal from '../components/Modal';
-import { Button } from '../components/Button.js';
-import { Rolecard } from '../components/Rolecard.js';
 import { ConsoleView, General, Nomination, PlayerListView, Private } from './components'
 
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
-import firebaseService from '../firebase/firebaseService';
-import playerModule from './mods/playerModule';
-import ownerModule from './mods/ownerModule';
-
-const { height, width } = Dimensions.get('window')
-const icon = 0.12 * width
+import NavigationTool from '../navigation/NavigationTool'
+import firebaseService from '../firebase/firebaseService'
+import playerModule from './mods/playerModule'
+import ownerModule from './mods/ownerModule'
 
 class GameScreen extends Component {
 
@@ -61,35 +49,22 @@ class GameScreen extends Component {
         playerModule.wipeGame()
         ownerModule.gameOver()
         
-        this.props.screenProps.navigate('Home')
+        NavigationTool.navigate('Home')
     }
 
     render() {
         return (
             <View style = {{flex:1}}>
-                <PlayerListView />
+                <ScrollView>
+                    <ScrollView horizontal>
+                        <ConsoleView />
+                        <ConsoleView />
+                    </ScrollView>
+                    
+                    <PlayerListView />
+                </ScrollView>
             </View>
         )
-    }
-}
-
-const styles = {
-    player: {
-        fontSize: 16,
-        fontFamily: 'FredokaOne-Regular',
-        color: colors.shadow,
-        margin:5,
-    },
-    plainfont: {
-        color: colors.font,
-        margin:5,
-        fontFamily: 'FredokaOne-Regular',
-    },
-    cancelButton: {
-        fontSize: 16,
-        fontFamily: 'FredokaOne-Regular',
-        color: colors.shadow,
-        margin:5,
     }
 }
 

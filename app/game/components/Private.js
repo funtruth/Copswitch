@@ -10,16 +10,6 @@ import playerModule from '../mods/playerModule.js';
 
 class Private extends Component {
     
-    constructor(props) {
-        super(props);
-    }
-
-    debug(){
-
-        playerModule.turnOffListeners()
-
-    }
-
     render() {
     
         return (

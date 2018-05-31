@@ -8,7 +8,8 @@ class Separator extends Component {
                 height:2,
                 backgroundColor:'white',
                 opacity:0.2,
-                width: '50%'
+                width: '50%',
+                alignSelf: 'center'
             }}/>    
         )
     }
