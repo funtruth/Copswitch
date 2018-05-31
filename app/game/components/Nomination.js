@@ -7,7 +7,6 @@ import {
 } from 'react-native';
 
 import { Button } from '../../components/Button';
-import playerModule from '../mods/playerModule';
 import firebaseService from '../../firebase/firebaseService';
 import ownerModule from '../mods/ownerModule';
 
@@ -41,9 +40,7 @@ class Nomination extends Component {
     }
 
     buttonPress(choice) {
-
-        playerModule.selectChoice(choice)
-
+        
     }
 
     render() {

@@ -7,12 +7,13 @@ import {
     Dimensions
 } from 'react-native'
 import { connect } from 'react-redux'
+import { gameChoice } from '../GameReducer'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import Separator from '../../components/Separator'
 import Styler from '../../common/Styler'
 
-import playerModule from '../mods/playerModule'
+import firebaseService from '../../firebase/firebaseService';
 
 const { height, width } = Dimensions.get('window')
 
@@ -46,8 +47,8 @@ class PlayerListView extends Component {
     }
 
     _onPress(item){
-        playerModule.notification('You have selected ' + item.name + '.')
-        playerModule.selectChoice(item.key)
+        //TODO algorithm that takes my roleid and target to see if valid ... THEN continue
+        this.props.gameChoice(item.key)
     }
     
     render() {
@@ -89,6 +90,12 @@ const styles = {
 
 export default connect(
     state => ({
+        roleid: state.game.roleid,
         playerList: state.game.playerList
-    })
+    }),
+    dispatch => {
+        return {
+            gameChoice: (choice) => dispatch(gameChoice(choice))
+        }
+    }
 )(PlayerListView)

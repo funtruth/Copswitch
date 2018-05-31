@@ -8,7 +8,6 @@ import { connect } from 'react-redux'
 
 import colors from '../../misc/colors.js'
 import { Message } from '../../parents/Message.js'
-import playerModule from '../mods/playerModule.js'
 import firebaseService from '../../firebase/firebaseService'
 
 class General extends Component {

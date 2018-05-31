@@ -1,6 +1,5 @@
 import firebaseService from '../firebase/firebaseService'
 import ownerModule from '../game/mods/ownerModule'
-import playerModule from '../game/mods/playerModule'
 
 const initialState = {
     roomId: null,
@@ -72,13 +71,12 @@ export function newLobbyInfo(snap, listener){
     return (dispatch) => {
         switch(listener){
             case 'owner':
-                if(snap.val() === firebaseService.getUid()){
-                    ownerModule.ownerMode(true)
-                    dispatch({
-                        type: OWNER_LISTENER,
-                        payload: snap.val() === firebaseService.getUid()
-                    })
-                }
+                let amIOwner = snap.val() === firebaseService.getUid()
+                ownerModule.ownerMode(amIOwner)
+                dispatch({
+                    type: OWNER_LISTENER,
+                    payload: amIOwner
+                })
                 break
             case 'name':
                 dispatch({

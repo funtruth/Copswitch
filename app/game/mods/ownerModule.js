@@ -52,17 +52,13 @@ class ownerModule{
 
     wipeGame(){
 
-
-
     }
 
     ownerMode(mode){
-
         this.owner = mode
 
         if(mode) this.turnOnListeners()
         else this.turnOffListeners()
-
     }
 
     turnOnListeners() {
@@ -74,13 +70,9 @@ class ownerModule{
     }
 
     turnOffListeners() {
-
         for(var i=0; i<this.listeners.length; i++){
-            if(this.listeners[i]) {
-                this.listeners[i].off()
-            }
+            this.listeners[i].off()
         }
-
     }
 
     passCounterInfo(phase, counter){
@@ -91,36 +83,22 @@ class ownerModule{
     }
 
     passPlayerList(list){
-
         this.playerList = list
-
         var alive = 0;
 
         for(i=0;i<this.playerList.length;i++){
-
             this.playerList[i].key = i;
 
             if(!this.playerList[i].dead){
                 alive++;
             }
-
         }
-
         this.playerNum = alive
         this.triggerNum = ((alive - alive%2)/2) + 1
-
-    }
-
-    passNominate(nominate){
-
-        this.nominate = nominate
-
     }
 
     _changePhase(){
-
         this.roomRef.child('ready').remove()
-
     }
 
     _resetDayStatuses() {
@@ -136,9 +114,7 @@ class ownerModule{
     }
 
     _globalMsg(message){
-
         this.roomRef.child('log').push(message)
-
     }
 
     loadedListener(){

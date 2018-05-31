@@ -13,7 +13,6 @@ import { ConsoleView, General, Nomination, PlayerListView, Private } from './com
 
 import NavigationTool from '../navigation/NavigationTool'
 import firebaseService from '../firebase/firebaseService'
-import playerModule from './mods/playerModule'
 import ownerModule from './mods/ownerModule'
 
 class GameScreen extends Component {
@@ -29,6 +28,7 @@ class GameScreen extends Component {
         this.GameListenerOn('nomination','nomination','value')
         this.GameListenerOn('counter','counter','value')
         this.GameListenerOn('myReady',`ready/${this.props.place}`,'value')
+        this.GameListenerOn('myInfo',`list/${this.props.place}`,'value')
         this.GameListenerOn('list','list','value')
         this.GameListenerOn('news','news','child_added')
     }
@@ -46,7 +46,6 @@ class GameScreen extends Component {
         AsyncStorage.removeItem('ROOM-KEY');
         AsyncStorage.removeItem('GAME-KEY');
 
-        playerModule.wipeGame()
         ownerModule.gameOver()
         
         NavigationTool.navigate('Home')
@@ -60,7 +59,7 @@ class GameScreen extends Component {
                         <ConsoleView />
                         <ConsoleView />
                     </ScrollView>
-                    
+
                     <PlayerListView />
                 </ScrollView>
             </View>

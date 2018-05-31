@@ -1,6 +1,5 @@
 import firebaseService from '../firebase/firebaseService'
 import ownerModule from './mods/ownerModule'
-import playerModule from './mods/playerModule'
 
 const initialState = {
     activeListeners: [],
@@ -10,6 +9,8 @@ const initialState = {
     phase: 0,
     dayNum: null,
     myReady: null,
+    roleid: null,
+    alive: null,
     playerList: [],
     news: []
 }
@@ -21,8 +22,9 @@ const CLEAR_LISTENERS = 'game/clear_listeners'
 const NOMINATION_LISTENER = 'game/nomination_listener'
 const COUNTER_LISTENER = 'game/counter_listener'
 const MY_READY_LISTENER = 'game/my_ready_listener'
+const MY_INFO_LISTENER = 'game/my_info_listener'
 const PLAYER_LIST_LISTENER = 'game/player_list_listener'
-const NEWS_LISTENER = 'game/log_listener'
+const NEWS_LISTENER = 'game/news_listener'
 
 export function pushNewListener(listenerRef){
     return (dispatch) => {
@@ -67,21 +69,39 @@ export function newRoomInfo(snap, listener){
                     payload: snap.val()
                 })
                 break
+            case 'myInfo':
+            alert(snap)
+                dispatch({
+                    type: MY_INFO_LISTENER,
+                    payload: snap.val()
+                })
+                break
             case 'list':
-                playerModule.passPlayerList(snap.val())
+                //TODO player list is not keyed in redux right now
                 ownerModule.passPlayerList(snap.val())
                 dispatch({
                     type: PLAYER_LIST_LISTENER,
                     payload: snap.val()
                 })
                 break
-            case 'log':
+            case 'news':
                 dispatch({
                     type: NEWS_LISTENER,
                     payload: snap
                 })
             default:
         }
+    }
+}
+
+export function gameChoice(choice) {
+    return (dispatch, getState) => {
+        const { place } = getState().lobby
+        let myChoiceRef = firebaseService.fetchRoomRef(`choice/${place}`)
+        let myReadyRef = firebaseService.fetchRoomRef(`ready/${place}`)
+
+        myChoiceRef.set(choice)
+            .then(()=>{myReadyRef.set(choice !== null)})
     }
 }
 
@@ -98,6 +118,8 @@ export default (state = initialState, action) => {
             return { ...state, counter: action.payload, phase: action.payload%2, dayNum: (action.payload-action.payload%2)/2+1 }
         case MY_READY_LISTENER:
             return { ...state, myReady: action.payload }
+        case MY_INFO_LISTENER:
+            return { ...state, roleid: action.payload.roleid, alive: !action.payload.dead }
         case PLAYER_LIST_LISTENER:
             return { ...state, playerList: action.payload }
         case NEWS_LISTENER:

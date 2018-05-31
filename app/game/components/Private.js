@@ -6,7 +6,6 @@ import {
 
 import { Button } from '../../components/Button.js';
 import firebaseService from '../../firebase/firebaseService.js';
-import playerModule from '../mods/playerModule.js';
 
 class Private extends Component {
     

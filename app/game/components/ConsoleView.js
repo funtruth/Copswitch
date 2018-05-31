@@ -7,10 +7,10 @@ import {
     Dimensions
 } from 'react-native';
 import { connect } from 'react-redux'
+import { gameChoice } from '../GameReducer'
 import { Phases } from '../../misc/phases.js';
 
 import firebaseService from '../../firebase/firebaseService';
-import playerModule from '../mods/playerModule';
 import ownerModule from '../mods/ownerModule';
 import Styler from '../../common/Styler.js';
 import Separator from '../../components/Separator.js';
@@ -24,11 +24,11 @@ class ConsoleView extends Component {
     }
     
     buttonTwoPress = () => {
-        playerModule.selectChoice(-1)
+        this.props.gameChoice(-1)
     }
 
     resetOptionPress() {
-        playerModule.selectChoice(null)
+        this.props.gameChoice(null)
     }
 
     render() {
@@ -75,6 +75,11 @@ export default connect(
     state => ({
         phase: state.game.phase,
         dayNum: state.game.dayNum
-    })
+    }),
+    dispatch => {
+        return {
+            gameChoice: (choice) => dispatch(gameChoice(choice))
+        }
+    }
 )(ConsoleView)
 
