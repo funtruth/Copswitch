@@ -1,3 +1,4 @@
+import { AsyncStorage } from 'react-native'
 import firebaseService from '../firebase/firebaseService'
 import ownerModule from '../game/mods/ownerModule'
 
@@ -5,6 +6,7 @@ const initialState = {
     roomId: null,
     modalView: null,
     activeListeners: [],
+    refreshed: false,
 
     username: null,
     owner: false,
@@ -12,11 +14,14 @@ const initialState = {
     lobbyList: [],
     placeList: [],
     place: null,
-    activityLog: [],
+    log: [],
 }
 
 const JOIN_ROOM = 'lobby/join_room'
 const CHANGE_MODAL = 'lobby/change_modal'
+const REFRESH_ROOM_ID = 'lobby/refresh_room_id'
+const REFRESH_REDUCER = 'lobby/refresh_reducer'
+
 const PUSH_NEW_LISTENER = 'lobby/push_new_listener'
 const CLEAR_LISTENERS = 'lobby/clear_listeners'
 
@@ -27,6 +32,8 @@ const PLACE_LISTENER = 'lobby/place_listener'
 const SET_MY_PLACE = 'lobby/set_my_place'
 const ACTIVITY_LOG_LISTENER = 'lobby/activity_log_listener'
 const ROOM_STATUS_LISTENER = 'lobby/status_listener'
+
+const RESET = 'lobby/reset'
 
 export function joinRoom(roomId){
     return (dispatch) => {
@@ -46,28 +53,46 @@ export function changeModalView(modalView){
     }
 }
 
-export function pushNewListener(listenerRef){
+export function refreshLobbyReducer() {
     return (dispatch) => {
+        AsyncStorage.getItem('LOBBY-KEY',(error,result)=>{
+            dispatch({
+                type: REFRESH_ROOM_ID,
+                payload: result
+            })
+            dispatch({
+                type: REFRESH_REDUCER
+            })
+        })
+    }
+}
+
+export function turnOnLobbyListeners() {
+    return (dispatch) => {
+        dispatch(lobbyListenerOn('owner','owner','value'))
+        dispatch(lobbyListenerOn('name',`lobby/${firebaseService.getUid()}`,'value'))
+        dispatch(lobbyListenerOn('lobby','lobby','value'))
+        dispatch(lobbyListenerOn('place','place','value'))
+        dispatch(lobbyListenerOn('log','log','child_added'))
+        dispatch(lobbyListenerOn('roles','roles','value'))
+        dispatch(lobbyListenerOn('status','status','value'))
+    }
+}
+
+function lobbyListenerOn(listener,listenerPath,listenerType){
+    return (dispatch) => {
+        let listenerRef = firebaseService.fetchRoomRef(listenerPath)
         dispatch({
             type: PUSH_NEW_LISTENER,
             payload: listenerRef
         })
-    }
-}
-
-export function clearListeners(){
-    return (dispatch, getState) => {
-        const { activeListeners } = getState().room
-        for(var i=0; i<activeListeners.length; i++){
-            activeListeners[i].off()
-        }
-        dispatch({
-            type: CLEAR_LISTENERS
+        listenerRef.on(listenerType, snap => {
+            dispatch(newLobbyInfo(snap, listener))
         })
     }
 }
 
-export function newLobbyInfo(snap, listener){
+function newLobbyInfo(snap, listener){
     return (dispatch) => {
         switch(listener){
             case 'owner':
@@ -121,6 +146,18 @@ export function newLobbyInfo(snap, listener){
     }
 }
 
+export function clearListeners(){
+    return (dispatch, getState) => {
+        const { activeListeners } = getState().lobby
+        for(var i=0; i<activeListeners.length; i++){
+            activeListeners[i].off()
+        }
+        dispatch({
+            type: CLEAR_LISTENERS
+        })
+    }
+}
+
 export default (state = initialState, action) => {
 
     switch(action.type){
@@ -128,6 +165,10 @@ export default (state = initialState, action) => {
             return { ...state, roomId: action.payload }
         case CHANGE_MODAL:
             return { ...state, modalView: action.payload }
+        case REFRESH_ROOM_ID:
+            return { ...state, roomId: action.payload }
+        case REFRESH_REDUCER:
+            return { ...state, refreshed: true }
         case PUSH_NEW_LISTENER:
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:
@@ -140,10 +181,14 @@ export default (state = initialState, action) => {
             return { ...state, lobbyList: action.payload }
         case PLACE_LISTENER:
             return { ...state, placeList: action.payload }
+        case ACTIVITY_LOG_LISTENER:
+            return { ...state, log: [{message: action.payload.val(), key: action.payload.key}, ...state.log] }
         case SET_MY_PLACE:
             return { ...state, place: action.payload }
         case ROOM_STATUS_LISTENER:
             return { ...state, roomStatus: action.payload }
+        case RESET: 
+            return initialState
         default:
             return state;
     }

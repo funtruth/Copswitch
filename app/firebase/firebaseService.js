@@ -40,30 +40,16 @@ class FirebaseService{
         return this.roomId
     }
 
-    //Loading
-    findUser() {
-        console.log('current user', firebase.auth().currentUser)
-        if(!firebase.auth().currentUser){
-            firebase.auth().signInAnonymously()
-            console.log('New user created.')
-        }
-    }
-
+    //TODO test how well this works 
     initUser(){
         firebase.auth().onAuthStateChanged( user =>{
-            if(user) this.uid = user.uid
-            console.log('User is ' + user.uid)
+            if(user){
+                this.uid = user.uid
+            } else {
+                firebase.auth().signInAnonymously()
+                    .then(user => alert(user.uid))
+            }
         })
-    }
-
-    initRefs(roomId){
-        if(!roomId) return
-
-        this.roomId = roomId
-        this.roomRef = firebase.database().ref(`rooms/${roomId}`)
-
-        this.myInfoRef = firebase.database().ref(`rooms/${roomId}/lobby/${this.uid}`)
-        this.placeRef = firebase.database().ref(`rooms/${roomId}/place`)
     }
 
     wipeRefs(){
@@ -74,13 +60,19 @@ class FirebaseService{
         this.myInfoRef = null
         this.placeRef = null
 
-        AsyncStorage.removeItem('ROOM-KEY')
+        AsyncStorage.removeItem('LOBBY-KEY')
         AsyncStorage.removeItem('GAME-KEY')
 
     }
 
     joinRoom(roomId){
-        this.addPushKey()
+        if(!roomId) return
+
+        this.roomId = roomId
+        this.roomRef = firebase.database().ref(`rooms/${roomId}`)
+
+        this.myInfoRef = firebase.database().ref(`rooms/${roomId}/lobby/${this.uid}`)
+        this.placeRef = firebase.database().ref(`rooms/${roomId}/place`)
 
         this.myInfoRef.update({
             joined:true,
@@ -192,9 +184,7 @@ class FirebaseService{
                 this.roomRef.child('ready').set(readyshot) 
             })
             .then(()=>{ 
-                this.roomRef.update({
-                    counter: 3
-                }) 
+                this.roomRef.child('counter').set(3)
             })
             .then(()=>{ 
                 this.roomRef.child('status').set('Starting') 

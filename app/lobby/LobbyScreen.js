@@ -21,30 +21,6 @@ import { Alert } from '../components/Alert.js';
 const { height, width } = Dimensions.get('window')
 
 class LobbyScreen extends Component {
-    listening = false
-
-    componentWillMount(){
-        if(!this.listening) this.turnOnLobbyListeners()
-    }
-
-    turnOnLobbyListeners(){
-        this.listening = true
-        this.lobbyListenerOn('owner','owner','value')
-        this.lobbyListenerOn('name',`lobby/${firebaseService.getUid()}`,'value')
-        this.lobbyListenerOn('lobby','lobby','value')
-        this.lobbyListenerOn('place','place','value')
-        this.lobbyListenerOn('log','log','child_added')
-        this.lobbyListenerOn('roles','roles','value')
-        this.lobbyListenerOn('status','status','value')
-    }
-
-    lobbyListenerOn(listener,listenerPath,listenerType){
-        let listenerRef = firebaseService.fetchRoomRef(listenerPath)
-        this.props.pushNewListener(listenerRef)
-        listenerRef.on(listenerType, snap => {
-            this.props.newLobbyInfo(snap, listener)
-        })
-    }
     
     componentWillReceiveProps(newProps){
         if(newProps.roomStatus === 'Starting'){

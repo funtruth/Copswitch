@@ -1,6 +1,6 @@
 import { AsyncStorage } from 'react-native'
 import { NavigationActions } from 'react-navigation'
-import { joinRoom } from '../lobby/LobbyReducer'
+import { joinRoom, turnOnLobbyListeners } from '../lobby/LobbyReducer'
 
 import firebase from '../firebase/FirebaseController'
 import randomize from 'randomatic'
@@ -67,12 +67,11 @@ function checkRoom(roomId){
 
         //Set AsyncStorage
         if (valid) {
-            AsyncStorage.setItem('ROOM-KEY', roomId)
+            AsyncStorage.setItem('LOBBY-KEY', roomId)
             .then(()=>{
-                //Initialize references in firebaseService
-                firebaseService.initRefs(roomId)
-                //enter the room - set PLACE
+                //Initialize references in firebaseService AND enter the room to set PLACE
                 firebaseService.joinRoom(roomId)
+                firebaseService.addPushKey()
                 //Move to next screen
                 dispatch(moveToLobby(roomId))
             })
@@ -113,13 +112,12 @@ export function createRoom(){
         })
         //Set AsyncStorage
         .then(()=>{
-            AsyncStorage.setItem('ROOM-KEY', roomId)
+            AsyncStorage.setItem('LOBBY-KEY', roomId)
         })
-
-        //initialize references in firebaseService
-        firebaseService.initRefs(roomId)
-        //enter the room - set PLACE
+        
+        //Initialize references in firebaseService AND enter the room to set PLACE
         firebaseService.joinRoom(roomId)
+        firebaseService.addPushKey()
         //Move to next screen
         dispatch(moveToLobby(roomId))
     }
@@ -128,11 +126,12 @@ export function createRoom(){
 //Navigates to Lobby and resets state
 function moveToLobby(roomId){
     return (dispatch) => {
+        dispatch(joinRoom(roomId))
+        dispatch(turnOnLobbyListeners())
         NavigationTool.navigate("Lobby")
         dispatch({
             type: RESET
         })
-        dispatch(joinRoom(roomId))
     }
 }
 

@@ -3,14 +3,12 @@ import {
     View, 
     Text,
 } from 'react-native';
+import { connect } from 'react-redux'
 
 import { Button } from '../../components/Button.js';
-import firebaseService from '../../firebase/firebaseService.js';
 
 class Private extends Component {
-    
     render() {
-    
         return (
             <View style = {{flex:0.25, justifyContent:'center'}}>
                 
@@ -18,7 +16,7 @@ class Private extends Component {
                     horizontal = {0.4}
                     margin = {10}
                     backgroundColor = {colors.dead}
-                    onPress = {()=>this.debug()}
+                    onPress = {() => {}}
                 ><Text style = {styles.choiceButton}>Private</Text>
                 </Button>
                 
@@ -37,4 +35,8 @@ const styles = {
     },
 }
 
-export default Private
+export default connect(
+    state => ({
+        roleid: state.game.roleid
+    })
+)(Private)

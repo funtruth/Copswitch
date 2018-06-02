@@ -21,7 +21,7 @@ class LobbyActivityLogView extends Component {
     render() {
 
         return <FlatList
-            data={this.props.activityLog}
+            data={this.props.log}
             renderItem={({item}) => this._renderItem(item)}
             initialNumToRender={15}
             keyExtractor={item => item.key}
@@ -43,6 +43,6 @@ const styles = {
 
 export default connect(
     state => ({
-        activityLog: state.game.activityLog
+        log: state.lobby.log
     })
 )(LobbyActivityLogView)

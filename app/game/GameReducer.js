@@ -1,8 +1,11 @@
+import { AsyncStorage } from 'react-native'
 import firebaseService from '../firebase/firebaseService'
 import ownerModule from './mods/ownerModule'
 
 const initialState = {
+    roomId: null,
     activeListeners: [],
+    refreshed: false,
 
     nomination: null,
     counter: null,
@@ -15,6 +18,9 @@ const initialState = {
     news: []
 }
 
+const REFRESH_ROOM_ID = 'game/refresh_room_id'
+const REFRESH_REDUCER = 'game/refresh_reducer'
+
 const PUSH_NEW_LISTENER = 'game/push_new_listener'
 const CLEAR_LISTENERS = 'game/clear_listeners'
 
@@ -26,11 +32,41 @@ const MY_INFO_LISTENER = 'game/my_info_listener'
 const PLAYER_LIST_LISTENER = 'game/player_list_listener'
 const NEWS_LISTENER = 'game/news_listener'
 
-export function pushNewListener(listenerRef){
+export function refreshGameReducer() {
     return (dispatch) => {
+        AsyncStorage.getItem('GAME-KEY',(error,result)=>{
+            dispatch({
+                type: REFRESH_ROOM_ID,
+                payload: result
+            })
+            dispatch({
+                type: REFRESH_REDUCER
+            })
+        })
+    }
+}
+
+export function turnOnGameListeners(){
+    return (dispatch, getState) => {
+        const { place } = getState().lobby
+        dispatch(gameListenerOn('nomination','nomination','value'))
+        dispatch(gameListenerOn('counter','counter','value'))
+        dispatch(gameListenerOn('myReady',`ready/${place}`,'value'))
+        dispatch(gameListenerOn('myInfo',`list/${place}`,'value'))
+        dispatch(gameListenerOn('list','list','value'))
+        dispatch(gameListenerOn('news','news','child_added'))
+    }
+}
+
+function gameListenerOn(listener,listenerPath,listenerType){
+    return (dispatch) => {
+        let listenerRef = firebaseService.fetchRoomRef(listenerPath)
         dispatch({
             type: PUSH_NEW_LISTENER,
             payload: listenerRef
+        })
+        listenerRef.on(listenerType, snap => {
+            dispatch(newRoomInfo(snap, listener))
         })
     }
 }
@@ -47,7 +83,7 @@ export function clearListeners(){
     }
 }
 
-export function newRoomInfo(snap, listener){
+function newRoomInfo(snap, listener){
     return (dispatch) => {
         switch(listener){
             case 'nomination':
@@ -70,7 +106,6 @@ export function newRoomInfo(snap, listener){
                 })
                 break
             case 'myInfo':
-            alert(snap)
                 dispatch({
                     type: MY_INFO_LISTENER,
                     payload: snap.val()
@@ -108,6 +143,10 @@ export function gameChoice(choice) {
 export default (state = initialState, action) => {
 
     switch(action.type){
+        case REFRESH_ROOM_ID:
+            return { ...state, roomId: action.payload }
+        case REFRESH_REDUCER:
+            return { ...state, refreshed: true }
         case PUSH_NEW_LISTENER:
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:

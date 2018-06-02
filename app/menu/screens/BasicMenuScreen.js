@@ -17,7 +17,7 @@ class BasicMenuScreen extends Component {
 
     //TODO: Create button in bottom left
     _deleteRoom() {
-        AsyncStorage.removeItem('ROOM-KEY');
+        AsyncStorage.removeItem('LOBBY-KEY');
         AsyncStorage.removeItem('GAME-KEY');
         this.props.screenProps.navigate('Home')
     }
