@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 
-import Modal from '../common/Modal';
-
 import BasicMenu from './screens/BasicMenuScreen';
 import Roles from './screens/RoleScreen';
 import Menus from './screens/MenuScreen';
@@ -41,9 +39,7 @@ class ListNavigator extends Component {
     render() {
         return(
             <View style = {{flex:1}}>
-                <Modal visible = {true} onClose = {this.props.onClose}>
-                    <Menu />
-                </Modal>
+                <Menu />
             </View>
         )
     }

@@ -6,7 +6,6 @@ import HomeReducer from '../home/HomeReducer'
 import LobbyReducer from '../lobby/LobbyReducer'
 import GameReducer from '../game/GameReducer'
 
-
 const reducers = {
     appState: AppReducer,
     menu: MenuReducer,
