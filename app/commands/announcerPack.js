@@ -17,9 +17,11 @@ export const Defaults = {
 
     youStayedHome       : 'You stayed home last night.',
     _died               : ' was killed last night.',
+    _ressed             : ' was raised from the dead!',
     youVisitedTarget    : 'You visited your target last night',
-    //_killedByMafia      : ' was murdered by a member of the Mafia.',
 
+    stabbedByMafia      : ' was murdered by a member of the Mafia.',
+    stabbedYourTarget   : 'You stabbedd your target',
     _seenByWarden       : ' visited your target last night!',
     //_shotByHunter       : ' was shot by a Hunter.',
     shotBySoldier       : 'You were shot by the Soldier you visited!',

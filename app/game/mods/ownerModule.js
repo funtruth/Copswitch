@@ -221,6 +221,7 @@ class ownerModule{
                     actionModule.updateAlive()
 
                     actionModule.prepareNight()
+                    actionModule.shuffle()
                     actionModule.prepareRoles()
                     actionModule.doNight()
                     actionModule.postMortem()

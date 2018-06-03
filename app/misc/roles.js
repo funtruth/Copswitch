@@ -1,5 +1,4 @@
 export const Roles = {
-
     a : {
         index : 0,
         name : "Informant",
@@ -170,7 +169,7 @@ export const Roles = {
         index : 8,
         name : "Soldier",
         rules : "Choose to shoot anyone who visits you during the night.",
-        tag : "alert",
+        alert : true,
         type : 2,
     },
     J : {
