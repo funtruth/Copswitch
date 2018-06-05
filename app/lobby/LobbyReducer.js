@@ -1,6 +1,9 @@
 import { AsyncStorage } from 'react-native'
 import firebaseService from '../firebase/firebaseService'
 import ownerModule from '../game/mods/ownerModule'
+import NavigationTool from '../navigation/NavigationTool';
+
+const LOBBY_KEY = 'LOBBY-KEY'
 
 const initialState = {
     roomId: null,
@@ -46,6 +49,23 @@ export function joinRoom(roomId){
     }
 }
 
+export function leaveLobby(){
+    return (dispatch, getState) => {
+        const { owner, username } = getState().lobby
+
+        dispatch(clearListeners())
+        firebaseService.leaveLobby(username)
+        AsyncStorage.removeItem(LOBBY_KEY)
+
+        if(owner) firebaseService.deleteRoom()
+        NavigationTool.navigate("Home")
+
+        dispatch({
+            type: RESET
+        })
+    }
+}
+
 export function changeModalView(modalView){
     return (dispatch) => {
         dispatch({
@@ -57,7 +77,7 @@ export function changeModalView(modalView){
 
 export function refreshLobbyReducer() {
     return (dispatch) => {
-        AsyncStorage.getItem('LOBBY-KEY',(error,result)=>{
+        AsyncStorage.getItem(LOBBY_KEY,(error,result)=>{
             dispatch({
                 type: REFRESH_ROOM_ID,
                 payload: result

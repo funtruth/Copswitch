@@ -1,5 +1,4 @@
 import { AsyncStorage } from 'react-native'
-import { NavigationActions } from 'react-navigation'
 import { joinRoom, turnOnLobbyListeners } from '../lobby/LobbyReducer'
 
 import firebase from '../firebase/FirebaseController'

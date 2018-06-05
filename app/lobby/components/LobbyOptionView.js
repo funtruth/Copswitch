@@ -6,33 +6,14 @@ import {
     Dimensions,
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { clearListeners, changeModalView, startPregame } from '../LobbyReducer'
+import { leaveLobby, changeModalView, startPregame } from '../LobbyReducer'
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 import colors from '../../misc/colors.js';
-import firebaseService from '../../firebase/firebaseService.js';
-import NavigationTool from '../../navigation/NavigationTool.js';
 const { height, width } = Dimensions.get('window')
 
 class LobbyOptionView extends Component {
-
-    _exit = () => {
-        const { owner, username } = this.props
-
-        this.props.clearListeners()
-
-        if(owner) firebaseService.deleteRoom()
-        else firebaseService.leaveLobby(username)
-
-        NavigationTool.navigate('Home')        
-    }
-
-    _startGame = () => {
-        if(this.props.owner){
-            this.props.startPregame()
-        }
-    }
 
     _toggleMenu = () => {
         if(this.props.modalView){
@@ -43,13 +24,13 @@ class LobbyOptionView extends Component {
     }
 
     render(){
-        const { owner } = this.props
+        const { owner, leaveLobby, startPregame } = this.props
         return (
             <View style = { styles.container }>
         
                 <TouchableOpacity
                     style = {{alignItems:'center', flex:0.17}}
-                    onPress = {this._exit}>
+                    onPress = {leaveLobby}>
                     <FontAwesome name='close'
                         style={{color:colors.font, fontSize:25}}/>
                     <Text style = {styles.font}>Leave</Text>
@@ -57,7 +38,7 @@ class LobbyOptionView extends Component {
 
                 <TouchableOpacity
                     style = {{alignItems:'center', flex:0.20}}
-                    onPress = {this._startGame}
+                    onPress = {startPregame}
                     disabled = {!owner}
                 >
                     <FontAwesome name={owner?'check':'lock'}
@@ -99,12 +80,11 @@ const styles = {
 export default connect(
     state => ({
         modalView: state.lobby.modalView,
-        owner: state.lobby.owner,
-        username: state.lobby.username
+        owner: state.lobby.owner
     }),
     dispatch => {
         return {
-            clearListeners: () => dispatch(clearListeners()),
+            leaveLobby: () => dispatch(leaveLobby()),
             changeModalView: (modalView) => dispatch(changeModalView(modalView)),
             startPregame: () => dispatch(startPregame())
         }

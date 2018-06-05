@@ -47,7 +47,7 @@ export function startGame(){
             list: list,
             ready: ready,
             counter: 3,
-            status: 'Starting'//TODO pick a word lmao
+            status: 'Running'
         })
         
     }

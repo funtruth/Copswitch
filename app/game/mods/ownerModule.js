@@ -6,7 +6,6 @@ import actionModule from './actionModule';
 class ownerModule{
 
     constructor(){
-
         this.roomId = null
 
         this.owner = false
@@ -28,15 +27,13 @@ class ownerModule{
 
         this.playerList = []
         this.nominate = null
-
     }
 
     //TODO
     //Balance check - end game
 
-    async initGame(){
-
-        this.roomId = await firebaseService.getRoomId()
+    initOwnerRefs(){
+        this.roomId = firebaseService.getRoomId()
         if(!this.roomId) return
 
         this.roomRef = firebase.database().ref(`rooms/${this.roomId}`)
@@ -46,7 +43,6 @@ class ownerModule{
         this.listRef = firebase.database().ref(`rooms/${this.roomId}/list`)
         this.logRef = firebase.database().ref(`rooms/${this.roomId}/log`)
         this.eventsRef = firebase.database().ref(`rooms/${this.roomId}/events`)
-
     }
 
     wipeGame(){
@@ -61,11 +57,9 @@ class ownerModule{
     }
 
     turnOnListeners() {
-        
         this.loadedListener()
         this.choiceListener()
         this.voteListener()
-
     }
 
     turnOffListeners() {

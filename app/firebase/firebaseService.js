@@ -1,14 +1,10 @@
 import firebase from './FirebaseController'
-
 import { AsyncStorage } from 'react-native'
-
-import randomize from 'randomatic'
 import { Messages, Errors } from '../commands/strings'
 
 class FirebaseService{
 
     constructor(){
-
         this.uid = null
         this.pushKey = null //push key upon entering room
 
@@ -16,7 +12,6 @@ class FirebaseService{
         this.roomRef = null
         this.myInfoRef = null
         this.placeRef = null
-
     }
 
     //General
@@ -53,16 +48,13 @@ class FirebaseService{
     }
 
     wipeRefs(){
+        this.pushKey = null
 
         this.roomId = null
         this.roomRef = null
 
         this.myInfoRef = null
         this.placeRef = null
-
-        AsyncStorage.removeItem('LOBBY-KEY')
-        AsyncStorage.removeItem('GAME-KEY')
-
     }
 
     joinRoom(roomId){
@@ -85,6 +77,7 @@ class FirebaseService{
     }
 
     removePushKey(){
+        if(!this.pushKey) return
         this.placeRef.child(this.pushKey).remove()
     }
 
@@ -93,30 +86,15 @@ class FirebaseService{
     }
 
     leaveLobby(username){
-
         this.activityLog(username + Messages.LEAVE_ROOM)
 
         //If already left lobby, don't do anything
         if(!this.roomRef) return
-
+    
         this.myInfoRef.remove()
         this.removePushKey()
 
         this.wipeRefs()
-
-    }
-
-    deleteRoom() {
-
-        this.activityLog(Messages.DELETE_ROOM)
-
-        //If already left lobby, don't do anything
-        if(!this.roomRef) return
-
-        this.roomRef.remove()
-
-        this.wipeRefs()
-
     }
 
     updateUsername(newName){
