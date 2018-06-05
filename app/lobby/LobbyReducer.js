@@ -15,6 +15,7 @@ const initialState = {
     placeList: [],
     place: null,
     log: [],
+    roleList: []
 }
 
 const JOIN_ROOM = 'lobby/join_room'
@@ -31,6 +32,7 @@ const LOBBY_LISTENER = 'lobby/lobby_listener'
 const PLACE_LISTENER = 'lobby/place_listener'
 const SET_MY_PLACE = 'lobby/set_my_place'
 const ACTIVITY_LOG_LISTENER = 'lobby/activity_log_listener'
+const ROLE_LIST_LISTENER = 'lobby/role_list_listener'
 const ROOM_STATUS_LISTENER = 'lobby/status_listener'
 
 const RESET = 'lobby/reset'
@@ -135,6 +137,11 @@ function newLobbyInfo(snap, listener){
                 })
                 break
             case 'roles':
+                dispatch({
+                    type: ROLE_LIST_LISTENER,
+                    payload: snap
+                })
+                break
             case 'status':
                 dispatch({
                     type: ROOM_STATUS_LISTENER,
@@ -155,6 +162,24 @@ export function clearListeners(){
         dispatch({
             type: CLEAR_LISTENERS
         })
+    }
+}
+
+export function startPregame() {
+    return (dispatch, getState) => {
+        const { roleList, lobbyList } = getState().lobby
+        let roleListLen = 0
+
+        for(var i=0; i<roleList.length; i++){
+            roleListLen += roleList[i]
+        }
+
+        if(roleListLen === lobbyList.length){
+            let roomRef = firebaseService.fetchRoomRef('')
+            roomRef.set({
+                status: 'Starting'
+            })
+        }
     }
 }
 
@@ -185,6 +210,8 @@ export default (state = initialState, action) => {
             return { ...state, log: [{message: action.payload.val(), key: action.payload.key}, ...state.log] }
         case SET_MY_PLACE:
             return { ...state, place: action.payload }
+        case ROLE_LIST_LISTENER:
+            return { ...state, roleList: action.payload }
         case ROOM_STATUS_LISTENER:
             return { ...state, roomStatus: action.payload }
         case RESET: 

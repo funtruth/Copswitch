@@ -138,63 +138,6 @@ class FirebaseService{
         })
     }
 
-    async startGame(){
-
-        var randomstring = '';
-        const roomInfo = await this.getSnap(`rooms/${this.roomId}`)
-
-        roomInfo.child('roles').forEach((child)=>{
-            for(i=0;i<child.val();i++){
-                randomstring += randomize('?', 1, {chars: child.key})
-            }
-        })
-
-        if(roomInfo.child('lobby').numChildren() != randomstring.length){
-
-            this.activityLog('Improper set-up')
-        
-        } else {
-
-            //TODO algorithm
-            var rng = 0
-
-            var count = 0
-            var listshot = []
-            var readyshot = []
-
-            roomInfo.child('lobby').forEach((child)=>{
-
-                rng = Math.floor(Math.random() * randomstring.length);
-
-                listshot.push({
-                    name: child.val().name,
-                    uid: child.key,
-                    roleid: randomstring.charAt(rng)
-                })
-                readyshot.push(false)
-                count++
-
-                randomstring = randomstring.slice(0,rng) + randomstring.slice(rng+1)
-                
-            })
-
-            //Set-up more safely
-            this.roomRef.child('list').set(listshot)
-            .then(()=>{ 
-                this.roomRef.child('ready').set(readyshot) 
-            })
-            .then(()=>{ 
-                this.roomRef.child('counter').set(3)
-            })
-            .then(()=>{ 
-                this.roomRef.child('status').set('Starting') 
-            })
-
-
-        }
-
-    }
-
 }
 
 export default new FirebaseService();

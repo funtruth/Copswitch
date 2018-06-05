@@ -1,7 +1,6 @@
 import firebaseService from '../../firebase/firebaseService';
 import firebase from '../../firebase/FirebaseController';
 
-import randomize from 'randomatic';
 import actionModule from './actionModule';
 
 class ownerModule{

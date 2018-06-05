@@ -3,7 +3,7 @@ import { View } from 'react-native'
 
 import NavigationTool from '../navigation/NavigationTool'
 import firebaseService from '../firebase/firebaseService'
-import ownerModule from './mods/ownerModule'
+import ownerModule from '../game/mods/ownerModule'
 
 class PregameScreen extends Component {
 

@@ -6,7 +6,7 @@ import { StackNavigator } from "react-navigation";
 import Loading from '../appState/LoadingScreen';
 import Home from '../home/HomeScreen';
 import Lobby from '../lobby/LobbyScreen';
-import Pregame from "../game/PregameScreen";
+import Pregame from "../pregame/PregameScreen";
 import Game from "../game/GameScreen";
 
 const Router = StackNavigator(

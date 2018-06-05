@@ -6,7 +6,7 @@ import {
     Dimensions,
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { clearListeners, changeModalView } from '../LobbyReducer'
+import { clearListeners, changeModalView, startPregame } from '../LobbyReducer'
 
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
@@ -30,7 +30,7 @@ class LobbyOptionView extends Component {
 
     _startGame = () => {
         if(this.props.owner){
-            firebaseService.startGame()
+            this.props.startPregame()
         }
     }
 
@@ -105,7 +105,8 @@ export default connect(
     dispatch => {
         return {
             clearListeners: () => dispatch(clearListeners()),
-            changeModalView: (modalView) => dispatch(changeModalView(modalView))
+            changeModalView: (modalView) => dispatch(changeModalView(modalView)),
+            startPregame: () => dispatch(startPregame())
         }
     }
 )(LobbyOptionView)
