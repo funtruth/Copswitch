@@ -166,8 +166,8 @@ class actionModule{
 
     //Mainly used to measure attack / defense
     //A player can be killed by multiple sources, which will all be announced
-    activateTag(tagger, tagged, tags){
-        let tags = tags.split(s)
+    activateTag(tagger, tagged, unsplitTags){
+        let tags = unsplitTags.split(s)
         if(tags.length > 1){
             let newTags = tags.slice(1)
             this.players[tagged][tag] = newTags.join(s)

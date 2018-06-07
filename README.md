@@ -14,16 +14,14 @@ https://git-scm.com/download/win
 6. Follow Guide
 https://facebook.github.io/react-native/docs/getting-started.html
 
-7. Restart Powershell -> npm install
-
-8. Fonts will need to be linked again: 
+7. Fonts will need to be linked again: 
     run: react-native link
     delete: changes made in settings.gradle and MainActivity if there are duplicates
     refer to: https://medium.com/@danielskripnik/how-to-add-and-remove-custom-fonts-in-react-native-b2830084b0e4
 
-9. react-native run-android
+8. react-native run-android
 
-10. (ERROR) If 'adb' is unrecognized, add it in the PATH variable through Control Panel
+9. (ERROR) If 'adb' is unrecognized, add it in the PATH variable through Control Panel
 Control Panel -> System and Security -> System -> Change Settings -> Advanced -> ENV Variables
 Add to System Variables -> Path -> New
 C:\Users\YOUR_USER_NAME\AppData\Local\Android\Sdk\platform-tools
