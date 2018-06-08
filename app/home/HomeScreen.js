@@ -3,109 +3,128 @@ import {
     View,
     Text,
     TouchableOpacity,
-    TextInput,
-    Keyboard,
-    ActivityIndicator
+    Image,
+    Dimensions
 }   from 'react-native'
-import { connect } from 'react-redux'
-import { onChangeCode, createRoom } from './HomeReducer'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import colors from '../misc/colors.js'
+import LinearGradient from 'react-native-linear-gradient'
+
+import joinBook from '../../assets/images/JoinRoomBook.png'
+import createBook from '../../assets/images/CreateRoomBook.png'
+import leftArrow from '../../assets/images/ArrowLeft.png'
+
+const { height, width } = Dimensions.get('window')
+
+const T = (props) => <Text style={styles.optionStyle}>{props.children}</Text>
 
 class HomeScreen extends Component {
     render() {
+        const { container, wrapper, title,
+            imageContainer, arrowContainer, rightArrowContainer, optionContainer,
+            THE, COPSWITCH, CASES } = styles
         return( 
-            <View style = {{justifyContent:'center'}}>
-                <View style = {styles.container}>
-                    <View style = {{margin: 10}}>
-                        <View style = {styles.titleContainer}>
-                            <FontAwesome name = 'star' style = {styles.iconStyle} />
-                            <Text style = {styles.titleStyle}>Join</Text>
-                        </View>
-                        <TextInput
-                            ref = 'roomCode'
-                            keyboardType = 'numeric' 
-                            maxLength = {4}   
-                            placeholder = 'Enter your 4 digit code'
-                            placeholderTextColor = {colors.dead}
-                            style = {styles.textInput}
-                            value = { this.props.joinId }
-                            onChangeText = { this.props.onChangeCode }
-                        />
-                        <Text style = {styles.subtitleStyle}>{this.props.errorText}</Text>
-                    </View>
-                </View>
-
-                <TouchableOpacity 
-                    style = {styles.container} 
-                    onPress = { this.props.createRoom }
-                    activeOpacity = {0.9}
-                >
-                    <View style = {{ margin: 10 }}>
-                        <View style = {styles.titleContainer}>
-                            <FontAwesome name = 'edit' style = {styles.iconStyle} />
-                            <Text style = {styles.titleStyle}>Create</Text>
-                            <ActivityIndicator
-                                animating = { this.props.loading } 
-                                size = "large"
-                                color = { colors.shadow }
-                                style = { styles.indicator }
-                            />
-                        </View>
-                        <Text style = {styles.subtitleStyle}>Customize your own room!</Text>
+            <View style = {container}>
+                <TouchableOpacity style={wrapper}>
+                    <Image source={joinBook} style={imageContainer}/>
+                    <Image source={leftArrow} style={arrowContainer}/>
+                    <View style={[optionContainer,{transform:[{rotate:'7.36deg'}]}]}>
+                        <T>JOIN</T>
+                        <T>ROOM</T>
                     </View>
                 </TouchableOpacity>
+
+                <View style={{height: 0.1*height}}/>
+
+                <TouchableOpacity style={wrapper}>
+                    <View style={[optionContainer,{transform:[{rotate:'-3.38deg'}]}]}>
+                        <T>CREATE</T>
+                        <T>ROOM</T>
+                    </View>
+                    <Image source={leftArrow} style={rightArrowContainer}/>
+                    <Image source={createBook} style={imageContainer}/>
+                </TouchableOpacity>
+
+                <View style={title}>
+                    <Text style={THE}>THE</Text>
+                    <Text style={COPSWITCH}>COPSWITCH</Text>
+                    <Text style={CASES}>CASES</Text>
+                </View>
             </View>
         )
     }
 }
 
 const styles = {
-    container:{
-        marginTop:20,
-        marginLeft:20,
-        marginRight:20,
-        backgroundColor: colors.lightgrey,
-        borderRadius: 5
+    container: {
+        flex: 1,
+        backgroundColor: '#2E2620',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
-    iconStyle:{
-        fontSize: 25,
-        marginLeft:5
+    wrapper: {
+        flexDirection: 'row',
+        alignItems: 'center'
     },
-    titleContainer:{
-        flexDirection:'row',
-        alignItems:'center',
-        marginTop:5
+    title: {
+        position: 'absolute',
+        top: 0.32*height,
+        height: 0.3*height,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
-    titleStyle:{
+    imageContainer: {
+        width: 0.4*width,
+        height: 0.475*width,
+        resizeMode: 'contain'
+    },
+    arrowContainer: {
+        width: 0.25*width,
+        height: 0.1*width,
+        resizeMode: 'contain',
+        marginBottom: 0.1*width
+    },
+    rightArrowContainer: {
+        width: 0.25*width,
+        height: 0.1*width,
+        resizeMode: 'contain',
+        marginTop: 0.1*width,
+        transform: [
+            {rotate: '180deg'}
+        ]
+    },
+    optionContainer: {
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    optionStyle: {
+        fontSize:20,
+        fontFamily: 'BarlowCondensed-Medium',
+        color: '#C4C4C4'
+    },
+    THE: {
         fontSize:30,
-        fontFamily: 'LuckiestGuy-Regular',
-        marginLeft:10
+        fontFamily: 'BarlowCondensed-Medium',
+        color: '#A38455',
+        marginRight: 50
     },
-    subtitleStyle:{
-        fontSize:16,
-        marginLeft:5
+    COPSWITCH: {
+        fontSize:60,
+        fontFamily: 'BarlowCondensed-SemiBold',
+        color: '#A38455',
+        borderWidth: 2,
+        borderColor: '#A38455',
+        borderRadius: 3,
+        paddingLeft: 10,
+        paddingRight: 10,
+        elevation: 5
     },
-    textInput: {
-        fontSize: 16,
-        color: colors.shadow,
-        fontWeight:'bold'
-    },
-    indicator:{
-        marginLeft: 20
+    CASES: {
+        fontSize:35,
+        fontFamily: 'BarlowCondensed-Medium',
+        color: '#A38455',
+        marginRight: 50
     }
 }
 
-export default connect(
-    state => ({
-        joinId: state.home.joinId,
-        loading: state.home.loading,
-        errorText: state.home.errorText
-    }),
-    dispatch => {
-        return {
-            onChangeCode: (payload) => dispatch(onChangeCode(payload)),
-            createRoom: () => dispatch(createRoom()) 
-        } 
-    }
-)(HomeScreen)
+export default HomeScreen

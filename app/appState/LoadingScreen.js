@@ -6,6 +6,7 @@ import { connect } from 'react-redux'
 
 import { refreshLobbyReducer, joinRoom, turnOnLobbyListeners } from '../lobby/LobbyReducer'
 import { refreshGameReducer, turnOnGameListeners } from '../game/GameReducer'
+import { appStateLoaded } from '../appState/AppReducer'
 
 import firebaseService from '../firebase/firebaseService.js'
 import NavigationTool from '../navigation/NavigationTool'
@@ -29,9 +30,11 @@ class LoadingScreen extends Component {
     
     componentWillReceiveProps(newProps) {
         const { lobbyKey, lobbyRefreshed, place,
-            gameKey, gameRefreshed } = newProps
+            gameKey, gameRefreshed,
+            loaded } = newProps
         
-        if(!lobbyRefreshed || !gameRefreshed) return
+        //If data hasn't been fetched OR app already navigated
+        if(!lobbyRefreshed || !gameRefreshed || loaded) return
 
         if(lobbyKey) {
             firebaseService.joinRoom(lobbyKey)
@@ -46,6 +49,8 @@ class LoadingScreen extends Component {
             this.props.turnOnGameListeners()
         }
 
+        this.props.appStateLoaded()
+
         if(gameKey){
             NavigationTool.navigate('Pregame')
         } else if(lobbyKey) {
@@ -56,7 +61,7 @@ class LoadingScreen extends Component {
     }
 
     render() {
-        return <View/>
+        return <View style={{flex:1, backgroundColor:'purple'}}/>
     }
 }
 
@@ -66,7 +71,8 @@ export default connect(
        lobbyRefreshed: state.lobby.refreshed,
        place: state.lobby.place,
        gameKey: state.game.roomId,
-       gameRefreshed: state.game.refreshed
+       gameRefreshed: state.game.refreshed,
+       loaded: state.appState.loaded
     }),
     dispatch => {
         return {
@@ -74,7 +80,8 @@ export default connect(
             refreshGameReducer: () => dispatch(refreshGameReducer()),
             joinRoom: (roomId) => dispatch(joinRoom(roomId)),
             turnOnLobbyListeners: () => dispatch(turnOnLobbyListeners()),
-            turnOnGameListeners: () => dispatch(turnOnGameListeners())
+            turnOnGameListeners: () => dispatch(turnOnGameListeners()),
+            appStateLoaded: () => dispatch(appStateLoaded())
         }
     }
 )(LoadingScreen)

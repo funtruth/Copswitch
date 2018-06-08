@@ -1,11 +1,12 @@
 export default {
     default: {
-        fontFamily: 'Bonkers',
+        fontFamily: 'BarlowCondensed-Regular',
         color: 'white'
     },
     fading: {
-        fontFamily: 'Bonkers',
+        fontFamily: 'BarlowCondensed-Regular',
         color: 'white',
         opacity: 0.8
-    }
+    },
+    systemFont: 'BarlowCondensed-Regular'
 }
