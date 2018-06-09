@@ -3,73 +3,81 @@ import {
     View,
     Text,
     TouchableOpacity,
-    TextInput,
-    Keyboard,
-    ActivityIndicator
+    ActivityIndicator,
+    Dimensions
 }   from 'react-native'
+import { connect } from 'react-redux'
+import { createRoom } from '../HomeReducer'
 import LinearGradient from 'react-native-linear-gradient'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import colors from '../../misc/colors.js'
+
+import { Header, Button } from '../../components';
+import NavigationTool from '../../navigation/NavigationTool';
+
+const { height, width } = Dimensions.get('window')
 
 class CreateSlide extends Component {
+    _onIconPress = () => {
+        NavigationTool.back()
+    }
+
     render() {
+        const { createRoom } = this.props
+        const { container, headerText, subText, separator,
+            submitButton, submitText } = styles
+
         return(
-            <TouchableOpacity 
-                style = {styles.container} 
-                onPress = { this.props.createRoom }
-                activeOpacity = {0.9}
-            >
-                <View style = {{ margin: 10 }}>
-                    <View style = {styles.titleContainer}>
-                        <FontAwesome name = 'edit' style = {styles.iconStyle} />
-                        <Text style = {styles.titleStyle}>Create</Text>
-                        <ActivityIndicator
-                            animating = { this.props.loading } 
-                            size = "large"
-                            color = { colors.shadow }
-                            style = { styles.indicator }
-                        />
-                    </View>
-                    <Text style = {styles.subtitleStyle}>Customize your own room!</Text>
-                </View>
-            </TouchableOpacity>
+            <LinearGradient colors={['#3A2F26', '#2E2620']} style={container}>
+                <View style={{flex:0.2}}/>
+                <Header icon='chevron-left' onPress={this._onIconPress}>CREATE ROOM</Header>
+                <Text style={subText}>SELECT A GAME MODE:</Text>
+                <Button style={submitButton} onPress={createRoom}>
+                    <Text style={submitText}>DONE</Text>
+                </Button>
+            </LinearGradient>
         )
     }
 }
 
 const styles = {
     container:{
-        marginLeft:20,
-        marginRight:20,
-        backgroundColor: colors.lightgrey,
-        borderRadius: 5
+        flex: 1,
+        alignItems: 'center'
     },
-    iconStyle:{
+    headerText: {
+        fontFamily: 'BarlowCondensed-Medium',
+        fontSize: 35,
+        color: '#A6895D'
+    },
+    separator: {
+        width,
+        height: 2,
+        marginTop: 10,
+        marginBottom: 10,
+        backgroundColor: '#A6895D'
+    },
+    subText: {
+        fontFamily: 'BarlowCondensed-Regular',
+        fontSize: 20,
+        color: '#786343',
+        marginBottom: 20
+    },
+    submitButton: {
+        width: 0.45*width,
+        height: 0.15*width
+    },
+    submitText: {
+        fontFamily: 'BarlowCondensed-Medium',
         fontSize: 25,
-        marginLeft:5
-    },
-    titleContainer:{
-        flexDirection:'row',
-        alignItems:'center',
-        marginTop:5
-    },
-    titleStyle:{
-        fontSize:30,
-        fontFamily: 'BarlowCondensed-SemiBold',
-        marginLeft:10
-    },
-    subtitleStyle:{
-        fontSize:16,
-        marginLeft:5
-    },
-    textInput: {
-        fontSize: 16,
-        color: colors.shadow,
-        fontWeight:'bold'
-    },
-    indicator:{
-        marginLeft: 20
+        color: '#372C24',
+        margin: 10
     }
 }
 
-export default CreateSlide
+export default connect(
+    null,
+    dispatch => {
+        return {
+            createRoom: (roomId) => dispatch(createRoom(roomId))
+        }
+    }
+)(CreateSlide)

@@ -16,7 +16,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import CodeInput from '../components/JoinCodeInput'
 
 import colors from '../../misc/colors.js'
-import { Header } from '../../components';
+import { Header, Button } from '../../components';
 import NavigationTool from '../../navigation/NavigationTool';
 
 const { height, width } = Dimensions.get('window')
@@ -38,9 +38,9 @@ class JoinSlide extends Component {
                 <CodeInput
                     onFulfill={this.props.checkRoom}
                 />
-                <TouchableOpacity style={submitButton}>
+                <Button style={submitButton}>
                     <Text style={submitText}>SUBMIT</Text>
-                </TouchableOpacity>
+                </Button>
             </LinearGradient>
         )
     }
@@ -70,9 +70,7 @@ const styles = {
     },
     submitButton: {
         width: 0.45*width,
-        backgroundColor: '#A6895D',
-        borderRadius: 2,
-        alignItems: 'center'
+        height: 0.15*width
     },
     submitText: {
         fontFamily: 'BarlowCondensed-Medium',

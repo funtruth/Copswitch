@@ -11,7 +11,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Foundation from 'react-native-vector-icons/Foundation';
-import { Button } from './Button.js';
+import Button from './Button.js';
 import { Alert } from './Alert.js';
 import { Modal } from '../parents/Modal.js';
 import { Desc } from './Desc.js';

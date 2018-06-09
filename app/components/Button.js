@@ -1,86 +1,75 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
 
-export class Button extends React.Component {
-
-constructor(props) {
-    super(props);
-
-    this.state ={
-        disabled:false,
-        depth:6
+class Button extends React.Component {
+    state = {
+        pressed: false
     }
 
-    
-}
-      
-_handlePressIn(){
-    this.setState({
-        depth:3
-    })
-}
-
-_handlePressOut(){
-    this._buttonPress()
-}
-
-_buttonPress() {
-    this.setState({
-        disabled:true,
-        depth:6
-    })
-    this.timer = setTimeout(() => this.setState({disabled: false}), 50);
-}
-
-componentWillUnmount(){
-    if(this.timer){
-        clearTimeout(this.timer)
+    componentWillMount() {
+        let { height, width } = this.props.style
+        if (!height || !width) {
+            console.warn('Custom Button is missing a Dimension')
+        }
     }
-    
-}
+        
+    _handlePressIn = () => {
+        this.setState({
+            pressed: true
+        })
+    }
 
-render() {
+    _handlePressOut = () => {
+        this.setState({
+            pressed: false
+        })
+    }
 
-    return (
-        <View style = {[{
-            flex:this.props.flex,
-            opacity:this.props.opacity,
-            flexDirection:'row',
-            justifyContent:'center',
-            marginBottom:this.props.margin,
-            },this.props.containerStyle
-        ]}>
-            <View style = {[{
-                marginTop:6-this.state.depth,
-                flex:this.props.horizontal,
-                backgroundColor: this.props.backgroundColor || colors.dead,
-                borderRadius:15,
-            },
-                this.props.style
-            ]}>
-                <TouchableOpacity style = {[{
-                    justifyContent:'center',
-                    alignItems:'center',
-                    backgroundColor: this.props.color || colors.font, 
-                    borderRadius:15,
-                },
-                    this.props.touchStyle || this.props.style
-                ]}
-                    onPress = {this.props.onPress}
-                    onPressIn = {()=>{
-                        this._handlePressIn()
-                    }}
-                    onPressOut = {()=>{
-                        this._handlePressOut()
-                    }}
-                    activeOpacity = {1}
-                    disabled = {this.props.disabled || this.state.disabled}>
+    render() {
+        const { style } = this.props
+        const { height, width } = style
+        const { button } = styles
+        
+        let buttonStyle = [style, button]
+        let containerStyle = []
+
+        if (this.state.pressed) {
+            containerStyle.push({
+                height, width,
+                borderColor: '#000000',
+                borderRadius: 2,
+                borderWidth: 0,
+                borderTopWidth: 3,
+                borderLeftWidth: 3
+            })
+            buttonStyle.push({
+                height: height - 4,
+                width: width - 4
+            })
+        }
+
+        return (
+            <View style={containerStyle}>
+                <TouchableOpacity
+                    { ...this.props}
+                    style={buttonStyle}
+                    onPressIn={this._handlePressIn}
+                    onPressOut={this._handlePressOut}
+                    activeOpacity={0.8}
+                >
                     {this.props.children}
                 </TouchableOpacity>
-
-                <View style = {{height:this.state.depth}}/>
             </View>
-        </View>
-    )
+        )
+    }
 }
+
+const styles = {
+    button: {
+        backgroundColor: '#A6895D',
+        borderRadius: 2,
+        alignItems: 'center'
+    }
 }
+
+export default Button

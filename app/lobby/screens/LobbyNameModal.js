@@ -19,19 +19,7 @@ class LobbyNameModal extends Component {
         super(props);
 
         this.state = {
-            username: props.username,
-            modalValue: new Animated.Value(0)
-        }
-    }
-
-    componentDidMount() {
-        let { username } = this.props
-        if (!username) {
-            this._showModal(true)
-        } else {
-            this.refs.textInput.ref.setState({
-                name: username
-            })
+            modalValue: new Animated.Value(1)
         }
     }
 

@@ -32,7 +32,8 @@ class LobbyTextInput extends Component {
         })
     }
 
-    checkName = (name) => {
+    checkName = (event) => {
+        let name = event.nativeEvent.text.trim()
         this.invalidChars = []
 
         if(!name){
@@ -64,6 +65,11 @@ class LobbyTextInput extends Component {
             firebaseService.updateUsername(name)
         }
     }
+
+    _onSubmit = () => {
+        this.checkName(this.state.username)
+    }
+
     render() {
         const { wrapper, textInput, iconWrapper, icon } = styles
 
@@ -73,6 +79,7 @@ class LobbyTextInput extends Component {
                 <TextInput
                     ref = 'textInput'
                     keyboardType='default'
+                    autoFocus
                     autoCapitalize='words'
                     value = {this.state.username}
                     placeholder='ENTER NAME'
@@ -81,11 +88,9 @@ class LobbyTextInput extends Component {
                     maxLength={maxCharLen}
                     style={textInput}
                     onChangeText = {this.onChange}
-                    onSubmitEditing = { (event) => this.checkName(event.nativeEvent.text.trim()) }
+                    onSubmitEditing = {this.checkName}
                 />
-                <TouchableOpacity
-                    style={iconWrapper}
-                    onPress = {this.checkName(this.state.username)}>
+                <TouchableOpacity style={iconWrapper} onPress = {this._onSubmit}>
                     <FontAwesome name='arrow-right' style={icon}/>
                 </TouchableOpacity>
             </View>
