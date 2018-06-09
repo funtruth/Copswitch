@@ -7,32 +7,16 @@ import firebaseService from '../firebase/firebaseService'
 import NavigationTool from '../navigation/NavigationTool'
 
 const initialState = {
-    joinId: null,
     loading: false,
     errorText: null,
 }
 
-const ON_CHANGE_CODE = 'home/on_change_code'
 const LOADING_STATUS = 'home/loading_status'
 const ERROR_MESSAGE = 'home/error_message'
 const RESET = 'home/reset'
 
-//keeps track of changes in TextInput for JOINING rooms
-export function onChangeCode(payload){
-    return (dispatch, getState) => {
-        let { loading } = getState()
-        dispatch({
-            type: ON_CHANGE_CODE,
-            payload: payload
-        })
-        if( !loading &&  payload.length === 4 ) {
-            dispatch(checkRoom(payload))
-        }
-    }
-}
-
 //checks validity of roomId
-function checkRoom(roomId){
+export function checkRoom(roomId){
     return async (dispatch) => {
         dispatch({
             type: LOADING_STATUS,
@@ -40,7 +24,7 @@ function checkRoom(roomId){
         })
 
         //Takes a snap of the corresponding room
-        const roomInfo = await firebaseService.get(`room/${roomId}`)
+        const roomInfo = await firebaseService.get(`rooms/${roomId}`)
         let valid = false
 
         //If the room does not exist ... invalid code
@@ -137,8 +121,6 @@ function moveToLobby(roomId){
 export default (state = initialState, action) => {
 
     switch(action.type){
-        case ON_CHANGE_CODE:
-            return { ...state, joinId: action.payload }
         case LOADING_STATUS:
             return { ...state, loading: action.payload }
         case ERROR_MESSAGE:

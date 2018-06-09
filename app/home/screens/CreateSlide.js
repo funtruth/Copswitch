@@ -9,7 +9,7 @@ import {
 }   from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import colors from '../misc/colors.js'
+import colors from '../../misc/colors.js'
 
 class CreateSlide extends Component {
     render() {

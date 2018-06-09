@@ -8,22 +8,33 @@ import {
 }   from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
 
-import joinBook from '../../assets/images/JoinRoomBook.png'
-import createBook from '../../assets/images/CreateRoomBook.png'
-import leftArrow from '../../assets/images/ArrowLeft.png'
+import * as Styler from '@common'
+import NavigationTool from '../../navigation/NavigationTool'
+
+import joinBook from '../../../assets/images/JoinRoomBook.png'
+import createBook from '../../../assets/images/CreateRoomBook.png'
+import leftArrow from '../../../assets/images/ArrowLeft.png'
 
 const { height, width } = Dimensions.get('window')
 
 const T = (props) => <Text style={styles.optionStyle}>{props.children}</Text>
 
 class HomeScreen extends Component {
+    _joinRoom = () => {
+        NavigationTool.navigate('Join')
+    }
+    
+    _createRoom = () => {
+        NavigationTool.navigate('Create')
+    }
+
     render() {
         const { container, wrapper, title,
             imageContainer, arrowContainer, rightArrowContainer, optionContainer,
             THE, COPSWITCH, CASES } = styles
         return( 
             <View style = {container}>
-                <TouchableOpacity style={wrapper}>
+                <TouchableOpacity style={wrapper} onPress={this._joinRoom}>
                     <Image source={joinBook} style={imageContainer}/>
                     <Image source={leftArrow} style={arrowContainer}/>
                     <View style={[optionContainer,{transform:[{rotate:'7.36deg'}]}]}>
@@ -34,7 +45,7 @@ class HomeScreen extends Component {
 
                 <View style={{height: 0.1*height}}/>
 
-                <TouchableOpacity style={wrapper}>
+                <TouchableOpacity style={wrapper} onPress={this._createRoom}>
                     <View style={[optionContainer,{transform:[{rotate:'-3.38deg'}]}]}>
                         <T>CREATE</T>
                         <T>ROOM</T>

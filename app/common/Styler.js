@@ -1,4 +1,4 @@
-export default {
+export default Styler = [{
     default: {
         fontFamily: 'BarlowCondensed-Regular',
         color: 'white'
@@ -8,5 +8,6 @@ export default {
         color: 'white',
         opacity: 0.8
     },
-    systemFont: 'BarlowCondensed-Regular'
-}
+    regular: 'BarlowCondensed-Regular',
+    medium: 'BarlowCondensed-Medium'
+}]

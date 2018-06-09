@@ -4,7 +4,7 @@ import React from "react";
 import { StackNavigator } from "react-navigation";
 
 import Loading from '../appState/LoadingScreen';
-import Home from '../home/HomeScreen';
+import HomeNavigator from '../home/HomeNavigator';
 import Lobby from '../lobby/LobbyScreen';
 import Pregame from "../pregame/PregameScreen";
 import Game from "../game/GameScreen";
@@ -14,8 +14,8 @@ const Router = StackNavigator(
         Loading: {
           screen: Loading
         },
-        Home: {
-          screen: Home
+        HomeNav: {
+          screen: HomeNavigator
         },
         Lobby: {
           screen: Lobby

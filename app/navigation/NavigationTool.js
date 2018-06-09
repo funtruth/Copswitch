@@ -20,6 +20,12 @@ function reset(routeName){
     )
 }
 
+function back(){
+    _container.dispatch(
+        NavigationActions.back()
+    )
+}
+
 function navigate(routeName){
     _container.dispatch(
         NavigationActions.navigate({
@@ -41,5 +47,6 @@ export default {
     setContainer,
     navigate,
     reset,
+    back,
     getCurrentRoute,
 };
