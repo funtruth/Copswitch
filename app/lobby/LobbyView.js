@@ -14,13 +14,14 @@ import firebaseService from '../firebase/firebaseService.js';
 
 import colors from '../misc/colors.js';
 
-import { ActivityLogView, NameView, OptionView } from './components'
+import { ActivityLogView, OptionView } from './components'
+import LobbyNameModal from './screens/LobbyNameModal'
 import { RoleView } from '../components/RoleView.js';
 import { Alert } from '../components/Alert.js';
 
 const { height, width } = Dimensions.get('window')
 
-class LobbyScreen extends Component {
+class LobbyView extends Component {
     
     componentWillReceiveProps(newProps){
         if(newProps.roomStatus === 'Starting'){
@@ -32,28 +33,26 @@ class LobbyScreen extends Component {
     }
 
     render() {
-        return <View style = {{flex:1, backgroundColor:colors.background, 
-            justifyContent:'center', alignItems:'center'}}>
-        
-            <View style = {{ height:height*0.1, justifyContent:'center', alignItems:'center' }}>
-                <Text style = {styles.title}>Room</Text>
-                <Text style = {styles.code}>{ this.props.roomId }</Text>
+        return (
+            <View style = {{flex:1, backgroundColor:colors.background, 
+                justifyContent:'center', alignItems:'center'}}>
+                <View style = {{ height:height*0.1, justifyContent:'center', alignItems:'center' }}>
+                    <Text style = {styles.title}>Room</Text>
+                    <Text style = {styles.code}>{ this.props.roomId }</Text>
+                </View>
+                <View style = {{height:height*0.6}}>
+                    <Alert visible = {!this.props.modalView} flex={0.6}>
+                        <ActivityLogView />
+                    </Alert>
+
+                    <Alert visible = {this.props.modalView === 'roles'} flex={0.5}>
+                        <RoleView rolepress = { (key,change) => firebaseService.changeRoleCount(key,change) }/>
+                    </Alert>
+                </View>
+                <OptionView />
+                <LobbyNameModal ref='nameModal'/>
             </View>
-
-            <NameView />
-
-            <View style = {{height:height*0.6}}>
-                <Alert visible = {!this.props.modalView} flex={0.6}>
-                    <ActivityLogView />
-                </Alert>
-
-                <Alert visible = {this.props.modalView === 'roles'} flex={0.5}>
-                    <RoleView rolepress = { (key,change) => firebaseService.changeRoleCount(key,change) }/>
-                </Alert>
-            </View>
-
-            <OptionView />
-        </View>
+        )
     }
 }
 
@@ -83,4 +82,4 @@ export default connect(
             newLobbyInfo: (snap, listener) => dispatch(newLobbyInfo(snap,listener))
         }
     }
-)(LobbyScreen)
+)(LobbyView)

@@ -9,11 +9,7 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 
 const { height, width } = Dimensions.get('window')
 
-const Header = ({
-    children,
-    icon,
-    onPress
-}) => {
+const Header = ({ children, icon, onPress }) => {
     const { header, iconWrapper, iconStyle, headerText, separator } = styles
 
     return(
@@ -35,7 +31,7 @@ const styles = {
         alignItems: 'center'
     },
     iconWrapper: {
-        flex: 0.1,
+        flex: 0.15,
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -44,7 +40,7 @@ const styles = {
         color: '#A6895D'
     },
     headerText: {
-        flex: 0.8,
+        flex: 0.7,
         fontFamily: 'BarlowCondensed-Medium',
         fontSize: 35,
         color: '#A6895D',

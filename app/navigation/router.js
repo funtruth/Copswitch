@@ -5,7 +5,7 @@ import { StackNavigator } from "react-navigation";
 
 import Loading from '../appState/LoadingScreen';
 import HomeNavigator from '../home/HomeNavigator';
-import Lobby from '../lobby/LobbyScreen';
+import Lobby from '../lobby/LobbyView';
 import Pregame from "../pregame/PregameScreen";
 import Game from "../game/GameScreen";
 
