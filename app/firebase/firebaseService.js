@@ -59,7 +59,7 @@ class FirebaseService{
 
     joinRoom(roomId){
         if(!roomId) return
-
+        
         this.roomId = roomId
         this.roomRef = firebase.database().ref(`rooms/${roomId}`)
 
@@ -95,6 +95,10 @@ class FirebaseService{
         this.removePushKey()
 
         this.wipeRefs()
+    }
+
+    deleteRoom(){
+        this.roomRef.remove()
     }
 
     updateUsername(newName){

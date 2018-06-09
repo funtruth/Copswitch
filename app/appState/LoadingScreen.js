@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
     View,
+    AsyncStorage
 }   from 'react-native';
 import { connect } from 'react-redux'
 
@@ -35,7 +36,7 @@ class LoadingScreen extends Component {
         
         //If data hasn't been fetched OR app already navigated
         if(!lobbyRefreshed || !gameRefreshed || loaded) return
-
+        
         if(lobbyKey) {
             firebaseService.joinRoom(lobbyKey)
             this.props.joinRoom(lobbyKey)
@@ -50,7 +51,7 @@ class LoadingScreen extends Component {
         }
 
         this.props.appStateLoaded()
-
+        
         if(gameKey){
             NavigationTool.navigate('Pregame')
         } else if(lobbyKey) {

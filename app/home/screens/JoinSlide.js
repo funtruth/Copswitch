@@ -16,11 +16,16 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import CodeInput from '../components/JoinCodeInput'
 
 import colors from '../../misc/colors.js'
-import HomeHeader from '../components/HomeHeader';
+import { Header } from '../../components';
+import NavigationTool from '../../navigation/NavigationTool';
 
 const { height, width } = Dimensions.get('window')
 
 class JoinSlide extends Component {
+    _onIconPress = () => {
+        NavigationTool.back()
+    }
+
     render() {
         const { container, headerText, subText, separator,
             submitButton, submitText } = styles
@@ -28,7 +33,7 @@ class JoinSlide extends Component {
         return(
             <LinearGradient colors={['#3A2F26', '#2E2620']} style={container}>
                 <View style={{flex:0.2}}/>
-                <HomeHeader>JOIN ROOM</HomeHeader>
+                <Header icon='chevron-left' onPress={this._onIconPress}>JOIN ROOM</Header>
                 <Text style={subText}>ENTER THE 4-DIGIT CODE:</Text>
                 <CodeInput
                     onFulfill={this.props.checkRoom}
