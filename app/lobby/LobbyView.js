@@ -1,4 +1,3 @@
-
 import React, { Component } from 'react';
 import {
     Text,
@@ -8,20 +7,14 @@ import {
 }   from 'react-native';
 import { connect } from 'react-redux'
 import LinearGradient from 'react-native-linear-gradient'
-import { pushNewListener, newLobbyInfo } from './LobbyReducer'
-
-import NavigationTool from '../navigation/NavigationTool'
-import firebaseService from '../firebase/firebaseService.js';
-
-import colors from '../misc/colors.js';
-
 import { ActivityLogView, OptionView } from './components'
 import LobbyNameModal from './screens/LobbyNameModal'
+
+import NavigationTool from '../navigation/NavigationTool'
 
 const { height, width } = Dimensions.get('window')
 
 class LobbyView extends Component {
-    
     componentWillReceiveProps(newProps){
         if(newProps.roomStatus === 'Starting'){
             AsyncStorage.setItem('GAME-KEY', newProps.roomId)
@@ -58,26 +51,19 @@ const styles = {
     title : {
         fontSize: 17,
         fontFamily: 'FredokaOne-Regular',
-        color: colors.striker,
+        color: '#FFFFFF',
     },
     code : {
         fontSize: 25,
         fontFamily: 'FredokaOne-Regular',
-        color: colors.font,
+        color: '#FFFFFF',
     },
 }
 
 export default connect(
     state => ({
         roomId: state.lobby.roomId,
-        username: state.lobby.username,
         modalView: state.lobby.modalView,
         roomStatus: state.lobby.roomStatus
-    }),
-    dispatch => {
-        return {
-            pushNewListener: (listenerRef) => dispatch(pushNewListener(listenerRef)),
-            newLobbyInfo: (snap, listener) => dispatch(newLobbyInfo(snap,listener))
-        }
-    }
+    })
 )(LobbyView)

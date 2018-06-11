@@ -10,7 +10,7 @@ import {
 import { connect } from 'react-redux'
 
 import { Header } from '../../components/index.js';
-import LobbyTextInput from '../components/LobbyTextInput.js';
+import { LobbyTextInput } from '../components';
 const { height, width } = Dimensions.get('window')
 
 class LobbyNameModal extends Component {

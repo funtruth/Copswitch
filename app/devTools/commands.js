@@ -18,11 +18,22 @@ const PLAYERS = [
 ]
 
 export default Commands = [
-    MAKE_DEV_ROOM = {
-        button: 'Make DEV room'
+    {
+        key: 'MAKE_DEV_ROOM',
+        buttonText: 'Make DEV room',
+        onPress: () => {
+            let roomRef = firebaseService.fetchRoomRef('')
+            roomRef.child(DEV_ROOM).set({
+                owner: firebaseService.getUid(),
+                status: 'Lobby'
+            })
+        }
     },
-    ADD_PLAYER = {
-        button: 'Add a Player',
-        function: () => firebaseService.get()
+    {
+        key: 'ADD_PLAYER',
+        buttonText: 'Add a Player',
+        onPress: () => {
+            alert('yo')
+        }
     }
 ]

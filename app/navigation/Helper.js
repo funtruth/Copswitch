@@ -6,6 +6,7 @@ import { NavigationActions } from 'react-navigation';
 
 import Router from "./router";
 import NavigationTool from './NavigationTool.js';
+import DevBot from '../devTools/DevBot.js';
 
 export class Helper extends React.Component {
         
@@ -93,6 +94,7 @@ export class Helper extends React.Component {
                             NavigationTool.setContainer(navigatorRef)
                         }}
                     />
+                    {__DEV__?<DevBot />:null}
                 </Animated.View>
 
             </View>
