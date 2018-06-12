@@ -1,4 +1,4 @@
-import firebaseService from '../firebase/firebaseService'
+import firebase from 'react-native-firebase'
 
 const DEV_ROOM = 'AAAA'
 
@@ -22,7 +22,7 @@ export default Commands = [
         key: 'MAKE_DEV_ROOM',
         buttonText: 'Make DEV room',
         onPress: () => {
-            let roomRef = firebaseService.fetchRoomRef('')
+            let roomRef = firebase.database().ref('rooms')
             roomRef.child(DEV_ROOM).set({
                 owner: firebaseService.getUid(),
                 status: 'Lobby'

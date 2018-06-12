@@ -32,8 +32,7 @@ class LobbyTextInput extends Component {
         })
     }
 
-    checkName = (event) => {
-        let name = event.nativeEvent.text.trim()
+    checkName = (name) => {
         this.invalidChars = []
 
         if(!name){
@@ -68,6 +67,11 @@ class LobbyTextInput extends Component {
 
     _onSubmit = () => {
         this.checkName(this.state.username)
+    }
+
+    _onSubmitEditing = (event) => {
+        let name = event.nativeEvent.text.trim()
+        this.checkName(name)
     }
 
     render() {

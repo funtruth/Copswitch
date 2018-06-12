@@ -12,7 +12,7 @@ const initialState = {
     refreshed: false,
 
     username: null,
-    owner: false,
+    owner: null,
     roomStatus: 'Lobby',
     lobbyList: [],
     placeList: [],
@@ -34,7 +34,6 @@ const NAME_LISTENER = 'lobby/name_listener'
 const LOBBY_LISTENER = 'lobby/lobby_listener'
 const PLACE_LISTENER = 'lobby/place_listener'
 const SET_MY_PLACE = 'lobby/set_my_place'
-const ACTIVITY_LOG_LISTENER = 'lobby/activity_log_listener'
 const ROLE_LIST_LISTENER = 'lobby/role_list_listener'
 const ROOM_STATUS_LISTENER = 'lobby/status_listener'
 
@@ -96,7 +95,6 @@ export function turnOnLobbyListeners() {
         dispatch(lobbyListenerOn('name',`lobby/${firebaseService.getUid()}`,'value'))
         dispatch(lobbyListenerOn('lobby','lobby','value'))
         dispatch(lobbyListenerOn('place','place','value'))
-        dispatch(lobbyListenerOn('log','log','child_added'))
         dispatch(lobbyListenerOn('roles','roles','value'))
         dispatch(lobbyListenerOn('status','status','value'))
     }
@@ -123,7 +121,7 @@ function newLobbyInfo(snap, listener){
                 ownerModule.ownerMode(amIOwner)
                 dispatch({
                     type: OWNER_LISTENER,
-                    payload: amIOwner
+                    payload: snap.val()
                 })
                 break
             case 'name':
@@ -135,7 +133,7 @@ function newLobbyInfo(snap, listener){
             case 'lobby':
                 dispatch({
                     type: LOBBY_LISTENER,
-                    payload: snap.val()
+                    payload: snap
                 })
             case 'place':
                 for(var i=0; i<snap.val().length; i++){
@@ -149,12 +147,6 @@ function newLobbyInfo(snap, listener){
                 dispatch({
                     type: PLACE_LISTENER,
                     payload: snap.val()
-                })
-                break
-            case 'log':
-                dispatch({
-                    type: ACTIVITY_LOG_LISTENER,
-                    payload: snap 
                 })
                 break
             case 'roles':
@@ -227,8 +219,6 @@ export default (state = initialState, action) => {
             return { ...state, lobbyList: action.payload }
         case PLACE_LISTENER:
             return { ...state, placeList: action.payload }
-        case ACTIVITY_LOG_LISTENER:
-            return { ...state, log: [{message: action.payload.val(), key: action.payload.key}, ...state.log] }
         case SET_MY_PLACE:
             return { ...state, place: action.payload }
         case ROLE_LIST_LISTENER:
