@@ -6,13 +6,13 @@ import {
     AsyncStorage,
 }   from 'react-native';
 import { connect } from 'react-redux'
+import { leaveLobby } from './LobbyReducer'
 import LinearGradient from 'react-native-linear-gradient'
-import { ActivityLogView, OptionView } from './components'
-import LobbyNameModal from './screens/LobbyNameModal'
 
 import NavigationTool from '../navigation/NavigationTool'
-import LobbyPlayerView from './screens/LobbyPlayerView';
 import { Header } from '../components';
+import LobbyPlayerView from './screens/LobbyPlayerView';
+import LobbyNameModal from './screens/LobbyNameModal'
 
 const { height, width } = Dimensions.get('window')
 
@@ -25,20 +25,15 @@ class LobbyView extends Component {
             })
         }
     }
-
-    _onIconPress = () => {
-        NavigationTool.reset('HomeNav')
-    }
-
+    
     render() {
-        const { roomId } = this.props
+        const { roomId, leaveLobby } = this.props
         const { container, title, code } = styles
 
         return (
             <LinearGradient colors={['#3A2F26', '#2E2620']} style={container}>
-                <Header icon='chevron-left' onPress={this._onIconPress}>{roomId}</Header>
+                <Header icon='chevron-left' onPress={leaveLobby}>{roomId}</Header>
                 <LobbyPlayerView />
-                <OptionView />
                 <LobbyNameModal/>
             </LinearGradient>
         )
@@ -66,7 +61,11 @@ const styles = {
 export default connect(
     state => ({
         roomId: state.lobby.roomId,
-        modalView: state.lobby.modalView,
         roomStatus: state.lobby.roomStatus
-    })
+    }),
+    dispatch => {
+        return {
+            leaveLobby: () => dispatch(leaveLobby())
+        }
+    }
 )(LobbyView)

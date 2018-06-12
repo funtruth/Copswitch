@@ -12,29 +12,31 @@ class LobbyPlayerView extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        let snapshot = newProps.lobbyList
-        let players = []
+        if (!newProps.lobbyList || !newProps.placeList) return
 
-        snapshot.forEach(child => {
-            players.push({
-                key: child.key,
-                name: child.val().name,
-                uid: child.key
+        let placeSnapshot = newProps.placeList
+        let lobbySnapshot = newProps.lobbyList
+        let data = []
+
+        const myUid = firebaseService.getUid()
+
+        placeSnapshot.forEach(child => {
+            let playerUid = child.val()
+            data.push({
+                key: playerUid,
+                name: lobbySnapshot.val()[playerUid] && lobbySnapshot.val()[playerUid].name,
+                uid: playerUid,
+                showOwner: playerUid === newProps.owner,
+                showEdit: playerUid === myUid
             })
         })
 
         this.setState({
-            data: players
+            data: data
         })
     }
 
-    renderPlayer = ({item}) => {
-        const { owner } = this.props
-        item.showOwner = item.uid === owner
-        item.showEdit = item.uid === firebaseService.getUid()
-
-        return <LobbyPlayer { ...item }/>
-    }
+    renderPlayer = ({item}) => <LobbyPlayer {...item}/>
 
     keyExtractor = (item) => item.key
 
@@ -64,6 +66,7 @@ const styles = {
 export default connect(
     state => ({
         owner: state.lobby.owner,
-        lobbyList: state.lobby.lobbyList
+        lobbyList: state.lobby.lobbyList,
+        placeList: state.lobby.placeList
     })
 )(LobbyPlayerView)

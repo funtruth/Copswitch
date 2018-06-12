@@ -7,7 +7,6 @@ const LOBBY_KEY = 'LOBBY-KEY'
 
 const initialState = {
     roomId: null,
-    modalView: null,
     activeListeners: [],
     refreshed: false,
 
@@ -22,7 +21,6 @@ const initialState = {
 }
 
 const JOIN_ROOM = 'lobby/join_room'
-const CHANGE_MODAL = 'lobby/change_modal'
 const REFRESH_ROOM_ID = 'lobby/refresh_room_id'
 const REFRESH_REDUCER = 'lobby/refresh_reducer'
 
@@ -62,15 +60,6 @@ export function leaveLobby(){
 
         dispatch({
             type: RESET
-        })
-    }
-}
-
-export function changeModalView(modalView){
-    return (dispatch) => {
-        dispatch({
-            type: CHANGE_MODAL,
-            payload: modalView
         })
     }
 }
@@ -135,6 +124,7 @@ function newLobbyInfo(snap, listener){
                     type: LOBBY_LISTENER,
                     payload: snap
                 })
+                break
             case 'place':
                 for(var i=0; i<snap.val().length; i++){
                     if(snap.val()[i] === firebaseService.getUid()){
@@ -146,7 +136,7 @@ function newLobbyInfo(snap, listener){
                 }
                 dispatch({
                     type: PLACE_LISTENER,
-                    payload: snap.val()
+                    payload: snap
                 })
                 break
             case 'roles':
@@ -201,8 +191,6 @@ export default (state = initialState, action) => {
     switch(action.type){
         case JOIN_ROOM:
             return { ...state, roomId: action.payload }
-        case CHANGE_MODAL:
-            return { ...state, modalView: action.payload }
         case REFRESH_ROOM_ID:
             return { ...state, roomId: action.payload }
         case REFRESH_REDUCER:

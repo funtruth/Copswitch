@@ -5,7 +5,7 @@ import firebaseService from '../../firebase/firebaseService';
 
 const LobbyPlayer = ({ name, showOwner, showEdit }) => {
     const { container, icon, playerName } = styles
-    const displayName = name.toUpperCase()
+    const displayName = name && name.toUpperCase()
 
     return (
         <View style={container}>
