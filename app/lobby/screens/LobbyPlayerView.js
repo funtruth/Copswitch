@@ -41,7 +41,6 @@ class LobbyPlayerView extends Component {
     keyExtractor = (item) => item.key
 
     render() {
-        const { lobbyList } = this.props
         const { container } = styles
 
         return (

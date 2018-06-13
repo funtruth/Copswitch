@@ -53,11 +53,10 @@ export function leaveLobby(){
         dispatch(clearListeners())
         
         if(owner) firebaseService.deleteRoom()
-        firebaseService.leaveLobby(username)
+        else firebaseService.leaveLobby(username)
+
         AsyncStorage.removeItem(LOBBY_KEY)
-
         NavigationTool.navigate("Home")
-
         dispatch({
             type: RESET
         })

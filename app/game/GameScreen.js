@@ -15,17 +15,6 @@ import firebaseService from '../firebase/firebaseService'
 import ownerModule from './mods/ownerModule'
 
 class GameScreen extends Component {
-
-    //TODO Handling Game Ending
-    _gameOver() {
-        AsyncStorage.removeItem('LOBBY-KEY');
-        AsyncStorage.removeItem('GAME-KEY');
-
-        ownerModule.gameOver()
-        
-        NavigationTool.navigate('Home')
-    }
-
     render() {
         return (
             <View style = {{flex:1}}>

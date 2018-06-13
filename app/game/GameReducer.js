@@ -15,7 +15,9 @@ const initialState = {
     roleid: null,
     alive: null,
     playerList: [],
-    news: []
+    news: [],
+
+    timeout: null
 }
 
 const REFRESH_ROOM_ID = 'game/refresh_room_id'
@@ -31,6 +33,8 @@ const MY_READY_LISTENER = 'game/my_ready_listener'
 const MY_INFO_LISTENER = 'game/my_info_listener'
 const PLAYER_LIST_LISTENER = 'game/player_list_listener'
 const NEWS_LISTENER = 'game/news_listener'
+
+const TIMEOUT_LISTENER = 'game/timeout_listener'
 
 export function refreshGameReducer() {
     return (dispatch) => {
@@ -55,6 +59,7 @@ export function turnOnGameListeners(){
         dispatch(gameListenerOn('myInfo',`list/${place}`,'value'))
         dispatch(gameListenerOn('list','list','value'))
         dispatch(gameListenerOn('news','news','child_added'))
+        dispatch(gameListenerOn('timeout','timeout','value'))
     }
 }
 
@@ -124,6 +129,12 @@ function newRoomInfo(snap, listener){
                     type: NEWS_LISTENER,
                     payload: snap
                 })
+                break
+            case 'timeout':
+                dispatch({
+                    type: TIMEOUT_LISTENER,
+                    payload: snap.val()
+                })
             default:
         }
     }
@@ -137,6 +148,17 @@ export function gameChoice(choice) {
 
         myChoiceRef.set(choice)
             .then(()=>{myReadyRef.set(choice !== null)})
+    }
+}
+
+export function gameOver() {
+    return (dispatch) => {
+        AsyncStorage.removeItem('LOBBY-KEY');
+        AsyncStorage.removeItem('GAME-KEY');
+
+        ownerModule.gameOver()
+        
+        NavigationTool.navigate('Home')
     }
 }
 
@@ -163,6 +185,8 @@ export default (state = initialState, action) => {
             return { ...state, playerList: action.payload }
         case NEWS_LISTENER:
             return { ...state, news: [{message: action.payload.val(), key: action.payload.key}, ...state.news] }
+        case TIMEOUT_LISTENER:
+            return { ...state, timeout: action.payload }
         default:
             return state;
     }

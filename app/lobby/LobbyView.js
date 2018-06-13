@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
     Text,
     View,
+    ScrollView,
     Dimensions,
     AsyncStorage,
 }   from 'react-native';
@@ -13,6 +14,8 @@ import NavigationTool from '../navigation/NavigationTool'
 import { Header } from '../components';
 import LobbyPlayerView from './screens/LobbyPlayerView';
 import LobbyNameModal from './screens/LobbyNameModal'
+import LobbyRolesView from './screens/LobbyRolesView';
+import LobbySetupView from './screens/LobbySetupView';
 
 const { height, width } = Dimensions.get('window')
 
@@ -28,12 +31,21 @@ class LobbyView extends Component {
     
     render() {
         const { roomId, leaveLobby } = this.props
-        const { container, title, code } = styles
+        const { container, content, contentContainer } = styles
 
         return (
             <LinearGradient colors={['#3A2F26', '#2E2620']} style={container}>
                 <Header icon='chevron-left' onPress={leaveLobby}>{roomId}</Header>
-                <LobbyPlayerView />
+                <ScrollView
+                    style={content}
+                    contentContainerStyle={contentContainer}
+                    horizontal={true}
+                    pagingEnabled={true}
+                >
+                    <LobbyPlayerView />
+                    <LobbySetupView />
+                    <LobbyRolesView />
+                </ScrollView>
                 <LobbyNameModal/>
             </LinearGradient>
         )
@@ -46,16 +58,13 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'center'
     },
-    title : {
-        fontSize: 17,
-        fontFamily: 'FredokaOne-Regular',
-        color: '#FFFFFF',
+    content: {
+        height: 0.7*height,
+        width
     },
-    code : {
-        fontSize: 25,
-        fontFamily: 'FredokaOne-Regular',
-        color: '#FFFFFF',
-    },
+    contentContainer: {
+        justifyContent: 'center'
+    }
 }
 
 export default connect(
