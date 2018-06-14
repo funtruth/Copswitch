@@ -34,8 +34,12 @@ class JoinSlide extends Component {
         return(
             <LinearGradient colors={['#3A2F26', '#2E2620']} style={container}>
                 <View style={{flex:0.2}}/>
-                <Header icon='angle-left' onPress={this._onIconPress}>JOIN ROOM</Header>
-                <Text style={subText}>ENTER THE 4-DIGIT CODE:</Text>
+                <Header
+                    icon='angle-left'
+                    onPress={this._onIconPress}
+                    children='JOIN ROOM'
+                    subtitle='ENTER THE 4-DIGIT CODE:'
+                />
                 <CodeHandler onFulfill={checkRoom} error={error}/>
                 <View style={{flex:0.1}}>
                     <Text style={errorText}>{error}</Text>

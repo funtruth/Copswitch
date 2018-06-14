@@ -9,11 +9,20 @@ import Icon from 'react-native-vector-icons/FontAwesome'
 
 const { height, width } = Dimensions.get('window')
 
-const Header = ({ children, icon, onPress }) => {
-    const { container, header, iconWrapper, iconStyle, headerText, separator } = styles
+const Header = (props) => {
+    const { children, icon, onPress, stickyHeader, subtitle } = props
+    const { container, header, iconWrapper, iconStyle, headerText, separator, subText } = styles
+
+    let containerStyle = [container]
+    if (stickyHeader) {
+        containerStyle.push({
+            position: 'absolute',
+            top: 10
+        })
+    }
 
     return(
-        <View style={container}>
+        <View style={containerStyle}>
             <View style={header}>
                 <TouchableOpacity style={iconWrapper} onPress={onPress}>
                     <Icon style={iconStyle} name={icon}/>
@@ -21,6 +30,7 @@ const Header = ({ children, icon, onPress }) => {
                 <Text style={headerText}>{children}</Text>
             </View>
             <View style={separator}/>
+            {subtitle && <Text style={subText}>{subtitle}</Text>}
         </View>
     )
 }
@@ -55,6 +65,13 @@ const styles = {
         marginTop: 10,
         marginBottom: 10,
         backgroundColor: '#A6895D',
+        alignSelf: 'center'
+    },
+    subText: {
+        fontFamily: 'BarlowCondensed-Regular',
+        fontSize: 20,
+        color: '#786343',
+        marginBottom: 20,
         alignSelf: 'center'
     }
 }

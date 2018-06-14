@@ -81,7 +81,7 @@ export function checkRoom(roomId){
 }
 
 //Creating a room process
-export function createRoom(){
+export function createRoom(roomConfig){
     return async (dispatch) => {
         dispatch({
             type: LOADING_STATUS,
@@ -100,11 +100,14 @@ export function createRoom(){
             if(!allRoomInfo) flag = true
             else if(!allRoomInfo[roomId]) flag = true
         }
+
+        let { gameMode } = roomConfig
         
         //Write owner and room status to the database
         firebase.database().ref(`rooms/${roomId}`).set({
             owner: firebaseService.getUid(),
             status:'Lobby',
+            mode: gameMode
         })
         //Set AsyncStorage
         .then(()=>{
