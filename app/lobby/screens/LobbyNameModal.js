@@ -62,7 +62,7 @@ class LobbyNameModal extends Component {
                 }]
             }]}>
                 <View style={{flex:0.2}}/>
-                <Header icon='remove' onPress={this._onBackPress}>CHOOSE AN ALIAS</Header>
+                <Header icon='angle-left' onPress={this._onBackPress}>CHOOSE AN ALIAS</Header>
                 <LobbyTextInput/>
             </Animated.View>
         )

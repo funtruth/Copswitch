@@ -4,7 +4,8 @@ import {
     Text,
     TouchableOpacity,
     ActivityIndicator,
-    Dimensions
+    Dimensions,
+    FlatList
 }   from 'react-native'
 import { connect } from 'react-redux'
 import { createRoom } from '../HomeReducer'
@@ -28,11 +29,16 @@ class CreateSlide extends Component {
         return(
             <LinearGradient colors={['#3A2F26', '#2E2620']} style={container}>
                 <View style={{flex:0.2}}/>
-                <Header icon='chevron-left' onPress={this._onIconPress}>CREATE ROOM</Header>
-                <Text style={subText}>SELECT A GAME MODE:</Text>
+                <Header icon='angle-left' onPress={this._onIconPress}>CREATE ROOM</Header>
+                <Text style={subText}>DOUBLE TAP A GAME MODE TO SELECT</Text>
                 <Button style={submitButton} onPress={createRoom}>
                     <Text style={submitText}>DONE</Text>
                 </Button>
+                <View style={{flex:0.4}}>
+                    <LinearGradient colors={['rgba(0, 0, 0, 0.3)', 'rgba(0, 0, 0, 0.005)']} style={{flex:0.25, width}}/>
+                    
+                    <LinearGradient colors={['rgba(0, 0, 0, 0.005)', 'rgba(0, 0, 0, 0.3)']} style={{flex:0.25, width}}/>
+                </View>
             </LinearGradient>
         )
     }

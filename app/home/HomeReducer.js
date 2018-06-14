@@ -8,7 +8,7 @@ import NavigationTool from '../navigation/NavigationTool'
 
 const initialState = {
     loading: false,
-    errorText: null,
+    error: null,
 }
 
 const LOADING_STATUS = 'home/loading_status'
@@ -18,6 +18,19 @@ const RESET = 'home/reset'
 //checks validity of roomId
 export function checkRoom(roomId){
     return async (dispatch) => {
+        dispatch({
+            type: ERROR_MESSAGE,
+            payload: null
+        })
+
+        if (!roomId) {
+            dispatch({
+                type: ERROR_MESSAGE,
+                payload: 'Why you do this to me??'
+            })
+            return
+        }
+
         dispatch({
             type: LOADING_STATUS,
             payload: true
@@ -106,6 +119,14 @@ export function createRoom(){
     }
 }
 
+export function reset() {
+    return (dispatch) => {
+        dispatch({
+            type: RESET
+        })
+    }
+}
+
 //Navigates to Lobby and resets state
 function moveToLobby(roomId){
     return (dispatch) => {
@@ -124,7 +145,7 @@ export default (state = initialState, action) => {
         case LOADING_STATUS:
             return { ...state, loading: action.payload }
         case ERROR_MESSAGE:
-            return { ...state, errorText: action.payload }
+            return { ...state, error: action.payload }
         case RESET:
             return initialState
         default:

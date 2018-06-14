@@ -35,7 +35,7 @@ class LobbyView extends Component {
 
         return (
             <LinearGradient colors={['#3A2F26', '#2E2620']} style={container}>
-                <Header icon='chevron-left' onPress={leaveLobby}>{roomId}</Header>
+                <Header icon='angle-left' onPress={leaveLobby}>{roomId}</Header>
                 <ScrollView
                     style={content}
                     contentContainerStyle={contentContainer}

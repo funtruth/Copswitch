@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient'
 
 class Button extends React.Component {
     state = {
@@ -25,50 +26,46 @@ class Button extends React.Component {
         })
     }
 
-    render() {
-        const { style } = this.props
-        const { height, width } = style
-        const { button } = styles
-        
-        let buttonStyle = [style, button]
-        let containerStyle = []
+    renderShadow = () => {
+        return (
+            <LinearGradient
+                style={{position: 'absolute', top: 0, height: 6, left:0, right:0}}
+                colors={['rgba(0, 0, 0, 0.3)', 'rgba(0, 0, 0, 0.005)']}
+            />
+        )
+    }
 
-        if (this.state.pressed) {
-            containerStyle.push({
-                height, width,
-                borderColor: '#000000',
-                borderRadius: 2,
-                borderWidth: 0,
-                borderTopWidth: 3,
-                borderLeftWidth: 3
-            })
-            buttonStyle.push({
-                height: height - 4,
-                width: width - 4
-            })
-        }
+    render() {
+        const { style, disabled } = this.props
+        const { buttonStyle, disabledStyle } = styles
 
         return (
-            <View style={containerStyle}>
-                <TouchableOpacity
-                    { ...this.props}
-                    style={buttonStyle}
-                    onPressIn={this._handlePressIn}
-                    onPressOut={this._handlePressOut}
-                    activeOpacity={0.8}
-                >
-                    {this.props.children}
-                </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+                { ...this.props}
+                style={[disabled?disabledStyle:buttonStyle, style]}
+                onPressIn={this._handlePressIn}
+                onPressOut={this._handlePressOut}
+                activeOpacity={0.9}
+            >
+                {this.state.pressed?<View style={{height:3}}/>:null}
+                {this.props.children}
+                {this.state.pressed?this.renderShadow():null}
+            </TouchableOpacity>
         )
     }
 }
 
 const styles = {
-    button: {
+    buttonStyle: {
         backgroundColor: '#A6895D',
-        borderRadius: 2,
-        alignItems: 'center'
+        alignItems: 'center',
+        overflow: 'hidden'
+    },
+    disabledStyle: {
+        backgroundColor: '#A6895D',
+        alignItems: 'center',
+        overflow: 'hidden',
+        opacity: 0.8
     }
 }
 

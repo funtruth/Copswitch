@@ -1,14 +1,33 @@
-export default [
+export const Games = [
     'Mafia' = {
         settings: {
             timer: {
                 none: 0,
                 standard: 120
             }
-        },
-        modes: [
-            'Classic',
-            'Expert'
-        ]
+        }
     }
 ]
+
+export const Modes = [{
+    'Classic': {
+        key: 'classic',
+        title: 'Classic',
+        desc: 'Play the classic game of Mafia with all the original roles!'
+    },
+    'Blitz': {
+        key: 'blitz',
+        title: 'Blitz',
+        desc: 'Play a speed round of Mafia with hand-picked roles, with 1 minute discussion rounds.'
+    },
+    'Copswitch': {
+        key: 'copswitch',
+        title: 'Copswitch',
+        desc: 'Play the classic game of Mafia with all the original roles!'
+    },
+    'Custom': {
+        key: 'customic',
+        title: 'Custom',
+        desc: 'Play the classic game of Mafia with all the original roles!'
+    }
+}]

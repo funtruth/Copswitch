@@ -10,10 +10,10 @@ import {
     Dimensions
 }   from 'react-native'
 import { connect } from 'react-redux'
-import { checkRoom } from '../HomeReducer'
+import { checkRoom, reset } from '../HomeReducer'
 import LinearGradient from 'react-native-linear-gradient'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import CodeInput from '../components/JoinCodeInput'
+import CodeHandler from '../components/JoinCodeHandler'
 
 import colors from '../../misc/colors.js'
 import { Header, Button } from '../../components';
@@ -23,24 +23,23 @@ const { height, width } = Dimensions.get('window')
 
 class JoinSlide extends Component {
     _onIconPress = () => {
+        this.props.reset()
         NavigationTool.back()
     }
 
     render() {
-        const { container, headerText, subText, separator,
-            submitButton, submitText } = styles
+        const { checkRoom, error } = this.props
+        const { container, headerText, subText, separator, errorText } = styles
 
         return(
             <LinearGradient colors={['#3A2F26', '#2E2620']} style={container}>
                 <View style={{flex:0.2}}/>
-                <Header icon='chevron-left' onPress={this._onIconPress}>JOIN ROOM</Header>
+                <Header icon='angle-left' onPress={this._onIconPress}>JOIN ROOM</Header>
                 <Text style={subText}>ENTER THE 4-DIGIT CODE:</Text>
-                <CodeInput
-                    onFulfill={this.props.checkRoom}
-                />
-                <Button style={submitButton}>
-                    <Text style={submitText}>SUBMIT</Text>
-                </Button>
+                <CodeHandler onFulfill={checkRoom} error={error}/>
+                <View style={{flex:0.1}}>
+                    <Text style={errorText}>{error}</Text>
+                </View>
             </LinearGradient>
         )
     }
@@ -68,23 +67,23 @@ const styles = {
         fontSize: 20,
         color: '#786343'
     },
-    submitButton: {
-        width: 0.45*width,
-        height: 0.15*width
-    },
-    submitText: {
-        fontFamily: 'BarlowCondensed-Medium',
-        fontSize: 25,
-        color: '#372C24',
-        margin: 10
+    errorText: {
+        fontFamily: 'BarlowCondensed-Regular',
+        fontSize: 20,
+        color: '#A6895D',
+        marginTop: 10,
+        textAlign: 'center'
     }
 }
 
 export default connect(
-    null,
+    state => ({
+        error: state.home.error
+    }),
     dispatch => {
         return {
-            checkRoom: (roomId) => dispatch(checkRoom(roomId))
+            checkRoom: (roomId) => dispatch(checkRoom(roomId)),
+            reset: () => dispatch(reset())
         }
     }
 )(JoinSlide)
