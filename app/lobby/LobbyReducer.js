@@ -105,8 +105,8 @@ function newLobbyInfo(snap, listener){
     return (dispatch) => {
         switch(listener){
             case 'owner':
-                let amIOwner = snap.val() === firebaseService.getUid()
-                ownerModule.ownerMode(amIOwner)
+                let ownership = snap.val() === firebaseService.getUid()
+                ownerModule.ownerMode(ownership)
                 dispatch({
                     type: OWNER_LISTENER,
                     payload: snap.val()
@@ -125,14 +125,17 @@ function newLobbyInfo(snap, listener){
                 })
                 break
             case 'place':
-                for(var i=0; i<snap.val().length; i++){
-                    if(snap.val()[i] === firebaseService.getUid()){
+                let myUid = firebaseService.getUid()
+                let j = 0
+                snap.forEach(child => {
+                    if (child.val() === myUid){
                         dispatch({
                             type: SET_MY_PLACE,
-                            payload: i
+                            payload: j
                         })
                     }
-                }
+                    j++
+                })
                 dispatch({
                     type: PLACE_LISTENER,
                     payload: snap
@@ -170,17 +173,19 @@ export function clearListeners(){
 export function startPregame() {
     return (dispatch, getState) => {
         const { roleList, lobbyList } = getState().lobby
-        let roleListLen = 0
+        const roles = roleList.val()
+        const lobby = lobbyList.val()
+        let rolesLen = 0
+        let lobbyLen = Object.keys(lobby).length
 
-        for(var i=0; i<roleList.length; i++){
-            roleListLen += roleList[i]
+        for(var i in roles){
+            rolesLen += roles[i]
         }
 
-        if(roleListLen === lobbyList.length){
-            let roomRef = firebaseService.fetchRoomRef('')
-            roomRef.set({
-                status: 'Starting'
-            })
+        if(rolesLen === lobbyLen){
+            console.log('got here')
+            let statusRef = firebaseService.fetchRoomRef('status')
+            statusRef.set('Starting')
         }
     }
 }

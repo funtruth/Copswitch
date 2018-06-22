@@ -33,7 +33,7 @@ class JoinSlide extends Component {
 
         return(
             <LinearGradient colors={['#3A2F26', '#2E2620']} style={container}>
-                <View style={{flex:0.2}}/>
+                <View style={{flex:0.1}}/>
                 <Header
                     icon='angle-left'
                     onPress={this._onIconPress}

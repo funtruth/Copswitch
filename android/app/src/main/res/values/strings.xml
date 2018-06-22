@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Mafia!</string>
+    <string name="app_name">Copswitch</string>
     <string name="facebook_app_id">163035727607470</string>
     <string name="fb_login_protocol_scheme">fb163035727607470</string>
 </resources>

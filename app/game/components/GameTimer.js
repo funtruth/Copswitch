@@ -2,27 +2,24 @@ import React, { Component } from 'react'
 import { View, Text } from 'react-native'
 import { connect } from 'react-redux'
 
-class Timer extends Component {
+class GameTimer extends Component {
     state = {
-        timer: null
+        stopwatch: null
     }
 
     componentWillReceiveProps(newProps) {
-        let endTime = newProps.timeout
-
-        if (!endTime) {
+        if (!newProps.timeout) {
             this._clearTimers()
             return
         }
 
+        let endTime = newProps.timeout
         let myTime = Date.now()
         let countdown = endTime - myTime
 
-        this.setState({
-            timer: Math.round(countdown/1000)
-        })
+        this.setState({ stopwatch: Math.round(countdown/1000) })
 
-        setTimeout(this._alarm,countdown)
+        this.timerRef = setTimeout(this._alarm,countdown)
         this.interval = setInterval(this._oneSecondPassed, 1000)
     }
 
@@ -30,24 +27,25 @@ class Timer extends Component {
 
     }
 
-    _oneSecondPassed = () => {
-        this.setState({
-            timer: this.state.timer - 1
-        })
-    }
+    _oneSecondPassed = () => this.setState({ stopwatch: this.state.stopwatch - 1 })
 
     _alarm = () => {
         clearInterval(this.interval)
         alert('ring ring!!')
     }
 
+    componentWillUnmount() {
+        if (this.timerRef) {
+            clearTimeout(this.timerRef)
+        }
+    }
+
     render () {
         const { timeout } = this.props
 
-        if (!timeout) return null
         return (
             <View>
-                {this.state.timer}
+                <Text>{this.state.stopwatch}</Text>
             </View>
         )
     }
@@ -61,4 +59,4 @@ export default connect(
     state => ({
         timer: state.game.timer
     })
-)(Timer)
+)(GameTimer)

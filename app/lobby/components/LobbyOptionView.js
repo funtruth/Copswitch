@@ -48,7 +48,7 @@ class LobbyOptionView extends Component {
 
                 <TouchableOpacity
                     style = {{alignItems:'center', flex:0.17}}
-                    onPress = {this._toggleMenu}>
+                >
                     <FontAwesome name='bars'
                         style={{color:colors.font, fontSize:25}}/>
                     <Text style = {styles.font}>Roles</Text>
@@ -61,14 +61,13 @@ class LobbyOptionView extends Component {
 
 const styles = {
     container:{
-        position: 'absolute',
-        left: 15,
-        right: 15,
-        bottom: 15,
         height: height*0.1,
+        width,
         flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#FFFFFF'
     },
     font: {
         fontFamily: 'FredokaOne-Regular',

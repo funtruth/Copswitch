@@ -11,11 +11,13 @@ import { leaveLobby } from './LobbyReducer'
 import LinearGradient from 'react-native-linear-gradient'
 
 import NavigationTool from '../navigation/NavigationTool'
-import { Header } from '../components';
-import LobbyPlayerView from './screens/LobbyPlayerView';
+import { Header } from '../components'
+import LobbyPlayerView from './screens/LobbyPlayerView'
 import LobbyNameModal from './screens/LobbyNameModal'
-import LobbyRolesView from './screens/LobbyRolesView';
-import LobbySetupView from './screens/LobbySetupView';
+import LobbyRolesView from './screens/LobbyRolesView'
+import LobbySetupView from './screens/LobbySetupView'
+
+import LobbyOptionView from './components/LobbyOptionView'
 
 const { height, width } = Dimensions.get('window')
 
@@ -46,6 +48,7 @@ class LobbyView extends Component {
                     <LobbySetupView />
                     <LobbyRolesView />
                 </ScrollView>
+                <LobbyOptionView />
                 <LobbyNameModal/>
             </LinearGradient>
         )
@@ -60,7 +63,8 @@ const styles = {
     },
     content: {
         height: 0.7*height,
-        width
+        width,
+        borderWidth: 1
     },
     contentContainer: {
         justifyContent: 'center'

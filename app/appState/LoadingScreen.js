@@ -14,16 +14,8 @@ import NavigationTool from '../navigation/NavigationTool'
 
 class LoadingScreen extends Component {
 
-    reset(){
-        AsyncStorage.removeItem('GAME-KEY')
-        AsyncStorage.removeItem('LOBBY-KEY')
-    }
-
     componentDidMount() {
         firebaseService.initUser()
-
-        //Debugging
-        //this.reset()
 
         this.props.refreshLobbyReducer()
         this.props.refreshGameReducer()
@@ -33,7 +25,7 @@ class LoadingScreen extends Component {
         const { lobbyKey, lobbyRefreshed, place,
             gameKey, gameRefreshed,
             loaded } = newProps
-        
+            
         //If data hasn't been fetched OR app already navigated
         if(!lobbyRefreshed || !gameRefreshed || loaded) return
         
@@ -44,7 +36,7 @@ class LoadingScreen extends Component {
         }
         
         //Wait for place before turning on GameListeners
-        if(gameKey && !place) return
+        if(gameKey && place === null) return
 
         if(gameKey){
             this.props.turnOnGameListeners()

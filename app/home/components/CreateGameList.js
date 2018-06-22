@@ -1,47 +1,40 @@
 import React, { Component } from 'react'
-import { View, Text, FlatList, TouchableOpacity } from 'react-native'
+import { View, Text, FlatList, TouchableOpacity, Dimensions } from 'react-native'
 import { Modes } from '../../library/games'
+
+const { height, width } = Dimensions.get('window')
 
 class CreateGameList extends Component {
     constructor(props){
         super(props)
         this.state = {
-            gameModeSelected: null,
-            gameModeData: [],
+            pressedKey: null
         }
     }
 
-    componentDidMount() {
-        let gameModes = []
-        for(var i=0; i<Modes.length; i++){
-            gameModes.push(Modes[i])
-        }
-        this.setState({
-            gameModeData: gameModes
-        })
-    }
-
-    _onPress = (key) => {
-        if (this.state.gameModeSelected === key) {
-            this.props.createRoom.bind(null,key)
+    _onPress(key) {
+        if (this.state.pressedKey === key) {
+            this.props.createRoom(key)
         } else {
             this.setState({
-                gameModeSelected: key
+                pressedKey: key
             })
         }
     }
 
     renderItem = ({item}) => {
-        const { pressedContainer, unpressedContainer } = styles
-
-        let pressed = item.key === this.state.gameModeSelected
+        const { sharedStyle, pressedStyle, unpressedStyle, title, desc } = styles
+        const pressed = (item.key === this.state.pressedKey)
         
         return (
             <TouchableOpacity 
-                style={pressed?pressedContainer:unpressedContainer}
-                onPress={this._onPress(item.key)}
+                style={[sharedStyle, {
+                    opacity: pressed?1:0.65
+                }]}
+                onPress={this._onPress.bind(this, item.key)}
             >
-
+                <Text style={title}>{item.display}</Text>
+                {pressed && <Text style={desc}>{item.desc}</Text>}
             </TouchableOpacity>
         )
     }
@@ -54,8 +47,11 @@ class CreateGameList extends Component {
         return (
             <View style={container}>
                 <FlatList
-                    data={this.state.gameModeData}
+                    data={Modes}
+                    extraData={this.state.pressedKey}
                     renderItem={this.renderItem}
+                    ItemSeparatorComponent={() => <View style={{height: 4}}/>}
+                    showsVerticalScrollIndicator={false}
                     keyExtractor={this.keyExtractor}
                 />
             </View>
@@ -64,11 +60,34 @@ class CreateGameList extends Component {
 }
 
 const styles = {
-    pressedContainer: {
-        height: 100, width: 200, backgroundColor: 'red'
+    container: {
+        flex: 0.6,
+        alignItems: 'center'
     },
-    unpressedContainer: {
-
+    sharedStyle: {
+        borderWidth: 3,
+        borderColor: '#A6895D',
+        height: 0.25*width,
+        width: 0.7*width,
+        justifyContent: 'center'
+    },
+    pressedStyle: {
+        opacity: 1
+    },
+    unpressedStyle: {
+        opacity: 0.65
+    },
+    title: {
+        fontFamily: 'BarlowCondensed-Medium',
+        fontSize: 25,
+        color: '#A6895D',
+        alignSelf: 'center'
+    },
+    desc: {
+        fontFamily: 'BarlowCondensed-Regular',
+        fontSize: 14,
+        color: '#A6895D',
+        textAlign: 'center'
     }
 }
 

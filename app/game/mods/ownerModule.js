@@ -8,15 +8,12 @@ class ownerModule{
     constructor(){
         this.roomId = null
 
+        //true or false, not uid
         this.owner = false
 
         this.roomRef = null
-        this.readyRef = null
         this.counterRef = null
-
         this.listRef = null
-        this.logRef = null
-        this.eventsRef = null
 
         this.listeners = []
 
@@ -37,12 +34,8 @@ class ownerModule{
         if(!this.roomId) return
 
         this.roomRef = firebase.database().ref(`rooms/${this.roomId}`)
-        this.readyRef = firebase.database().ref(`rooms/${this.roomId}/ready`)
         this.counterRef = firebase.database().ref(`rooms/${this.roomId}/counter`)
-
         this.listRef = firebase.database().ref(`rooms/${this.roomId}/list`)
-        this.logRef = firebase.database().ref(`rooms/${this.roomId}/log`)
-        this.eventsRef = firebase.database().ref(`rooms/${this.roomId}/events`)
     }
 
     wipeGame(){
@@ -54,6 +47,10 @@ class ownerModule{
 
         if(mode) this.turnOnListeners()
         else this.turnOffListeners()
+    }
+
+    checkOwnership() {
+        return this.owner
     }
 
     turnOnListeners() {

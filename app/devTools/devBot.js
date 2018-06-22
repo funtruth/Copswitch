@@ -24,7 +24,6 @@ class DevBot extends Component {
             <View style={buttons}>
                 <FlatList
                     data={Commands}
-                    inverted
                     renderItem={this.renderButton}
                     keyExtractor={this.keyExtractor}
                 />

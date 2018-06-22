@@ -33,7 +33,9 @@ class CreateSlide extends Component {
                     children='CREATE ROOM'
                     subtitle='DOUBLE TAP A GAME MODE TO SELECT'
                 />
-                <CreateGameList createRoom={createRoom}/>
+                <CreateGameList
+                    createRoom={createRoom}
+                />
             </LinearGradient>
         )
     }
@@ -42,7 +44,8 @@ class CreateSlide extends Component {
 const styles = {
     container:{
         flex: 1,
-        alignItems: 'center'
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     headerText: {
         fontFamily: 'BarlowCondensed-Medium',
