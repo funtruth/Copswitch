@@ -5,13 +5,15 @@ import MenuReducer from '../menu/MenuReducer'
 import HomeReducer from '../home/HomeReducer'
 import LobbyReducer from '../lobby/LobbyReducer'
 import GameReducer from '../game/GameReducer'
+import OwnerReducer from '../game/engine/OwnerReducer'
 
 const reducers = {
     appState: AppReducer,
     menu: MenuReducer,
     home: HomeReducer,
     lobby: LobbyReducer,
-    game: GameReducer
+    game: GameReducer,
+    owner: OwnerReducer
 }
 
 export default combineReducers( reducers )

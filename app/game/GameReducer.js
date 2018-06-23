@@ -1,6 +1,5 @@
 import { AsyncStorage } from 'react-native'
 import firebaseService from '../firebase/firebaseService'
-import ownerModule from './mods/ownerModule'
 
 const initialState = {
     roomId: null,
@@ -29,9 +28,13 @@ const CLEAR_LISTENERS = 'game/clear_listeners'
 //Listeners initialized in Game
 const NOMINATION_LISTENER = 'game/nomination_listener'
 const COUNTER_LISTENER = 'game/counter_listener'
+const PHASE_LISTENER = 'game/phase_listener'
+const DAYNUM_LISTENER = 'game/daynum_listener'
 const MY_READY_LISTENER = 'game/my_ready_listener'
 const MY_INFO_LISTENER = 'game/my_info_listener'
 const PLAYER_LIST_LISTENER = 'game/player_list_listener'
+const PLAYER_NUM_LISTENER = 'game/player_num_listener'
+const TRIGGER_NUM_LISTENER = 'game/trigger_num_listener'
 const NEWS_LISTENER = 'game/news_listener'
 
 const TIMEOUT_LISTENER = 'game/timeout_listener'
@@ -101,8 +104,15 @@ function newRoomInfo(snap, listener){
                 dispatch({
                     type: COUNTER_LISTENER,
                     payload: snap.val()
+                }),
+                dispatch({
+                    type: PHASE_LISTENER,
+                    payload: snap.val()%2
+                }),
+                dispatch({
+                    type: DAYNUM_LISTENER,
+                    payload: (snap.val() - snap.val()%2)/2 + 1
                 })
-                ownerModule.passCounterInfo(snap.val()%2, snap.val())
                 break
             case 'myReady':
                 dispatch({
@@ -117,8 +127,18 @@ function newRoomInfo(snap, listener){
                 })
                 break
             case 'list':
-                //TODO player list is not keyed in redux right now
-                ownerModule.passPlayerList(snap.val())
+                let alivePlayers = 0;
+                for(i=0; i<snap.val().length; i++){
+                    if (!snap.val()[i].dead) alivePlayers++
+                }
+                dispatch({
+                    type: PLAYER_NUM_LISTENER,
+                    payload: alivePlayers
+                })
+                dispatch({
+                    type: TRIGGER_NUM_LISTENER,
+                    payload: ((alivePlayers - alivePlayers%2)/2) + 1
+                })
                 dispatch({
                     type: PLAYER_LIST_LISTENER,
                     payload: snap.val()
@@ -155,8 +175,6 @@ export function gameOver() {
     return (dispatch) => {
         AsyncStorage.removeItem('LOBBY-KEY');
         AsyncStorage.removeItem('GAME-KEY');
-
-        ownerModule.gameOver()
         
         NavigationTool.navigate('Home')
     }
@@ -176,13 +194,21 @@ export default (state = initialState, action) => {
         case NOMINATION_LISTENER:
             return { ...state, nomination: action.payload }
         case COUNTER_LISTENER:
-            return { ...state, counter: action.payload, phase: action.payload%2, dayNum: (action.payload-action.payload%2)/2+1 }
+            return { ...state, counter: action.payload }
+        case PHASE_LISTENER:
+            return { ...state, phase: action.payload }
+        case DAYNUM_LISTENER:
+            return { ...state, dayNum: action.payload }
         case MY_READY_LISTENER:
             return { ...state, myReady: action.payload }
         case MY_INFO_LISTENER:
             return { ...state, roleid: action.payload.roleid, alive: !action.payload.dead }
         case PLAYER_LIST_LISTENER:
             return { ...state, playerList: action.payload }
+        case PLAYER_NUM_LISTENER:
+            return { ...state, playerNum: action.payload }
+        case TRIGGER_NUM_LISTENER:
+            return { ...state, triggerNum: action.payload }
         case NEWS_LISTENER:
             return { ...state, news: [{message: action.payload.val(), key: action.payload.key}, ...state.news] }
         case TIMEOUT_LISTENER:

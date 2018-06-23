@@ -8,5 +8,6 @@ export const fontFamily = {
 export const colors = {
     dark: '#372C24',
     light: '#A6895D',
-    title: '#A38455'
+    title: '#A38455',
+    gradient: ['#3A2F26', '#2E2620']
 }

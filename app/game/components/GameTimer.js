@@ -1,11 +1,15 @@
 import React, { Component } from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, Dimensions } from 'react-native'
 import { connect } from 'react-redux'
+import { Styler } from '@common'
+
+const { height, width } = Dimensions.get('window')
 
 class GameTimer extends Component {
     state = {
         stopwatch: null
     }
+    endTime = null
 
     componentWillReceiveProps(newProps) {
         if (!newProps.timeout) {
@@ -13,25 +17,22 @@ class GameTimer extends Component {
             return
         }
 
-        let endTime = newProps.timeout
-        let myTime = Date.now()
-        let countdown = endTime - myTime
-
-        this.setState({ stopwatch: Math.round(countdown/1000) })
-
-        this.timerRef = setTimeout(this._alarm,countdown)
+        this.endTime = newProps.timeout
         this.interval = setInterval(this._oneSecondPassed, 1000)
     }
 
-    _clearTimers() {
-
+    _oneSecondPassed = () => {
+        let diff = Date.now() - this.endTime
+        if (diff <= 0) this._alarm()
+        
+        this.setState({
+            stopwatch: Math.round(diff/1000)
+        })
     }
 
-    _oneSecondPassed = () => this.setState({ stopwatch: this.state.stopwatch - 1 })
-
-    _alarm = () => {
+    _alarm() {
+        this.endTime = null
         clearInterval(this.interval)
-        alert('ring ring!!')
     }
 
     componentWillUnmount() {
@@ -44,8 +45,15 @@ class GameTimer extends Component {
         const { timeout } = this.props
 
         return (
-            <View>
-                <Text>{this.state.stopwatch}</Text>
+            <View style={{
+                height,
+                width,
+                justifyContent: 'center',
+                alignItems: 'center'
+            }}>
+                <Text style={{
+                    fontFamily: Styler.fontFamily.Regular
+                }}>{this.state.stopwatch}</Text>
             </View>
         )
     }
@@ -57,6 +65,6 @@ const styles = {
 
 export default connect(
     state => ({
-        timer: state.game.timer
+        timeout: state.game.timeout
     })
 )(GameTimer)

@@ -1,7 +1,7 @@
 import RNFirebase from 'react-native-firebase';
 
 const configurationOptions = {
-  debug: true,
+  debug: false,
   apiKey: "AIzaSyCTzqSB0g2r_E9SOUNOzd6_Q29wQXBpHTs",
   authDomain: "huddlec-4205b.firebaseapp.com",
   databaseURL: "https://huddlec-4205b.firebaseio.com",

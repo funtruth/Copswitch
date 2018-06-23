@@ -1,7 +1,7 @@
 import { AsyncStorage } from 'react-native'
 import firebaseService from '../firebase/firebaseService'
-import ownerModule from '../game/mods/ownerModule'
 import NavigationTool from '../navigation/NavigationTool';
+import { ownershipMode } from '../game/engine/OwnerReducer'
 
 const LOBBY_KEY = 'LOBBY-KEY'
 
@@ -110,7 +110,7 @@ function newLobbyInfo(snap, listener){
         switch(listener){
             case 'owner':
                 let ownership = snap.val() === firebaseService.getUid()
-                ownerModule.ownerMode(ownership)
+                dispatch(ownershipMode(ownership))
                 dispatch({
                     type: OWNER_LISTENER,
                     payload: snap.val()
@@ -162,7 +162,7 @@ function newLobbyInfo(snap, listener){
     }
 }
 
-export function clearListeners(){
+function clearListeners(){
     return (dispatch, getState) => {
         const { activeListeners } = getState().lobby
         for(var i=0; i<activeListeners.length; i++){

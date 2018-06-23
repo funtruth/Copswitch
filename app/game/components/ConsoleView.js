@@ -12,7 +12,6 @@ import { Phases } from '../../misc/phases.js';
 import { Styler } from '@common'
 
 import firebaseService from '../../firebase/firebaseService';
-import ownerModule from '../mods/ownerModule';
 import Separator from '../../components/Separator.js';
 
 const { height, width } = Dimensions.get('window')

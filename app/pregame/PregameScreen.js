@@ -5,16 +5,13 @@ import { turnOnGameListeners } from '../game/GameReducer'
 import { setupAndStartGame } from './PregameReducer';
 
 import NavigationTool from '../navigation/NavigationTool'
-import ownerModule from '../game/mods/ownerModule'
 
 class PregameScreen extends Component {
     componentDidMount() {
-        const { roomStatus } = this.props
-        if (roomStatus === 'Starting') {
-            let ownership = ownerModule.checkOwnership()
-            if (ownership) {
-                this.props.setupAndStartGame()
-            }
+        const { roomStatus, ownership } = this.props
+        console.log('props didmount', roomStatus, ownership)
+        if (roomStatus === 'Starting' && ownership) {
+            this.props.setupAndStartGame()
         }
     }
 
@@ -35,7 +32,8 @@ class PregameScreen extends Component {
 
 export default connect(
     state => ({
-        roomStatus: state.lobby.roomStatus
+        roomStatus: state.lobby.roomStatus,
+        ownership: state.owner.ownership
     }),
     dispatch => {
         return {

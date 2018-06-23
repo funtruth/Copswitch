@@ -6,27 +6,28 @@ import {
     ScrollView
 }   from 'react-native'
 import { connect } from 'react-redux'
+import { Styler } from '@common'
 
+import LinearGradient from 'react-native-linear-gradient'
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import { ConsoleView, General, Nomination, PlayerListView, Private } from './components'
+import { ConsoleView, GameTimer, General, Nomination, PlayerListView, Private } from './components'
 
 import NavigationTool from '../navigation/NavigationTool'
 import firebaseService from '../firebase/firebaseService'
-import ownerModule from './mods/ownerModule'
 
 class GameScreen extends Component {
     render() {
         return (
-            <View style = {{flex:1}}>
+            <LinearGradient colors={Styler.colors.gradient} style = {{flex:1}}>
                 <ScrollView>
                     <ScrollView horizontal>
                         <ConsoleView />
-                        <ConsoleView />
+                        <GameTimer />
                     </ScrollView>
 
                     <PlayerListView />
                 </ScrollView>
-            </View>
+            </LinearGradient>
         )
     }
 }

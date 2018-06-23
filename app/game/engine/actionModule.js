@@ -1,6 +1,6 @@
 import firebaseService from '../../firebase/firebaseService';
 
-import { Roles } from '../../misc/roles.js';
+import Roles from '../../misc/roles.js';
 import { Defaults } from '../../commands/announcerPack';
 
 const s = ','
@@ -27,12 +27,21 @@ class actionModule{
         this.events = []
     }
 
-    passChoices(choices){
-        this.choices = choices
-    }
-
-    passPlayers(players){
+    runActionModule(players, choices) {
         this.players = players
+        this.choices = choices
+
+        this.updateAlive()
+
+        this.prepareNight()
+        this.shuffle()
+        this.prepareRoles()
+        this.doRoles()
+        this.postMortem()
+
+        this.cleanUpPlayerState()
+        this.checkNews()
+        this.pushToDatabase()
     }
 
     /*

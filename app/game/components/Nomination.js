@@ -8,7 +8,6 @@ import {
 
 import { Button } from '../../components/Button';
 import firebaseService from '../../firebase/firebaseService';
-import ownerModule from '../mods/ownerModule';
 
 
 class Nomination extends Component {

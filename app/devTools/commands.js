@@ -68,6 +68,15 @@ export default Commands = [
         }
     },
     {
+        key: 'GET_TIME',
+        buttonText: 'Whats the time dawg??',
+        onPress: () => {
+            let timestamp = Date.now()
+            console.log('Current time:', timestamp)
+            alert(timestamp)
+        }
+    },
+    {
         key: 'testpush',
         buttonText: 'test',
         onPress: () => {
