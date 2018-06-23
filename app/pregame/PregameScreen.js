@@ -5,28 +5,24 @@ import { turnOnGameListeners } from '../game/GameReducer'
 import { setupAndStartGame } from './PregameReducer';
 
 import NavigationTool from '../navigation/NavigationTool'
-import firebaseService from '../firebase/firebaseService'
 import ownerModule from '../game/mods/ownerModule'
 
 class PregameScreen extends Component {
     componentDidMount() {
-        ownerModule.initOwnerRefs()
-        let ownership = ownerModule.checkOwnership()
-        if (ownership) {
-            //this.props.setupAndStartGame()
+        const { roomStatus } = this.props
+        if (roomStatus === 'Starting') {
+            let ownership = ownerModule.checkOwnership()
+            if (ownership) {
+                this.props.setupAndStartGame()
+            }
         }
     }
 
     componentWillReceiveProps(newProps){
-        console.log('receiving new props', newProps)
-        const { roomStatus, roleid } = newProps
+        const { roomStatus } = newProps
+        console.log('props', newProps)
 
-        //TODO consider adding more criteria to get in game
-        if(!roleid) return
-        
-        console.log('status', roomStatus, roleid)
-        //TODO does this trigger when in stack?
-        if(roomStatus === 'Running'){
+        if (roomStatus === 'Running') {
             this.props.turnOnGameListeners()
             NavigationTool.navigate('Game')
         }
@@ -39,8 +35,7 @@ class PregameScreen extends Component {
 
 export default connect(
     state => ({
-        roomStatus: state.lobby.roomStatus,
-        roleid: state.game.roleid
+        roomStatus: state.lobby.roomStatus
     }),
     dispatch => {
         return {

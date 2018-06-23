@@ -9,10 +9,10 @@ import {
 import { connect } from 'react-redux'
 import { gameChoice } from '../GameReducer'
 import { Phases } from '../../misc/phases.js';
+import { Styler } from '@common'
 
 import firebaseService from '../../firebase/firebaseService';
 import ownerModule from '../mods/ownerModule';
-import Styler from '../../common/Styler.js';
 import Separator from '../../components/Separator.js';
 
 const { height, width } = Dimensions.get('window')
@@ -40,18 +40,18 @@ class ConsoleView extends Component {
                 justifyContent: 'center',
                 alignItems: 'center'
             }}>
-                <Text style = {[styles.header,Styler.default]}>
+                <Text style = {styles.header}>
                     {Phases[phase].name+' '+dayNum}</Text>
 
                 <View style={{width:'50%', alignItems:'center', margin: 20}}>
                     <TouchableOpacity
                         onPress = {this.buttonOnePress}
-                    ><Text style = {[styles.choiceButton,Styler.fading]}>{Phases[phase].buttonOne}</Text>
+                    ><Text style = {styles.choiceButton}>{Phases[phase].buttonOne}</Text>
                     </TouchableOpacity>
                     <Separator />
                     <TouchableOpacity
                         onPress = {this.buttonTwoPress}
-                    ><Text style = {[styles.choiceButton,Styler.fading]}>{Phases[phase].buttonTwo}</Text>
+                    ><Text style = {styles.choiceButton}>{Phases[phase].buttonTwo}</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -61,11 +61,15 @@ class ConsoleView extends Component {
 
 const styles = {
     header:{
+        fontFamily: Styler.fontFamily.Medium,
         fontSize:30,
         marginBottom:5,
         alignSelf:'center'
     },
     choiceButton: {
+        fontFamily: Styler.fontFamily.Regular,
+        color: 'white',
+        opacity: 0.8,
         fontSize: 20,
         margin:4
     }

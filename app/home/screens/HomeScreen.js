@@ -7,8 +7,8 @@ import {
     Dimensions
 }   from 'react-native'
 import LinearGradient from 'react-native-linear-gradient'
+import { Styler } from '@common'
 
-import * as Styler from '@common'
 import NavigationTool from '../../navigation/NavigationTool'
 
 import joinBook from '../../../assets/images/JoinRoomBook.png'
@@ -110,21 +110,21 @@ const styles = {
     },
     optionStyle: {
         fontSize:20,
-        fontFamily: 'BarlowCondensed-Medium',
+        fontFamily: Styler.fontFamily.Medium,
         color: '#C4C4C4'
     },
     THE: {
         fontSize:30,
-        fontFamily: 'BarlowCondensed-Medium',
-        color: '#A38455',
+        fontFamily: Styler.fontFamily.Medium,
+        color: Styler.colors.title,
         marginRight: 50
     },
     COPSWITCH: {
         fontSize:60,
-        fontFamily: 'BarlowCondensed-SemiBold',
-        color: '#A38455',
+        fontFamily: Styler.fontFamily.SemiBold,
+        color: Styler.colors.title,
         borderWidth: 2,
-        borderColor: '#A38455',
+        borderColor: Styler.colors.title,
         borderRadius: 3,
         paddingLeft: 10,
         paddingRight: 10,
@@ -132,8 +132,8 @@ const styles = {
     },
     CASES: {
         fontSize:35,
-        fontFamily: 'BarlowCondensed-Medium',
-        color: '#A38455',
+        fontFamily: Styler.fontFamily.Medium,
+        color: Styler.colors.title,
         marginRight: 50
     }
 }

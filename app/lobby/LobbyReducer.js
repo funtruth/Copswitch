@@ -65,7 +65,10 @@ export function leaveLobby(){
 
 export function refreshLobbyReducer() {
     return (dispatch) => {
-        AsyncStorage.getItem(LOBBY_KEY,(error,result)=>{
+        console.log('checkpoint')
+        AsyncStorage.getItem(LOBBY_KEY,(error,result) => {
+            //TODO sometimes this doesn't return anything - major BUG
+            console.log('error', error, 'result', result)
             dispatch({
                 type: REFRESH_ROOM_ID,
                 payload: result
@@ -74,6 +77,7 @@ export function refreshLobbyReducer() {
                 type: REFRESH_REDUCER
             })
         })
+        console.log('finished ...?')
     }
 }
 
@@ -183,7 +187,6 @@ export function startPregame() {
         }
 
         if(rolesLen === lobbyLen){
-            console.log('got here')
             let statusRef = firebaseService.fetchRoomRef('status')
             statusRef.set('Starting')
         }

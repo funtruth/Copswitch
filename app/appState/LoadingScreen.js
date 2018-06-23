@@ -6,7 +6,7 @@ import {
 import { connect } from 'react-redux'
 
 import { refreshLobbyReducer, joinRoom, turnOnLobbyListeners } from '../lobby/LobbyReducer'
-import { refreshGameReducer, turnOnGameListeners } from '../game/GameReducer'
+import { refreshGameReducer } from '../game/GameReducer'
 import { appStateLoaded } from '../appState/AppReducer'
 
 import firebaseService from '../firebase/firebaseService.js'
@@ -37,10 +37,6 @@ class LoadingScreen extends Component {
         
         //Wait for place before turning on GameListeners
         if(gameKey && place === null) return
-
-        if(gameKey){
-            this.props.turnOnGameListeners()
-        }
 
         this.props.appStateLoaded()
         

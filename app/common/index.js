@@ -1,4 +1,4 @@
-import Styler from './Styler'
+import * as Styler from './Styler'
 
 export {
     Styler

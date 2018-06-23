@@ -1,17 +1,13 @@
 import firebaseService from "../firebase/firebaseService";
 
-initialState = {
-
-}
+initialState = {}
 
 export function setupAndStartGame(){
     return (dispatch, getState) => {
-        const { roleList, lobbyList } = getState().lobby
-        const roles = roleList.val()
-        const lobby = lobbyList.val()
-        let rolesArr = [];
+        const { placeList, roleList, lobbyList } = getState().lobby
     
-        let roleListKeys = Object.keys(roleList)
+        const roles = roleList.val()
+        let rolesArr = [];
         for(var i in roles){
             for(var j=0; j<roles[i]; j++){
                 rolesArr.push(i)
@@ -33,17 +29,17 @@ export function setupAndStartGame(){
         //Finishing player details
         let list = []
         let ready = []
-
+        const lobby = lobbyList.val()
         counter = 0
-        for(var i in lobby){
+        placeList.forEach(child => {
             list.push({
-                name: lobby[i].name,
-                uid: i,
+                name: lobby[child.val()].name,
+                uid: child.val(),
                 roleid: rolesArr[counter]
             })
             ready.push(false)
             counter++
-        }
+        })
 
         let roomRef = firebaseService.fetchRoomRef('')
         roomRef.update({
@@ -52,7 +48,6 @@ export function setupAndStartGame(){
             counter: 3,
             status: 'Running'
         })
-        
     }
 }
 

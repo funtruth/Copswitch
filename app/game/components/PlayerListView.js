@@ -9,11 +9,10 @@ import {
 import { connect } from 'react-redux'
 import { gameChoice } from '../GameReducer'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { Styler } from '@common'
+import firebaseService from '../../firebase/firebaseService';
 
 import Separator from '../../components/Separator'
-import Styler from '../../common/Styler'
-
-import firebaseService from '../../firebase/firebaseService';
 
 const { height, width } = Dimensions.get('window')
 
@@ -38,7 +37,7 @@ class PlayerListView extends Component {
                             style={{color:colors.font, fontSize:15, alignSelf:'center'}}/>
                     </View>
                     <View style = {{flex:0.7, justifyContent:'center'}}>
-                        <Text style = {[styles.player,Styler.fading]}>{item.name}</Text>
+                        <Text style = {styles.player}>{item.name}</Text>
                     </View>
                     <View style={{flex:0.15}}/>
                 </View>
@@ -60,8 +59,8 @@ class PlayerListView extends Component {
                 alignItems: 'center'
             }}>
                 <View style={{flex:0.7}}>
-                    <Text style={[styles.header1,Styler.default]}>WhO are yOu</Text>
-                    <Text style={[styles.header2,Styler.default]}>Visiting?</Text>
+                    <Text style={styles.header1}>Who are you</Text>
+                    <Text style={styles.header2}>Visiting?</Text>
                     <FlatList
                         data={this.props.playerList}
                         ItemSeparatorComponent={() => <Separator/>}
@@ -76,12 +75,15 @@ class PlayerListView extends Component {
 
 const styles = {
     header1: {
+        fontFamily: Styler.fontFamily.Medium,
         fontSize: 19
     },
     header2: {
+        fontFamily: Styler.fontFamily.Regular,
         fontSize: 25
     },
     player: {
+        fontFamily: Styler.fontFamily.Regular,
         fontSize: 16,
         alignSelf: 'center',
         margin: 5

@@ -26,18 +26,6 @@ class ownerModule{
         this.nominate = null
     }
 
-    //TODO
-    //Balance check - end game
-
-    initOwnerRefs(){
-        this.roomId = firebaseService.getRoomId()
-        if(!this.roomId) return
-
-        this.roomRef = firebase.database().ref(`rooms/${this.roomId}`)
-        this.counterRef = firebase.database().ref(`rooms/${this.roomId}/counter`)
-        this.listRef = firebase.database().ref(`rooms/${this.roomId}/list`)
-    }
-
     wipeGame(){
 
     }
@@ -45,7 +33,14 @@ class ownerModule{
     ownerMode(mode){
         this.owner = mode
 
-        if(mode) this.turnOnListeners()
+        if(mode) {
+            this.turnOnListeners()
+            this.roomId = firebaseService.getRoomId()
+
+            this.roomRef = firebase.database().ref(`rooms/${this.roomId}`)
+            this.counterRef = firebase.database().ref(`rooms/${this.roomId}/counter`)
+            this.listRef = firebase.database().ref(`rooms/${this.roomId}/list`)
+        }
         else this.turnOffListeners()
     }
 
