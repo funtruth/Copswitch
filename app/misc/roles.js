@@ -23,6 +23,7 @@ export default Roles = {
         rules : "Choose a player to kill. If inspected by the Detective, the Assassin will not appear suspicious.",
         tag : "dead",
         targetTown : true,
+        killer : "e",
         type : 1,
     },
     d : {
@@ -32,6 +33,7 @@ export default Roles = {
         sus : true,
         tag : "dead",
         targetTown : true,
+        killer : "e",
         type : 1,
     },
     e : {
@@ -41,6 +43,7 @@ export default Roles = {
         sus : true,
         tag : "dead",
         targetTown : true,
+        killer : "e",
         type : 1,
     },
     f : {

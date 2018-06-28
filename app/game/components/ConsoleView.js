@@ -8,13 +8,14 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux'
 import { gameChoice } from '../GameReducer'
-import { Phases } from '../../misc/phases.js';
+import { GameInfo } from '@library';
 import { Styler } from '@common'
 
 import firebaseService from '../../firebase/firebaseService';
 import Separator from '../../components/Separator.js';
 
 const { height, width } = Dimensions.get('window')
+const { Phases } = GameInfo
 
 class ConsoleView extends Component {
         

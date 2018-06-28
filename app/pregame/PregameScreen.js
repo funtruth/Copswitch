@@ -9,7 +9,7 @@ import NavigationTool from '../navigation/NavigationTool'
 class PregameScreen extends Component {
     componentDidMount() {
         const { roomStatus, ownership } = this.props
-        console.log('props didmount', roomStatus, ownership)
+        
         if (roomStatus === 'Starting' && ownership) {
             this.props.setupAndStartGame()
         }
@@ -17,7 +17,6 @@ class PregameScreen extends Component {
 
     componentWillReceiveProps(newProps){
         const { roomStatus } = newProps
-        console.log('props', newProps)
 
         if (roomStatus === 'Running') {
             this.props.turnOnGameListeners()

@@ -107,11 +107,11 @@ function newRoomInfo(snap, listener){
                 }),
                 dispatch({
                     type: PHASE_LISTENER,
-                    payload: snap.val()%2
+                    payload: snap.val()%3
                 }),
                 dispatch({
                     type: DAYNUM_LISTENER,
-                    payload: (snap.val() - snap.val()%2)/2 + 1
+                    payload: Math.floor(snap.val()/3)
                 })
                 break
             case 'myReady':

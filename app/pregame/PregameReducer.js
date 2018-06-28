@@ -45,7 +45,7 @@ export function setupAndStartGame(){
         roomRef.update({
             list: list,
             ready: ready,
-            counter: 3,
+            counter: 0,
             status: 'Running'
         })
     }

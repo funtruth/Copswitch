@@ -9,7 +9,7 @@ import {
 import { Button } from '../../components/Button';
 import firebaseService from '../../firebase/firebaseService';
 
-
+//DEPRECATED
 class Nomination extends Component {
         
     constructor(props) {

@@ -87,6 +87,15 @@ export default Commands = [
                 }
             })
         }
+    },
+    {
+        key: 'teststuff',
+        buttonText: 'test array stuff',
+        onPress: () => {
+            let bundle = {}
+            bundle[`rooms/${DEV_ROOM}/teststuff`] = ['this', 'is', 'a', 'test']
+            firebase.database().ref().update(bundle)
+        }
     }
 
 ]

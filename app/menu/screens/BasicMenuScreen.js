@@ -5,33 +5,13 @@ import {
 }   from 'react-native';
 
 import { Button } from '../../components/Button.js';
-
 import colors from '../../misc/colors.js';
 
-
 class BasicMenuScreen extends Component {
-
     constructor(props) {
         super(props);
     }
 
-    //TODO: Create button in bottom left
-    _deleteRoom() {
-        AsyncStorage.removeItem('LOBBY-KEY');
-        AsyncStorage.removeItem('GAME-KEY');
-        this.props.screenProps.navigate('Home')
-    }
-
-    //TODO i don't like how this is done ew
-    _renderQuit(){
-        /*if(this.props.screenProps.quit){
-            return <Button
-                horizontal = {0.4}
-                onPress = {()=>{ this._deleteRoom() }}
-                ><Text style = {styles.listfont}>Quit</Text>
-            </Button>
-        } else return null*/
-    }
 
     render(){
         return <View>
@@ -62,8 +42,6 @@ class BasicMenuScreen extends Component {
                 }}
                 ><Text style = {styles.listfont}>About</Text>
             </Button>
-
-            {this._renderQuit()}
             
         </View>
     }

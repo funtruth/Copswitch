@@ -10,6 +10,7 @@ class actionModule{
     constructor(){
         this.choices = []
         this.players = []
+        this.counter = null
 
         this.order = []
         this.lifeStatus = []
@@ -17,7 +18,7 @@ class actionModule{
         this.events = []
     }
 
-    clear(){
+    reset(){
         this.choices = []
         this.players = []
 
@@ -27,9 +28,12 @@ class actionModule{
         this.events = []
     }
 
-    runActionModule(players, choices) {
+    runModule(players, choices, counter) {
+        this.reset()
+        
         this.players = players
         this.choices = choices
+        this.counter = counter
 
         this.updateAlive()
 
@@ -305,11 +309,16 @@ class actionModule{
 
     pushToDatabase(){
         firebaseService.fetchRoomRef('').update({
-            news: this.news,
-            events: [{2:this.events}],
+            news: {
+                [this.counter]: this.news
+            },
+            events: {
+                [this.counter]: this.events
+            },
             list: this.players,
-            choice: null
-        })   
+            choice: null,
+            ready: null
+        })
     }
 
 }

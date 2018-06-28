@@ -1,9 +1,11 @@
 import firebaseService from '../../firebase/firebaseService'
 import actionModule from './actionModule'
+import votingModule from './votingModule';
+import lynchingModule from './lynchingModule';
 
 const initialState = {
     ownership: false,
-    activeListeners: [],
+    activeListeners: []
 }
 
 const OWNERSHIP_LISTENER = 'owner/ownership_listener'
@@ -16,7 +18,6 @@ export function ownershipMode(ownership) {
             type: OWNERSHIP_LISTENER,
             payload: ownership
         })
-        console.log('ownership', ownership)
         if (ownership) {
             dispatch(turnOnListeners())
         } else {
@@ -29,7 +30,6 @@ function turnOnListeners() {
     return (dispatch) => {
         dispatch(ownerListenerOn('loaded','loaded','value'))
         dispatch(ownerListenerOn('choice','choice','value'))
-        dispatch(ownerListenerOn('votes','votes','value'))
     }
 }
 
@@ -46,140 +46,51 @@ function ownerListenerOn(listener, listenerPath, listenerType) {
     }
 }
 
+/*
+Modules removes the 'ready' ref, which brings players to the loading screen.
+They will write to the 'loaded' ref to indicate they are active,
+The owner listens to 'loaded' ref, and will change the phase once everyone is done.
+*/
 function handleNewInfo(snap, listener) {
     return (dispatch, getState) => {
         if (!snap.exists()) return
 
         let roomRef = firebaseService.fetchRoomRef('')
+        let batchUpdates = {}
+        const {
+            counter, phase,
+            playerNum, triggerNum,
+            playerList, nomination
+        } = getState().game
 
-        const { counter, phase, playerNum, triggerNum, playerList } = getState().game
-        if (!counter) return
         switch(listener){
             case 'loaded':
                 if (snap.numChildren() < playerNum) return
 
-                roomRef.update({counter: counter+1})
-                .then(()=>{
-                    var ready = []
-                    for(i=0; i<playerList.length; i++){
-                        ready[i] = false
-                    }
+                (ready = []).length = playerList.length
+                ready.fill(false)
 
-                    roomRef.update({
-                        ready,
-                        loaded: null,
-                        choice: null
-                    })
+                roomRef.update({
+                    counter: counter+1,
+                    ready,
+                    loaded: null,
+                    choice: null
                 })
                 break
             case 'choice':
                 let total = 0;
-
-                for(i=0;i<snap.val().length;i++){
+                for(i=0; i<snap.val().length; i++){
                     if(snap.val()[i]) total++
                 }
 
-                if (phase == 0 && total>=triggerNum){
-                    let flag = false;
-
-                    for(var i=0; i<triggerNum; i++){
-                        let count = 0;
-                        let players = 0;
-
-                        if(snap.val()[i] && snap.val()[i]!=-1){
-
-                            for(j=0; j<playerNum; j++){
-                                if(snap.val()[i] == snap.val()[j]){
-                                    count++
-                                }
-                            }
-
-                            if(count >= triggerNum){
-                                flag = true
-                                roomRef.update({nominate:snap.val()[i]}).then(()=> {}
-                                    //this._globalMsg(playerList[snap.val()[i]].name + ' has been nominated.')
-                                )
-                            }
-                            players++;
-                        }
-
-                        if(flag) break
-                    }
-
-                    if(flag){
-                        //ref.remove();
-
-                    } else if(!flag && players >= playerNum){
-                        //ref.remove();
-                        //this._resetDayStatuses();
-                        dispatch(changePhase())
-                    }
-                    
-                } else if (phase == 1 && total >= playerNum){
-                    actionModule.clear()
-                    actionModule.runActionModule(playerList, snap.val())
-
-                    //TODO wait for a promise or somehitng
-                    dispatch(changePhase())
+                if (phase == 0 && total >= triggerNum){
+                    lynchingModule.runModule(playerList, snap.val(), counter, triggerNum, playerNum)
+                } else if (phase == 1 && total >= playerNum - 1){
+                    votingModule.runModule(playerList, snap.val(), counter, nomination)
+                } else if (phase == 2 && total >= playerNum){
+                    actionModule.runModule(playerList, snap.val(), counter)
                 }
-                break
-            case 'votes':
-                let totalVotes = 0;
-
-                for(i=0;i<snap.val().length;i++){
-                    if(snap.val()[i]) totalVotes++
-                }
-
-                if(totalVotes >= playerNum - 1){
-
-                    var count = 0
-                    var names = []
-                    var nameString = ''
-
-                    for(var i=0; i<playerNum; i++){
-                        if(snap.val()[i] == -1){
-                            names.push(playerList[i].name)
-                            count++
-                        } else {
-                            count--
-                        }
-                    }
-
-                    for(var i=0; i<names.length; i++){
-                        nameString += names[i]
-                    }
-
-                    //this._globalMsg((nameString || 'Nobody') + ' voted against ' + playerList[this.nominate].name + '.')
-
-                    if(count>0){
-                        firebaseService.fetchRoomRef('list').child(this.nominate).update({dead:true})
-
-                        this._globalMsg(this.playerList[this.nominate].name + ' was hung.')
-
-                        if(this.playerList[this.nominate].roleid == 'a' || this.playerList[this.nominate].roleid == 'b'){
-                            //TODO NEW MURDERER LOGIC
-                        } 
-                    } else {
-                        //this._globalMsg(this.playerList[this.nominate].name + ' was not hung.')
-                        firebaseService.fetchRoomRef('nominate').remove()
-                    }
-                }
-                break
-            default:
         }
-    }
-}
-
-/*
-function changePhase removes the 'ready' ref, which does not directly change phase.
-instead, all players are brought to the loading screen,
-where they will write to the 'loaded' ref to indicate they are active.
-The owner listens to 'loaded' ref, and will actually change the phase once everyone is done.
-*/
-function changePhase() {
-    return (dispatch) => {
-        let readyRef = firebaseService.fetchRoomRef('ready')
-        readyRef.remove()
     }
 }
 
