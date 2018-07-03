@@ -111,7 +111,7 @@ function newRoomInfo(snap, listener){
                 }),
                 dispatch({
                     type: DAYNUM_LISTENER,
-                    payload: Math.floor(snap.val()/3)
+                    payload: Math.floor(snap.val()/3) + 1
                 })
                 break
             case 'myReady':
@@ -167,7 +167,7 @@ export function gameChoice(choice) {
         let myReadyRef = firebaseService.fetchRoomRef(`ready/${place}`)
 
         myChoiceRef.set(choice)
-            .then(()=>{myReadyRef.set(choice !== null)})
+            .then(() => myReadyRef.set(choice !== null))
     }
 }
 

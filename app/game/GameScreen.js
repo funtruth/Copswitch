@@ -18,7 +18,7 @@ import firebaseService from '../firebase/firebaseService'
 class GameScreen extends Component {
     render() {
         return (
-            <LinearGradient colors={Styler.colors.gradient} style = {{flex:1}}>
+            <LinearGradient colors={Styler.colors.gradient} style = {{flex:1, width: '100%'}}>
                 <ScrollView>
                     <ScrollView horizontal>
                         <ConsoleView />
@@ -27,6 +27,7 @@ class GameScreen extends Component {
 
                     <PlayerListView />
                 </ScrollView>
+                <General />
             </LinearGradient>
         )
     }

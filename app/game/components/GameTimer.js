@@ -32,6 +32,9 @@ class GameTimer extends Component {
 
     _alarm() {
         this.endTime = null
+        this.setState({
+            stopwatch: null
+        })
         clearInterval(this.interval)
     }
 
