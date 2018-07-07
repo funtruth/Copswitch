@@ -8,13 +8,16 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 class MenuButton extends Component {
     render() {
+        const { container, padding, iconStyle, fontStyle } = styles
+        const { toggleMenu } = this.props
+
         return(
             <TouchableOpacity 
-                style = {styles.container}
-                onPress = { this.props.onPress }>
-                <View style = { styles.padding }>
-                    <FontAwesome name='book' style={styles.iconStyle}/>
-                    <Text style = {styles.fontStyle}>Menu</Text>
+                style={container}
+                onPress={toggleMenu}>
+                <View style={padding}>
+                    <FontAwesome name='book' style={iconStyle}/>
+                    <Text style={fontStyle}>Menu</Text>
                 </View>
             </TouchableOpacity>
         )
@@ -45,4 +48,11 @@ const styles = {
     }
 }
 
-export default MenuButton
+export default connect(
+    null,
+    dispatch => {
+        return {
+            toggleMenu: (payload) => dispatch(toggleMenu(payload))
+        }
+    }
+)(MenuButton)

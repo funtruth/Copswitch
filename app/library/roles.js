@@ -1,4 +1,4 @@
-export default Roles = {
+export const Roles = {
     a : {
         index : 0,
         name : "Informant",

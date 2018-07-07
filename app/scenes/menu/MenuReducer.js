@@ -1,6 +1,9 @@
 const initialState = {
     visible: false,
     section: null,
+
+    routes: [],
+    
 }
 
 const TOGGLE_MENU = 'menu/toggle_menu'

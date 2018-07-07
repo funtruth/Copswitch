@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 
 import { Button } from '@components/Button';
-import { Rules } from '../../misc/rules.json';
+import { Details } from '@library';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 class InfoPageScreen extends Component {
@@ -61,13 +61,13 @@ class InfoPageScreen extends Component {
         const { params } = this.props.navigation.state;
         const section = params.section;
 
-        var keys = Object.keys((Rules[section])[page]).sort()
+        var keys = Object.keys((Details[section])[page]).sort()
         var infolist = [];
         keys.forEach(function(key){
             infolist.push({
-                type:           ((Rules[section])[page])[key].type,
-                desc:           ((Rules[section])[page])[key].desc,
-                route:          ((Rules[section])[page])[key].route,
+                type:           ((Details[section])[page])[key].type,
+                desc:           ((Details[section])[page])[key].desc,
+                route:          ((Details[section])[page])[key].route,
                 key:            key,
             })
         })
@@ -75,8 +75,8 @@ class InfoPageScreen extends Component {
             infolist:   infolist,
             section:    section,
             page:       page,
-            title:      (Rules.headers)[section],
-            lastpage:       Object.keys(Rules[section]).length,
+            title:      (Details[section].title)[section],
+            lastpage:       Object.keys(Details[section]).length,
         })
     }
 

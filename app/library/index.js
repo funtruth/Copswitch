@@ -1,8 +1,7 @@
 import * as Announcer from './announcerPack'
 import * as GameInfo from './games'
-import Menus from './menus.json'
-import Roles from './roles'
-import Rules from './rules.json'
+import * as Menus from './menus.json'
+import * as Roles from './roles'
 import * as Strings from './strings'
 
 export {
@@ -10,6 +9,5 @@ export {
     GameInfo,
     Menus,
     Roles,
-    Rules,
     Strings
 }
