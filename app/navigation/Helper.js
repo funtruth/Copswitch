@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
-import { View, Text, Animated, BackHandler } from 'react-native';
-
-import colors from '../misc/colors.js';
-import { NavigationActions } from 'react-navigation';
+import { View, BackHandler } from 'react-native';
 
 import Router from "./router";
-import NavigationTool from './NavigationTool.js';
-import DevBot from '../devTools/DevBot.js';
+import { NavigationTool } from '@navigation';
+import { DevBot } from '@services';
 
-export class Helper extends React.Component {
+export default class Helper extends React.Component {
     componentDidMount(){
         BackHandler.addEventListener("hardwareBackPress", this._onBackPress.bind(this));
     }

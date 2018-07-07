@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 import { View, Text, Animated, Dimensions, TouchableOpacity, FlatList } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import colors from '../misc/colors.js';
-
-import { Roles } from '../misc/roles.js';
+import { Roles } from '@library';
 
 const FADEOUT_ANIM = 300;
 const SIZE_ANIM = 500;
@@ -82,18 +78,15 @@ export class Rolecard extends React.Component {
 const styles = {
     roleFont: {
         fontSize:17,
-        fontFamily:'LuckiestGuy-Regular',
-        color:colors.font,
+        fontFamily:'LuckiestGuy-Regular'
     },
     title: {
         fontFamily:'LuckiestGuy-Regular',
-        fontSize: 25,
-        color: colors.striker,
+        fontSize: 25
     },
     roleDesc: {
         fontSize: 15,
         fontFamily: 'FredokaOne-Regular',
-        color: colors.striker,
         marginTop:5,
         marginBottom:5,
     },

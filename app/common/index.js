@@ -1,5 +1,5 @@
 import * as Styler from './Styler'
-import Printer from './Printer'
+import * as Printer from './Printer'
 
 export {
     Printer,

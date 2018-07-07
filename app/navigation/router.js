@@ -1,13 +1,11 @@
 // app/router.js
-
-import React from "react";
 import { StackNavigator } from "react-navigation";
 
-import Loading from '../appState/LoadingScreen';
-import HomeNavigator from '../home/HomeNavigator';
-import Lobby from '../lobby/LobbyView';
-import Pregame from "../pregame/PregameScreen";
-import Game from "../game/GameScreen";
+import Loading from '../scenes/appState/LoadingScreen';
+import HomeNavigator from '../scenes/home/HomeNavigator';
+import Lobby from '../scenes/lobby/LobbyView';
+import Pregame from "../scenes/pregame/PregameScreen";
+import Game from "../scenes/game/GameScreen";
 
 const Router = StackNavigator(
       {

@@ -1,16 +1,13 @@
-import React, { Component } from 'react';
+import React, { Component } from 'react'
 import { 
     View,
     Text,
     Animated,
     Dimensions,
     ScrollView,
-    TouchableOpacity } from 'react-native';
+    TouchableOpacity } from 'react-native'
 
-import colors from '../misc/colors.js';
-
-import { Slide } from '../parents/Slide.js';
-import { Roles } from '../misc/roles.js';
+import { Roles } from '../library/roles'
 
 export class Desc extends React.Component {
         
@@ -28,7 +25,7 @@ export class Desc extends React.Component {
         return ( 
             <ScrollView
                 showsVerticalScrollIndicator = {false}
-                style = {{width:this.width*0.7, backgroundColor:colors.background}}>
+                style = {{width:this.width*0.7}}>
                 <Text style = {styles.lfont}>CHARACTER:</Text>
                 <Text style = {styles.title}>{Roles[this.props.roleid].name}</Text>
                 <Text style = {styles.lfont}>DURING THE NIGHT:</Text>
@@ -45,20 +42,17 @@ const styles = {
 
     title: {
         fontFamily:'LuckiestGuy-Regular',
-        fontSize: 25,
-        color: colors.striker,
+        fontSize: 25
     },
     lfont: {
         fontFamily:'LuckiestGuy-Regular',
-        fontSize: 25,
-        color: colors.striker,
+        fontSize: 25
     },
     roleDesc: {
         fontSize: 15,
         fontFamily: 'FredokaOne-Regular',
-        color: colors.striker,
         marginTop:5,
-        marginBottom:5,
+        marginBottom:5
     },
 
 }

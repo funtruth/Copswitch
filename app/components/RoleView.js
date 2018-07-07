@@ -7,23 +7,14 @@ import {
     Dimensions,
 }   from 'react-native';
 
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Foundation from 'react-native-vector-icons/Foundation';
 import Button from './Button.js';
-import { Alert } from './Alert.js';
 import { Modal } from '../parents/Modal.js';
 import { Desc } from './Desc.js';
 
-import { Roles } from '../misc/roles.js';
-import firebase from '../firebase/FirebaseController.js';
+import { Roles } from '@library';
 
-import colors from '../misc/colors.js';
-
-const FADEOUT_ANIM = 300;
-const SIZE_ANIM = 100;
-const FADEIN_ANIM = 300;
 
 export class RoleView extends Component {
     
@@ -95,7 +86,7 @@ export class RoleView extends Component {
     }
 
     render(){
-        return <View style = {{flex:1, backgroundColor:colors.background}}>
+        return <View style = {{flex:1}}>
 
             <View style = {{ marginBottom:10, justifyContent:'center', flexDirection:'row' }}>
                 
@@ -110,7 +101,7 @@ export class RoleView extends Component {
                     onPress = {()=>{ this.setState({ showtown:true }) }}
                 >
                     <Foundation name='shield'
-                        style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                        style={{fontSize:25,alignSelf:'center',margin:3}}/>
                 </Button>
                 
                 <Button
@@ -123,7 +114,7 @@ export class RoleView extends Component {
                     onPress = {()=>{ this.setState({ showtown:false }) }}
                 >
                     <Foundation name='skull'
-                        style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                        style={{fontSize:25,alignSelf:'center',margin:3}}/>
                 </Button>
 
                 <Button
@@ -137,7 +128,7 @@ export class RoleView extends Component {
                     onPress = {()=>{ this.setState({ showpool:!this.state.showpool }) }}
                 >
                     <Foundation name='star'
-                        style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                        style={{fontSize:25,alignSelf:'center',margin:3}}/>
                 </Button>
             </View>
 
@@ -167,7 +158,7 @@ export class RoleView extends Component {
                     onPress = {()=> this.setState({ info:true })}
                 >
                     <Foundation name='info'
-                        style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                        style={{fontSize:25,alignSelf:'center',margin:3}}/>
                 </Button>
 
                 <View style = {{flex:0.03}}/>
@@ -184,7 +175,7 @@ export class RoleView extends Component {
                         onPress = {()=> this.setState({ info:false, desc:false, change:true }) }
                     >
                         <FontAwesome name='plus'
-                            style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                            style={{fontSize:25,alignSelf:'center',margin:3}}/>
                 </Button>
 
                 <Button
@@ -199,7 +190,7 @@ export class RoleView extends Component {
                     onPress = {()=> this.setState({ info:false, desc:false, change:false }) }
                 >
                     <FontAwesome name='minus'
-                        style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                        style={{fontSize:25,alignSelf:'center',margin:3}}/>
                 </Button>
                 
                 <View style = {{flex:0.03}}/>
@@ -217,7 +208,7 @@ export class RoleView extends Component {
                     disabled = {!this.state.desc}
                 >
                     <FontAwesome name='eye-slash'
-                        style={{color:colors.shadow,fontSize:25,alignSelf:'center',margin:3}}/>
+                        style={{fontSize:25,alignSelf:'center',margin:3}}/>
                 </Button>
 
             </View>
@@ -239,7 +230,6 @@ const styles = {
         fontSize: 17,
         fontFamily: 'FredokaOne-Regular',
         textAlign:'center',
-        color: colors.shadow,
         margin:4,
     },
 }
