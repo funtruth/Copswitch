@@ -4,7 +4,10 @@ import {
     View,
     TouchableOpacity
 } from 'react-native';
+import { connect } from 'react-redux'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+
+import { toggleMenu } from '../MenuReducer'
 
 class MenuButton extends Component {
     render() {
@@ -52,7 +55,7 @@ export default connect(
     null,
     dispatch => {
         return {
-            toggleMenu: (payload) => dispatch(toggleMenu(payload))
+            toggleMenu: () => dispatch(toggleMenu())
         }
     }
 )(MenuButton)

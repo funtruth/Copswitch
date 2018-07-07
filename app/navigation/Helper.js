@@ -5,6 +5,9 @@ import Router from "./router";
 import { NavigationTool } from '@navigation';
 import { DevBot } from '@services';
 
+import MenuView from '../scenes/menu/MenuView'
+import MenuHeader from '../scenes/menu/common/MenuHeader';
+
 export default class Helper extends React.Component {
     componentDidMount(){
         BackHandler.addEventListener("hardwareBackPress", this._onBackPress.bind(this));
@@ -27,6 +30,8 @@ export default class Helper extends React.Component {
                         NavigationTool.setContainer(navigatorRef)
                     }}
                 />
+                <MenuView />
+                <MenuHeader />
                 {__DEV__?<DevBot />:null}
             </View>
         )

@@ -1,3 +1,28 @@
+const ScreenTypes = {
+  menu: 'screen/menu',
+  detail: 'screen/detail'
+}
+
+const Screens = {
+  home: ScreenTypes.menu,
+  rules:  ScreenTypes.menu,
+  setup: ScreenTypes.menu,
+  gameInfo: ScreenTypes.menu,
+  phases: ScreenTypes.menu,
+  about: ScreenTypes.detail,
+  intro: ScreenTypes.detail,
+  general: ScreenTypes.detail,
+  making: ScreenTypes.detail,
+  joining: ScreenTypes.detail,
+  pickingRoles: ScreenTypes.detail,
+  role: ScreenTypes.detail,
+  day: ScreenTypes.detail,
+  trial: ScreenTypes.detail,
+  night: ScreenTypes.detail,
+  events: ScreenTypes.detail,
+  ending: ScreenTypes.detail
+}
+
 const MenuTypes = {
   menu: 'menu/menu',
   detail: 'menu/detail',
@@ -9,14 +34,17 @@ const Menus = {
     data: [
       {
         key: 'roles',
+        label: 'Roles',
         type: MenuTypes.other
       },
       {
         key: 'rules',
+        label: 'Rules',
         type: MenuTypes.menu
       },
       {
         key: 'about',
+        label: 'About',
         type: MenuTypes.detail
       }
     ]
@@ -26,18 +54,22 @@ const Menus = {
     data: [
       {
         key: 'intro',
+        label: 'Introduction',
         type: MenuTypes.detail
       },
       {
         key: 'general',
+        label: 'General',
         type: MenuTypes.detail
       },
       {
         key: 'setup',
+        label: 'Setting Up',
         type: MenuTypes.menu
       },
       {
         key: 'gameInfo',
+        label: 'Game Info',
         type: MenuTypes.menu
       }
     ]
@@ -47,14 +79,17 @@ const Menus = {
     data: [
       {
         key: 'joining',
+        label: 'Joining a Game',
         type: MenuTypes.detail
       },
       {
         key: 'making',
+        label: 'Making a Game',
         type: MenuTypes.detail
       },
       {
         key: 'pickingRoles',
+        label: 'Picking Roles',
         type: MenuTypes.detail
       }
     ]
@@ -64,18 +99,22 @@ const Menus = {
     data: [
       {
         key: 'profile',
+        label: 'Profile',
         type: MenuTypes.detail
       },
       {
         key: 'phases',
+        label: 'Phases',
         type: MenuTypes.menu
       },
       {
         key: 'events',
+        label: 'Events',
         type: MenuTypes.detail
       },
       {
         key: 'ending',
+        label: 'End of Game',
         type: MenuTypes.detail
       }
     ]
@@ -85,14 +124,17 @@ const Menus = {
     data: [
       {
         key: 'day',
+        label: 'Day',
         type: MenuTypes.detail
       },
       {
         key: 'trial',
+        label: 'Trial',
         type: MenuTypes.detail
       },
       {
         key: 'night',
+        label: 'Night',
         type: MenuTypes.detail
       }
     ]
@@ -286,7 +328,7 @@ const Details = {
       }
     ]
   },
-  selection: {
+  pickingRoles: {
     title: 'Role set-up',
     data: [
       {
@@ -405,8 +447,10 @@ const Details = {
 }
 
 export {
+  ScreenTypes, 
+  Screens,
   MenuTypes,
-  DetailTypes,
   Menus,
+  DetailTypes,
   Details
 }

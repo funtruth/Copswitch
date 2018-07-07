@@ -3,65 +3,83 @@ import {
     View,
     Text,
     FlatList,
+    TouchableOpacity,
+    Dimensions
 } from 'react-native';
+import { connect } from 'react-redux'
 
-import { Button } from '@components/Button';
+import { Author } from '@library'
+import { pushNewScreen } from '../MenuReducer'
+
+const { Menus } = Author
+const { height, width } = Dimensions.get('window')
 
 class MenuScreen extends Component {
-    
     constructor(props) {
         super(props);
 
         this.state = {
-            menulist: [],
+            menu: Menus[props.route].data,
         }
-        
     }
 
-    componentWillMount() {
-        
-        const { params } = this.props.navigation.state;
-        const menu = params.menu;
-
-        var keys = Object.keys(Menus[menu]).sort()
-        var menulist = [];
-        keys.forEach(function(key){
-            menulist.push({
-                type:           (Menus[menu])[key].type,
-                desc:           (Menus[menu])[key].desc,
-                route:          (Menus[menu])[key].route,
-                key:            key,
-            })
-        })
-        this.setState({
-            menulist:   menulist,
-        })
+    _onPress = (route) => {
+        this.props.pushNewScreen(route)
     }
 
-    _renderMenuButton(item) {
-        return <Button
-            horizontal = {0.4}
-            margin = {10}
-            onPress = {()=>{item.type==1?
-                this.props.navigation.navigate('Menu',{menu:item.route}) 
-                :this.props.navigation.navigate('InfoPage',{section:item.route}) 
-            }}><Text numberOfLines={1} style = {styles.listfont}>{item.desc}</Text>
-        </Button>
-        
+    _renderItem = ({item}) => {
+        const { buttonStyle, buttonTextStyle } = styles
+        return (
+            <TouchableOpacity
+                style={buttonStyle}
+                onPress={this._onPress.bind(this, item.key)}
+            >
+                <Text style = {buttonTextStyle}>{item.label}</Text>
+            </TouchableOpacity>
+        )
     }
 
-    //TODO back button
+    _keyExtractor = (item) => item.key
+
     render(){
-        return <View style = {{backgroundColor:colors.background}}>
+        const { menu } = this.state
+        const { screen } = styles
 
-            <FlatList
-                data={this.state.menulist}
-                renderItem={({item}) => this._renderMenuButton(item) }
-                keyExtractor={item => item.key}
-            />
-
-        </View>
+        return (
+            <View style={screen}>
+                <FlatList
+                    data={menu}
+                    renderItem={this._renderItem}
+                    horizontal
+                    contentContainerStyle={{alignSelf:'center', borderWidth: 1}}
+                    keyExtractor={this._keyExtractor}
+                />
+            </View>
+        )
     }
 }
 
-export default MenuScreen
+const styles = {
+    screen: {
+        height,
+        width
+    },
+    headerStyle: {
+        //Might be included in MenuHeader
+    },
+    buttonStyle: {
+
+    },
+    buttonTextStyle: {
+
+    }
+}
+
+export default connect(
+    null,
+    dispatch => {
+        return {
+            pushNewScreen: (route) => dispatch(pushNewScreen(route))
+        }
+    }
+)(MenuScreen)
