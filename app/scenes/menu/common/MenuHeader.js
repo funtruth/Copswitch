@@ -6,33 +6,48 @@ import {
 } from 'react-native';
 import { connect } from 'react-redux'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import LinearGradient from 'react-native-linear-gradient'
 
 import { toggleMenu } from '../MenuReducer'
 
-class MenuButton extends Component {
+import { Styler } from '@common'
+
+class MenuHeader extends Component {
     render() {
-        const { container, padding, iconStyle, fontStyle } = styles
+        const { buttonStyle, gradientStyle, padding, iconStyle, fontStyle } = styles
         const { toggleMenu } = this.props
 
         return(
             <TouchableOpacity 
-                style={container}
-                onPress={toggleMenu}>
-                <View style={padding}>
-                    <FontAwesome name='book' style={iconStyle}/>
-                    <Text style={fontStyle}>Menu</Text>
-                </View>
+                style={buttonStyle}
+                onPress={toggleMenu}
+            >
+                <LinearGradient 
+                    colors={Styler.color.buttonGradient}
+                    start={{x: 0, y: 0}} end={{x: 1, y: 1}}
+                    style={gradientStyle}
+                >
+                    <View style={padding}>
+                        <FontAwesome name='book' style={iconStyle}/>
+                        <Text style={fontStyle}>Menu</Text>
+                    </View>
+                </LinearGradient>
             </TouchableOpacity>
         )
     }
 }
 
 const styles = {
-    container:{
+    buttonStyle:{
         position:'absolute',
         top:20,
         left:20,
-        borderRadius:5
+    },
+    gradientStyle: {
+        flex: 1,
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     padding:{
         margin: 5,
@@ -44,9 +59,10 @@ const styles = {
         marginLeft:10
     },
     fontStyle:{
-        marginLeft:15,
+        marginLeft:10,
         marginRight:15,
-        fontFamily:'FredokaOne-Regular',
+        fontFamily: Styler.fontFamily.Regular,
+        color: Styler.color.dark,
         fontSize: 18
     }
 }
@@ -58,4 +74,4 @@ export default connect(
             toggleMenu: () => dispatch(toggleMenu())
         }
     }
-)(MenuButton)
+)(MenuHeader)

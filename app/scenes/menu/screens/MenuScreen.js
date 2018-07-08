@@ -7,8 +7,10 @@ import {
     Dimensions
 } from 'react-native';
 import { connect } from 'react-redux'
+import LinearGradient from 'react-native-linear-gradient'
 
 import { Author } from '@library'
+import { Styler } from '@common'
 import { pushNewScreen } from '../MenuReducer'
 
 const { Menus } = Author
@@ -28,13 +30,19 @@ class MenuScreen extends Component {
     }
 
     _renderItem = ({item}) => {
-        const { buttonStyle, buttonTextStyle } = styles
+        const { buttonStyle, gradientStyle, buttonTextStyle } = styles
         return (
             <TouchableOpacity
                 style={buttonStyle}
                 onPress={this._onPress.bind(this, item.key)}
             >
-                <Text style = {buttonTextStyle}>{item.label}</Text>
+                <LinearGradient 
+                    colors={Styler.color.buttonGradient}
+                    start={{x: 0, y: 0}} end={{x: 1, y: 1}}
+                    style={gradientStyle}
+                >
+                    <Text style = {buttonTextStyle}>{item.label}</Text>
+                </LinearGradient>
             </TouchableOpacity>
         )
     }
@@ -46,32 +54,43 @@ class MenuScreen extends Component {
         const { screen } = styles
 
         return (
-            <View style={screen}>
-                <FlatList
-                    data={menu}
-                    renderItem={this._renderItem}
-                    horizontal
-                    contentContainerStyle={{alignSelf:'center', borderWidth: 1}}
-                    keyExtractor={this._keyExtractor}
-                />
-            </View>
+            <FlatList
+                data={menu}
+                renderItem={this._renderItem}
+                contentContainerStyle={screen}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={this._keyExtractor}
+            />
         )
     }
 }
 
 const styles = {
     screen: {
-        height,
-        width
+        height: Styler.constant.menuHeight,
+        width: Styler.constant.menuWidth,
+        backgroundColor: 'white',
+        padding: 30,
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: 'red'
     },
     headerStyle: {
         //Might be included in MenuHeader
     },
     buttonStyle: {
-
+        width: 0.6*width,
+        height: 0.15*width
+    },
+    gradientStyle: {
+        flex: 1,
+        borderRadius: 30,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     buttonTextStyle: {
-
+        fontFamily: Styler.fontFamily.Medium,
+        fontSize: 18
     }
 }
 

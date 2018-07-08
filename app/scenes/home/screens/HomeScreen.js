@@ -115,15 +115,15 @@ const styles = {
     THE: {
         fontSize:30,
         fontFamily: Styler.fontFamily.Medium,
-        color: Styler.colors.title,
+        color: Styler.color.title,
         marginRight: 50
     },
     COPSWITCH: {
         fontSize:60,
         fontFamily: Styler.fontFamily.SemiBold,
-        color: Styler.colors.title,
+        color: Styler.color.title,
         borderWidth: 2,
-        borderColor: Styler.colors.title,
+        borderColor: Styler.color.title,
         borderRadius: 3,
         paddingLeft: 10,
         paddingRight: 10,
@@ -132,7 +132,7 @@ const styles = {
     CASES: {
         fontSize:35,
         fontFamily: Styler.fontFamily.Medium,
-        color: Styler.colors.title,
+        color: Styler.color.title,
         marginRight: 50
     }
 }

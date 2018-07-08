@@ -16,7 +16,7 @@ class GameScreen extends Component {
         const { news } = this.props
         
         return (
-            <LinearGradient colors={Styler.colors.gradient} style = {{flex:1, width: '100%'}}>
+            <LinearGradient colors={Styler.color.gradient} style = {{flex:1, width: '100%'}}>
                 <ScrollView>
                     <ScrollView horizontal>
                         <ConsoleView />

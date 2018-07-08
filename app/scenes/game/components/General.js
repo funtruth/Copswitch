@@ -71,7 +71,7 @@ const styles = {
         left: 10,
         right: 10,
         height: 0.1*height,
-        backgroundColor: Styler.colors.light,
+        backgroundColor: Styler.color.light,
         borderRadius: 15
     },
     newsContainerStyle: {
@@ -80,13 +80,13 @@ const styles = {
         left: 10,
         right: 10,
         height: 0.5*height,
-        backgroundColor: Styler.colors.light,
+        backgroundColor: Styler.color.light,
         borderRadius: 15
     },
     message: {
         fontSize: 15,
         fontFamily: Styler.fontFamily.Regular,
-        color: Styler.colors.dark,
+        color: Styler.color.dark,
         marginTop:5,
         marginBottom:5,
     },

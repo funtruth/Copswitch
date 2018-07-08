@@ -5,8 +5,8 @@ import Router from "./router";
 import { NavigationTool } from '@navigation';
 import { DevBot } from '@services';
 
-import MenuView from '../scenes/menu/MenuView'
 import MenuHeader from '../scenes/menu/common/MenuHeader';
+import MenuContainer from '../scenes/menu/MenuContainer';
 
 export default class Helper extends React.Component {
     componentDidMount(){
@@ -30,7 +30,7 @@ export default class Helper extends React.Component {
                         NavigationTool.setContainer(navigatorRef)
                     }}
                 />
-                <MenuView />
+                <MenuContainer />
                 <MenuHeader />
                 {__DEV__?<DevBot />:null}
             </View>

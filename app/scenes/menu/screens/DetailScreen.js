@@ -6,108 +6,108 @@ import {
     TouchableOpacity,
     Dimensions
 } from 'react-native';
-
-import { Button } from '@components/Button';
-import { Details } from '@library';
+import { connect } from 'react-redux'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-class InfoPageScreen extends Component {
-    
+import { Styler } from '@common'
+import { Button } from '@components'
+import { Author } from '@library'
+import { pushNewScreen } from '../MenuReducer'
+
+const { Details, DetailTypes } = Author
+const { height, width } = Dimensions.get('window')
+
+class DetailScreen extends Component {
     constructor(props) {
         super(props);
 
         this.state = {
-            infolist: [],
-            title:null,
-
-            page: 1,
-            lastpage: 10,
-        }
-
-        this.height = Dimensions.get('window').height;
-        this.width = Dimensions.get('window').width;
-    }
-
-
-    componentWillMount(){
-        this._newPage(this.state.page)
-    }
-
-    _renderListItem(item) {
-        if(item.type == 1){
-            return <View style = {styles.detailContainer}>
-                <Text style = {styles.detail}>{item.desc}</Text>
-            </View>
-        } else if (item.type == 2){
-            return <View style = {styles.commentContainer}>
-                <Text style = {styles.comment}>{item.desc}</Text>
-            </View>
-        } else if (item.type == 3){
-            return <View style = {styles.linkContainer}><Button size = {0.15} backgroundColor = {colors.link}
-                onPress = {()=>{this.props.navigation.navigate('InfoPage',{section:item.route})}}>
-                <Text style = {styles.link}>{item.desc}</Text>
-            </Button></View>
+            data: Details[props.route].data
         }
     }
 
-    _pageBack() {
-        this._newPage(this.state.page>1?this.state.page-1:1)
-    }
-    _pageForward() {
-        this._newPage(this.state.page<this.state.lastpage?this.state.page+1:this.state.page)
+    _renderItem = ({item}) => {
+        const { subtitle, subtitleText } = styles
+
+        switch(item.type) {
+            case DetailTypes.subtitle:
+                return (
+                    <View style={subtitle}>
+                        <Text style={subtitleText}>{item.payload}</Text>
+                    </View>
+                )
+            case DetailTypes.text:
+                return (
+                    <View style={subtitle}>
+                        <Text style={subtitleText}>{item.payload}</Text>
+                    </View>
+                )
+            case DetailTypes.note:
+                return (
+                    <View style={subtitle}>
+                        <Text style={subtitleText}>{item.payload}</Text>
+                    </View>
+                )
+            case DetailTypes.image:
+                return (
+                    <View style={subtitle}>
+                        <Text style={subtitleText}>{item.payload}</Text>
+                    </View>
+                )
+            case DetailTypes.button:
+                return (
+                    <View style={subtitle}>
+                        <Text style={subtitleText}>{item.payload}</Text>
+                    </View>
+                )
+            default:
+                return null
+        }
     }
 
-    _newPage(page){
-        const { params } = this.props.navigation.state;
-        const section = params.section;
-
-        var keys = Object.keys((Details[section])[page]).sort()
-        var infolist = [];
-        keys.forEach(function(key){
-            infolist.push({
-                type:           ((Details[section])[page])[key].type,
-                desc:           ((Details[section])[page])[key].desc,
-                route:          ((Details[section])[page])[key].route,
-                key:            key,
-            })
-        })
-        this.setState({
-            infolist:   infolist,
-            section:    section,
-            page:       page,
-            title:      (Details[section].title)[section],
-            lastpage:       Object.keys(Details[section]).length,
-        })
-    }
+    _keyExtractor = (item, index) => index.toString()
 
     render(){
-        return <View style = {{ flex:1, alignItems:'center' }}>
+        const { screen } = styles
+        const { data } = this.state
 
-            <View style = {{flexDirection:'row', alignSelf:'center'}}>
-                <TouchableOpacity onPress = { () => this.props.navigation.dispatch(NavigationActions.back()) }>
-                    <MaterialCommunityIcons name='chevron-left'
-                    style={styles.chevron}/>
-                </TouchableOpacity>
-                <Text style = {styles.header}>{this.state.title}</Text>
-                
-            </View>
-            
-            <View style = {{flex:1, width:this.width*0.8, backgroundColor:colors.font,borderRadius:15}}>
-                <FlatList
-                    data={this.state.infolist}
-                    renderItem={({item}) => this._renderListItem(item) }
-                    keyExtractor={item => item.key}
-                />
-            </View>
-
-            <TouchableOpacity style = {{position:'absolute', left:0, top:0, bottom:0, width:this.width*0.13}}
-                onPress = {()=>{ this._pageBack() }}/>
-
-            <TouchableOpacity style = {{position:'absolute', right:0, top:0, bottom:0, width:this.width*0.13}}
-                onPress = {()=>{ this._pageForward() }}/>
-
-        </View>
+        return (
+            <FlatList
+                data={data}
+                renderItem={this._renderItem}
+                contentContainerStyle={screen}
+                overScrollMode={'never'}
+                showsVerticalScrollIndicator={false}
+                keyExtractor={this._keyExtractor}
+            />
+        )
     }
 }
 
-export default InfoPageScreen
+const styles = {
+    screen: {
+        height: Styler.constant.menuHeight,
+        width: Styler.constant.menuWidth,
+        backgroundColor: 'white',
+        alignItems: 'center',
+        borderWidth: 2,
+        borderColor: 'red'
+    },
+    subtitle: {
+        margin: 5
+    },
+    subtitleText: {
+        fontFamily: Styler.fontFamily.SemiBold,
+        fontSize: 15,
+        textAlign: 'center'
+    }
+}
+
+export default connect(
+    null,
+    dispatch => {
+        return {
+            pushNewScreen: (route) => dispatch(pushNewScreen(route)) 
+        }
+    }
+)(DetailScreen)

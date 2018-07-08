@@ -10,7 +10,7 @@ import { leaveLobby, changeModalView, startPregame } from '../LobbyReducer'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Styler } from '@common';
 
-const { colors } = Styler
+const { color } = Styler
 const { height, width } = Dimensions.get('window')
 
 class LobbyOptionView extends Component {
@@ -32,7 +32,7 @@ class LobbyOptionView extends Component {
                     style = {{alignItems:'center', flex:0.17}}
                     onPress = {leaveLobby}>
                     <FontAwesome name='close'
-                        style={{color:colors.font, fontSize:25}}/>
+                        style={{color:color.font, fontSize:25}}/>
                     <Text style = {styles.font}>Leave</Text>
                 </TouchableOpacity>
 
@@ -42,15 +42,15 @@ class LobbyOptionView extends Component {
                     disabled = {!owner}
                 >
                     <FontAwesome name={owner?'check':'lock'}
-                        style={{color:owner?colors.font:colors.dead, fontSize:35}}/>
-                    <Text style = {[styles.font,{color:owner?colors.font:colors.dead}]}>Start</Text>
+                        style={{color:owner?color.font:colors.dead, fontSize:35}}/>
+                    <Text style = {[styles.font,{color:owner?color.font:colors.dead}]}>Start</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style = {{alignItems:'center', flex:0.17}}
                 >
                     <FontAwesome name='bars'
-                        style={{color:colors.font, fontSize:25}}/>
+                        style={{color:color.font, fontSize:25}}/>
                     <Text style = {styles.font}>Roles</Text>
                 </TouchableOpacity>
 
@@ -72,7 +72,7 @@ const styles = {
     font: {
         fontFamily: 'FredokaOne-Regular',
         textAlign:'center',
-        color: colors.font,
+        color: color.font,
     },
 }
 
