@@ -23,6 +23,8 @@ class MenuSwiper extends Component {
                 return <MenuScreen route={item}/>
             case ScreenTypes.detail:
                 return <DetailScreen route={item}/>
+            case ScreenTypes.roles:
+                return <RoleScreen />
             default:
                 return null
         }

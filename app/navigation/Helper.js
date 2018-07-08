@@ -5,8 +5,8 @@ import Router from "./router";
 import { NavigationTool } from '@navigation';
 import { DevBot } from '@services';
 
-import MenuHeader from '../scenes/menu/common/MenuHeader';
-import MenuContainer from '../scenes/menu/MenuContainer';
+import MenuHeader from '../modules/menu/common/MenuHeader';
+import MenuContainer from '../modules/menu/MenuContainer';
 
 export default class Helper extends React.Component {
     componentDidMount(){
