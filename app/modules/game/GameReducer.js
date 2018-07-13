@@ -3,9 +3,8 @@ import { firebaseService } from '@services'
 import { NavigationTool } from '@navigation'
 
 const initialState = {
+    inGame: false,
     roomId: null,
-    activeListeners: [],
-    refreshed: false,
 
     nomination: null,
     counter: null,
@@ -16,17 +15,16 @@ const initialState = {
     alive: null,
     playerList: [],
     news: [],
+    events: [],
 
     timeout: null
 }
 
-const REFRESH_ROOM_ID = 'game/refresh_room_id'
-const REFRESH_REDUCER = 'game/refresh_reducer'
+const IN_GAME_STATUS = 'game/in_game_status'
 
 const PUSH_NEW_LISTENER = 'game/push_new_listener'
 const CLEAR_LISTENERS = 'game/clear_listeners'
 
-//Listeners initialized in Game
 const NOMINATION_LISTENER = 'game/nomination_listener'
 const COUNTER_LISTENER = 'game/counter_listener'
 const PHASE_LISTENER = 'game/phase_listener'
@@ -37,8 +35,11 @@ const PLAYER_LIST_LISTENER = 'game/player_list_listener'
 const PLAYER_NUM_LISTENER = 'game/player_num_listener'
 const TRIGGER_NUM_LISTENER = 'game/trigger_num_listener'
 const NEWS_LISTENER = 'game/news_listener'
+const EVENTS_LISTENER = 'game/events_listener'
 
 const TIMEOUT_LISTENER = 'game/timeout_listener'
+
+const RESET = 'game/reset'
 
 export function refreshGameReducer() {
     return (dispatch) => {
@@ -57,12 +58,17 @@ export function refreshGameReducer() {
 export function turnOnGameListeners(){
     return (dispatch, getState) => {
         const { place } = getState().lobby
+        dispatch({
+            type: IN_GAME_STATUS,
+            payload: true
+        })
         dispatch(gameListenerOn('nomination','nomination','value'))
         dispatch(gameListenerOn('counter','counter','value'))
         dispatch(gameListenerOn('myReady',`ready/${place}`,'value'))
         dispatch(gameListenerOn('myInfo',`list/${place}`,'value'))
         dispatch(gameListenerOn('list','list','value'))
         dispatch(gameListenerOn('news','news','child_added'))
+        dispatch(gameListenerOn('events','events','child_added'))
         dispatch(gameListenerOn('timeout','timeout','value'))
     }
 }
@@ -151,6 +157,13 @@ function newRoomInfo(snap, listener){
                     payload: snap
                 })
                 break
+            case 'events':
+                console.log('event listener', snap)
+                dispatch({
+                    type: EVENTS_LISTENER,
+                    payload: snap
+                })
+                break
             case 'timeout':
                 dispatch({
                     type: TIMEOUT_LISTENER,
@@ -184,14 +197,14 @@ export function gameOver() {
 export default (state = initialState, action) => {
 
     switch(action.type){
-        case REFRESH_ROOM_ID:
-            return { ...state, roomId: action.payload }
-        case REFRESH_REDUCER:
-            return { ...state, refreshed: true }
+        case IN_GAME_STATUS:
+            return { ...state, inGame: action.payload }
+
         case PUSH_NEW_LISTENER:
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:
             return { ...state, activeListeners: [] }
+            
         case NOMINATION_LISTENER:
             return { ...state, nomination: action.payload }
         case COUNTER_LISTENER:
@@ -212,8 +225,13 @@ export default (state = initialState, action) => {
             return { ...state, triggerNum: action.payload }
         case NEWS_LISTENER:
             return { ...state, news: [{message: action.payload.val(), key: action.payload.key}, ...state.news] }
+        case EVENTS_LISTENER:
+            return { ...state, events: [ ...state.events, action.payload ] }
         case TIMEOUT_LISTENER:
             return { ...state, timeout: action.payload }
+
+        case RESET:
+            return initialState
         default:
             return state;
     }

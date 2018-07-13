@@ -60,16 +60,12 @@ export function checkRoom(roomId){
             valid = true
         }
 
-        //Set AsyncStorage
         if (valid) {
-            AsyncStorage.setItem('LOBBY-KEY', roomId)
-            .then(()=>{
-                //Initialize references in firebaseService AND enter the room to set PLACE
-                firebaseService.joinRoom(roomId)
-                firebaseService.addPushKey()
-                //Move to next screen
-                dispatch(moveToLobby(roomId))
-            })
+            //Initialize references in firebaseService AND enter the room to set PLACE
+            firebaseService.joinRoom(roomId)
+            firebaseService.addPushKey()
+            //Move to next screen
+            dispatch(moveToLobby(roomId))
         }
 
         dispatch({

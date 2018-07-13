@@ -3,7 +3,6 @@ import {
     View, 
     Text,
 } from 'react-native'
-import { connect } from 'react-redux'
 import { Button } from '@components'
 
 class PrivateNewsView extends Component {
@@ -32,8 +31,4 @@ const styles = {
     },
 }
 
-export default connect(
-    state => ({
-        roleid: state.game.roleid
-    })
-)(PrivateNewsView)
+export default PrivateNewsView

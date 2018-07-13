@@ -1,35 +1,45 @@
-// app/router.js
-import { StackNavigator } from "react-navigation";
+import React, { Component } from 'react';
+import { View, BackHandler } from 'react-native';
 
-import Loading from '../modules/appState/LoadingScreen';
-import HomeNavigator from '../modules/home/HomeNavigator';
-import Lobby from '../modules/lobby/LobbyView';
-import Pregame from "../modules/pregame/PregameScreen";
-import Game from "../modules/game/GameScreen";
+import Navigator from "./Navigator";
+import { NavigationTool } from '@navigation';
+import { DevBot } from '@services';
 
-const Router = StackNavigator(
-      {
-        Loading: {
-          screen: Loading
-        },
-        HomeNav: {
-          screen: HomeNavigator
-        },
-        Lobby: {
-          screen: Lobby
-        },
-        Pregame:{
-          screen: Pregame
-        },
-        Game: {
-          screen: Game
-        }
-      },
-      {
-        headerMode: "none",
-        initialRouteName: "Loading",
-        cardStyle: {backgroundColor:'transparent'}
-      }
-);
+import MenuHeader from '../menu/common/MenuHeader';
+import MenuContainer from '../menu/MenuContainer';
 
-export default Router
+export default class Router extends React.Component {
+    componentDidMount(){
+        BackHandler.addEventListener("hardwareBackPress", this._onBackPress.bind(this));
+    }
+
+    componentWillUnmount(){
+        BackHandler.removeEventListener("hardwareBackPress");
+    }
+
+    _onBackPress(){
+        return false
+    }
+
+    render() {
+
+        return (
+            <View style = {styles.container}>
+                <Navigator
+                    ref = {navigatorRef => {
+                        NavigationTool.setContainer(navigatorRef)
+                    }}
+                />
+                <MenuContainer />
+                <MenuHeader />
+                {__DEV__?<DevBot />:null}
+            </View>
+        )
+    }
+}
+
+const styles = {
+    container : {
+        flex: 1
+    }
+}

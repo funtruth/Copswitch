@@ -1,10 +1,7 @@
 import React, { Component } from 'react';
 import {
-    Text,
-    View,
     ScrollView,
     Dimensions,
-    AsyncStorage,
 }   from 'react-native';
 import { connect } from 'react-redux'
 import { leaveLobby } from './LobbyReducer'
@@ -12,6 +9,7 @@ import LinearGradient from 'react-native-linear-gradient'
 
 import { NavigationTool } from '@navigation'
 import { Header } from '@components'
+
 import LobbyPlayerView from './screens/LobbyPlayerView'
 import LobbyNameModal from './screens/LobbyNameModal'
 import LobbyRolesView from './screens/LobbyRolesView'
@@ -24,10 +22,7 @@ const { height, width } = Dimensions.get('window')
 class LobbyView extends Component {
     componentWillReceiveProps(newProps){
         if(newProps.roomStatus === 'Starting'){
-            AsyncStorage.setItem('GAME-KEY', newProps.roomId)
-            .then(()=>{
-                NavigationTool.navigate('Pregame')
-            })
+            NavigationTool.navigate('Pregame')
         }
     }
     
@@ -46,7 +41,6 @@ class LobbyView extends Component {
                 >
                     <LobbyPlayerView />
                     <LobbySetupView />
-                    <LobbyRolesView />
                 </ScrollView>
                 <LobbyOptionView />
                 <LobbyNameModal/>

@@ -42,8 +42,8 @@ class LobbyOptionView extends Component {
                     disabled = {!owner}
                 >
                     <FontAwesome name={owner?'check':'lock'}
-                        style={{color:owner?color.font:colors.dead, fontSize:35}}/>
-                    <Text style = {[styles.font,{color:owner?color.font:colors.dead}]}>Start</Text>
+                        style={{color:owner?color.font:color.dead, fontSize:35}}/>
+                    <Text style = {[styles.font,{color:owner?color.font:color.dead}]}>Start</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity

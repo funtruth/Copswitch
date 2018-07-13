@@ -105,7 +105,6 @@ class FirebaseService{
             name:newName,
         })
 
-        this.activityLog(newName + Messages.UPDATE_NAME)
     }
 
     activityLog(message){

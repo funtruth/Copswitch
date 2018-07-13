@@ -4,18 +4,25 @@ import {
     View
 } from 'react-native';
 
+import { Styler } from '@common'
 import { RoleView } from '@components/RoleView'; 
 
 class RoleScreen extends Component {
-
-    constructor(props) {
-        super(props);
-    }
-
     render(){
-        return <View style = {{flex:1}}>
-            <RoleView/>
-        </View>
+        const { screen } = styles
+
+        return (
+            <View style = {screen}>
+                <RoleView/>
+            </View>
+        )
+    }
+}
+
+const styles = {
+    screen: {
+        height: Styler.constant.menuHeight,
+        width: Styler.constant.menuWidth
     }
 }
 

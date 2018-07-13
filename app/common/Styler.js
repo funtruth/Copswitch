@@ -14,7 +14,8 @@ const color = {
     light: '#A6895D',
     title: '#A38455',
     gradient: ['#3A2F26', '#2E2620'],
-    buttonGradient: ['#A6895D', '#463B2A']
+    buttonGradient: ['#A6895D', '#463B2A'],
+    dead: '#FFFFFF'
 }
 
 const constant = {

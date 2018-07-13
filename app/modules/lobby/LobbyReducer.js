@@ -1,14 +1,12 @@
-import { AsyncStorage } from 'react-native'
 import { firebaseService } from '@services'
 import { NavigationTool } from '@navigation';
 import { ownershipMode } from '../game/engine/OwnerReducer'
 
-const LOBBY_KEY = 'LOBBY-KEY'
-
 const initialState = {
+    inLobby: false,
     roomId: null,
+    
     activeListeners: [],
-    refreshed: false,
 
     username: null,
     owner: null,
@@ -21,8 +19,6 @@ const initialState = {
 }
 
 const JOIN_ROOM = 'lobby/join_room'
-const REFRESH_ROOM_ID = 'lobby/refresh_room_id'
-const REFRESH_REDUCER = 'lobby/refresh_reducer'
 
 const PUSH_NEW_LISTENER = 'lobby/push_new_listener'
 const CLEAR_LISTENERS = 'lobby/clear_listeners'
@@ -55,29 +51,10 @@ export function leaveLobby(){
         if(owner) firebaseService.deleteRoom()
         else firebaseService.leaveLobby(username)
 
-        AsyncStorage.removeItem(LOBBY_KEY)
         NavigationTool.navigate("Home")
         dispatch({
             type: RESET
         })
-    }
-}
-
-export function refreshLobbyReducer() {
-    return (dispatch) => {
-        console.log('checkpoint')
-        AsyncStorage.getItem(LOBBY_KEY,(error,result) => {
-            //TODO sometimes this doesn't return anything - major BUG
-            console.log('error', error, 'result', result)
-            dispatch({
-                type: REFRESH_ROOM_ID,
-                payload: result
-            })
-            dispatch({
-                type: REFRESH_REDUCER
-            })
-        })
-        console.log('finished ...?')
     }
 }
 
@@ -95,10 +72,10 @@ export function turnOnLobbyListeners() {
 function lobbyListenerOn(listener,listenerPath,listenerType){
     return (dispatch) => {
         let listenerRef = firebaseService.fetchRoomRef(listenerPath)
-        dispatch({
+        /*dispatch({
             type: PUSH_NEW_LISTENER,
             payload: listenerRef
-        })
+        })*/
         listenerRef.on(listenerType, snap => {
             dispatch(newLobbyInfo(snap, listener))
         })
@@ -110,7 +87,7 @@ function newLobbyInfo(snap, listener){
         switch(listener){
             case 'owner':
                 let ownership = snap.val() === firebaseService.getUid()
-                dispatch(ownershipMode(ownership))
+                //dispatch(ownershipMode(ownership))
                 dispatch({
                     type: OWNER_LISTENER,
                     payload: snap.val()
@@ -197,15 +174,13 @@ export default (state = initialState, action) => {
 
     switch(action.type){
         case JOIN_ROOM:
-            return { ...state, roomId: action.payload }
-        case REFRESH_ROOM_ID:
-            return { ...state, roomId: action.payload }
-        case REFRESH_REDUCER:
-            return { ...state, refreshed: true }
+            return { ...state, inLobby: true, roomId: action.payload }
+
         case PUSH_NEW_LISTENER:
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:
             return { ...state, activeListeners: [] }
+
         case OWNER_LISTENER:
             return { ...state, owner: action.payload }
         case NAME_LISTENER:
@@ -220,6 +195,7 @@ export default (state = initialState, action) => {
             return { ...state, roleList: action.payload }
         case ROOM_STATUS_LISTENER:
             return { ...state, roomStatus: action.payload }
+            
         case RESET: 
             return initialState
         default:
