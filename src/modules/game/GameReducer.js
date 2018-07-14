@@ -181,6 +181,8 @@ export default (state = initialState, action) => {
             return { ...state, inGame: action.payload }
 
         case PUSH_LISTENER_PATH:
+            //TODO remove when confident lols
+            if (!state.activeListeners) return { ...state, activeListeners: [action.payload] }
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:
             return { ...state, activeListeners: [] }

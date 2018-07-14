@@ -28,7 +28,6 @@ class FirebaseService{
     getUid(){
         return this.uid
     }
-
     getRoomId(){
         return this.roomId
     }
@@ -97,6 +96,10 @@ class FirebaseService{
 
     deleteRoom(){
         this.roomRef.remove()
+    }
+
+    update(path, obj) {
+        firebase.database().ref(path).update(obj)
     }
 
     updateUsername(newName){

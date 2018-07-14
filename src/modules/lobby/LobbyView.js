@@ -22,6 +22,7 @@ const { height, width } = Dimensions.get('window')
 class LobbyView extends Component {
     componentWillReceiveProps(newProps){
         if(newProps.roomStatus === 'Starting'){
+            //TODO move to reducer?
             NavigationTool.navigate('Pregame')
         }
     }

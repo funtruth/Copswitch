@@ -4,17 +4,17 @@ import {
     TextInput,
     View,
     TouchableOpacity,
-    Dimensions,
-    Animated
+    Dimensions
 }   from 'react-native';
 import { connect } from 'react-redux'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { firebaseService } from '@services'
+import { firebaseService, fuseService } from '@services'
 
 const { height, width } = Dimensions.get('window')
 
 const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ';
-const maxCharLen = 12;
+const minCharLen = 2;
+const maxCharLen = 15;
 
 class LobbyTextInput extends Component {
     constructor(props){
@@ -38,8 +38,8 @@ class LobbyTextInput extends Component {
             return
         } 
         
-        if(name.length > maxCharLen){
-            //too long
+        if(name.length < minCharLen){
+            //too short
             return
         }
 
@@ -56,11 +56,16 @@ class LobbyTextInput extends Component {
             }
         }
 
-        if(this.invalidChars.length > 0){
+        if (this.invalidChars.length > 0) {
             return
-        } else {
-            firebaseService.updateUsername(name)
         }
+
+        let nameTaken = fuseService.usernameFuzzySearch(name, this.props.lobbyList)
+        if (nameTaken.length > 0) {
+            return
+        }
+
+        firebaseService.updateUsername(name)
     }
 
     _onSubmit = () => {
@@ -129,6 +134,7 @@ const styles = {
 
 export default connect(
     state => ({
-        username: state.lobby.username
+        username: state.lobby.username,
+        lobbyList: state.lobby.lobbyList
     })
 )(LobbyTextInput)

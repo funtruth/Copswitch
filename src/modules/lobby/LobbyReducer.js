@@ -20,8 +20,12 @@ const initialState = {
 /*
 NOTES:
 
-placeList is kept as a snap inside LobbyReducer in order to ensure order is kept
+activeListeners holds firebase paths as strings relative to the roomRef.
+This is because firebase ref objects cannot be persisted through redux
+
+placeList is kept as a snap inside LobbyReducer in order to ensure order is kept.
 Order of items in an object are not guaranteed to stay chronological
+TODO: persist is changing placeList from a snap -> object
 */
 
 const JOIN_ROOM = 'lobby/join_room'
