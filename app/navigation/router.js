@@ -30,8 +30,6 @@ export default class Router extends React.Component {
                         NavigationTool.setContainer(navigatorRef)
                     }}
                 />
-                <MenuContainer />
-                <MenuHeader />
                 {__DEV__?<DevBot />:null}
             </View>
         )

@@ -25,7 +25,7 @@ export function checkRoom(roomId){
         if (!roomId) {
             dispatch({
                 type: ERROR_MESSAGE,
-                payload: 'Why you do this to me??'
+                payload: 'Something went wrong'
             })
             return
         }
@@ -61,9 +61,13 @@ export function checkRoom(roomId){
         }
 
         if (valid) {
-            //Initialize references in firebaseService AND enter the room to set PLACE
-            firebaseService.joinRoom(roomId)
-            firebaseService.addPushKey()
+            //if there's no lobby, or I'm not there yet ...
+            if (!roomInfo.lobby || !roomInfo.lobby[firebaseService.getUid()]) {
+                //Initialize references in firebaseService AND enter the room to set PLACE
+                firebaseService.initRefs(roomId)
+                firebaseService.joinRoom() //sets joined: true, firstName, lastName, etc
+            }
+
             //Move to next screen
             dispatch(moveToLobby(roomId))
         }
@@ -110,8 +114,8 @@ export function createRoom(roomConfig){
         })
         
         //Initialize references in firebaseService AND enter the room to set PLACE
-        firebaseService.joinRoom(roomId)
-        firebaseService.addPushKey()
+        firebaseService.initRefs(roomId)
+        firebaseService.joinRoom()
         //Move to next screen
         dispatch(moveToLobby(roomId))
     }

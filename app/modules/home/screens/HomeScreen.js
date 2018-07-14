@@ -37,8 +37,7 @@ class HomeScreen extends Component {
                     <Image source={joinBook} style={imageContainer}/>
                     <Image source={leftArrow} style={arrowContainer}/>
                     <View style={[optionContainer,{transform:[{rotate:'7.36deg'}]}]}>
-                        <T>JOIN</T>
-                        <T>ROOM</T>
+                        <T>{'JOIN\nROOM'}</T>
                     </View>
                 </TouchableOpacity>
 
@@ -46,8 +45,7 @@ class HomeScreen extends Component {
 
                 <TouchableOpacity style={wrapper} onPress={this._createRoom}>
                     <View style={[optionContainer,{transform:[{rotate:'-3.38deg'}]}]}>
-                        <T>CREATE</T>
-                        <T>ROOM</T>
+                        <T>{'CREATE\nROOM'}</T>
                     </View>
                     <Image source={leftArrow} style={rightArrowContainer}/>
                     <Image source={createBook} style={imageContainer}/>
@@ -110,7 +108,8 @@ const styles = {
     optionStyle: {
         fontSize:20,
         fontFamily: Styler.fontFamily.Medium,
-        color: '#C4C4C4'
+        color: '#C4C4C4',
+        textAlign: 'center'
     },
     THE: {
         fontSize:30,

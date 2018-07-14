@@ -45,6 +45,16 @@ class FirebaseService{
         })
     }
 
+    initRefs(roomId) {
+        if(!roomId) return
+        
+        this.roomId = roomId
+        this.roomRef = firebase.database().ref(`rooms/${roomId}`)
+
+        this.myInfoRef = firebase.database().ref(`rooms/${roomId}/lobby/${this.uid}`)
+        this.placeRef = firebase.database().ref(`rooms/${roomId}/place`)
+    }
+
     wipeRefs(){
         this.pushKey = null
 
@@ -55,23 +65,15 @@ class FirebaseService{
         this.placeRef = null
     }
 
-    joinRoom(roomId){
-        if(!roomId) return
-        
-        this.roomId = roomId
-        this.roomRef = firebase.database().ref(`rooms/${roomId}`)
-
-        this.myInfoRef = firebase.database().ref(`rooms/${roomId}/lobby/${this.uid}`)
-        this.placeRef = firebase.database().ref(`rooms/${roomId}/place`)
-
-        this.myInfoRef.update({
-            joined:true,
-        })
-    }
-
-    addPushKey(){
+    joinRoom(){
         this.pushKey = this.placeRef.push().key
-        this.placeRef.child(this.pushKey).set(this.uid)
+
+        let batch = {}
+
+        batch[`place/${this.pushKey}`] = this.uid
+        batch[`lobby/${this.uid}/joined`] = true
+        
+        this.roomRef.update(batch)
     }
 
     removePushKey(){
@@ -83,9 +85,7 @@ class FirebaseService{
         return firebase.database().ref(`rooms/${this.roomId}/${path}`)
     }
 
-    leaveLobby(username){
-        this.activityLog(username + ' has left the room.')
-
+    leaveLobby(){
         //If already left lobby, don't do anything
         if(!this.roomRef) return
     
@@ -100,15 +100,9 @@ class FirebaseService{
     }
 
     updateUsername(newName){
-
         firebase.database().ref(`rooms/${this.roomId}/lobby/${this.uid}`).update({
             name:newName,
         })
-
-    }
-
-    activityLog(message){
-        firebase.database().ref(`rooms/${this.roomId}/log`).push(message)
     }
 
     changeRoleCount(key,change){

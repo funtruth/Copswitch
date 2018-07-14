@@ -6,16 +6,19 @@ import {
     Dimensions
 }   from 'react-native'
 import _ from 'lodash'
-import { Button } from '@components/index.js';
+import { Button } from '@components';
 
 const { height, width } = Dimensions.get('window')
 
 class CodeHandler extends Component {
-    state = {
-        currentIndex: 0,
-        codeArr: new Array(4).fill('')
+    constructor(props) {
+        super(props)
+        this.state = {
+            currentIndex: 0,
+            codeArr: new Array(4).fill('')
+        }
+        this.codeInputRefs = []
     }
-    codeInputRefs = []
 
     componentWillReceiveProps(newProps) {
         if (newProps.error && newProps.error !== this.props.error) {
@@ -62,7 +65,7 @@ class CodeHandler extends Component {
 		newCodeArr[index] = character
 
 		if (index == 3) {
-			this._blur(this.state.currentIndex)
+            this._onSubmit(newCodeArr)
 		} else {
 			this._setFocus(this.state.currentIndex + 1)
 		}
@@ -75,15 +78,14 @@ class CodeHandler extends Component {
 		})
     }
     
-    _onSubmit = () => {
-        let newCodeArr = this.state.codeArr
+    _onSubmit = (codeArr) => {
+        let newCodeArr = codeArr || this.state.codeArr
         const code = newCodeArr.join('')
 
         this.props.onFulfill(code)
     }
 
     render() {
-        const { onFulfill } = this.props
         const { activeWrapper, wrapper, inputText,
             submitButton, submitText } = styles
 

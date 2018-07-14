@@ -16,7 +16,7 @@ class LoadingScreen extends Component {
         if (inGame) {
             NavigationTool.navigate('Pregame')
         } else if (inLobby) {
-            firebaseService.joinRoom(lobbyKey)
+            firebaseService.initRefs(lobbyKey)
             this.props.turnOnLobbyListeners()
             NavigationTool.navigate('Lobby')
         } else {
