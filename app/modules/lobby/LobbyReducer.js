@@ -11,11 +11,18 @@ const initialState = {
     username: null,
     owner: null,
     roomStatus: 'Lobby',
-    lobbyList: [],
-    placeList: [],
+    lobbyList: {},
+    placeList: null,
     place: null,
-    roleList: []
+    roleList: {}
 }
+
+/*
+NOTES:
+
+placeList is kept as a snap inside LobbyReducer in order to ensure order is kept
+Order of items in an object are not guaranteed to stay chronological
+*/
 
 const JOIN_ROOM = 'lobby/join_room'
 
@@ -119,7 +126,7 @@ function newLobbyInfo(snap, listener){
                 })
                 dispatch({
                     type: PLACE_LISTENER,
-                    payload: snap.val()
+                    payload: snap
                 })
                 break
             case 'roles':
@@ -155,18 +162,18 @@ function clearListeners(){
 export function startPregame() {
     return (dispatch, getState) => {
         const { roleList, lobbyList } = getState().lobby
-        const roles = roleList.val()
-        const lobby = lobbyList.val()
         let rolesLen = 0
-        let lobbyLen = Object.keys(lobby).length
+        let lobbyLen = Object.keys(lobbyList).length
 
-        for(var i in roles){
-            rolesLen += roles[i]
+        for(var i in roleList){
+            rolesLen += roleList[i]
         }
 
         if(rolesLen === lobbyLen){
             let statusRef = firebaseService.fetchRoomRef('status')
             statusRef.set('Starting')
+        } else {
+            //TODO show extra logic
         }
     }
 }

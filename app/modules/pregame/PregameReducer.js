@@ -1,4 +1,5 @@
 import { firebaseService } from '@services'
+import _ from 'lodash'
 
 initialState = {}
 
@@ -6,10 +7,9 @@ export function setupAndStartGame(){
     return (dispatch, getState) => {
         const { placeList, roleList, lobbyList } = getState().lobby
     
-        const roles = roleList.val()
         let rolesArr = [];
-        for(var i in roles){
-            for(var j=0; j<roles[i]; j++){
+        for(var i in roleList){
+            for(var j=0; j<roleList[i]; j++){
                 rolesArr.push(i)
             }
         }
@@ -29,12 +29,13 @@ export function setupAndStartGame(){
         //Finishing player details
         let list = []
         let ready = []
-        const lobby = lobbyList.val()
         counter = 0
+        
         placeList.forEach(child => {
+            const uid = child.val()
             list.push({
-                name: lobby[child.val()].name,
-                uid: child.val(),
+                name: lobbyList[uid].name,
+                uid: uid,
                 roleid: rolesArr[counter]
             })
             ready.push(false)

@@ -6,6 +6,8 @@ const initialState = {
     inGame: false,
     roomId: null,
 
+    activeListeners: [],
+
     nomination: null,
     counter: null,
     phase: 0,
@@ -101,6 +103,7 @@ export function clearListeners(){
 
 function newRoomInfo(snap, listener){
     return (dispatch) => {
+        if (!snap.val()) return
         switch(listener){
             case 'nomination':
                 dispatch({

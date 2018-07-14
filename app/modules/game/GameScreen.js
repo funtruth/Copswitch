@@ -13,7 +13,7 @@ import { ConsoleView, GameTimer, General, PlayerListView, Private, PrivateNewsVi
 
 class GameScreen extends Component {
     render() {
-        const { news, events } = this.props
+        const { news, events, roleid } = this.props
         
         return (
             <LinearGradient colors={Styler.color.gradient} style = {{flex:1, width: '100%'}}>

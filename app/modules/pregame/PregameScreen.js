@@ -13,6 +13,11 @@ class PregameScreen extends Component {
         if (roomStatus === 'Starting' && ownership) {
             this.props.setupAndStartGame()
         }
+
+        if (roomStatus === 'Running') {
+            this.props.turnOnGameListeners()
+            NavigationTool.navigate('Game')
+        }
     }
 
     componentWillReceiveProps(newProps){

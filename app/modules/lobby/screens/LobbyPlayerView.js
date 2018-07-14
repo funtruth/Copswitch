@@ -26,16 +26,16 @@ class LobbyPlayerView extends Component {
         let data = []
         const myUid = firebaseService.getUid()
 
-        for (var i in placeList) {
-            let playerUid = placeList[i]
+        placeList.forEach(child => {
+            const uid = child.val()
             data.push({
-                key: playerUid,
-                name: lobbyList[playerUid] && lobbyList[playerUid].name,
-                uid: playerUid,
-                showOwner: playerUid === owner,
-                showEdit: playerUid === myUid
+                key: uid,
+                name: lobbyList[uid] && lobbyList[uid].name,
+                uid: uid,
+                showOwner: uid === owner,
+                showEdit: uid === myUid
             })
-        }
+        })
 
         this.setState({
             data: data
