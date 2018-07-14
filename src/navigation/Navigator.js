@@ -1,4 +1,3 @@
-// app/router.js
 import { StackNavigator } from "react-navigation";
 
 import Loading from '../modules/loading/LoadingScreen';

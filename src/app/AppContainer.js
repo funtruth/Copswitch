@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { View, BackHandler } from 'react-native';
 
-import Navigator from "./Navigator";
+import Navigator from "../navigation/Navigator";
 import { NavigationTool } from '@navigation';
 import { DevBot } from '@services';
 
