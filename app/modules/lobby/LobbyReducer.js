@@ -14,13 +14,12 @@ const initialState = {
     lobbyList: [],
     placeList: [],
     place: null,
-    log: [],
     roleList: []
 }
 
 const JOIN_ROOM = 'lobby/join_room'
 
-const PUSH_NEW_LISTENER = 'lobby/push_new_listener'
+const PUSH_LISTENER_PATH = 'lobby/push_listener_path'
 const CLEAR_LISTENERS = 'lobby/clear_listeners'
 
 const OWNER_LISTENER = 'lobby/room_owner_listener'
@@ -72,10 +71,10 @@ export function turnOnLobbyListeners() {
 function lobbyListenerOn(listener,listenerPath,listenerType){
     return (dispatch) => {
         let listenerRef = firebaseService.fetchRoomRef(listenerPath)
-        /*dispatch({
-            type: PUSH_NEW_LISTENER,
-            payload: listenerRef
-        })*/
+        dispatch({
+            type: PUSH_LISTENER_PATH,
+            payload: listenerPath
+        })
         listenerRef.on(listenerType, snap => {
             dispatch(newLobbyInfo(snap, listener))
         })
@@ -84,10 +83,11 @@ function lobbyListenerOn(listener,listenerPath,listenerType){
 
 function newLobbyInfo(snap, listener){
     return (dispatch) => {
+        if (!snap.val()) return
         switch(listener){
             case 'owner':
                 let ownership = snap.val() === firebaseService.getUid()
-                //dispatch(ownershipMode(ownership))
+                dispatch(ownershipMode(ownership))
                 dispatch({
                     type: OWNER_LISTENER,
                     payload: snap.val()
@@ -102,7 +102,7 @@ function newLobbyInfo(snap, listener){
             case 'lobby':
                 dispatch({
                     type: LOBBY_LISTENER,
-                    payload: snap
+                    payload: snap.val()
                 })
                 break
             case 'place':
@@ -119,13 +119,13 @@ function newLobbyInfo(snap, listener){
                 })
                 dispatch({
                     type: PLACE_LISTENER,
-                    payload: snap
+                    payload: snap.val()
                 })
                 break
             case 'roles':
                 dispatch({
                     type: ROLE_LIST_LISTENER,
-                    payload: snap
+                    payload: snap.val()
                 })
                 break
             case 'status':
@@ -143,7 +143,8 @@ function clearListeners(){
     return (dispatch, getState) => {
         const { activeListeners } = getState().lobby
         for(var i=0; i<activeListeners.length; i++){
-            activeListeners[i].off()
+            let listenerRef = firebaseService.fetchRoomRef(activeListeners[i])
+            listenerRef.off()
         }
         dispatch({
             type: CLEAR_LISTENERS
@@ -176,7 +177,7 @@ export default (state = initialState, action) => {
         case JOIN_ROOM:
             return { ...state, inLobby: true, roomId: action.payload }
 
-        case PUSH_NEW_LISTENER:
+        case PUSH_LISTENER_PATH:
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:
             return { ...state, activeListeners: [] }

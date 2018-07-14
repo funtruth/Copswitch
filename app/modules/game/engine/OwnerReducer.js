@@ -9,7 +9,7 @@ const initialState = {
 }
 
 const OWNERSHIP_LISTENER = 'owner/ownership_listener'
-const PUSH_NEW_LISTENER = 'owner/push_new_listener'
+const PUSH_LISTENER_PATH = 'owner/push_listener_path'
 const CLEAR_LISTENERS = 'owner/clear_listeners'
 
 export function ownershipMode(ownership) {
@@ -37,8 +37,8 @@ function ownerListenerOn(listener, listenerPath, listenerType) {
     return (dispatch, getState) => {
         let listenerRef = firebaseService.fetchRoomRef(listenerPath)
         dispatch({
-            type: PUSH_NEW_LISTENER,
-            payload: listenerRef
+            type: PUSH_LISTENER_PATH,
+            payload: listenerPath
         })
         listenerRef.on(listenerType, snap => {
             dispatch(handleNewInfo(snap, listener))
@@ -98,7 +98,8 @@ function turnOffListeners() {
     return (dispatch, getState) => {
         const { activeListeners } = getState().owner
         for(var i=0; i<activeListeners.length; i++){
-            activeListeners[i].off()
+            let listenerRef = firebaseService.fetchRoomRef(activeListeners[i])
+            listenerRef.off()
         }
         dispatch({
             type: CLEAR_LISTENERS
@@ -111,7 +112,7 @@ export default (state = initialState, action) => {
     switch(action.type){
         case OWNERSHIP_LISTENER:
             return { ...state, ownership: action.payload }
-        case PUSH_NEW_LISTENER:
+        case PUSH_LISTENER_PATH:
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:
             return { ...state, activeListeners: [] }

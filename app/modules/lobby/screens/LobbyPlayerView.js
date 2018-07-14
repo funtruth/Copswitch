@@ -11,25 +11,31 @@ class LobbyPlayerView extends Component {
         data: []
     }
 
+    componentDidMount() {
+        this.updateList(this.props)
+    }
+
     componentWillReceiveProps(newProps) {
-        if (!newProps.lobbyList || !newProps.placeList) return
+        this.updateList(newProps)
+    }
 
-        let placeSnapshot = newProps.placeList
-        let lobbySnapshot = newProps.lobbyList
+    updateList(props) {
+        let { placeList, lobbyList, owner } = props
+        if (!lobbyList || !placeList) return
+
         let data = []
-
         const myUid = firebaseService.getUid()
 
-        placeSnapshot.forEach(child => {
-            let playerUid = child.val()
+        for (var i in placeList) {
+            let playerUid = placeList[i]
             data.push({
                 key: playerUid,
-                name: lobbySnapshot.val()[playerUid] && lobbySnapshot.val()[playerUid].name,
+                name: lobbyList[playerUid] && lobbyList[playerUid].name,
                 uid: playerUid,
-                showOwner: playerUid === newProps.owner,
+                showOwner: playerUid === owner,
                 showEdit: playerUid === myUid
             })
-        })
+        }
 
         this.setState({
             data: data
@@ -57,7 +63,7 @@ class LobbyPlayerView extends Component {
 
 const styles = {
     container: {
-        height: 0.55*height,
+        height: 0.7*height,
         width
     }
 }

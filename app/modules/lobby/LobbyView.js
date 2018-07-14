@@ -40,6 +40,7 @@ class LobbyView extends Component {
                     pagingEnabled={true}
                 >
                     <LobbyPlayerView />
+                    <LobbyRolesView />
                     <LobbySetupView />
                 </ScrollView>
                 <LobbyOptionView />

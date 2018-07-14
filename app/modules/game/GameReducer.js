@@ -22,7 +22,7 @@ const initialState = {
 
 const IN_GAME_STATUS = 'game/in_game_status'
 
-const PUSH_NEW_LISTENER = 'game/push_new_listener'
+const PUSH_LISTENER_PATH = 'game/push_listener_path'
 const CLEAR_LISTENERS = 'game/clear_listeners'
 
 const NOMINATION_LISTENER = 'game/nomination_listener'
@@ -77,8 +77,8 @@ function gameListenerOn(listener,listenerPath,listenerType){
     return (dispatch) => {
         let listenerRef = firebaseService.fetchRoomRef(listenerPath)
         dispatch({
-            type: PUSH_NEW_LISTENER,
-            payload: listenerRef
+            type: PUSH_LISTENER_PATH,
+            payload: listenerPath
         })
         listenerRef.on(listenerType, snap => {
             dispatch(newRoomInfo(snap, listener))
@@ -90,7 +90,8 @@ export function clearListeners(){
     return (dispatch, getState) => {
         const { activeListeners } = getState().room
         for(var i=0; i<activeListeners.length; i++){
-            activeListeners[i].off()
+            let listenerRef = firebaseService.fetchRoomRef(activeListeners[i])
+            listenerRef.off()
         }
         dispatch({
             type: CLEAR_LISTENERS
@@ -200,7 +201,7 @@ export default (state = initialState, action) => {
         case IN_GAME_STATUS:
             return { ...state, inGame: action.payload }
 
-        case PUSH_NEW_LISTENER:
+        case PUSH_LISTENER_PATH:
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:
             return { ...state, activeListeners: [] }

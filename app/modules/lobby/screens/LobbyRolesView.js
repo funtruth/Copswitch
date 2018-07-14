@@ -10,19 +10,26 @@ class LobbyRolesView extends Component {
         data: []
     }
 
-    componentWillReceiveProps(newProps) {
-        if (!newProps.roleList) return
+    componentDidMount() {
+        this.updateList(this.props)
+    }
 
-        let roleSnapshot = newProps.roleList
+    componentWillReceiveProps(newProps) {
+        this.updateList(newProps)
+    }
+
+    updateList(props) {
+        if (!props.roleList) return
+        let { roleList } = props
         let data = []
 
-        roleSnapshot.forEach(child => {
+        for (var i in roleList) {
             data.push({
-                key: child.key,
-                roleid: child.key,
-                count: child.val()
+                key: i,
+                roleid: i,
+                count: roleList[i]
             })
-        })
+        }
 
         this.setState({
             data: data
