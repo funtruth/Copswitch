@@ -1,4 +1,3 @@
-import { AsyncStorage } from 'react-native'
 import { firebaseService } from '@services'
 import { NavigationTool } from '@navigation'
 
@@ -42,20 +41,6 @@ const EVENTS_LISTENER = 'game/events_listener'
 const TIMEOUT_LISTENER = 'game/timeout_listener'
 
 const RESET = 'game/reset'
-
-export function refreshGameReducer() {
-    return (dispatch) => {
-        AsyncStorage.getItem('GAME-KEY',(error,result)=>{
-            dispatch({
-                type: REFRESH_ROOM_ID,
-                payload: result
-            })
-            dispatch({
-                type: REFRESH_REDUCER
-            })
-        })
-    }
-}
 
 export function turnOnGameListeners(){
     return (dispatch, getState) => {
@@ -186,15 +171,6 @@ export function gameChoice(choice) {
 
         myChoiceRef.set(choice)
             .then(() => myReadyRef.set(choice !== null))
-    }
-}
-
-export function gameOver() {
-    return (dispatch) => {
-        AsyncStorage.removeItem('LOBBY-KEY');
-        AsyncStorage.removeItem('GAME-KEY');
-        
-        NavigationTool.navigate('Home')
     }
 }
 

@@ -1,8 +1,5 @@
 import React, { Component } from 'react'
 import {
-    View,
-    AsyncStorage,
-    Animated,
     ScrollView
 }   from 'react-native'
 import { connect } from 'react-redux'

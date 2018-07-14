@@ -22,7 +22,7 @@ class CreateSlide extends Component {
 
     render() {
         const { createRoom } = this.props
-        const { container, headerText, subText, separator } = styles
+        const { container } = styles
 
         return(
             <LinearGradient colors={['#3A2F26', '#2E2620']} style={container}>

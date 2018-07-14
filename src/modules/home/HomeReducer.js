@@ -1,4 +1,3 @@
-import { AsyncStorage } from 'react-native'
 import { joinRoom, turnOnLobbyListeners } from '../lobby/LobbyReducer'
 
 import randomize from 'randomatic'
@@ -108,14 +107,11 @@ export function createRoom(roomConfig){
             status:'Lobby',
             mode: gameMode
         })
-        //Set AsyncStorage
-        .then(()=>{
-            AsyncStorage.setItem('LOBBY-KEY', roomId)
-        })
-        
+
         //Initialize references in firebaseService AND enter the room to set PLACE
         firebaseService.initRefs(roomId)
         firebaseService.joinRoom()
+        
         //Move to next screen
         dispatch(moveToLobby(roomId))
     }
@@ -132,7 +128,7 @@ export function reset() {
 //Navigates to Lobby and resets state
 function moveToLobby(roomId){
     return (dispatch) => {
-        dispatch(joinRoom(roomId))
+        dispatch(joinRoom(roomId)) //Lobby reducer
         dispatch(turnOnLobbyListeners())
         NavigationTool.navigate("Lobby")
         dispatch({
