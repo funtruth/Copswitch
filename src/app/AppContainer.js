@@ -3,7 +3,7 @@ import { View, BackHandler } from 'react-native';
 
 import Navigator from "../navigation/Navigator";
 import { NavigationTool } from '@navigation';
-import { DevBot } from '@services';
+import DevTool from '../components/dev/DevTool';
 
 import MenuHeader from '../menu/common/MenuHeader';
 import MenuContainer from '../menu/MenuContainer';
@@ -30,7 +30,7 @@ export default class Router extends React.Component {
                         NavigationTool.setContainer(navigatorRef)
                     }}
                 />
-                {__DEV__?<DevBot />:null}
+                {__DEV__?<DevTool />:null}
             </View>
         )
     }

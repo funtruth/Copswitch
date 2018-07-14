@@ -5,7 +5,7 @@ import Commands from './commands'
 
 const devBotHeight = 200
 
-class DevBot extends Component {
+class DevTool extends Component {
     state = {
         visible: false
     }
@@ -95,4 +95,4 @@ const styles = {
     }
 }
 
-export default DevBot
+export default DevTool

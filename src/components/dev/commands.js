@@ -1,6 +1,6 @@
 import { firebase } from '@services'
 import { NavigationTool } from '@navigation'
-import { AsyncStorage } from 'react-native'
+import { persistor } from '../../redux/store'
 
 const DEV_ROOM = '****'
 
@@ -62,8 +62,7 @@ export default Commands = [
         buttonText: 'Reset Everything',
         onPress: () => {
             firebase.database().ref(`rooms/${DEV_ROOM}`).remove()
-            AsyncStorage.removeItem('GAME-KEY')
-            AsyncStorage.removeItem('LOBBY-KEY')
+            persistor.purge()
             NavigationTool.reset('HomeNav')
         }
     },
