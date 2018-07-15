@@ -10,7 +10,7 @@ import {
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import Foundation from 'react-native-vector-icons/Foundation';
 import Button from './Button.js';
-import { Modal } from '../parents/Modal.js';
+import Modal from '../parents/Modal.js';
 import { Desc } from './Desc.js';
 
 import { Roles } from '@library';

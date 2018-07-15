@@ -1,9 +1,9 @@
-import firebaseService from './firebase/firebaseService'
-import firebase from './firebase/FirebaseController'
+import firebaseService from './firebaseService'
 import * as fuseService from './fuseService'
+import * as nameUtil from './nameUtil'
 
 export {
-    firebase,
     firebaseService,
-    fuseService
+    fuseService,
+    nameUtil
 }

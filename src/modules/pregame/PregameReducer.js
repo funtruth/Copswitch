@@ -1,5 +1,4 @@
 import { firebaseService } from '@services'
-import _ from 'lodash'
 
 initialState = {}
 

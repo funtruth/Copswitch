@@ -1,18 +1,18 @@
 
 import React, { Component } from 'react';
 import {
-    TextInput,
     View,
     TouchableOpacity,
     Dimensions
 }   from 'react-native';
 import { connect } from 'react-redux'
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { firebaseService, fuseService } from '@services'
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { firebaseService, fuseService, nameUtil } from '@services'
+
+import { TextInput } from '@components'
 
 const { height, width } = Dimensions.get('window')
 
-const allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ ';
 const minCharLen = 2;
 const maxCharLen = 15;
 
@@ -31,8 +31,6 @@ class LobbyTextInput extends Component {
     }
 
     checkName = (name) => {
-        this.invalidChars = []
-
         if(!name){
             //must give a name
             return
@@ -43,20 +41,10 @@ class LobbyTextInput extends Component {
             return
         }
 
-        for(var i=0; i<name.length; i++){
-            var isCharValid = false
-            for(var j=0; j<allowedChars.length; j++){
-                if(name.charAt(i) === allowedChars.charAt(j)) {
-                    isCharValid = true
-                    break
-                }
-            }
-            if(!isCharValid){
-                this.invalidChars.push( name.charAt(i) )
-            }
-        }
+        const { valid, invalidChars } = nameUtil.checkIfValidName(name, {allowSpaces: true})
 
-        if (this.invalidChars.length > 0) {
+        if (!valid) {
+            console.log('invalid characters', invalidChars)
             return
         }
 
@@ -90,15 +78,13 @@ class LobbyTextInput extends Component {
                     autoCapitalize='words'
                     value = {this.state.username}
                     placeholder='ENTER NAME'
-                    placeholderTextColor={'#000000'}
-                    underlineColorAndroid='transparent'
                     maxLength={maxCharLen}
                     style={textInput}
                     onChangeText = {this.onChange}
                     onSubmitEditing = {this.checkName}
                 />
                 <TouchableOpacity style={iconWrapper} onPress = {this._onSubmit}>
-                    <FontAwesome name='arrow-right' style={icon}/>
+                    <Icon name='arrow-left' style={icon}/>
                 </TouchableOpacity>
             </View>
         )
@@ -111,15 +97,7 @@ const styles = {
         justifyContent: 'center'
     },
     textInput: {
-        fontFamily:'BarlowCondensed-Regular',
-        fontSize: 20,
-        color: '#8E8782',
-        backgroundColor: '#C4C4C4',
-        textAlign:'left',
-        justifyContent:'center',
-        width: 0.6*width,
-        borderRadius: 2,
-        margin: 5
+        width: 0.6*width
     },
     iconWrapper: {
         alignItems: 'center',

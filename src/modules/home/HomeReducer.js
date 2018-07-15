@@ -64,7 +64,7 @@ export function checkRoom(roomId){
             if (!roomInfo.lobby || !roomInfo.lobby[firebaseService.getUid()]) {
                 //Initialize references in firebaseService AND enter the room to set PLACE
                 firebaseService.initRefs(roomId)
-                firebaseService.joinRoom() //sets joined: true, firstName, lastName, etc
+                firebaseService.joinRoom(roomId) //sets joined: true, firstName, lastName, etc
             }
 
             //Move to next screen
@@ -110,7 +110,7 @@ export function createRoom(roomConfig){
 
         //Initialize references in firebaseService AND enter the room to set PLACE
         firebaseService.initRefs(roomId)
-        firebaseService.joinRoom()
+        firebaseService.joinRoom(roomId)
         
         //Move to next screen
         dispatch(moveToLobby(roomId))

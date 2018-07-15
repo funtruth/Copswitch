@@ -1,7 +1,6 @@
-import firebase from './FirebaseController'
+import firebase from '../app/admin'
 
 class FirebaseService{
-
     constructor(){
         this.uid = null
         this.pushKey = null //push key upon entering room
@@ -9,7 +8,6 @@ class FirebaseService{
         this.roomId = null
         this.roomRef = null
         this.myInfoRef = null
-        this.placeRef = null
     }
 
     //General
@@ -51,7 +49,6 @@ class FirebaseService{
         this.roomRef = firebase.database().ref(`rooms/${roomId}`)
 
         this.myInfoRef = firebase.database().ref(`rooms/${roomId}/lobby/${this.uid}`)
-        this.placeRef = firebase.database().ref(`rooms/${roomId}/place`)
     }
 
     wipeRefs(){
@@ -61,23 +58,24 @@ class FirebaseService{
         this.roomRef = null
 
         this.myInfoRef = null
-        this.placeRef = null
     }
 
-    joinRoom(){
-        this.pushKey = this.placeRef.push().key
+    joinRoom(roomId){
+        let pushKeyRef = firebase.database().ref(`rooms/${roomId}/place`)
+        this.pushKey = pushKeyRef.push().key
 
         let batch = {}
 
         batch[`place/${this.pushKey}`] = this.uid
         batch[`lobby/${this.uid}/joined`] = true
         
-        this.roomRef.update(batch)
+        firebase.database().ref(`rooms/${roomId}`).update(batch)
     }
 
     removePushKey(){
         if(!this.pushKey) return
-        this.placeRef.child(this.pushKey).remove()
+        let placeRef = firebase.database().ref(`rooms/${this.roomId}/place`)
+        placeRef.child(this.pushKey).remove()
     }
 
     fetchRoomRef(path){
@@ -113,7 +111,6 @@ class FirebaseService{
             return change?count+1:count-1
         })
     }
-
 }
 
 export default new FirebaseService();

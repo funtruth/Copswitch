@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import { View, Text, TouchableOpacity, Animated } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient'
 
-class Button extends React.Component {
-    state = {
-        pressed: false
+class Button extends Component {
+    constructor(props) {
+        super(props)
+        this.state = {
+            pressed: false
+        }
     }
 
     componentWillMount() {
