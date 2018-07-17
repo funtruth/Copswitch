@@ -31,6 +31,7 @@ class LobbyPlayerView extends Component {
             data.push({
                 key: uid,
                 name: lobbyList[uid] && lobbyList[uid].name,
+                fullName: lobbyList[uid] && lobbyList[uid].fullName,
                 uid: uid,
                 showOwner: uid === owner,
                 showEdit: uid === myUid

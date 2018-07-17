@@ -15,7 +15,9 @@ const RESET = 'home/reset'
 
 //checks validity of roomId
 export function checkRoom(roomId){
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
+        const { profile } = getState()
+
         dispatch({
             type: ERROR_MESSAGE,
             payload: null
@@ -64,7 +66,7 @@ export function checkRoom(roomId){
             if (!roomInfo.lobby || !roomInfo.lobby[firebaseService.getUid()]) {
                 //Initialize references in firebaseService AND enter the room to set PLACE
                 firebaseService.initRefs(roomId)
-                firebaseService.joinRoom(roomId) //sets joined: true, firstName, lastName, etc
+                firebaseService.joinRoom(roomId, profile.fullName) //sets joined: true, firstName, lastName, etc
             }
 
             //Move to next screen
@@ -80,7 +82,9 @@ export function checkRoom(roomId){
 
 //Creating a room process
 export function createRoom(roomConfig){
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
+        const { profile } = getState()
+
         dispatch({
             type: LOADING_STATUS,
             payload: true
@@ -110,7 +114,7 @@ export function createRoom(roomConfig){
 
         //Initialize references in firebaseService AND enter the room to set PLACE
         firebaseService.initRefs(roomId)
-        firebaseService.joinRoom(roomId)
+        firebaseService.joinRoom(roomId, profile.fullName)
         
         //Move to next screen
         dispatch(moveToLobby(roomId))

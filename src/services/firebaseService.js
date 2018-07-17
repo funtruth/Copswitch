@@ -60,14 +60,14 @@ class FirebaseService{
         this.myInfoRef = null
     }
 
-    joinRoom(roomId){
+    joinRoom(roomId, fullName){
         let pushKeyRef = firebase.database().ref(`rooms/${roomId}/place`)
         this.pushKey = pushKeyRef.push().key
 
         let batch = {}
 
         batch[`place/${this.pushKey}`] = this.uid
-        batch[`lobby/${this.uid}/joined`] = true
+        batch[`lobby/${this.uid}/fullName`] = fullName
         
         firebase.database().ref(`rooms/${roomId}`).update(batch)
     }
