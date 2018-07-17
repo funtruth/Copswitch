@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
-import { View, Text, TouchableOpacity, Animated } from 'react-native';
+import { View, Text, TouchableOpacity, Animated, Dimensions } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient'
+
+const { height, width } = Dimensions.get('window')
 
 class Button extends Component {
     constructor(props) {
@@ -10,13 +12,6 @@ class Button extends Component {
         }
     }
 
-    componentWillMount() {
-        let { height, width } = this.props.style
-        if (!height || !width) {
-            console.warn('Custom Button is missing a Dimension')
-        }
-    }
-        
     _handlePressIn = () => {
         this.setState({
             pressed: true
@@ -40,33 +35,38 @@ class Button extends Component {
 
     render() {
         const { style, disabled } = this.props
-        const { buttonStyle, disabledStyle } = styles
+        const { pressed } = this.state
+        const { defaultStyle, buttonStyle, disabledStyle } = styles
 
         return (
             <TouchableOpacity
+                activeOpacity={0.9}
                 { ...this.props}
-                style={[disabled?disabledStyle:buttonStyle, style]}
+                style={[defaultStyle, disabled ? disabledStyle : buttonStyle, style]}
                 onPressIn={this._handlePressIn}
                 onPressOut={this._handlePressOut}
-                activeOpacity={0.9}
             >
-                {this.state.pressed?<View style={{height:3}}/>:null}
+                {pressed && <View style={{height:3}}/>}
                 {this.props.children}
-                {this.state.pressed?this.renderShadow():null}
+                {pressed && this.renderShadow()}
             </TouchableOpacity>
         )
     }
 }
 
 const styles = {
+    defaultStyle: {
+        width: 0.45*width,
+        height: 0.15*width,
+        alignSelf: 'center',
+        alignItems: 'center'
+    },
     buttonStyle: {
         backgroundColor: '#A6895D',
-        alignItems: 'center',
         overflow: 'hidden'
     },
     disabledStyle: {
         backgroundColor: '#A6895D',
-        alignItems: 'center',
         overflow: 'hidden',
         opacity: 0.8
     }

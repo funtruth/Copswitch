@@ -1,16 +1,31 @@
-import { firebaseService } from '@services'
+initialState = {
+    firstName: null,
+    lastName: null,
+    avatar: null,
 
-initialState = {}
+    firstNameEdit: null,
+    lastNameEdit: null,
 
-export function setProfile(profile) {
+    fullName: null
+}
+
+const UPDATE_PROPERTY = 'profile/update_property'
+
+export function updateProperty(obj) {
     return (dispatch) => {
-        let myUid = firebaseService.getUid()
-        firebaseService.update(`users/${myUid}`, profile)
+        dispatch({
+            type: UPDATE_PROPERTY,
+            payload: obj
+        })
     }
 }
 
+//TODO not sure if I should save profiles to firebase
+
 export default (state = initialState, action) => {
     switch(action.type){
+        case UPDATE_PROPERTY:
+            return { ...state, ...action.payload }
         default:
             return state;
     }

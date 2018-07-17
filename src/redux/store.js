@@ -6,6 +6,7 @@ import storage from 'redux-persist/lib/storage'
 import reducers from './reducers';
 
 const persistConfig = {
+    timeout: 10000,
     key: 'root',
     storage,
 }

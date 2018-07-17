@@ -117,7 +117,7 @@ class CodeHandler extends Component {
                 <View style={{flexDirection:'row'}}>
                     {codeInputs}
                 </View>
-                <Button style={submitButton} onPress={this._onSubmit} disabled={!enableSubmit}>
+                <Button onPress={this._onSubmit} disabled={!enableSubmit}>
                     <Text style={submitText}>SUBMIT</Text>
                 </Button>
             </View>
@@ -149,11 +149,6 @@ const styles = {
         fontSize: 25,
         color: '#372C24',
         textAlign: 'center'
-    },
-    submitButton: {
-        width: 0.45*width,
-        height: 0.15*width,
-        alignSelf: 'center'
     },
     submitText: {
         fontFamily: 'BarlowCondensed-Medium',

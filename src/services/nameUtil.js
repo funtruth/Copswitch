@@ -24,7 +24,7 @@ const checkIfValidName = (name, config) => {
     }
 
     return {
-        valid: invalidChars.length > 0,
+        valid: invalidChars.length === 0,
         invalidChars
     }
 }
