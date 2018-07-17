@@ -34,6 +34,7 @@ export function setupAndStartGame(){
             const uid = child.val()
             list.push({
                 name: lobbyList[uid].name,
+                fullName: lobbyList[uid].fullName,
                 uid: uid,
                 roleid: rolesArr[counter]
             })

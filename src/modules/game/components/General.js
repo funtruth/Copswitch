@@ -7,7 +7,7 @@ import {
     Dimensions
 } from 'react-native'
 
-import { Printer, Styler } from '@common'
+import { TextHandler, Styler } from '@common'
 import { Message } from '@components'
 
 const { height, width } = Dimensions.get('window')
@@ -27,7 +27,7 @@ class General extends Component {
             itemArr.push(
                 <Message key={i} style={messageContainer}>
                     <Text style={message}>
-                        {Printer.processString(news[i].message)}
+                        {TextHandler.processString(news[i].message)}
                     </Text>
                 </Message>
             )

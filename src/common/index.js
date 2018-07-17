@@ -1,7 +1,7 @@
 import * as Styler from './Styler'
-import * as Printer from './Printer'
+import * as TextHandler from './TextHandler'
 
 export {
-    Printer,
-    Styler
+    Styler,
+    TextHandler
 }

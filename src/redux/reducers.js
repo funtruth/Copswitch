@@ -6,6 +6,7 @@ import MenuReducer from '../menu/MenuReducer'
 import HomeReducer from '../modules/home/HomeReducer'
 import LobbyReducer from '../modules/lobby/LobbyReducer'
 import GameReducer from '../modules/game/GameReducer'
+import InterfaceReducer from '../modules/gameUI/InterfaceReducer'
 import OwnerReducer from '../modules/game/engine/OwnerReducer'
 
 const reducers = {
@@ -15,6 +16,7 @@ const reducers = {
     home: HomeReducer,
     lobby: LobbyReducer,
     game: GameReducer,
+    ui: InterfaceReducer,
     owner: OwnerReducer
 }
 
