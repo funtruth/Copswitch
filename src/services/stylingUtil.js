@@ -7,6 +7,7 @@ const processString = (string) => {
     let words = string.split(' ')
     let arr = []
 
+    //TODO should proably make this a .map() and also make this a service
     for (var i in words) {
         switch(wordsArr[i].charAt(0)){
             case PLAYER_NAME:

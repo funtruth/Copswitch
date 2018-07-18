@@ -2,7 +2,7 @@ initialState = {
     nameState: 'name'
 }
 
-const TOGGLE_NAME_STATE = 'ui/toggle_name_state'
+const TOGGLE_NAME_STATE = 'gameState/toggle_name_state'
 
 export function toggleNameState() {
     return (dispatch, getState) => {
