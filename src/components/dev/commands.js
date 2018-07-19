@@ -1,4 +1,4 @@
-import { firebase } from '@services'
+import firebase from '../../app/admin'
 import { NavigationTool } from '@navigation'
 import { persistor } from '../../redux/store'
 
@@ -42,7 +42,7 @@ export default Commands = [
         onPress: () => {
             let bundle = {}
             for (var i in FAKE_ROOM) {
-                bundle[`rooms/${DEV_ROOM}/lobby/${i}/joined`] = true
+                bundle[`rooms/${DEV_ROOM}/lobby/${i}/fullName`] = 'Test Name'
                 bundle[`rooms/${DEV_ROOM}/lobby/${i}/name`] = FAKE_ROOM[i].name
                 bundle[`rooms/${DEV_ROOM}/place/${FAKE_ROOM[i].place}`] = i
             }

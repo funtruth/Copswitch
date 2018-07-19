@@ -81,7 +81,7 @@ class LobbyTextInput extends Component {
                     maxLength={maxCharLen}
                     style={textInput}
                     onChangeText = {this.onChange}
-                    onSubmitEditing = {this.checkName}
+                    onSubmitEditing = {this._onSubmitEditing}
                 />
                 <TouchableOpacity style={iconWrapper} onPress = {this._onSubmit}>
                     <Icon name='arrow-left' style={icon}/>

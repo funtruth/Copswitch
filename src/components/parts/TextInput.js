@@ -1,15 +1,17 @@
-import React from 'react'
+import React, { Component } from 'react'
 import { TextInput } from 'react-native'
 
-const Input = (props) => {
-    return (
-        <TextInput
+class Input extends Component {
+    render() {
+        return (
+            <TextInput
             underlineColorAndroid={'transparent'}
             placeholderTextColor={'#8E8782'}
-            { ...props }
-            style={[styles.defaultStyle, props.style]}
+            { ...this.props }
+            style={[styles.defaultStyle, this.props.style]}
         />
-    )
+        )
+    }
 }
 
 const styles = {

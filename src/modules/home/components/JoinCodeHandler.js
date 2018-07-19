@@ -65,7 +65,7 @@ class CodeHandler extends Component {
 		newCodeArr[index] = character
 
 		if (index == 3) {
-            this._onSubmit(newCodeArr)
+            //this._onSubmitEditing(newCodeArr)
 		} else {
 			this._setFocus(this.state.currentIndex + 1)
 		}
@@ -78,10 +78,17 @@ class CodeHandler extends Component {
 		})
     }
     
-    _onSubmit = (codeArr) => {
-        let newCodeArr = codeArr || this.state.codeArr
+    //Submit button has been pressed
+    _onSubmit = () => {
+        let newCodeArr = this.state.codeArr
         const code = newCodeArr.join('')
 
+        this.props.onFulfill(code)
+    }
+
+    //Submit has been triggered
+    _onSubmitEditing = (codeArr) => {
+        const code = codeArr.join('')
         this.props.onFulfill(code)
     }
 
