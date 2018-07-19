@@ -67,7 +67,7 @@ class FirebaseService{
         let batch = {}
 
         batch[`place/${this.pushKey}`] = this.uid
-        batch[`lobby/${this.uid}/fullName`] = fullName
+        batch[`lobby/${this.uid}`] = { fullName: fullName, uid: this.uid }
         
         firebase.database().ref(`rooms/${roomId}`).update(batch)
     }

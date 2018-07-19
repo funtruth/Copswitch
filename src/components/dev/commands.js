@@ -5,15 +5,15 @@ import { persistor } from '../../redux/store'
 const DEV_ROOM = '****'
 
 const FAKE_ROOM = {
-    '00000': { name: 'Matthew', place: '-A0'},
-    '00001': { name: 'Justin', place: '-A1'},
-    '00002': { name: 'Hannah', place: '-A2'},
-    '00003': { name: 'Andrew', place: '-A3'},
-    '00004': { name: 'Esther', place: '-A4'},
-    '00005': { name: 'Tyler', place: '-A5'},
-    '00006': { name: 'Mark', place: '-A6'},
-    '00007': { name: 'Jacob', place: '-A7'},
-    '00008': { name: 'Sally', place: '-A8'}
+    '00000': { name: 'Matthew', place: '-A0', uid: '00000' },
+    '0000A': { name: 'Justin', place: '-A1', uid: '0000A' },
+    '0000B': { name: 'Hannah', place: '-A2', uid: '0000B' },
+    '0000F': { name: 'Andrew', place: '-A3', uid: '0000F' },
+    '00004': { name: 'Esther', place: '-A4', uid: '00004' },
+    '00005': { name: 'Tyler', place: '-A5', uid: '00005' },
+    '00123': { name: 'Mark', place: '-A6', uid: '00123' },
+    '00007': { name: 'Jacob', place: '-A7', uid: '00007' },
+    '00008': { name: 'Sally', place: '-A8', uid: '00008' }
 }
 
 const TEST_ROLES = {
@@ -44,6 +44,7 @@ export default Commands = [
             for (var i in FAKE_ROOM) {
                 bundle[`rooms/${DEV_ROOM}/lobby/${i}/fullName`] = 'Test Name'
                 bundle[`rooms/${DEV_ROOM}/lobby/${i}/name`] = FAKE_ROOM[i].name
+                bundle[`rooms/${DEV_ROOM}/lobby/${i}/uid`] = FAKE_ROOM[i].uid
                 bundle[`rooms/${DEV_ROOM}/place/${FAKE_ROOM[i].place}`] = i
             }
             firebase.database().ref().update(bundle)

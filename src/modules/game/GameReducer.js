@@ -89,9 +89,7 @@ export function setRoomInfo(obj) {
 
 function newRoomInfo(snap, listener){
     return (dispatch) => {
-        console.log('newRoomInfo!')
         if (!snap.val()) return
-        console.log('newRoomInfo! MADE IT!')
 
         switch(listener){
             case 'nomination':

@@ -29,11 +29,14 @@ class LobbyPlayerView extends Component {
         this.setState({
             data: formatUtil.join(placeList, lobbyList)
         })
+        console.log('placelist', placeList)
+        console.log('lobby', lobbyList)
+        console.log(formatUtil.join(placeList, lobbyList))
     }
 
     renderPlayer = ({item}) => <LobbyPlayer {...item}/>
 
-    keyExtractor = (item) => item.key
+    keyExtractor = (item) => item.uid
 
     render() {
         const { container } = styles

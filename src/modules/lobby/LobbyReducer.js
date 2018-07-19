@@ -128,6 +128,7 @@ function newLobbyInfo(snap, listener){
                         })
                     )
                 }
+                console.log('setting lobby', snap.val())
                 dispatch({
                     type: LOBBY_LISTENER,
                     payload: snap.val()
@@ -136,7 +137,7 @@ function newLobbyInfo(snap, listener){
             case 'place':
                 let myUid = firebaseService.getUid()
                 let placeArr = []
-                
+
                 snap.forEach(child => {
                     placeArr.push(child.val())
                 })
