@@ -1,5 +1,7 @@
 import { firebaseService } from '@services'
 import { NavigationTool } from '@navigation';
+
+import { setRoomInfo } from '../game/GameReducer'
 import { ownershipMode } from '../game/engine/OwnerReducer'
 
 const initialState = {
@@ -12,7 +14,7 @@ const initialState = {
     owner: null,
     roomStatus: 'Lobby',
     lobbyList: {},
-    placeList: null,
+    placeList: [],
     place: null,
     roleList: {}
 }
@@ -23,9 +25,9 @@ NOTES:
 activeListeners holds firebase paths as strings relative to the roomRef.
 This is because firebase ref objects cannot be persisted through redux
 
-placeList is kept as a snap inside LobbyReducer in order to ensure order is kept.
-Order of items in an object are not guaranteed to stay chronological
-TODO: persist is changing placeList from a snap -> object
+placeList is kept as an ARRAY inside LobbyReducer in order to ensure order is kept.
+Order of items in an OBJECT are not guaranteed to stay chronological
+cannot be kept as a SNAP because redux persist does not store snaps(?)
 */
 
 const JOIN_ROOM = 'lobby/join_room'
@@ -93,8 +95,11 @@ function lobbyListenerOn(listener,listenerPath,listenerType){
 }
 
 function newLobbyInfo(snap, listener){
-    return (dispatch) => {
+    return (dispatch, getState) => {
         if (!snap.val()) return
+        const { game } = getState()
+        const { inGame } = game
+
         switch(listener){
             case 'owner':
                 let ownership = snap.val() === firebaseService.getUid()
@@ -111,6 +116,18 @@ function newLobbyInfo(snap, listener){
                 })
                 break
             case 'lobby':
+                if (inGame) {
+                    let alivePlayers = 0;
+                    for (var i in snap.val()) {
+                        if (!snap.val()[i].dead) alivePlayers++
+                    }
+                    dispatch(
+                        setRoomInfo({
+                            playerNum: alivePlayers,
+                            triggerNum: ((alivePlayers - alivePlayers%2)/2) + 1
+                        })
+                    )
+                }
                 dispatch({
                     type: LOBBY_LISTENER,
                     payload: snap.val()
@@ -118,19 +135,18 @@ function newLobbyInfo(snap, listener){
                 break
             case 'place':
                 let myUid = firebaseService.getUid()
-                let j = 0
+                let placeArr = []
+                
                 snap.forEach(child => {
-                    if (child.val() === myUid){
-                        dispatch({
-                            type: SET_MY_PLACE,
-                            payload: j
-                        })
-                    }
-                    j++
+                    placeArr.push(child.val())
+                })
+                dispatch({
+                    type: SET_MY_PLACE,
+                    payload: placeArr.indexOf(myUid)
                 })
                 dispatch({
                     type: PLACE_LISTENER,
-                    payload: snap
+                    payload: placeArr
                 })
                 break
             case 'roles':

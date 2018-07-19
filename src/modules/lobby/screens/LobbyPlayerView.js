@@ -1,16 +1,19 @@
 import React, { Component } from 'react'
 import { View, FlatList, Dimensions } from 'react-native'
 import { connect } from 'react-redux' 
-import { firebaseService } from '@services'
+import { firebaseService, formatUtil } from '@services'
 import LobbyPlayer from '../components/LobbyPlayer';
 
 const { height, width } = Dimensions.get('window')
 
 class LobbyPlayerView extends Component {
-    state = {
-        data: []
+    constructor(props) {
+        super(props)
+        this.state = {
+            data: []
+        }
     }
-
+    
     componentDidMount() {
         this.updateList(this.props)
     }
@@ -20,26 +23,11 @@ class LobbyPlayerView extends Component {
     }
 
     updateList(props) {
-        let { placeList, lobbyList, owner } = props
-        if (!lobbyList || !placeList) return
-
-        let data = []
-        const myUid = firebaseService.getUid()
-
-        placeList.forEach(child => {
-            const uid = child.val()
-            data.push({
-                key: uid,
-                name: lobbyList[uid] && lobbyList[uid].name,
-                fullName: lobbyList[uid] && lobbyList[uid].fullName,
-                uid: uid,
-                showOwner: uid === owner,
-                showEdit: uid === myUid
-            })
-        })
+        let { placeList, lobbyList } = props
+        if (!placeList || !lobbyList) return
 
         this.setState({
-            data: data
+            data: formatUtil.join(placeList, lobbyList)
         })
     }
 
@@ -71,8 +59,7 @@ const styles = {
 
 export default connect(
     state => ({
-        owner: state.lobby.owner,
-        lobbyList: state.lobby.lobbyList,
-        placeList: state.lobby.placeList
+        placeList: state.lobby.placeList,
+        lobbyList: state.lobby.lobbyList
     })
 )(LobbyPlayerView)

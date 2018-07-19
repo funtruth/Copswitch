@@ -1,10 +1,7 @@
 import { firebaseService } from '@services'
-import { NavigationTool } from '@navigation'
 
 const initialState = {
     inGame: false,
-    roomId: null,
-
     activeListeners: [],
 
     nomination: null,
@@ -14,7 +11,6 @@ const initialState = {
     myReady: null,
     roleid: null,
     alive: null,
-    playerList: [],
     news: [],
     events: [],
 
@@ -25,16 +21,11 @@ const IN_GAME_STATUS = 'game/in_game_status'
 
 const PUSH_LISTENER_PATH = 'game/push_listener_path'
 const CLEAR_LISTENERS = 'game/clear_listeners'
+const SET_ROOM_INFO = 'game/set_room_info'
 
 const NOMINATION_LISTENER = 'game/nomination_listener'
-const COUNTER_LISTENER = 'game/counter_listener'
-const PHASE_LISTENER = 'game/phase_listener'
-const DAYNUM_LISTENER = 'game/daynum_listener'
 const MY_READY_LISTENER = 'game/my_ready_listener'
 const MY_INFO_LISTENER = 'game/my_info_listener'
-const PLAYER_LIST_LISTENER = 'game/player_list_listener'
-const PLAYER_NUM_LISTENER = 'game/player_num_listener'
-const TRIGGER_NUM_LISTENER = 'game/trigger_num_listener'
 const NEWS_LISTENER = 'game/news_listener'
 const EVENTS_LISTENER = 'game/events_listener'
 
@@ -53,7 +44,6 @@ export function turnOnGameListeners(){
         dispatch(gameListenerOn('counter','counter','value'))
         dispatch(gameListenerOn('myReady',`ready/${place}`,'value'))
         dispatch(gameListenerOn('myInfo',`list/${place}`,'value'))
-        dispatch(gameListenerOn('list','list','value'))
         dispatch(gameListenerOn('news','news','child_added'))
         dispatch(gameListenerOn('events','events','child_added'))
         dispatch(gameListenerOn('timeout','timeout','value'))
@@ -62,7 +52,9 @@ export function turnOnGameListeners(){
 
 function gameListenerOn(listener,listenerPath,listenerType){
     return (dispatch) => {
+        //FirebaseService hasn't init roomId ...
         let listenerRef = firebaseService.fetchRoomRef(listenerPath)
+        console.log('listener ref', listenerRef)
         dispatch({
             type: PUSH_LISTENER_PATH,
             payload: listenerPath
@@ -86,9 +78,21 @@ export function clearListeners(){
     }
 }
 
+export function setRoomInfo(obj) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_ROOM_INFO,
+            payload: obj
+        })
+    }
+}
+
 function newRoomInfo(snap, listener){
     return (dispatch) => {
+        console.log('newRoomInfo!')
         if (!snap.val()) return
+        console.log('newRoomInfo! MADE IT!')
+
         switch(listener){
             case 'nomination':
                 dispatch({
@@ -97,18 +101,11 @@ function newRoomInfo(snap, listener){
                 })
                 break
             case 'counter':
-                dispatch({
-                    type: COUNTER_LISTENER,
-                    payload: snap.val()
-                }),
-                dispatch({
-                    type: PHASE_LISTENER,
-                    payload: snap.val()%3
-                }),
-                dispatch({
-                    type: DAYNUM_LISTENER,
-                    payload: Math.floor(snap.val()/3) + 1
-                })
+                dispatch(setRoomInfo({
+                    counter: snap.val(),
+                    phase: snap.val()%3,
+                    dayNum: Math.floor(snap.val()/3) + 1
+                }))
                 break
             case 'myReady':
                 dispatch({
@@ -119,24 +116,6 @@ function newRoomInfo(snap, listener){
             case 'myInfo':
                 dispatch({
                     type: MY_INFO_LISTENER,
-                    payload: snap.val()
-                })
-                break
-            case 'list':
-                let alivePlayers = 0;
-                for(i=0; i<snap.val().length; i++){
-                    if (!snap.val()[i].dead) alivePlayers++
-                }
-                dispatch({
-                    type: PLAYER_NUM_LISTENER,
-                    payload: alivePlayers
-                })
-                dispatch({
-                    type: TRIGGER_NUM_LISTENER,
-                    payload: ((alivePlayers - alivePlayers%2)/2) + 1
-                })
-                dispatch({
-                    type: PLAYER_LIST_LISTENER,
                     payload: snap.val()
                 })
                 break
@@ -182,29 +161,19 @@ export default (state = initialState, action) => {
 
         case PUSH_LISTENER_PATH:
             //TODO remove when confident lols
-            if (!state.activeListeners) return { ...state, activeListeners: [action.payload] }
+            //if (!state.activeListeners) return { ...state, activeListeners: [action.payload] }
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:
             return { ...state, activeListeners: [] }
+        case SET_ROOM_INFO:
+            return { ...state, ...action.payload }
             
         case NOMINATION_LISTENER:
             return { ...state, nomination: action.payload }
-        case COUNTER_LISTENER:
-            return { ...state, counter: action.payload }
-        case PHASE_LISTENER:
-            return { ...state, phase: action.payload }
-        case DAYNUM_LISTENER:
-            return { ...state, dayNum: action.payload }
         case MY_READY_LISTENER:
             return { ...state, myReady: action.payload }
         case MY_INFO_LISTENER:
             return { ...state, roleid: action.payload.roleid, alive: !action.payload.dead }
-        case PLAYER_LIST_LISTENER:
-            return { ...state, playerList: action.payload }
-        case PLAYER_NUM_LISTENER:
-            return { ...state, playerNum: action.payload }
-        case TRIGGER_NUM_LISTENER:
-            return { ...state, triggerNum: action.payload }
         case NEWS_LISTENER:
             return { ...state, news: [{message: action.payload.val(), key: action.payload.key}, ...state.news] }
         case EVENTS_LISTENER:

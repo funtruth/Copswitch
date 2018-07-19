@@ -12,11 +12,12 @@ class LoadingScreen extends Component {
         firebaseService.initUser()
         console.log('persisted state.', this.props.state)
         
-        const { inLobby, lobbyKey, inGame, gameKey } = this.props
+        const { inLobby, roomId, inGame } = this.props
         if (inGame) {
+            firebaseService.initRefs(roomId)
             NavigationTool.navigate('Pregame')
         } else if (inLobby) {
-            firebaseService.initRefs(lobbyKey)
+            firebaseService.initRefs(roomId)
             this.props.turnOnLobbyListeners()
             NavigationTool.navigate('Lobby')
         } else {
@@ -32,9 +33,8 @@ class LoadingScreen extends Component {
 export default connect(
     state => ({
         inLobby: state.lobby.inLobby,
-        lobbyKey: state.lobby.roomId,
+        roomId: state.lobby.roomId,
         inGame: state.game.inGame,
-        gameKey: state.game.roomId,
         state: state
     }),
     dispatch => {

@@ -9,14 +9,38 @@ import {
 import { connect } from 'react-redux'
 import { gameChoice } from '../GameReducer'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import { Styler } from '@common'
 
+import { Styler } from '@common'
 import { Separator } from '@components'
+import { formatUtil } from '@services';
 
 const { height, width } = Dimensions.get('window')
 
 class PlayerListView extends Component {
-    
+    constructor(props) {
+        super(props)
+        this.state = {
+            data: []
+        }
+    }
+
+    componentDidMount() {
+        this.updateList(this.props)
+    }
+
+    componentWillReceiveProps(newProps) {
+        this.updateList(newProps)
+    }
+
+    updateList(props) {
+        let { placeList, lobbyList } = props
+        if (!placeList || !lobbyList) return
+
+        this.setState({
+            data: formatUtil.join(placeList, lobbyList)
+        })
+    }
+
     _renderItem = ({item}) => {
         const iconName = item.dead?'skull':
             (item.readyvalue?'check-circle':
@@ -61,7 +85,7 @@ class PlayerListView extends Component {
                     <Text style={styles.header1}>Who are you</Text>
                     <Text style={styles.header2}>Visiting?</Text>
                     <FlatList
-                        data={this.props.playerList}
+                        data={this.state.data}
                         ItemSeparatorComponent={() => <Separator/>}
                         renderItem={this._renderItem}
                         keyExtractor={item => item.uid}
@@ -92,7 +116,8 @@ const styles = {
 export default connect(
     state => ({
         roleid: state.game.roleid,
-        playerList: state.game.playerList
+        placeList: state.lobby.placeList,
+        lobbyList: state.lobby.lobbyList
     }),
     dispatch => {
         return {

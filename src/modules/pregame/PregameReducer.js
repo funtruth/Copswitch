@@ -26,25 +26,23 @@ export function setupAndStartGame(){
         }
 
         //Finishing player details
-        let list = []
-        let ready = []
-        counter = 0
+        let list = {}
+        let ready = {}
         
-        placeList.forEach(child => {
-            const uid = child.val()
-            list.push({
+        for (var i=0; i<placeList.length; i++) {
+            const uid = placeList[i]
+            list[uid] = {
                 name: lobbyList[uid].name,
                 fullName: lobbyList[uid].fullName,
                 uid: uid,
-                roleid: rolesArr[counter]
-            })
-            ready.push(false)
-            counter++
-        })
+                roleid: rolesArr[i]
+            }
+            ready[uid] = false
+        }
 
         let roomRef = firebaseService.fetchRoomRef('')
         roomRef.update({
-            list: list,
+            lobby: list,
             ready: ready,
             counter: 0,
             status: 'Running'
