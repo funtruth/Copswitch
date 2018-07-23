@@ -5,12 +5,8 @@ import { setRoomInfo } from '../game/GameReducer'
 import { ownershipMode } from '../game/engine/OwnerReducer'
 
 const initialState = {
-    inLobby: false,
-    roomId: null,
-    
     activeListeners: [],
 
-    username: null,
     owner: null,
     roomStatus: 'Lobby',
     lobbyList: {},
@@ -30,13 +26,10 @@ Order of items in an OBJECT are not guaranteed to stay chronological
 cannot be kept as a SNAP because redux persist does not store snaps(?)
 */
 
-const JOIN_ROOM = 'lobby/join_room'
-
 const PUSH_LISTENER_PATH = 'lobby/push_listener_path'
 const CLEAR_LISTENERS = 'lobby/clear_listeners'
 
 const OWNER_LISTENER = 'lobby/room_owner_listener'
-const NAME_LISTENER = 'lobby/name_listener'
 const LOBBY_LISTENER = 'lobby/lobby_listener'
 const PLACE_LISTENER = 'lobby/place_listener'
 const SET_MY_PLACE = 'lobby/set_my_place'
@@ -45,23 +38,14 @@ const ROOM_STATUS_LISTENER = 'lobby/status_listener'
 
 const RESET = 'lobby/reset'
 
-export function joinRoom(roomId){
-    return (dispatch) => {
-        dispatch({
-            type: JOIN_ROOM,
-            payload: roomId
-        })
-    }
-}
-
 export function leaveLobby(){
     return (dispatch, getState) => {
-        const { owner, username } = getState().lobby
+        const { owner } = getState().lobby
 
         dispatch(clearListeners())
         
         if(owner) firebaseService.deleteRoom()
-        else firebaseService.leaveLobby(username)
+        else firebaseService.leaveLobby()
 
         NavigationTool.navigate("Home")
         dispatch({
@@ -73,7 +57,6 @@ export function leaveLobby(){
 export function turnOnLobbyListeners() {
     return (dispatch) => {
         dispatch(lobbyListenerOn('owner','owner','value'))
-        dispatch(lobbyListenerOn('name',`lobby/${firebaseService.getUid()}`,'value'))
         dispatch(lobbyListenerOn('lobby','lobby','value'))
         dispatch(lobbyListenerOn('place','place','value'))
         dispatch(lobbyListenerOn('roles','roles','value'))
@@ -84,6 +67,7 @@ export function turnOnLobbyListeners() {
 function lobbyListenerOn(listener,listenerPath,listenerType){
     return (dispatch) => {
         let listenerRef = firebaseService.fetchRoomRef(listenerPath)
+        console.log('ref', listenerRef)
         dispatch({
             type: PUSH_LISTENER_PATH,
             payload: listenerPath
@@ -97,45 +81,36 @@ function lobbyListenerOn(listener,listenerPath,listenerType){
 function newLobbyInfo(snap, listener){
     return (dispatch, getState) => {
         if (!snap.val()) return
-        const { game } = getState()
-        const { inGame } = game
+        let myUid = firebaseService.getUid()
 
         switch(listener){
             case 'owner':
-                let ownership = snap.val() === firebaseService.getUid()
+                let ownership = snap.val() === myUid
                 dispatch(ownershipMode(ownership))
                 dispatch({
                     type: OWNER_LISTENER,
                     payload: snap.val()
                 })
                 break
-            case 'name':
-                dispatch({
-                    type: NAME_LISTENER,
-                    payload: snap.val().name
-                })
-                break
             case 'lobby':
-                if (inGame) {
-                    let alivePlayers = 0;
-                    for (var i in snap.val()) {
-                        if (!snap.val()[i].dead) alivePlayers++
-                    }
-                    dispatch(
-                        setRoomInfo({
-                            playerNum: alivePlayers,
-                            triggerNum: ((alivePlayers - alivePlayers%2)/2) + 1
-                        })
-                    )
+                let alivePlayers = 0;
+                for (var i in snap.val()) {
+                    if (!snap.val()[i].dead) alivePlayers++
                 }
-                console.log('setting lobby', snap.val())
+                dispatch(
+                    setRoomInfo({
+                        myInfo: snap.val()[myUid],
+                        playerNum: alivePlayers,
+                        triggerNum: ((alivePlayers - alivePlayers%2)/2) + 1
+                    })
+                )
+                
                 dispatch({
                     type: LOBBY_LISTENER,
                     payload: snap.val()
                 })
                 break
             case 'place':
-                let myUid = firebaseService.getUid()
                 let placeArr = []
 
                 snap.forEach(child => {
@@ -202,9 +177,6 @@ export function startPregame() {
 export default (state = initialState, action) => {
 
     switch(action.type){
-        case JOIN_ROOM:
-            return { ...state, inLobby: true, roomId: action.payload }
-
         case PUSH_LISTENER_PATH:
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:
@@ -212,8 +184,6 @@ export default (state = initialState, action) => {
 
         case OWNER_LISTENER:
             return { ...state, owner: action.payload }
-        case NAME_LISTENER:
-            return { ...state, username: action.payload }
         case LOBBY_LISTENER:
             return { ...state, lobbyList: action.payload }
         case PLACE_LISTENER:

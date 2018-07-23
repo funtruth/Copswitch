@@ -9,6 +9,7 @@ const persistConfig = {
     timeout: 10000,
     key: 'root',
     storage,
+    whitelist: ['profile', 'loading']
 }
   
 const persistedReducer = persistReducer(persistConfig, reducers)

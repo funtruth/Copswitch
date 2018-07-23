@@ -24,8 +24,8 @@ class LobbyNameModal extends Component {
     }
 
     componentWillReceiveProps(newProps) {
-        let { username } = newProps
-        if (username && username !== this.props.username){
+        let { name } = newProps
+        if (name && name !== this.props.name){
             this._showModal(false)
         }
     }
@@ -86,6 +86,6 @@ const styles = {
 
 export default connect(
     state => ({
-        username: state.lobby.username
+        name: state.game.myInfo.name
     })
 )(LobbyNameModal)

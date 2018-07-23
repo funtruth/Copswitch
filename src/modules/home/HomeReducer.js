@@ -1,4 +1,5 @@
-import { joinRoom, turnOnLobbyListeners } from '../lobby/LobbyReducer'
+import { turnOnLobbyListeners } from '../lobby/LobbyReducer'
+import { inLobbyStatus } from '../loading/LoadingReducer'
 
 import randomize from 'randomatic'
 import { firebase, firebaseService } from '@services'
@@ -62,12 +63,13 @@ export function checkRoom(roomId){
         }
 
         if (valid) {
+            //Initialize references in firebaseService
+            firebaseService.initRefs(roomId)
             //if there's no lobby, or I'm not there yet ...
             if (!roomInfo.lobby || !roomInfo.lobby[firebaseService.getUid()]) {
-                //Initialize references in firebaseService AND enter the room to set PLACE
-                firebaseService.initRefs(roomId)
+                //enter the room to set PLACE
                 firebaseService.joinRoom(roomId, profile.fullName) //sets joined: true, firstName, lastName, etc
-            }
+            }   
 
             //Move to next screen
             dispatch(moveToLobby(roomId))
@@ -132,7 +134,7 @@ export function reset() {
 //Navigates to Lobby and resets state
 function moveToLobby(roomId){
     return (dispatch) => {
-        dispatch(joinRoom(roomId)) //Lobby reducer
+        dispatch(inLobbyStatus(roomId)) //Lobby reducer
         dispatch(turnOnLobbyListeners())
         NavigationTool.navigate("Lobby")
         dispatch({

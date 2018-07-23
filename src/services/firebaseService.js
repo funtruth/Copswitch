@@ -86,6 +86,7 @@ class FirebaseService{
         //If already left lobby, don't do anything
         if(!this.roomRef) return
     
+        //Should cycle through place/lobby instead of this.pushKey
         this.myInfoRef.remove()
         this.removePushKey()
 

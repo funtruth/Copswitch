@@ -20,13 +20,13 @@ class LobbyTextInput extends Component {
     constructor(props){
         super(props)
         this.state = {
-            username: props.username
+            name: props.name
         }
     }
 
     onChange = (text) => {
         this.setState({
-            username: text
+            name: text
         })
     }
 
@@ -57,7 +57,7 @@ class LobbyTextInput extends Component {
     }
 
     _onSubmit = () => {
-        this.checkName(this.state.username)
+        this.checkName(this.state.name)
     }
 
     _onSubmitEditing = (event) => {
@@ -76,7 +76,7 @@ class LobbyTextInput extends Component {
                     keyboardType='default'
                     autoFocus
                     autoCapitalize='words'
-                    value = {this.state.username}
+                    value = {this.state.name}
                     placeholder='ENTER NAME'
                     maxLength={maxCharLen}
                     style={textInput}
@@ -112,7 +112,7 @@ const styles = {
 
 export default connect(
     state => ({
-        username: state.lobby.username,
+        name: state.game.myInfo.name,
         lobbyList: state.lobby.lobbyList
     })
 )(LobbyTextInput)

@@ -69,7 +69,7 @@ const styles = {
 
 export default connect(
     state => ({
-        roomId: state.lobby.roomId,
+        roomId: state.loading.roomId,
         roomStatus: state.lobby.roomStatus
     }),
     dispatch => {

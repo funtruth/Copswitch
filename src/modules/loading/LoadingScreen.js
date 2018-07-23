@@ -32,9 +32,9 @@ class LoadingScreen extends Component {
 
 export default connect(
     state => ({
-        inLobby: state.lobby.inLobby,
-        roomId: state.lobby.roomId,
-        inGame: state.game.inGame,
+        inLobby: state.loading.inLobby,
+        roomId: state.loading.roomId,
+        inGame: state.loading.inGame,
         state: state
     }),
     dispatch => {

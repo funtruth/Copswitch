@@ -1,4 +1,4 @@
-initialState = {
+const initialState = {
     firstName: null,
     lastName: null,
     avatar: null,
