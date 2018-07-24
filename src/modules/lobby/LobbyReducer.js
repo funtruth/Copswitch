@@ -66,7 +66,6 @@ export function turnOnLobbyListeners() {
 function lobbyListenerOn(listener,listenerPath,listenerType){
     return (dispatch) => {
         let listenerRef = db.fetchRoomRef(listenerPath)
-        console.log('ref', listenerRef)
         dispatch({
             type: PUSH_LISTENER_PATH,
             payload: listenerPath

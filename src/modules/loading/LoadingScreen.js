@@ -3,6 +3,7 @@ import { View } from 'react-native';
 import { connect } from 'react-redux'
 
 import { turnOnLobbyListeners } from '../lobby/LobbyReducer'
+import { turnOnGameListeners } from '../game/GameReducer'
 
 import { db } from '@services'
 import { NavigationTool } from '@navigation'
@@ -12,13 +13,17 @@ class LoadingScreen extends Component {
         db.initUser()
         console.log('persisted state.', this.props.state)
         
-        const { inLobby, roomId, inGame } = this.props
+        const { inLobby, roomId, inGame,
+            turnOnLobbyListeners, turnOnGameListeners } = this.props
+
+        if (roomId) db.initRefs(roomId)
+
+        if (inLobby) turnOnLobbyListeners()
+        if (inGame) turnOnGameListeners()
+
         if (inGame) {
-            db.initRefs(roomId)
-            NavigationTool.navigate('Pregame')
+            NavigationTool.navigate('Game')
         } else if (inLobby) {
-            db.initRefs(roomId)
-            this.props.turnOnLobbyListeners()
             NavigationTool.navigate('Lobby')
         } else {
             NavigationTool.navigate('Home')
@@ -39,7 +44,8 @@ export default connect(
     }),
     dispatch => {
         return {
-            turnOnLobbyListeners: () => dispatch(turnOnLobbyListeners())
+            turnOnLobbyListeners: () => dispatch(turnOnLobbyListeners()),
+            turnOnGameListeners: () => dispatch(turnOnGameListeners())
         }
     }
 )(LoadingScreen)

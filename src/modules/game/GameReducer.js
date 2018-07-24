@@ -157,21 +157,21 @@ function newRoomInfo(snap, listener){
                 })
                 break
             case 'news':
-                //TODO stylingUtil here???
                 dispatch({
                     type: NEWS_LISTENER,
                     payload: {
-                        val: snap.val(),
+                        message: snap.val(),
                         key: snap.key
                     }
                 })
                 break
             case 'events':
-                //HANDLE SNAP -> OBJ/ARR
-                console.log('event listener', snap)
                 dispatch({
                     type: EVENTS_LISTENER,
-                    payload: snap.val()
+                    payload: {
+                        message: snap.val(),
+                        key: snap.key
+                    }
                 })
                 break
             case 'timeout':
@@ -212,9 +212,9 @@ export default (state = initialState, action) => {
         case MY_READY_LISTENER:
             return { ...state, myReady: action.payload }
         case NEWS_LISTENER:
-            return { ...state, news: [ ...state.news, {message: action.payload.val, key: action.payload.key} ] }
+            return { ...state, news: [...state.news, action.payload] }
         case EVENTS_LISTENER:
-            return { ...state, events: [ ...state.events, action.payload ] }
+            return { ...state, events: [...state.events, action.payload] }
         case TIMEOUT_LISTENER:
             return { ...state, timeout: action.payload }
 
