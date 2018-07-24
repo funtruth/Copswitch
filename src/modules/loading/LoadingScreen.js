@@ -4,20 +4,20 @@ import { connect } from 'react-redux'
 
 import { turnOnLobbyListeners } from '../lobby/LobbyReducer'
 
-import { firebaseService } from '@services'
+import { db } from '@services'
 import { NavigationTool } from '@navigation'
 
 class LoadingScreen extends Component {
     componentDidMount() {
-        firebaseService.initUser()
+        db.initUser()
         console.log('persisted state.', this.props.state)
         
         const { inLobby, roomId, inGame } = this.props
         if (inGame) {
-            firebaseService.initRefs(roomId)
+            db.initRefs(roomId)
             NavigationTool.navigate('Pregame')
         } else if (inLobby) {
-            firebaseService.initRefs(roomId)
+            db.initRefs(roomId)
             this.props.turnOnLobbyListeners()
             NavigationTool.navigate('Lobby')
         } else {

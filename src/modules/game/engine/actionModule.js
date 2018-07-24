@@ -1,4 +1,4 @@
-import { firebaseService } from '@services'
+import { db } from '@services'
 import { Announcer, Roles } from '@library'
 const { Defaults } = Announcer
 
@@ -307,7 +307,7 @@ class actionModule{
     }
 
     pushToDatabase(){
-        firebaseService.fetchRoomRef('').update({
+        db.fetchRoomRef('').update({
             news: {
                 [this.counter]: this.news
             },

@@ -1,4 +1,4 @@
-import { firebaseService } from '@services'
+import { db } from '@services'
 import { inGameStatus } from '../loading/LoadingReducer'
 
 const initialState = {
@@ -81,19 +81,19 @@ export function turnOnGameListeners(){
     return (dispatch) => {
         dispatch(inGameStatus())
 
-        dispatch(gameListenerOn('nomination','nomination','value'))
-        dispatch(gameListenerOn('counter','counter','value'))
-        dispatch(gameListenerOn('ready','ready','value'))
-        dispatch(gameListenerOn('news','news','child_added'))
-        dispatch(gameListenerOn('events','events','child_added'))
-        dispatch(gameListenerOn('timeout','timeout','value'))
+        dispatch(gameListenerOn('nomination', 'nomination', 'value'))
+        dispatch(gameListenerOn('counter', 'counter', 'value'))
+        dispatch(gameListenerOn('ready', 'ready', 'value'))
+        dispatch(gameListenerOn('news', 'news', 'child_added'))
+        dispatch(gameListenerOn('events', `events/${db.getUid()}`, 'child_added'))
+        dispatch(gameListenerOn('timeout', 'timeout', 'value'))
     }
 }
 
-function gameListenerOn(listener,listenerPath,listenerType){
+function gameListenerOn(listener, listenerPath, listenerType){
     return (dispatch) => {
         //TODO FirebaseService hasn't init roomId ...
-        let listenerRef = firebaseService.fetchRoomRef(listenerPath)
+        let listenerRef = db.fetchRoomRef(listenerPath)
         dispatch({
             type: PUSH_LISTENER_PATH,
             payload: listenerPath
@@ -108,7 +108,7 @@ export function clearListeners(){
     return (dispatch, getState) => {
         const { activeListeners } = getState().room
         for(var i=0; i<activeListeners.length; i++){
-            let listenerRef = firebaseService.fetchRoomRef(activeListeners[i])
+            let listenerRef = db.fetchRoomRef(activeListeners[i])
             listenerRef.off()
         }
         dispatch({
@@ -153,7 +153,7 @@ function newRoomInfo(snap, listener){
                 })
                 dispatch({
                     type: MY_READY_LISTENER,
-                    payload: snap.val()[firebaseService.getUid()]
+                    payload: snap.val()[db.getUid()]
                 })
                 break
             case 'news':
@@ -187,8 +187,8 @@ function newRoomInfo(snap, listener){
 export function gameChoice(choice) {
     return (dispatch, getState) => {
         const { place } = getState().lobby
-        let myChoiceRef = firebaseService.fetchRoomRef(`choice/${place}`)
-        let myReadyRef = firebaseService.fetchRoomRef(`ready/${place}`)
+        let myChoiceRef = db.fetchRoomRef(`choice/${place}`)
+        let myReadyRef = db.fetchRoomRef(`ready/${place}`)
 
         myChoiceRef.set(choice)
             .then(() => myReadyRef.set(choice !== null))

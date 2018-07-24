@@ -1,5 +1,5 @@
 import Fuse from 'fuse.js'
-import { firebaseService } from '@services'
+import { db } from '@services'
 
 /*
 TO USE:
@@ -12,7 +12,7 @@ TO USE:
 
 const usernameFuzzySearch = (name, lobbyList) => {
     let list = []
-    const uid = firebaseService.getUid()
+    const uid = db.getUid()
 
     for (var i in lobbyList) {
         if (i !== uid) list.push(lobbyList[i])

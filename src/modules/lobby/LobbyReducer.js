@@ -1,4 +1,4 @@
-import { firebaseService } from '@services'
+import { db } from '@services'
 import { NavigationTool } from '@navigation';
 
 import { setRoomInfo } from '../game/GameReducer'
@@ -43,8 +43,8 @@ export function leaveLobby(){
 
         dispatch(clearListeners())
         
-        if(owner) firebaseService.deleteRoom()
-        else firebaseService.leaveLobby()
+        if(owner) db.deleteRoom()
+        else db.leaveLobby()
 
         NavigationTool.navigate("Home")
         dispatch({
@@ -65,7 +65,7 @@ export function turnOnLobbyListeners() {
 
 function lobbyListenerOn(listener,listenerPath,listenerType){
     return (dispatch) => {
-        let listenerRef = firebaseService.fetchRoomRef(listenerPath)
+        let listenerRef = db.fetchRoomRef(listenerPath)
         console.log('ref', listenerRef)
         dispatch({
             type: PUSH_LISTENER_PATH,
@@ -80,7 +80,7 @@ function lobbyListenerOn(listener,listenerPath,listenerType){
 function newLobbyInfo(snap, listener){
     return (dispatch, getState) => {
         if (!snap.val()) return
-        let myUid = firebaseService.getUid()
+        let myUid = db.getUid()
 
         switch(listener){
             case 'owner':
@@ -145,7 +145,7 @@ function clearListeners(){
     return (dispatch, getState) => {
         const { activeListeners } = getState().lobby
         for(var i=0; i<activeListeners.length; i++){
-            let listenerRef = firebaseService.fetchRoomRef(activeListeners[i])
+            let listenerRef = db.fetchRoomRef(activeListeners[i])
             listenerRef.off()
         }
         dispatch({
@@ -165,7 +165,7 @@ export function startPregame() {
         }
 
         if(rolesLen === lobbyLen){
-            let statusRef = firebaseService.fetchRoomRef('status')
+            let statusRef = db.fetchRoomRef('status')
             statusRef.set('Starting')
         } else {
             //TODO show extra logic

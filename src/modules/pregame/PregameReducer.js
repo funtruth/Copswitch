@@ -1,4 +1,4 @@
-import { firebaseService } from '@services'
+import { db } from '@services'
 
 initialState = {}
 
@@ -40,7 +40,7 @@ export function setupAndStartGame(){
             ready[uid] = false
         }
 
-        let roomRef = firebaseService.fetchRoomRef('')
+        let roomRef = db.fetchRoomRef('')
         roomRef.update({
             lobby: list,
             ready: ready,

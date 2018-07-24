@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View, FlatList, Dimensions } from 'react-native'
 import { connect } from 'react-redux' 
-import { firebaseService, formatUtil } from '@services'
+import { db, formatUtil } from '@services'
 import LobbyPlayer from '../components/LobbyPlayer';
 
 const { height, width } = Dimensions.get('window')

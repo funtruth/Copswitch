@@ -1,4 +1,4 @@
-import { firebaseService } from '@services'
+import { db } from '@services'
 import actionModule from './actionModule'
 import votingModule from './votingModule';
 import lynchingModule from './lynchingModule';
@@ -35,7 +35,7 @@ function turnOnListeners() {
 
 function ownerListenerOn(listener, listenerPath, listenerType) {
     return (dispatch, getState) => {
-        let listenerRef = firebaseService.fetchRoomRef(listenerPath)
+        let listenerRef = db.fetchRoomRef(listenerPath)
         dispatch({
             type: PUSH_LISTENER_PATH,
             payload: listenerPath
@@ -55,7 +55,7 @@ function handleNewInfo(snap, listener) {
     return (dispatch, getState) => {
         if (!snap.exists()) return
 
-        let roomRef = firebaseService.fetchRoomRef('')
+        let roomRef = db.fetchRoomRef('')
         let batchUpdates = {}
         const {
             counter, phase,
@@ -98,7 +98,7 @@ function turnOffListeners() {
     return (dispatch, getState) => {
         const { activeListeners } = getState().owner
         for(var i=0; i<activeListeners.length; i++){
-            let listenerRef = firebaseService.fetchRoomRef(activeListeners[i])
+            let listenerRef = db.fetchRoomRef(activeListeners[i])
             listenerRef.off()
         }
         dispatch({

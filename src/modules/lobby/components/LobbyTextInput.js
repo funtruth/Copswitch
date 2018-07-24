@@ -7,7 +7,7 @@ import {
 }   from 'react-native';
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { firebaseService, fuseService, nameUtil } from '@services'
+import { db, fuseService, nameUtil } from '@services'
 
 import { TextInput } from '@components'
 
@@ -53,7 +53,7 @@ class LobbyTextInput extends Component {
             return
         }
 
-        firebaseService.updateUsername(name)
+        db.updateUsername(name)
     }
 
     _onSubmit = () => {

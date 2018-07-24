@@ -1,4 +1,4 @@
-import { firebaseService } from '@services'
+import { db } from '@services'
 import { Announcer, Roles } from '@library'
 
 const s = ','
@@ -81,7 +81,7 @@ class lynchingModule{
     }
 
     pushToDatabase(){
-        firebaseService.fetchRoomRef('').update({
+        db.fetchRoomRef('').update({
             news: {
                 [this.counter]: this.news
             },

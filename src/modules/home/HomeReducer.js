@@ -2,7 +2,7 @@ import { turnOnLobbyListeners } from '../lobby/LobbyReducer'
 import { inLobbyStatus } from '../loading/LoadingReducer'
 
 import randomize from 'randomatic'
-import { firebase, firebaseService } from '@services'
+import { firebase, db } from '@services'
 import { NavigationTool } from '@navigation'
 
 const initialState = {
@@ -38,7 +38,7 @@ export function checkRoom(roomId){
         })
 
         //Takes a snap of the corresponding room
-        const roomInfo = await firebaseService.get(`rooms/${roomId}`)
+        const roomInfo = await db.get(`rooms/${roomId}`)
         let valid = false
 
         //If the room does not exist ... invalid code
@@ -63,12 +63,12 @@ export function checkRoom(roomId){
         }
 
         if (valid) {
-            //Initialize references in firebaseService
-            firebaseService.initRefs(roomId)
+            //Initialize references in db
+            db.initRefs(roomId)
             //if there's no lobby, or I'm not there yet ...
-            if (!roomInfo.lobby || !roomInfo.lobby[firebaseService.getUid()]) {
+            if (!roomInfo.lobby || !roomInfo.lobby[db.getUid()]) {
                 //enter the room to set PLACE
-                firebaseService.joinRoom(roomId, profile.fullName) //sets joined: true, firstName, lastName, etc
+                db.joinRoom(roomId, profile.fullName) //sets joined: true, firstName, lastName, etc
             }   
 
             //Move to next screen
@@ -93,7 +93,7 @@ export function createRoom(roomConfig){
         })
 
         //Takes a snap of all rooms
-        const allRoomInfo = await firebaseService.get(`rooms`)
+        const allRoomInfo = await db.get(`rooms`)
 
         let flag = false
         let roomId = null
@@ -109,14 +109,14 @@ export function createRoom(roomConfig){
         
         //Write owner and room status to the database
         firebase.database().ref(`rooms/${roomId}`).set({
-            owner: firebaseService.getUid(),
+            owner: db.getUid(),
             status:'Lobby',
             mode: gameMode
         })
 
-        //Initialize references in firebaseService AND enter the room to set PLACE
-        firebaseService.initRefs(roomId)
-        firebaseService.joinRoom(roomId, profile.fullName)
+        //Initialize references in db AND enter the room to set PLACE
+        db.initRefs(roomId)
+        db.joinRoom(roomId, profile.fullName)
         
         //Move to next screen
         dispatch(moveToLobby(roomId))
