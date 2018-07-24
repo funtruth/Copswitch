@@ -1,4 +1,4 @@
-# HuddleC
+# CONSPIRE
 
 ANDROID
 1. git remote add origin https://github.com/CoffeePaste/HuddleC

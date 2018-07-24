@@ -19,10 +19,9 @@ const initialState = {
 NOTES:
 
 activeListeners holds firebase paths as strings relative to the roomRef.
-This is because firebase ref objects cannot be persisted through redux
 
-placeList is kept as an ARRAY inside LobbyReducer in order to ensure order is kept.
-Order of items in an OBJECT are not guaranteed to stay chronological
+placeList is kept as an ARRAY inside LobbyReducer in order to ensure order is kept,
+Order of items in an OBJECT are not guaranteed to stay chronological.
 cannot be kept as a SNAP because redux persist does not store snaps(?)
 */
 

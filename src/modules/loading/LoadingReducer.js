@@ -1,7 +1,7 @@
 const initialState = {
     inLobby: false,
     inGame: false,
-    place: null
+    roomId: null
 }
 
 const PLAYER_IN_LOBBY = 'loading/player_in_lobby'

@@ -1,5 +1,6 @@
-initialState = {
-    nameState: 'name'
+const initialState = {
+    nameState: 'name',
+    //TODO alive: false handling maybe here
 }
 
 const TOGGLE_NAME_STATE = 'gameState/toggle_name_state'
