@@ -1,24 +1,21 @@
 import React from 'react'
 import { Text } from 'react-native'
 
-class Hext {
+class PreText {
     constructor(catalog, {
-        //Search for characters in Catalog instead
-        allowAllChars = false,
-
-        //Words beginning with allowed Characters will be given style={this.defaultStyle}
-        allowedChars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ',
-
         //Character(s) used to split up the string
+        //Can be used with Regex, for example, /[\s,]+/ will split on spaces and commas.
         separator = ' ',
+
+        //Checks for multiple prefixes
+        stackPrefixes = false,
 
         //Default style
         defaultStyle = {},
     }) {
         this.config = {
-            allowAllChars,
-            allowedChars,
             separator,
+            stackPrefixes,
             defaultStyle
         }
 
@@ -36,7 +33,8 @@ class Hext {
 
         for (var i=0; i<parts.length; i++) {
             charId = parts[i].charAt(0)
-            if (this.config.allowedChars.indexOf(charId) === -1) {
+
+            if (this.catalog[charId]) {
                 parts[i] = <Text style={this.catalog[charId]} key={i}>{string.substr(1)}</Text>
             }
         }
@@ -45,4 +43,4 @@ class Hext {
     }
 }
 
-export default Hext
+export default PreText

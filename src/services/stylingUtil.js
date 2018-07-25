@@ -1,4 +1,4 @@
-import Hext from './hext'
+import PreText from 'pretext'
 
 const styles = {
     '$': {
@@ -16,4 +16,4 @@ const config = {
     }
 }
 
-export default stylingUtil = new Hext(styles, config)
+export default stylingUtil = new PreText(styles, config)
