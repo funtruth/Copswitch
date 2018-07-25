@@ -1,25 +1,19 @@
-import { NameSwap } from '@components'
+import Hext from './hext'
 
-const PLAYER_NAME = '!'
-
-const processString = (string) => {
-    console.log('string', string)
-    let words = string.split(' ')
-    let arr = []
-
-    //TODO should proably make this a .map() and also make this a service
-    for (var i in words) {
-        switch(wordsArr[i].charAt(0)){
-            case PLAYER_NAME:
-                return arr.push(<NameSwap>{words[i].substr(1)}</NameSwap>)
-            default:
-                return arr.push(wordsArr[i])
-        }
+const styles = {
+    '$': {
+        color: 'red'
+    },
+    '&': {
+        color: 'yellow'
     }
-
-    return phraseArr
 }
 
-export {
-    processString
+const config = {
+    defaultStyle: {
+        fontFamily: 'BarlowCondensed-Regular',
+        color: '#FFFFFF'
+    }
 }
+
+export default stylingUtil = new Hext(styles, config)

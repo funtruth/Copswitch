@@ -28,7 +28,7 @@ class General extends Component {
             itemArr.push(
                 <Message key={i} style={messageContainer}>
                     <Text style={message}>
-                        {stylingUtil.processString(news[i].message)}
+                        {stylingUtil.format(news[i].message)}
                     </Text>
                 </Message>
             )
