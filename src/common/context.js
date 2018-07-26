@@ -1,4 +1,4 @@
-import { Context }  from '@pretext'
+import { Context }  from 'react-native-pretext'
 
 const defaultStyle = {
     fontFamily: 'BarlowCondensed-Regular',
