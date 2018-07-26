@@ -1,5 +1,5 @@
 
-//formatUtil mainly used to format lists / arrays / objects to standard format.
+//arrObjUtil mainly used to format lists / arrays / objects to standard format.
 
 /*
 joins [a, b] and {a:{}, b:{}} => [{}, {}]

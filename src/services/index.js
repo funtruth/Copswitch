@@ -1,13 +1,11 @@
 import db from './firebaseService'
 import * as fuseService from './fuseService'
 import * as nameUtil from './nameUtil'
-import stylingUtil from './stylingUtil'
-import * as formatUtil from './formatUtil'
+import * as arrObjUtil from './arrObjUtil'
 
 export {
     db,
     fuseService,
     nameUtil,
-    stylingUtil,
-    formatUtil
+    arrObjUtil
 }

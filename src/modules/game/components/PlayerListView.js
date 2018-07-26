@@ -12,7 +12,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import { Styler } from '@common'
 import { Separator } from '@components'
-import { formatUtil } from '@services';
+import { arrObjUtil } from '@services';
 
 const { height, width } = Dimensions.get('window')
 
@@ -37,7 +37,7 @@ class PlayerListView extends Component {
         if (!placeList || !lobbyList) return
 
         this.setState({
-            data: formatUtil.join(placeList, lobbyList)
+            data: arrObjUtil.join(placeList, lobbyList)
         })
     }
 

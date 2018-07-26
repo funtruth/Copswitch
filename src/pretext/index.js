@@ -1,3 +1,7 @@
-import Pretext from './src/PreText'
+import Context from './src/Context'
+import Pretext from './src/Pretext'
 
-export default Pretext
+export {
+    Context,
+    Pretext
+}

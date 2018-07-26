@@ -9,7 +9,7 @@ import {
 
 import { Styler } from '@common'
 import { Message } from '@components'
-import { stylingUtil } from '@services'
+import { Pretext } from '@pretext'
 
 const { height, width } = Dimensions.get('window')
 
@@ -26,11 +26,9 @@ class General extends Component {
         let itemArr = []
         for (var i in news) {
             itemArr.push(
-                <Message key={i} style={messageContainer}>
-                    <Text style={message}>
-                        {stylingUtil.format(news[i].message)}
-                    </Text>
-                </Message>
+                <Pretext key={i}>
+                    {news[i].message}
+                </Pretext>
             )
         }
         return itemArr

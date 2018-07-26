@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { View, FlatList, Dimensions } from 'react-native'
 import { connect } from 'react-redux' 
-import { db, formatUtil } from '@services'
+import { db, arrObjUtil } from '@services'
 import LobbyPlayer from '../components/LobbyPlayer';
 
 const { height, width } = Dimensions.get('window')
@@ -27,11 +27,11 @@ class LobbyPlayerView extends Component {
         if (!placeList || !lobbyList) return
 
         this.setState({
-            data: formatUtil.join(placeList, lobbyList)
+            data: arrObjUtil.join(placeList, lobbyList)
         })
         console.log('placelist', placeList)
         console.log('lobby', lobbyList)
-        console.log(formatUtil.join(placeList, lobbyList))
+        console.log(arrObjUtil.join(placeList, lobbyList))
     }
 
     renderPlayer = ({item}) => <LobbyPlayer {...item}/>
