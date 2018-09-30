@@ -156,6 +156,13 @@ function clearListeners(){
 export function startPregame() {
     return (dispatch, getState) => {
         const { roleList, lobbyList } = getState().lobby
+
+        //TODO show error message
+        if (areThereDuplicateNames()) {
+
+            return
+        }
+
         let rolesLen = 0
         let lobbyLen = Object.keys(lobbyList).length
 
@@ -171,6 +178,15 @@ export function startPregame() {
         }
     }
 }
+
+const areThereDuplicateNames = (lobbyList) => {
+    let names = {}
+    for (uid in lobbyList) {
+        if (names[lobbyList[uid].name]) return true
+        names[lobbyList[uid].name] = true
+    }
+    return false
+} 
 
 export default (state = initialState, action) => {
 

@@ -6,16 +6,10 @@ const defaultStyle = {
 }
 
 const context = {
-    '$': {
-        color: 'red'
-    },
-    '&': {
-        color: 'yellow'
-    }
+    
+    
 }
 
-const config = {
+const config = {}
 
-}
-
-export default Context.give(defaultStyle, context, config)
+export default Context.give(context, defaultStyle, config)
