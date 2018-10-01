@@ -7,5 +7,5 @@ const call = require("../callbacks/call");
 exports.onPlayerLoad = functions.database.ref('/rooms/{roomId}/loaded')
     .onUpdate((change, event) => call.onPlayerLoadHandler(change.after.val(), event.params.roomId));
 exports.onPlayerChoice = functions.database.ref('/rooms/{roomId}/choice')
-    .onWrite(call.onPlayerChoiceHandler);
+    .onUpdate((change, event) => call.onPlayerChoiceHandler(change, event.params.roomId));
 //# sourceMappingURL=index.js.map

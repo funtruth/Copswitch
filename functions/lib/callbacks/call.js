@@ -10,17 +10,32 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const db = require("./db");
 const helpers = require("./helpers");
-function onPlayerChoiceHandler(change, event) {
+const voting = require("../engines/voting");
+function onPlayerChoiceHandler(change, roomId) {
     return __awaiter(this, void 0, void 0, function* () {
-        let test = yield db.get('rooms/****');
-        return db.set('testing', test);
+        let roomSnapshot = yield db.get(`rooms/${roomId}`);
+        let playerNum = helpers.getPlayerCount(roomSnapshot.lobby);
+        let gamePhase = roomSnapshot.counter % 3;
+        let triggerNum = helpers.getTriggerNum(playerNum);
+        let choices = change.after.val();
+        let total = Object.keys(choices).length;
+        let batch = {};
+        if (gamePhase == 0 && total >= triggerNum) {
+        }
+        else if (gamePhase == 1 && total >= playerNum - 1) {
+        }
+        else if (gamePhase == 2 && total >= playerNum) {
+            batch = voting.processVotes(choices, roomSnapshot);
+        }
+        return db.update(`rooms/${roomId}`, batch);
     });
 }
 exports.onPlayerChoiceHandler = onPlayerChoiceHandler;
-function onPlayerLoadHandler(choices, roomId) {
+function onPlayerLoadHandler(loaded, roomId) {
     return __awaiter(this, void 0, void 0, function* () {
         let roomSnapshot = yield db.get(`rooms/${roomId}`);
-        if (Object.keys(choices).length < helpers.getPlayerCount(roomSnapshot.lobby))
+        let playerNum = helpers.getPlayerCount(roomSnapshot.lobby);
+        if (Object.keys(loaded).length < playerNum)
             return;
         let ready;
         (ready = []).length = Object.keys(roomSnapshot.ready).length;

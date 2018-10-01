@@ -1,7 +1,5 @@
 import { db } from '@services'
 import actionModule from './actionModule'
-import votingModule from './votingModule';
-import lynchingModule from './lynchingModule';
 
 const initialState = {
     ownership: false,

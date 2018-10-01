@@ -1,12 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-function getPlayerCount(lobby) {
-    var count = 0;
-    for (var key in lobby) {
-        if (!lobby[key].dead)
-            count++;
+function getPlayerCount(l) {
+    var c = 0;
+    for (var k in l) {
+        if (!l[k].dead)
+            c++;
     }
-    return count;
+    return c;
 }
 exports.getPlayerCount = getPlayerCount;
+function getTriggerNum(p) {
+    return (p - p % 2) / 2 + 1;
+}
+exports.getTriggerNum = getTriggerNum;
 //# sourceMappingURL=helpers.js.map
