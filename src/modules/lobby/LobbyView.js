@@ -9,6 +9,7 @@ import LinearGradient from 'react-native-linear-gradient'
 
 import NavigationTool from '../navigation/NavigationTool'
 import { Header } from '@components'
+import {statusType} from '../common/types'
 
 import LobbyPlayerView from './screens/LobbyPlayerView'
 import LobbyNameModal from './screens/LobbyNameModal'
@@ -21,7 +22,7 @@ const { height, width } = Dimensions.get('window')
 
 class LobbyView extends Component {
     componentWillReceiveProps(newProps){
-        if(newProps.roomStatus === 'Starting'){
+        if(newProps.status === statusType.pregame){
             //TODO move to reducer?
             NavigationTool.navigate('Pregame')
         }
@@ -40,11 +41,11 @@ class LobbyView extends Component {
                     horizontal={true}
                     pagingEnabled={true}
                 >
-                    <LobbyPlayerView />
-                    <LobbyRolesView />
-                    <LobbySetupView />
+                    <LobbyPlayerView/>
+                    <LobbyRolesView/>
+                    <LobbySetupView/>
                 </ScrollView>
-                <LobbyOptionView />
+                <LobbyOptionView/>
                 <LobbyNameModal/>
             </LinearGradient>
         )
@@ -70,7 +71,7 @@ const styles = {
 export default connect(
     state => ({
         roomId: state.loading.roomId,
-        roomStatus: state.lobby.roomStatus
+        status: state.lobby.status
     }),
     dispatch => {
         return {

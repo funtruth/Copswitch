@@ -40,7 +40,7 @@ export default connect(
         inLobby: state.loading.inLobby,
         roomId: state.loading.roomId,
         inGame: state.loading.inGame,
-        state: state
+        state: state,
     }),
     dispatch => {
         return {

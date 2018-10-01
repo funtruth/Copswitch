@@ -1,25 +1,27 @@
 import React, { Component } from 'react'
 import { View } from 'react-native'
 import { connect } from 'react-redux'
+
 import { turnOnGameListeners } from '../game/GameReducer'
 import { setupAndStartGame } from './PregameReducer';
+import {statusType} from '../common/types'
 
 import NavigationTool from '../navigation/NavigationTool'
 
 class PregameScreen extends Component {
     componentDidMount() {
-        const { roomStatus, ownership } = this.props
+        const { status, ownership } = this.props
         this.props.turnOnGameListeners()
         
-        if (roomStatus === 'Starting' && ownership) {
+        if (status === statusType.pregame && ownership) {
             this.props.setupAndStartGame()
         }
     }
 
     componentWillReceiveProps(newProps){
-        const { roomStatus } = newProps
+        const { status } = newProps
 
-        if (roomStatus === 'Running') {
+        if (status === statusType.game) {
             NavigationTool.navigate('Game')
         }
     }
@@ -31,7 +33,7 @@ class PregameScreen extends Component {
 
 export default connect(
     state => ({
-        roomStatus: state.lobby.roomStatus,
+        status: state.lobby.status,
         ownership: state.owner.ownership
     }),
     dispatch => {

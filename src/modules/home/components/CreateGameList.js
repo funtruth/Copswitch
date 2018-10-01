@@ -24,7 +24,7 @@ class CreateGameList extends Component {
     }
 
     renderItem = ({item}) => {
-        const { sharedStyle, pressedStyle, unpressedStyle, title, desc } = styles
+        const { sharedStyle, title, desc } = styles
         const pressed = (item.key === this.state.pressedKey)
         
         return (

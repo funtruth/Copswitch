@@ -96,6 +96,13 @@ export default Commands = [
             bundle[`rooms/${DEV_ROOM}/teststuff`] = ['this', 'is', 'a', 'test']
             firebase.database().ref().update(bundle)
         }
+    },
+    {
+        key: 'teststuff',
+        buttonText: 'test firebase functions',
+        onPress: () => {
+            firebase.database().ref('rooms/1234/choice').set('sigh')
+        }
     }
 
 ]

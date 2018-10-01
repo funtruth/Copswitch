@@ -1,4 +1,5 @@
 import { db } from '@services'
+import {statusType, listenerType} from '../common/types'
 import NavigationTool from '../navigation/NavigationTool'
 
 import { setRoomInfo } from '../game/GameReducer'
@@ -8,11 +9,11 @@ const initialState = {
     activeListeners: [],
 
     owner: null,
-    roomStatus: 'Lobby',
     lobbyList: {},
     placeList: [],
     place: null,
-    roleList: {}
+    roleList: {},
+    status: statusType.lobby,
 }
 
 /*
@@ -55,22 +56,22 @@ export function leaveLobby(){
 
 export function turnOnLobbyListeners() {
     return (dispatch) => {
-        dispatch(lobbyListenerOn('owner','owner','value'))
-        dispatch(lobbyListenerOn('lobby','lobby','value'))
-        dispatch(lobbyListenerOn('place','place','value'))
-        dispatch(lobbyListenerOn('roles','roles','value'))
-        dispatch(lobbyListenerOn('status','status','value'))
+        dispatch(lobbyListenerOn(listenerType.owner))
+        dispatch(lobbyListenerOn(listenerType.lobby))
+        dispatch(lobbyListenerOn(listenerType.place))
+        dispatch(lobbyListenerOn(listenerType.roles))
+        dispatch(lobbyListenerOn(listenerType.status))
     }
 }
 
-function lobbyListenerOn(listener,listenerPath,listenerType){
+function lobbyListenerOn(listener){
     return (dispatch) => {
-        let listenerRef = db.fetchRoomRef(listenerPath)
+        let listenerRef = db.fetchRoomRef(listener)
         dispatch({
             type: PUSH_LISTENER_PATH,
-            payload: listenerPath
+            payload: listener
         })
-        listenerRef.on(listenerType, snap => {
+        listenerRef.on('value', snap => {
             dispatch(newLobbyInfo(snap, listener))
         })
     }
@@ -79,10 +80,11 @@ function lobbyListenerOn(listener,listenerPath,listenerType){
 function newLobbyInfo(snap, listener){
     return (dispatch, getState) => {
         if (!snap.val()) return
+        var { lobby } = getState()
         let myUid = db.getUid()
 
         switch(listener){
-            case 'owner':
+            case listenerType.owner:
                 let ownership = snap.val() === myUid
                 dispatch(ownershipMode(ownership))
                 dispatch({
@@ -90,7 +92,7 @@ function newLobbyInfo(snap, listener){
                     payload: snap.val()
                 })
                 break
-            case 'lobby':
+            case listenerType.lobby:
                 let alivePlayers = 0;
                 for (var i in snap.val()) {
                     if (!snap.val()[i].dead) alivePlayers++
@@ -108,7 +110,7 @@ function newLobbyInfo(snap, listener){
                     payload: snap.val()
                 })
                 break
-            case 'place':
+            case listenerType.place:
                 let placeArr = []
 
                 snap.forEach(child => {
@@ -123,13 +125,13 @@ function newLobbyInfo(snap, listener){
                     payload: placeArr
                 })
                 break
-            case 'roles':
+            case listenerType.roles:
                 dispatch({
                     type: ROLE_LIST_LISTENER,
                     payload: snap.val()
                 })
                 break
-            case 'status':
+            case listenerType.status:
                 dispatch({
                     type: ROOM_STATUS_LISTENER,
                     payload: snap.val()
@@ -172,7 +174,7 @@ export function startPregame() {
 
         if(rolesLen === lobbyLen){
             let statusRef = db.fetchRoomRef('status')
-            statusRef.set('Starting')
+            statusRef.set(statusType.pregame)
         } else {
             //TODO show extra logic
         }
@@ -207,7 +209,7 @@ export default (state = initialState, action) => {
         case ROLE_LIST_LISTENER:
             return { ...state, roleList: action.payload }
         case ROOM_STATUS_LISTENER:
-            return { ...state, roomStatus: action.payload }
+            return { ...state, status: action.payload }
             
         case RESET: 
             return initialState
