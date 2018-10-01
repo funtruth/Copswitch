@@ -10,18 +10,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const db = require("./db");
 const helpers = require("./helpers");
-function onPlayerChoiceHandler(event) {
+function onPlayerChoiceHandler(change, event) {
     return __awaiter(this, void 0, void 0, function* () {
         let test = yield db.get('rooms/****');
         return db.set('testing', test);
     });
 }
 exports.onPlayerChoiceHandler = onPlayerChoiceHandler;
-function onPlayerLoadHandler(change, event) {
+function onPlayerLoadHandler(choices, roomId) {
     return __awaiter(this, void 0, void 0, function* () {
-        let roomId = event.params.roomId;
         let roomSnapshot = yield db.get(`rooms/${roomId}`);
-        let choices = change.after.val();
         if (Object.keys(choices).length < helpers.getPlayerCount(roomSnapshot.lobby))
             return;
         let ready;

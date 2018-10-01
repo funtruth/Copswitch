@@ -6,10 +6,8 @@ export async function onPlayerChoiceHandler(change, event) {
     return db.set('testing', test)
 }
 
-export async function onPlayerLoadHandler(change, event) {
-    let roomId = event.params.roomId
+export async function onPlayerLoadHandler(choices, roomId) {
     let roomSnapshot = await db.get(`rooms/${roomId}`)
-    let choices = change.after.val()
 
     if (Object.keys(choices).length < helpers.getPlayerCount(roomSnapshot.lobby)) return
 
