@@ -1,14 +1,11 @@
 import React, { Component } from 'react'
 import { 
-    View, 
-    Text,
+    View,
     TouchableOpacity,
-    FlatList,
     Dimensions
 } from 'react-native'
 
 import { Styler } from '@common'
-import { Message } from '@components'
 
 const { height, width } = Dimensions.get('window')
 
@@ -19,7 +16,6 @@ class General extends Component {
 
     //TODO VERY inefficient rendering
     _renderList() {
-        const { messageContainer, message } = styles
         const { news } = this.props
         
         let itemArr = []

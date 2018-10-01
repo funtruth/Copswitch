@@ -4,6 +4,23 @@ import HomeScreen from '../home/screens/HomeScreen'
 import JoinSlide from '../home/screens/JoinSlide'
 import CreateSlide from '../home/screens/CreateSlide'
 
+import { slideLeft } from './navAnim'
+
+const config = () => {
+  return {
+      // Define scene interpolation, eq. custom transition
+      screenInterpolator: (sceneProps) => {
+          const {position, scene} = sceneProps;
+          const {index} = scene;
+
+          return slideLeft(index, position);
+      },
+      transitionSpec: {
+          duration: 300
+      }
+  }
+};
+
 const HomeNavigator = createStackNavigator(
     {
       Home: {
@@ -19,7 +36,10 @@ const HomeNavigator = createStackNavigator(
     {
       headerMode: "none",
       initialRouteName: "Home",
-      cardStyle: {backgroundColor:'transparent'}
+      transitionConfig: config,
+      cardStyle: {
+        backgroundColor:'transparent'
+      }
     }
 );
 

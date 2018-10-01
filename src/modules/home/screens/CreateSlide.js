@@ -1,15 +1,12 @@
 import React, { Component } from 'react'
 import {
-    View,
-    Text,
-    TouchableOpacity,
     Dimensions
 }   from 'react-native'
 import { connect } from 'react-redux'
 import { createRoom } from '../HomeReducer'
 import LinearGradient from 'react-native-linear-gradient'
 
-import { Header, Button } from '@components'
+import { Header } from '@components'
 import CreateGameList from '../components/CreateGameList'
 import NavigationTool from '../../navigation/NavigationTool'
 

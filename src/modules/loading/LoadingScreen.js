@@ -31,7 +31,7 @@ class LoadingScreen extends Component {
     }
 
     render() {
-        return <View style={{flex:1, backgroundColor:'purple'}}/>
+        return <View style={{flex:1, backgroundColor:'#2E2620'}}/>
     }
 }
 

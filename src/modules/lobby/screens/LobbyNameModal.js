@@ -1,9 +1,7 @@
 
 import React, { Component } from 'react';
 import {
-    TextInput,
     View,
-    TouchableOpacity,
     Dimensions,
     Animated
 }   from 'react-native';

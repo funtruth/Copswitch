@@ -3,12 +3,9 @@ import {
     View,
     Text,
     TextInput,
-    Dimensions
 }   from 'react-native'
 import _ from 'lodash'
 import { Button } from '@components';
-
-const { height, width } = Dimensions.get('window')
 
 class CodeHandler extends Component {
     constructor(props) {

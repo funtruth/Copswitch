@@ -24,7 +24,7 @@ class HomeScreen extends Component {
     }
     
     _createRoom = () => {
-        NavigationTool.navigate('Create')
+        NavigationTool.navigate('Lobby')
     }
 
     render() {

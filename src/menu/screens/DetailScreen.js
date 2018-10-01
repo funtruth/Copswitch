@@ -2,20 +2,15 @@ import React, { Component } from 'react';
 import {
     View,
     Text,
-    FlatList,
-    TouchableOpacity,
-    Dimensions
+    FlatList
 } from 'react-native';
 import { connect } from 'react-redux'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { Styler } from '@common'
-import { Button } from '@components'
 import { Author } from '@library'
 import { pushNewScreen } from '../MenuReducer'
 
 const { Details, DetailTypes } = Author
-const { height, width } = Dimensions.get('window')
 
 class DetailScreen extends Component {
     constructor(props) {

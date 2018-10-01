@@ -6,6 +6,23 @@ import Lobby from '../lobby/LobbyView';
 import Pregame from "../pregame/PregameScreen";
 import Game from "../game/GameScreen";
 
+import { fadeIn } from './navAnim'
+
+const config = () => {
+  return {
+      // Define scene interpolation, eq. custom transition
+      screenInterpolator: (sceneProps) => {
+          const {position, scene} = sceneProps;
+          const {index} = scene;
+
+          return fadeIn(index, position);
+      },
+      transitionSpec: {
+          duration: 300
+      }
+  }
+};
+
 const Navigator = createStackNavigator(
       {
         Loading: {
@@ -27,7 +44,10 @@ const Navigator = createStackNavigator(
       {
         headerMode: "none",
         initialRouteName: "Loading",
-        cardStyle: {backgroundColor:'transparent'}
+        transitionConfig: config,
+        cardStyle: {
+          backgroundColor:'transparent'
+        }
       }
 );
 

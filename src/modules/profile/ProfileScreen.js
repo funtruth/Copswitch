@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 
 import { Button } from '@components'
 import { nameUtil } from '@services'
-import AvatarPicker from './components/AvatarPicker'
 import NameInput from './components/NameInput'
 
 import { updateProperty } from './ProfileReducer'
