@@ -1,14 +1,11 @@
 import React, { Component } from 'react';
 import { View, BackHandler } from 'react-native';
 
-import Navigator from "../navigation/Navigator";
-import { NavigationTool } from '@navigation';
+import AppNavigator from "../modules/navigation/AppNavigator";
+import NavigationTool from '../modules/navigation/NavigationTool'
 import DevTool from '../components/dev/DevTool';
 
-import MenuHeader from '../menu/common/MenuHeader';
-import MenuContainer from '../menu/MenuContainer';
-
-export default class Router extends React.Component {
+export default class Router extends Component {
     componentDidMount(){
         BackHandler.addEventListener("hardwareBackPress", this._onBackPress.bind(this));
     }
@@ -25,7 +22,7 @@ export default class Router extends React.Component {
 
         return (
             <View style = {styles.container}>
-                <Navigator
+                <AppNavigator
                     ref = {navigatorRef => {
                         NavigationTool.setContainer(navigatorRef)
                     }}

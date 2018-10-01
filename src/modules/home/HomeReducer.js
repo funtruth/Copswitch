@@ -3,7 +3,7 @@ import { inLobbyStatus } from '../loading/LoadingReducer'
 
 import randomize from 'randomatic'
 import { firebase, db } from '@services'
-import { NavigationTool } from '@navigation'
+import NavigationTool from '../navigation/NavigationTool'
 
 const initialState = {
     loading: false,

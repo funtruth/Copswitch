@@ -1,5 +1,5 @@
 import firebase from '../../app/admin'
-import { NavigationTool } from '@navigation'
+import NavigationTool from '../../modules/navigation/NavigationTool'
 import { persistor } from '../../redux/store'
 
 const DEV_ROOM = '****'

@@ -1,8 +1,8 @@
 import { createStackNavigator } from "react-navigation";
 
-import HomeScreen from './screens/HomeScreen'
-import JoinSlide from './screens/JoinSlide'
-import CreateSlide from './screens/CreateSlide'
+import HomeScreen from '../home/screens/HomeScreen'
+import JoinSlide from '../home/screens/JoinSlide'
+import CreateSlide from '../home/screens/CreateSlide'
 
 const HomeNavigator = createStackNavigator(
     {

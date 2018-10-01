@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 import { leaveLobby } from './LobbyReducer'
 import LinearGradient from 'react-native-linear-gradient'
 
-import { NavigationTool } from '@navigation'
+import NavigationTool from '../navigation/NavigationTool'
 import { Header } from '@components'
 
 import LobbyPlayerView from './screens/LobbyPlayerView'

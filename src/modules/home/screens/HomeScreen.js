@@ -8,7 +8,7 @@ import {
 }   from 'react-native'
 import { Styler } from '@common'
 
-import { NavigationTool } from '@navigation'
+import NavigationTool from '../../navigation/NavigationTool'
 
 import joinBook from '../../../../assets/images/JoinRoomBook.png'
 import createBook from '../../../../assets/images/CreateRoomBook.png'

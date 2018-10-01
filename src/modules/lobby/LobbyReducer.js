@@ -1,5 +1,5 @@
 import { db } from '@services'
-import { NavigationTool } from '@navigation';
+import NavigationTool from '../navigation/NavigationTool'
 
 import { setRoomInfo } from '../game/GameReducer'
 import { ownershipMode } from '../game/engine/OwnerReducer'

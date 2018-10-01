@@ -10,7 +10,7 @@ import LinearGradient from 'react-native-linear-gradient'
 import CodeHandler from '../components/JoinCodeHandler'
 
 import { Header, Button } from '@components';
-import { NavigationTool } from '@navigation'
+import NavigationTool from '../../navigation/NavigationTool'
 
 const { height, width } = Dimensions.get('window')
 

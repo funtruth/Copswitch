@@ -1,10 +1,10 @@
 import { createStackNavigator } from "react-navigation";
 
-import Loading from '../modules/loading/LoadingScreen';
-import HomeNavigator from '../modules/home/HomeNavigator';
-import Lobby from '../modules/lobby/LobbyView';
-import Pregame from "../modules/pregame/PregameScreen";
-import Game from "../modules/game/GameScreen";
+import Loading from '../loading/LoadingScreen';
+import HomeNavigator from './HomeNavigator';
+import Lobby from '../lobby/LobbyView';
+import Pregame from "../pregame/PregameScreen";
+import Game from "../game/GameScreen";
 
 const Navigator = createStackNavigator(
       {

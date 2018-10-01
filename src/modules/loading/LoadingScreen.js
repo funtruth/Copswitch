@@ -6,7 +6,7 @@ import { turnOnLobbyListeners } from '../lobby/LobbyReducer'
 import { turnOnGameListeners } from '../game/GameReducer'
 
 import { db } from '@services'
-import { NavigationTool } from '@navigation'
+import NavigationTool from '../navigation/NavigationTool'
 
 class LoadingScreen extends Component {
     componentDidMount() {

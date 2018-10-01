@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { turnOnGameListeners } from '../game/GameReducer'
 import { setupAndStartGame } from './PregameReducer';
 
-import { NavigationTool } from '@navigation'
+import NavigationTool from '../navigation/NavigationTool'
 
 class PregameScreen extends Component {
     componentDidMount() {

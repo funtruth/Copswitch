@@ -11,7 +11,7 @@ import LinearGradient from 'react-native-linear-gradient'
 
 import { Header, Button } from '@components'
 import CreateGameList from '../components/CreateGameList'
-import { NavigationTool } from '@navigation'
+import NavigationTool from '../../navigation/NavigationTool'
 
 const { height, width } = Dimensions.get('window')
 
