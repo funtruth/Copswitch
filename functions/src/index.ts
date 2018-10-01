@@ -5,4 +5,5 @@ admin.initializeApp()
 import * as call from '../callbacks/call'
 
 exports.onPlayerLoad = functions.database.ref('/rooms/{roomId}/loaded').onWrite(call.onPlayerLoadHandler)
+
 exports.onPlayerChoice = functions.database.ref('/rooms/{roomId}/choice').onWrite(call.onPlayerChoiceHandler)
