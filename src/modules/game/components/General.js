@@ -9,7 +9,6 @@ import {
 
 import { Styler } from '@common'
 import { Message } from '@components'
-import { Pretext } from 'react-native-pretext'
 
 const { height, width } = Dimensions.get('window')
 

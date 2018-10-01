@@ -7,7 +7,6 @@ import {
     Dimensions
 }   from 'react-native'
 import { Styler } from '@common'
-import { Pretext } from 'react-native-pretext'
 
 import { NavigationTool } from '@navigation'
 

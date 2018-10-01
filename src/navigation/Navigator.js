@@ -1,4 +1,4 @@
-import { StackNavigator } from "react-navigation";
+import { createStackNavigator } from "react-navigation";
 
 import Loading from '../modules/loading/LoadingScreen';
 import HomeNavigator from '../modules/home/HomeNavigator';
@@ -6,7 +6,7 @@ import Lobby from '../modules/lobby/LobbyView';
 import Pregame from "../modules/pregame/PregameScreen";
 import Game from "../modules/game/GameScreen";
 
-const Navigator = StackNavigator(
+const Navigator = createStackNavigator(
       {
         Loading: {
           screen: Loading
