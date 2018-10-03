@@ -7,9 +7,9 @@ import {
 import { connect } from 'react-redux'
 import { checkRoom, reset } from '../HomeReducer'
 import LinearGradient from 'react-native-linear-gradient'
-import CodeHandler from '../components/JoinCodeHandler'
+import JoinCodeHandler from '../components/JoinCodeHandler'
 
-import { Header, Button } from '@components';
+import { Header } from '@components';
 import NavigationTool from '../../navigation/NavigationTool'
 
 const { height, width } = Dimensions.get('window')
@@ -33,7 +33,7 @@ class JoinSlide extends Component {
                     children={'JOIN ROOM'}
                     subtitle={'ENTER THE 4-DIGIT CODE:'}
                 />
-                <CodeHandler
+                <JoinCodeHandler
                     onFulfill={checkRoom}
                     error={error}
                 />

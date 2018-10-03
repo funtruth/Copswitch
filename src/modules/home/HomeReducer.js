@@ -5,12 +5,14 @@ import randomize from 'randomatic'
 import { firebase, db } from '@services'
 import NavigationTool from '../navigation/NavigationTool'
 
+import { configTypes } from '../common/types'
+
 const initialState = {
     loading: false,
     error: null,
 }
 
-const LOADING_STATUS = 'home/loading_status'
+const START_LOADING = 'home/START_LOADING'
 const ERROR_MESSAGE = 'home/error_message'
 const RESET = 'home/reset'
 
@@ -33,13 +35,11 @@ export function checkRoom(roomId){
         }
 
         dispatch({
-            type: LOADING_STATUS,
-            payload: true
+            type: START_LOADING
         })
 
         //Takes a snap of the corresponding room
         const roomInfo = await db.get(`rooms/${roomId}`)
-        let valid = false
 
         //If the room does not exist ... invalid code
         if(!roomInfo){
@@ -59,26 +59,12 @@ export function checkRoom(roomId){
                 type: ERROR_MESSAGE,
                 payload: 'Success!'
             })
-            valid = true
-        }
 
-        if (valid) {
-            //Initialize references in db
-            db.initRefs(roomId)
-            //if there's no lobby, or I'm not there yet ...
-            if (!roomInfo.lobby || !roomInfo.lobby[db.getUid()]) {
-                //enter the room to set PLACE
-                db.joinRoom(roomId, profile.fullName) //sets joined: true, firstName, lastName, etc
-            }   
-
+            db.joinRoom(roomId, profile.fullName) //sets joined: true, firstName, lastName, etc
+            
             //Move to next screen
             dispatch(moveToLobby(roomId))
         }
-
-        dispatch({
-            type: LOADING_STATUS,
-            payload: false
-        })
     }
 }
 
@@ -88,7 +74,7 @@ export function createRoom(roomConfig){
         const { profile } = getState()
 
         dispatch({
-            type: LOADING_STATUS,
+            type: START_LOADING,
             payload: true
         })
 
@@ -104,18 +90,13 @@ export function createRoom(roomConfig){
             if(!allRoomInfo) flag = true
             else if(!allRoomInfo[roomId]) flag = true
         }
-
-        let { gameMode } = roomConfig
         
         //Write owner and room status to the database
-        firebase.database().ref(`rooms/${roomId}`).set({
+        firebase.database().ref(`rooms/${roomId}/config`).set({
             owner: db.getUid(),
             status:'Lobby',
-            mode: gameMode
         })
 
-        //Initialize references in db AND enter the room to set PLACE
-        db.initRefs(roomId)
         db.joinRoom(roomId, profile.fullName)
         
         //Move to next screen
@@ -146,10 +127,11 @@ function moveToLobby(roomId){
 export default (state = initialState, action) => {
 
     switch(action.type){
-        case LOADING_STATUS:
-            return { ...state, loading: action.payload }
+        case START_LOADING:
+            return { ...state, loading: true }
         case ERROR_MESSAGE:
-            return { ...state, error: action.payload }
+            return { ...state, error: action.payload, loading: false }
+
         case RESET:
             return initialState
         default:

@@ -13,10 +13,8 @@ class LoadingScreen extends Component {
         db.initUser()
         console.log('persisted state.', this.props.state)
         
-        const { inLobby, roomId, inGame,
+        const { inLobby, inGame,
             turnOnLobbyListeners, turnOnGameListeners } = this.props
-
-        if (roomId) db.initRefs(roomId)
 
         if (inLobby) turnOnLobbyListeners()
         if (inGame) turnOnGameListeners()

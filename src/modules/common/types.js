@@ -11,3 +11,7 @@ export const listenerType = {
     roles: 'roles',
     status: 'status',
 }
+
+export const configType = {
+    gameMode: 'gameMode/classic',
+}

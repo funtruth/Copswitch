@@ -3,11 +3,7 @@ import firebase from '../app/admin'
 class FirebaseService{
     constructor(){
         this.uid = null
-        this.pushKey = null //push key upon entering room
-
         this.roomId = null
-        this.roomRef = null
-        this.myInfoRef = null
     }
 
     //General
@@ -42,40 +38,14 @@ class FirebaseService{
         })
     }
 
-    initRefs(roomId) {
-        if(!roomId) return
-        
-        this.roomId = roomId
-        this.roomRef = firebase.database().ref(`rooms/${roomId}`)
-
-        this.myInfoRef = firebase.database().ref(`rooms/${roomId}/lobby/${this.uid}`)
-    }
-
-    wipeRefs(){
-        this.pushKey = null
-
-        this.roomId = null
-        this.roomRef = null
-
-        this.myInfoRef = null
-    }
-
     joinRoom(roomId, fullName){
-        let pushKeyRef = firebase.database().ref(`rooms/${roomId}/place`)
-        this.pushKey = pushKeyRef.push().key
-
-        let batch = {}
-
-        batch[`place/${this.pushKey}`] = this.uid
-        batch[`lobby/${this.uid}`] = { fullName: fullName, uid: this.uid }
+        if(!roomId) return
+        this.roomId = roomId
         
-        firebase.database().ref(`rooms/${roomId}`).update(batch)
-    }
-
-    removePushKey(){
-        if(!this.pushKey) return
-        let placeRef = firebase.database().ref(`rooms/${this.roomId}/place`)
-        placeRef.child(this.pushKey).remove()
+        firebase.database().ref(`rooms/${roomId}/lobby/${this.uid}`).update({
+            uid: this.uid,
+            fullName: fullName,
+        })
     }
 
     fetchRoomRef(path){
@@ -84,17 +54,12 @@ class FirebaseService{
 
     leaveLobby(){
         //If already left lobby, don't do anything
-        if(!this.roomRef) return
-    
-        //Should cycle through place/lobby instead of this.pushKey
-        this.myInfoRef.remove()
-        this.removePushKey()
-
-        this.wipeRefs()
+        if(!this.roomId) return
+        firebase.database().ref(`rooms/${roomId}/lobby/${this.uid}`).remove()
     }
 
     deleteRoom(){
-        this.roomRef.remove()
+        firebase.database().ref(`rooms/${this.roomId}`).remove()
     }
 
     update(path, obj) {
@@ -108,9 +73,10 @@ class FirebaseService{
     }
 
     changeRoleCount(key,change){
-        this.roomRef.child('roles').child(key).transaction(count=>{
-            return change?count+1:count-1
-        })
+        firebase.database().ref(`rooms/${this.roomId}`)
+            .child('roles').child(key).transaction(count=>{
+                return change?count+1:count-1
+            })
     }
 }
 

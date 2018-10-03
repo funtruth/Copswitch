@@ -3,12 +3,11 @@ import * as helpers from './helpers'
 import lynching from '../engines/lynching'
 import voting from '../engines/voting'
 
-export async function onPlayerChoiceHandler(change, roomId) {
+async function onPlayerChoiceHandler(choices, roomId) {
     let roomSnapshot = await db.get(`rooms/${roomId}`)
     let playerNum = helpers.getPlayerCount(roomSnapshot.lobby)
     let triggerNum = helpers.getTriggerNum(playerNum)
     let gamePhase = roomSnapshot.counter % 3
-    let choices = change.after.val()
 
     let total = Object.keys(choices).length;
     let batch = {}
@@ -24,7 +23,7 @@ export async function onPlayerChoiceHandler(change, roomId) {
     if (batch) return db.update(`rooms/${roomId}`, batch)
 }
 
-export async function onPlayerLoadHandler(loaded, roomId) {
+async function onPlayerLoadHandler(loaded, roomId) {
     let roomSnapshot = await db.get(`rooms/${roomId}`)
     let playerNum = helpers.getPlayerCount(roomSnapshot.lobby)
 
@@ -43,4 +42,9 @@ export async function onPlayerLoadHandler(loaded, roomId) {
             choice: null
         }
     )
+}
+
+export {
+    onPlayerChoiceHandler,
+    onPlayerLoadHandler,
 }

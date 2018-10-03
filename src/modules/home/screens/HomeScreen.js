@@ -6,9 +6,11 @@ import {
     Image,
     Dimensions
 }   from 'react-native'
+import { connect } from 'react-redux'
 import { Styler } from '@common'
 
 import NavigationTool from '../../navigation/NavigationTool'
+import { createRoom } from '../HomeReducer'
 
 import joinBook from '../../../../assets/images/JoinRoomBook.png'
 import createBook from '../../../../assets/images/CreateRoomBook.png'
@@ -24,6 +26,7 @@ class HomeScreen extends Component {
     }
     
     _createRoom = () => {
+        this.props.createRoom()
         NavigationTool.navigate('Lobby')
     }
 
@@ -136,4 +139,9 @@ const styles = {
     }
 }
 
-export default HomeScreen
+export default connect(
+    null,
+    {
+        createRoom,
+    }
+)(HomeScreen)
