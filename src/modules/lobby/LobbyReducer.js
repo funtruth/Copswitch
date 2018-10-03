@@ -16,16 +16,6 @@ const initialState = {
     myInfo: {},
 }
 
-/*
-NOTES:
-
-activeListeners holds firebase paths as strings relative to the roomRef.
-
-placeList is kept as an ARRAY inside LobbyReducer in order to ensure order is kept,
-Order of items in an OBJECT are not guaranteed to stay chronological.
-cannot be kept as a SNAP because redux persist does not store snaps(?)
-*/
-
 const PUSH_LISTENER_PATH = 'lobby/push_listener_path'
 const CLEAR_LISTENERS = 'lobby/clear_listeners'
 
@@ -78,7 +68,7 @@ function newLobbyInfo(snap, listener){
                 dispatch({
                     type: CONFIG_LISTENER,
                     payload: {
-                        owner: snap.val().owner,
+                        owner: snap.val().owner === db.getUid(),
                         status: snap.val().status,
                         roles: _.sortBy(snap.val(), i => i),
                     }

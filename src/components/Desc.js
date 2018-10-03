@@ -27,11 +27,11 @@ export class Desc extends React.Component {
                 showsVerticalScrollIndicator = {false}
                 style = {{width:this.width*0.7}}>
                 <Text style = {styles.lfont}>CHARACTER:</Text>
-                <Text style = {styles.title}>{Roles[this.props.roleid].name}</Text>
+                <Text style = {styles.title}>{Roles[this.props.roleDd].name}</Text>
                 <Text style = {styles.lfont}>DURING THE NIGHT:</Text>
-                <Text style = {styles.roleDesc}>{Roles[this.props.roleid].rules}</Text>
+                <Text style = {styles.roleDesc}>{Roles[this.props.roleId].rules}</Text>
                 <Text style = {styles.lfont}>WIN CONDITION:</Text>
-                <Text style = {styles.roleDesc}>{Roles[this.props.roleid].win}</Text>
+                <Text style = {styles.roleDesc}>{Roles[this.props.roleId].win}</Text>
 
             </ScrollView>
         )

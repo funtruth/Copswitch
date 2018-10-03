@@ -10,7 +10,6 @@ const initialState = {
     dayNum: null,
     ready: {},
     myReady: null,
-    myInfo: {},
     news: [],
     events: [],
 
@@ -60,7 +59,6 @@ READY formatting:
             ${uid}: <BOOL>,
             ${uid}: <BOOL> ...
         }
-    Will eventually be JOINed with placeList
 */
 
 const PUSH_LISTENER_PATH = 'game/push_listener_path'
@@ -185,14 +183,14 @@ function newRoomInfo(snap, listener){
 }
 
 export function gameChoice(choice) {
-    return (dispatch, getState) => {
-        const { place } = getState().lobby
-        let myChoiceRef = db.fetchRoomRef(`choice/${place}`)
-        let myReadyRef = db.fetchRoomRef(`ready/${place}`)
+    let uid = db.getUid()
 
-        myChoiceRef.set(choice)
-            .then(() => myReadyRef.set(choice !== null))
-    }
+    let myChoiceRef = db.fetchRoomRef(`choice/${uid}`)
+    let myReadyRef = db.fetchRoomRef(`ready/${uid}`)
+
+    myChoiceRef.set(choice)
+        .then(() => myReadyRef.set(choice !== null))
+    
 }
 
 export default (state = initialState, action) => {

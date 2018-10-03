@@ -3,9 +3,9 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import { Announcer, Roles } from '@library'
 const { Defaults } = Announcer
 
-const LobbyRole = ({ roleid, count }) => {
+const LobbyRole = ({ roleId, count }) => {
     const { container, playerName, description, countText } = styles
-    const { name, rules } = Roles[roleid]
+    const { name, rules } = Roles[roleId]
 
     return (
         <TouchableOpacity style={container}>

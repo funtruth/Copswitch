@@ -7,7 +7,6 @@ import HomeReducer from '../modules/home/HomeReducer'
 import LobbyReducer from '../modules/lobby/LobbyReducer'
 import GameReducer from '../modules/game/GameReducer'
 import GameStateReducer from '../modules/gameState/GameStateReducer'
-import OwnerReducer from '../modules/game/engine/OwnerReducer'
 
 const reducers = {
     profile: ProfileReducer,
@@ -17,7 +16,6 @@ const reducers = {
     lobby: LobbyReducer,
     game: GameReducer,
     gameState: GameStateReducer,
-    owner: OwnerReducer
 }
 
 export default combineReducers( reducers )

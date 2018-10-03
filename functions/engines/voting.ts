@@ -37,10 +37,10 @@ export default function processVotes(votes, rss) {
         news.push(rss.lobby[rss.nominate].name + ' has been hung!')
         
         lobby[rss.nominate].dead = true
-        if (roles[lobby[rss.nominate].roleid].killer) {
+        if (roles[lobby[rss.nominate].roleId].killer) {
             let mafiaArr = []
             for (var uid in lobby) {
-                if (!lobby[uid].dead && roles[lobby[uid].roleid].type === 1) {
+                if (!lobby[uid].dead && roles[lobby[uid].roleId].type === 1) {
                     mafiaArr.push(uid)
                 }
             }
@@ -50,7 +50,7 @@ export default function processVotes(votes, rss) {
                 promoted = mafiaArr[Math.floor(Math.random()*mafiaArr.length)]
             }
             if (promoted !== null) {
-                lobby[promoted].roleid = roles[lobby[rss.nominate].roleid].killer
+                lobby[promoted].roleId = roles[lobby[rss.nominate].roleId].killer
             }
         }
 

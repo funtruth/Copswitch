@@ -29,9 +29,10 @@ async function onPlayerLoadHandler(loaded, roomId) {
 
     if (Object.keys(loaded).length < playerNum) return
 
-    let ready
-    (ready = []).length = Object.keys(roomSnapshot.ready).length
-    ready.fill(false)
+    let ready = {};
+    for (var uid in roomSnapshot.ready) {
+        ready[uid] = false
+    }
 
     return db.update(
         `rooms/${roomId}`,

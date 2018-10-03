@@ -25,7 +25,7 @@ export class RoleView extends Component {
             townlist:       [],
             mafialist:      [],
 
-            roleid:         'a',
+            roleId:         'a',
             desc:           false,
 
             showtown:       true,
@@ -69,7 +69,7 @@ export class RoleView extends Component {
 
     _rolePress(key){
         if(this.state.info){
-            this.setState({desc:true, roleid:key})
+            this.setState({desc:true, roleId:key})
         } else {
             this.props.rolepress(key,this.state.change)
         }
@@ -215,7 +215,7 @@ export class RoleView extends Component {
             
             <Modal visible = {this.state.desc} flex = {0.2} style = {{bottom:10}}>
                 <Desc
-                    roleid = {this.state.roleid}
+                    roleId = {this.state.roleId}
                     close = {() => this.setState({desc:false})}
                 />
             </Modal>
