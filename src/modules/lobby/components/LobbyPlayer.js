@@ -1,7 +1,6 @@
-import React, { Component } from 'react'
+import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import Icon from 'react-native-vector-icons/FontAwesome'
-import { db } from '@services'
 
 const LobbyPlayer = ({ name, showOwner, showEdit }) => {
     const { container, icon, playerName } = styles

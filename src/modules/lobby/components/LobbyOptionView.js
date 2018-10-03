@@ -6,7 +6,7 @@ import {
     Dimensions,
 }   from 'react-native';
 import { connect } from 'react-redux'
-import { leaveLobby, changeModalView, startPregame } from '../LobbyReducer'
+import { leaveLobby, startPregame } from '../LobbyReducer'
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { Styler } from '@common';
 
@@ -16,11 +16,7 @@ const { height, width } = Dimensions.get('window')
 class LobbyOptionView extends Component {
 
     _toggleMenu = () => {
-        if(this.props.modalView){
-            this.props.changeModalView(null)
-        } else {
-            this.props.changeModalView('roles')
-        }
+        
     }
 
     render(){
@@ -78,13 +74,11 @@ const styles = {
 
 export default connect(
     state => ({
-        modalView: state.lobby.modalView,
-        owner: state.lobby.owner
+        owner: state.lobby.config.owner
     }),
     dispatch => {
         return {
             leaveLobby: () => dispatch(leaveLobby()),
-            changeModalView: (modalView) => dispatch(changeModalView(modalView)),
             startPregame: () => dispatch(startPregame())
         }
     }

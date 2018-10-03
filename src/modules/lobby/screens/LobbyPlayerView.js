@@ -1,50 +1,20 @@
 import React, { Component } from 'react'
 import { View, FlatList, Dimensions } from 'react-native'
-import { connect } from 'react-redux' 
-import { db, arrObjUtil } from '@services'
+
 import LobbyPlayer from '../components/LobbyPlayer';
 
 const { height, width } = Dimensions.get('window')
 
 class LobbyPlayerView extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            data: []
-        }
-    }
-    
-    componentDidMount() {
-        this.updateList(this.props)
-    }
-
-    componentWillReceiveProps(newProps) {
-        this.updateList(newProps)
-    }
-
-    updateList(props) {
-        let { placeList, lobbyList } = props
-        if (!placeList || !lobbyList) return
-
-        this.setState({
-            data: arrObjUtil.join(placeList, lobbyList)
-        })
-        console.log('placelist', placeList)
-        console.log('lobby', lobbyList)
-        console.log(arrObjUtil.join(placeList, lobbyList))
-    }
-
     renderPlayer = ({item}) => <LobbyPlayer {...item}/>
 
     keyExtractor = (item) => item.uid
 
     render() {
-        const { container } = styles
-
         return (
-            <View style={container}>
+            <View style={styles.container}>
                 <FlatList
-                    data={this.state.data}
+                    data={this.props.lobby}
                     renderItem={this.renderPlayer}
                     keyExtractor={this.keyExtractor}
                 />
@@ -60,9 +30,4 @@ const styles = {
     }
 }
 
-export default connect(
-    state => ({
-        placeList: state.lobby.placeList,
-        lobbyList: state.lobby.lobbyList
-    })
-)(LobbyPlayerView)
+export default LobbyPlayerView

@@ -22,7 +22,7 @@ const { height, width } = Dimensions.get('window')
 
 class LobbyView extends Component {
     componentWillReceiveProps(newProps){
-        if(newProps.status === statusType.pregame){
+        if(newProps.config.status === statusType.pregame){
             //TODO move to reducer?
             NavigationTool.navigate('Pregame')
         }
@@ -41,12 +41,19 @@ class LobbyView extends Component {
                     horizontal={true}
                     pagingEnabled={true}
                 >
-                    <LobbyPlayerView/>
-                    <LobbyRolesView/>
+                    <LobbyPlayerView
+                        data={this.props.lobby}
+                    />
+                    <LobbyRolesView
+                        data={this.props.config.roles}
+                    />
                     <LobbySetupView/>
                 </ScrollView>
                 <LobbyOptionView/>
-                <LobbyNameModal/>
+                <LobbyNameModal
+                    name={this.props.name}
+                    lobby={this.props.lobby}
+                />
             </LinearGradient>
         )
     }
@@ -71,7 +78,9 @@ const styles = {
 export default connect(
     state => ({
         roomId: state.loading.roomId,
-        status: state.lobby.status
+        lobby: state.lobby.lobby,
+        myInfo: state.lobby.myInfo,
+        config: state.lobby.config,
     }),
     dispatch => {
         return {

@@ -5,11 +5,8 @@ export const statusType = {
 }
 
 export const listenerType = {
-    owner: 'owner',
+    config: 'config',
     lobby: 'lobby',
-    place: 'place',
-    roles: 'roles',
-    status: 'status',
 }
 
 export const configType = {

@@ -1,19 +1,19 @@
-import { db } from '@services'
+import _ from 'lodash'
+
+import {db} from '@services'
 import {statusType, listenerType} from '../common/types'
 import NavigationTool from '../navigation/NavigationTool'
-
-import { setRoomInfo } from '../game/GameReducer'
-import { ownershipMode } from '../game/engine/OwnerReducer'
 
 const initialState = {
     activeListeners: [],
 
-    owner: null,
-    lobbyList: {},
-    placeList: [],
-    place: null,
-    roleList: {},
-    status: statusType.lobby,
+    config: {
+        owner: false,
+        status: statusType.lobby,
+        roles: [],
+    },
+    lobby: [],
+    myInfo: {},
 }
 
 /*
@@ -29,18 +29,13 @@ cannot be kept as a SNAP because redux persist does not store snaps(?)
 const PUSH_LISTENER_PATH = 'lobby/push_listener_path'
 const CLEAR_LISTENERS = 'lobby/clear_listeners'
 
-const OWNER_LISTENER = 'lobby/room_owner_listener'
 const LOBBY_LISTENER = 'lobby/lobby_listener'
-const PLACE_LISTENER = 'lobby/place_listener'
-const SET_MY_PLACE = 'lobby/set_my_place'
-const ROLE_LIST_LISTENER = 'lobby/role_list_listener'
-const ROOM_STATUS_LISTENER = 'lobby/status_listener'
-
+const CONFIG_LISTENER = 'lobby/config-listener'
 const RESET = 'lobby/reset'
 
 export function leaveLobby(){
     return (dispatch, getState) => {
-        const { owner } = getState().lobby
+        const { owner } = getState().lobby.config
 
         dispatch(clearListeners())
         
@@ -56,11 +51,8 @@ export function leaveLobby(){
 
 export function turnOnLobbyListeners() {
     return (dispatch) => {
-        dispatch(lobbyListenerOn(listenerType.owner))
+        dispatch(lobbyListenerOn(listenerType.config))
         dispatch(lobbyListenerOn(listenerType.lobby))
-        dispatch(lobbyListenerOn(listenerType.place))
-        dispatch(lobbyListenerOn(listenerType.roles))
-        dispatch(lobbyListenerOn(listenerType.status))
     }
 }
 
@@ -78,63 +70,27 @@ function lobbyListenerOn(listener){
 }
 
 function newLobbyInfo(snap, listener){
-    return (dispatch, getState) => {
+    return (dispatch) => {
         if (!snap.val()) return
-        var { lobby } = getState()
-        let myUid = db.getUid()
 
         switch(listener){
-            case listenerType.owner:
-                let ownership = snap.val() === myUid
-                dispatch(ownershipMode(ownership))
+            case listenerType.config:
                 dispatch({
-                    type: OWNER_LISTENER,
-                    payload: snap.val()
+                    type: CONFIG_LISTENER,
+                    payload: {
+                        owner: snap.val().owner,
+                        status: snap.val().status,
+                        roles: _.sortBy(snap.val(), i => i),
+                    }
                 })
                 break
             case listenerType.lobby:
-                let alivePlayers = 0;
-                for (var i in snap.val()) {
-                    if (!snap.val()[i].dead) alivePlayers++
-                }
-                dispatch(
-                    setRoomInfo({
-                        myInfo: snap.val()[myUid],
-                        playerNum: alivePlayers,
-                        triggerNum: ((alivePlayers - alivePlayers%2)/2) + 1
-                    })
-                )
-                
                 dispatch({
                     type: LOBBY_LISTENER,
-                    payload: snap.val()
-                })
-                break
-            case listenerType.place:
-                let placeArr = []
-
-                snap.forEach(child => {
-                    placeArr.push(child.val())
-                })
-                dispatch({
-                    type: SET_MY_PLACE,
-                    payload: placeArr.indexOf(myUid)
-                })
-                dispatch({
-                    type: PLACE_LISTENER,
-                    payload: placeArr
-                })
-                break
-            case listenerType.roles:
-                dispatch({
-                    type: ROLE_LIST_LISTENER,
-                    payload: snap.val()
-                })
-                break
-            case listenerType.status:
-                dispatch({
-                    type: ROOM_STATUS_LISTENER,
-                    payload: snap.val()
+                    payload: {
+                        lobby: _.sortBy(snap.val(), i => i.joinedAt),
+                        myInfo: snap.val()[db.getUid()],
+                    }
                 })
                 break
             default:
@@ -157,7 +113,8 @@ function clearListeners(){
 
 export function startPregame() {
     return (dispatch, getState) => {
-        const { roleList, lobbyList } = getState().lobby
+        const { config, lobby } = getState().lobby
+        const { roles } = config
 
         //TODO show error message
         if (areThereDuplicateNames()) {
@@ -166,10 +123,10 @@ export function startPregame() {
         }
 
         let rolesLen = 0
-        let lobbyLen = Object.keys(lobbyList).length
+        let lobbyLen = Object.keys(lobby).length
 
         for(var i in roleList){
-            rolesLen += roleList[i]
+            rolesLen += roles[i]
         }
 
         if(rolesLen === lobbyLen){
@@ -181,40 +138,30 @@ export function startPregame() {
     }
 }
 
-const areThereDuplicateNames = (lobbyList) => {
+const areThereDuplicateNames = (lobby) => {
     let names = {}
-    for (uid in lobbyList) {
-        if (names[lobbyList[uid].name]) return true
-        names[lobbyList[uid].name] = true
+    for (uid in lobby) {
+        if (names[lobby[uid].name]) return true
+        names[lobby[uid].name] = true
     }
     return false
 } 
 
 export default (state = initialState, action) => {
-
     switch(action.type){
         case PUSH_LISTENER_PATH:
             return { ...state, activeListeners: [...state.activeListeners, action.payload] }
         case CLEAR_LISTENERS:
             return { ...state, activeListeners: [] }
 
-        case OWNER_LISTENER:
-            return { ...state, owner: action.payload }
+        case CONFIG_LISTENER:
+            return { ...state, config: action.payload }
         case LOBBY_LISTENER:
-            return { ...state, lobbyList: action.payload }
-        case PLACE_LISTENER:
-            return { ...state, placeList: action.payload }
-        case SET_MY_PLACE:
-            return { ...state, place: action.payload }
-        case ROLE_LIST_LISTENER:
-            return { ...state, roleList: action.payload }
-        case ROOM_STATUS_LISTENER:
-            return { ...state, status: action.payload }
+            return { ...state, ...action.payload }
             
         case RESET: 
             return initialState
         default:
             return state;
     }
-
 }

@@ -95,6 +95,7 @@ export function createRoom(roomConfig){
         firebase.database().ref(`rooms/${roomId}/config`).set({
             owner: db.getUid(),
             status:'Lobby',
+            roles: {},
         })
 
         db.joinRoom(roomId, profile.fullName)

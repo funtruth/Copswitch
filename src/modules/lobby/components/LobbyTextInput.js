@@ -1,11 +1,10 @@
-
 import React, { Component } from 'react';
 import {
     View,
     TouchableOpacity,
     Dimensions
 }   from 'react-native';
-import { connect } from 'react-redux'
+
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { db, fuseService, nameUtil } from '@services'
 
@@ -48,7 +47,7 @@ class LobbyTextInput extends Component {
             return
         }
 
-        let nameTaken = fuseService.usernameFuzzySearch(name, this.props.lobbyList)
+        let nameTaken = fuseService.usernameFuzzySearch(name, this.props.lobby)
         if (nameTaken.length > 0) {
             return
         }
@@ -110,9 +109,4 @@ const styles = {
     }
 }
 
-export default connect(
-    state => ({
-        name: state.game.myInfo.name,
-        lobbyList: state.lobby.lobbyList
-    })
-)(LobbyTextInput)
+export default LobbyTextInput

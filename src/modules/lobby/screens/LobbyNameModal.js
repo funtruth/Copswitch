@@ -5,7 +5,6 @@ import {
     Dimensions,
     Animated
 }   from 'react-native';
-import { connect } from 'react-redux'
 
 import { Header } from '@components/index.js';
 import LobbyTextInput from '../components/LobbyTextInput';
@@ -61,7 +60,10 @@ class LobbyNameModal extends Component {
             }]}>
                 <View style={{flex:0.2}}/>
                 <Header icon='angle-left' onPress={this._onBackPress}>CHOOSE AN ALIAS</Header>
-                <LobbyTextInput />
+                <LobbyTextInput
+                    name={this.props.name}
+                    lobby={this.props.lobby}
+                />
             </Animated.View>
         )
     }
@@ -82,8 +84,4 @@ const styles = {
     },
 }
 
-export default connect(
-    state => ({
-        name: state.game.myInfo.name
-    })
-)(LobbyNameModal)
+export default LobbyNameModal
