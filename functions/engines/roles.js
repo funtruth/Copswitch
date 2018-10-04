@@ -1,3 +1,21 @@
+/*
+property descriptions (ON SHEET)
+
+index: DEPRECATED
+name, rules: really
+
+sus: appears suspicious if investigated
+rbi: immune to roleblock
+
+prep: performs action in preparation phase
+tag: performs action in tagging phase
+do: performs action in action phase
+haunt: performs action if they die
+
+TODO
+passive: passive roles, send value to ref.choices
+*/
+
 export default {
     a : {
         index : 0,
@@ -58,7 +76,7 @@ export default {
         name : "Consort",
         rules : "This role does not perform any actions.",
         sus : true,
-        roleblock : true,
+        rbi: true,
         type : 1
     },
     h : {
@@ -173,6 +191,7 @@ export default {
         name : "Soldier",
         rules : "Choose to shoot anyone who visits you during the night.",
         alert : true,
+        rbi: true,
         type : 2,
     },
     J : {
@@ -224,7 +243,7 @@ export default {
         name : "Escort",
         rules : "Choose a player and stop them from performing their action.",
         recipientMsg : "You were distracted last night!",
-        roleblock: true,
+        rbi: true,
         type : 2,
     },
     R : {

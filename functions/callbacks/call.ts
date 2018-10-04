@@ -2,6 +2,7 @@ import * as db from './db'
 import * as helpers from './helpers'
 import lynching from '../engines/lynching'
 import voting from '../engines/voting'
+import actions from '../engines/actions'
 
 async function onPlayerChoiceHandler(choices, roomId) {
     let roomSnapshot = await db.get(`rooms/${roomId}`)
@@ -17,10 +18,12 @@ async function onPlayerChoiceHandler(choices, roomId) {
     } else if (gamePhase == 1 && total >= playerNum - 1){
         batch = voting(choices, roomSnapshot)
     } else if (gamePhase == 2 && total >= playerNum){
-        //actionModule
+        batch = actions(choices, roomSnapshot)
+    } else {
+        return
     }
 
-    if (batch) return db.update(`rooms/${roomId}`, batch)
+    return db.update(`rooms/${roomId}`, batch)
 }
 
 async function onPlayerLoadHandler(loaded, roomId) {
