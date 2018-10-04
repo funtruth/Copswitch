@@ -30,16 +30,16 @@ function processVotes(votes, rss) {
             nameString += (guiltyVotes[i] + ', ');
         }
     }
-    news.push(nameString + 'voted against' + rss.lobby[rss.nomination].name + '.');
+    news.push(nameString + 'voted against' + rss.lobby[rss.nominate].name + '.');
     //findResults
     let nextCounter;
     if (guiltyVotes.length > innocentVotes.length) {
-        news.push(rss.lobby[rss.nomination].name + ' has been hung!');
-        lobby[rss.nomination].dead = true;
-        if (roles_1.default[lobby[rss.nomination].roleid].killer) {
+        news.push(rss.lobby[rss.nominate].name + ' has been hung!');
+        lobby[rss.nominate].dead = true;
+        if (roles_1.default[lobby[rss.nominate].roleId].killer) {
             let mafiaArr = [];
             for (var uid in lobby) {
-                if (!lobby[uid].dead && roles_1.default[lobby[uid].roleid].type === 1) {
+                if (!lobby[uid].dead && roles_1.default[lobby[uid].roleId].type === 1) {
                     mafiaArr.push(uid);
                 }
             }
@@ -48,13 +48,13 @@ function processVotes(votes, rss) {
                 promoted = mafiaArr[Math.floor(Math.random() * mafiaArr.length)];
             }
             if (promoted !== null) {
-                lobby[promoted].roleid = roles_1.default[lobby[rss.nomination].roleid].killer;
+                lobby[promoted].roleId = roles_1.default[lobby[rss.nominate].roleId].killer;
             }
         }
         nextCounter = rss.counter + 1;
     }
     else {
-        news.push(rss.lobby[rss.nomination].name + ' was not hung.');
+        news.push(rss.lobby[rss.nominate].name + ' was not hung.');
         nextCounter = rss.counter - 1;
     }
     return {
@@ -69,5 +69,5 @@ function processVotes(votes, rss) {
         ready: null
     };
 }
-exports.processVotes = processVotes;
+exports.default = processVotes;
 //# sourceMappingURL=voting.js.map

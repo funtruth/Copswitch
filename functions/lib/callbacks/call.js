@@ -10,24 +10,27 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const db = require("./db");
 const helpers = require("./helpers");
-const voting = require("../engines/voting");
-function onPlayerChoiceHandler(change, roomId) {
+const lynching_1 = require("../engines/lynching");
+const voting_1 = require("../engines/voting");
+function onPlayerChoiceHandler(choices, roomId) {
     return __awaiter(this, void 0, void 0, function* () {
         let roomSnapshot = yield db.get(`rooms/${roomId}`);
         let playerNum = helpers.getPlayerCount(roomSnapshot.lobby);
-        let gamePhase = roomSnapshot.counter % 3;
         let triggerNum = helpers.getTriggerNum(playerNum);
-        let choices = change.after.val();
+        let gamePhase = roomSnapshot.counter % 3;
         let total = Object.keys(choices).length;
         let batch = {};
         if (gamePhase == 0 && total >= triggerNum) {
+            batch = lynching_1.default(choices, roomSnapshot);
         }
         else if (gamePhase == 1 && total >= playerNum - 1) {
+            batch = voting_1.default(choices, roomSnapshot);
         }
         else if (gamePhase == 2 && total >= playerNum) {
-            batch = voting.processVotes(choices, roomSnapshot);
+            //actionModule
         }
-        return db.update(`rooms/${roomId}`, batch);
+        if (batch)
+            return db.update(`rooms/${roomId}`, batch);
     });
 }
 exports.onPlayerChoiceHandler = onPlayerChoiceHandler;
@@ -37,9 +40,10 @@ function onPlayerLoadHandler(loaded, roomId) {
         let playerNum = helpers.getPlayerCount(roomSnapshot.lobby);
         if (Object.keys(loaded).length < playerNum)
             return;
-        let ready;
-        (ready = []).length = Object.keys(roomSnapshot.ready).length;
-        ready.fill(false);
+        let ready = {};
+        for (var uid in roomSnapshot.ready) {
+            ready[uid] = false;
+        }
         return db.update(`rooms/${roomId}`, {
             counter: roomSnapshot.counter + 1,
             ready,
