@@ -17,16 +17,13 @@ function onVote(choices, rss) {
         }
     }
 
-    let nextCounter
     let nominate = null
-
     let flag = false
     for (var uid in ballots){
         if (ballots[uid] >= triggerNum) {
             flag = true
             nominate = uid
             news.push(rss.lobby[uid].name + ' has been put on trial.')
-            nextCounter = rss.counter + 1
             break
         }
     }
@@ -36,7 +33,7 @@ function onVote(choices, rss) {
             news: {
                 [rss.counter]: news
             },
-            counter: nextCounter,
+            counter: rss.counter + 1,
             nominate,
             choice: null,
             ready: null
@@ -47,7 +44,7 @@ function onVote(choices, rss) {
                 [rss.counter]: news
             },
             counter: rss.counter + 2,
-            nominate,
+            nominate: null,
             choice: null,
             ready: null
         }
@@ -95,9 +92,8 @@ function onTrial(votes, rss) {
         lobby: rss.lobby,
         counter: nextCounter,
         nominate: null,
+        ready: null,
         choice: null,
-        votes: null,
-        ready: null
     }
 }
 
@@ -133,6 +129,7 @@ function onNight(choices, rss) {
             [rss.counter]: events
         },
         lobby,
+        counter: rss.counter + 1,
         choice: null,
         ready: null,
     }

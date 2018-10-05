@@ -12,6 +12,7 @@ import {
 import {
     onPlayerDamaged,
     onPlayerDeath,
+    onPlayerRevive,
 } from '../engines/gameEvents'
 
 //listeners
@@ -33,3 +34,6 @@ exports.onPlayerDamaged = functions.database.ref(`rooms/{roomId}/lobby/{uid}/hea
 
 exports.onPlayerDeath = functions.database.ref('rooms/{roomId}/lobby/{uid}/dead')
     .onCreate((snap, event) => onPlayerDeath(event.params.roomId, event.params.uid))
+
+exports.onPlayerResurrect = functions.database.ref('rooms/{roomId}/lobby/{uid}/dead')
+    .onDelete((snap, event) => onPlayerRevive(event.params.roomId, event.params.uid))
