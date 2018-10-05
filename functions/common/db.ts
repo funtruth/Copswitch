@@ -21,4 +21,3 @@ export function batchUpdate(value) {
 export function remove(path) {
   return admin.database().ref(path).remove();
 }
-
