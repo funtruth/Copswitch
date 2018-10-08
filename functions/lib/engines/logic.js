@@ -6,7 +6,6 @@ const helpers = require("../common/helpers");
 function onVote(choices, rss) {
     let ballots = {};
     let ballotCount = 0;
-    let news = [];
     let playerNum = helpers.getPlayerCount(rss.lobby);
     let triggerNum = helpers.getTriggerNum(playerNum);
     for (var uid in choices) {
@@ -16,19 +15,16 @@ function onVote(choices, rss) {
         }
     }
     let nominate = null;
-    let flag = false;
     for (var uid in ballots) {
         if (ballots[uid] >= triggerNum) {
-            flag = true;
             nominate = uid;
-            news.push(rss.lobby[uid].name + ' has been put on trial.');
             break;
         }
     }
-    if (flag) {
+    if (nominate) {
         return {
             news: {
-                [rss.counter]: news
+                [Date.now()]: `${rss.lobby[nominate].name} has been put on trial.`
             },
             counter: rss.counter + 1,
             nominate,
@@ -38,9 +34,6 @@ function onVote(choices, rss) {
     }
     else if (ballotCount >= playerNum) {
         return {
-            news: {
-                [rss.counter]: news
-            },
             counter: rss.counter + 2,
             nominate: null,
             choice: null,
@@ -53,7 +46,8 @@ exports.onVote = onVote;
 function onTrial(votes, rss) {
     let iVotes = [];
     let gVotes = [];
-    let news = [];
+    let news = {};
+    let timestamp = Date.now();
     for (var uid in votes) {
         if (votes[uid] === 1) {
             iVotes.push(rss.lobby[uid].name);
@@ -72,21 +66,19 @@ function onTrial(votes, rss) {
     else {
         nameString = gVotes.join(', ');
     }
-    news.push(nameString + ' voted against' + rss.lobby[rss.nominate].name + '.');
+    news[timestamp] = nameString + ' voted against' + rss.lobby[rss.nominate].name + '.';
     let nextCounter;
     if (gVotes.length > iVotes.length) {
         rss.lobby[rss.nominate].dead = true;
-        news.push(rss.lobby[rss.nominate].name + ' has been hung!');
+        news[timestamp + 1] = rss.lobby[rss.nominate].name + ' has been hung!';
         nextCounter = rss.counter + 1;
     }
     else {
-        news.push(rss.lobby[rss.nominate].name + ' was not hung.');
+        news[timestamp + 1] = rss.lobby[rss.nominate].name + ' was not hung.';
         nextCounter = rss.counter - 1;
     }
     return {
-        news: {
-            [rss.counter]: news
-        },
+        news,
         lobby: rss.lobby,
         counter: nextCounter,
         nominate: null,
@@ -128,7 +120,15 @@ function onNight(choices, rss) {
     };
 }
 exports.onNight = onNight;
+//[a]ctor
+//check for flags, do role
 function _action(a, lobby, choices) {
+    var flags = lobby[choices[a]].flag;
+    if (flags) {
+        for (var uid in flags) {
+            flags[uid](a, lobby);
+        }
+    }
     switch (lobby[a].roleId) {
         case 'g':
         case 'Q':
