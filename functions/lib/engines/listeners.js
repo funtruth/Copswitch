@@ -26,8 +26,8 @@ function onGameStatusUpdate(change, roomId) {
             return;
         let rss = yield db.get(`rooms/${roomId}`);
         let rolesArr = [];
-        for (var id in rss.roles) {
-            for (var j = 0; j < rss.roles[id]; j++) {
+        for (var id in rss.config.roles) {
+            for (var j = 0; j < rss.config.roles[id]; j++) {
                 rolesArr.push(id);
             }
         }
@@ -52,7 +52,11 @@ function onGameStatusUpdate(change, roomId) {
         return db.update(`rooms/${roomId}`, {
             lobby,
             ready,
-            counter: 0,
+            gameState: {
+                counter: 0,
+                phase: 0,
+                dayNum: 1,
+            },
             status: 'statusType/game'
         });
     });

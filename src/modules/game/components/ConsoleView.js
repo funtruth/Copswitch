@@ -9,6 +9,8 @@ import { connect } from 'react-redux'
 import { GameInfo } from '@library';
 import { Styler } from '@common'
 
+import { statusType } from '../../common/types';
+
 import Separator from '@components/Separator.js';
 
 const { height, width } = Dimensions.get('window')
@@ -29,7 +31,9 @@ class ConsoleView extends Component {
     }
 
     render() {
-        const { phase, dayNum } = this.props
+        const { config, gameState } = this.props
+        if (config.status === statusType.pregame) return null
+
         return ( 
             <View style = {{
                 height,
@@ -38,7 +42,7 @@ class ConsoleView extends Component {
                 alignItems: 'center'
             }}>
                 <Text style = {styles.header}>
-                    {Phases[phase].name+' '+dayNum}</Text>
+                    {Phases[gameState.phase].name + ' ' + gameState.dayNum}</Text>
 
                 <View style={{width:'50%', alignItems:'center', margin: 20}}>
                     <TouchableOpacity
@@ -74,8 +78,8 @@ const styles = {
 
 export default connect(
     state => ({
-        phase: state.game.phase,
-        dayNum: state.game.dayNum
+        config: state.lobby.config,
+        gameState: state.lobby.gameState,
     })
 )(ConsoleView)
 

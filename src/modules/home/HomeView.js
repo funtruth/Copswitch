@@ -9,12 +9,12 @@ import {
 import { connect } from 'react-redux'
 import { Styler } from '@common'
 
-import NavigationTool from '../../navigation/NavigationTool'
-import { createRoom } from '../HomeReducer'
+import NavigationTool from '../navigation/NavigationTool'
+import { createRoom } from './HomeReducer'
 
-import joinBook from '../../../../assets/images/JoinRoomBook.png'
-import createBook from '../../../../assets/images/CreateRoomBook.png'
-import leftArrow from '../../../../assets/images/ArrowLeft.png'
+import joinBook from '../../../assets/images/JoinRoomBook.png'
+import createBook from '../../../assets/images/CreateRoomBook.png'
+import leftArrow from '../../../assets/images/ArrowLeft.png'
 
 const { height, width } = Dimensions.get('window')
 

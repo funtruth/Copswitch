@@ -18,8 +18,8 @@ async function onGameStatusUpdate(change, roomId) {
     let rss = await db.get(`rooms/${roomId}`)
     
     let rolesArr = [];
-    for(var id in rss.roles){
-        for(var j=0; j<rss.roles[id]; j++){
+    for(var id in rss.config.roles){
+        for(var j=0; j<rss.config.roles[id]; j++){
             rolesArr.push(id)
         }
     }

@@ -31,7 +31,7 @@ export default Commands = [
             let roomRef = firebase.database().ref('rooms')
             roomRef.child(DEV_ROOM).set({
                 config: {
-                    status: 'Lobby',
+                    status: 'statusType/lobby',
                     owner: firebase.auth().currentUser.uid,
                 }
             })

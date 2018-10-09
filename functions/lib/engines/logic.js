@@ -3,6 +3,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const _ = require("lodash");
 const roles_1 = require("./roles");
 const helpers = require("../common/helpers");
+function setGameState(counter) {
+    return {
+        counter,
+        phase: counter % 3,
+        dayNum: Math.floor(counter / 3) + 1,
+    };
+}
 function onVote(choices, rss) {
     let ballots = {};
     let ballotCount = 0;
@@ -26,7 +33,7 @@ function onVote(choices, rss) {
             news: {
                 [Date.now()]: `${rss.lobby[nominate].name} has been put on trial.`
             },
-            counter: rss.counter + 1,
+            gameState: setGameState(rss.counter + 1),
             nominate,
             choice: null,
             ready: null
@@ -34,7 +41,7 @@ function onVote(choices, rss) {
     }
     else if (ballotCount >= playerNum) {
         return {
-            counter: rss.counter + 2,
+            gameState: setGameState(rss.counter + 2),
             nominate: null,
             choice: null,
             ready: null
@@ -80,7 +87,7 @@ function onTrial(votes, rss) {
     return {
         news,
         lobby: rss.lobby,
-        counter: nextCounter,
+        gameState: setGameState(nextCounter),
         nominate: null,
         ready: null,
         choice: null,
@@ -114,7 +121,7 @@ function onNight(choices, rss) {
             [rss.counter]: events
         },
         lobby,
-        counter: rss.counter + 1,
+        gameState: setGameState(rss.counter + 1),
         choice: null,
         ready: null,
     };

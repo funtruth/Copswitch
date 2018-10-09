@@ -154,7 +154,7 @@ export function startPregame() {
         const { roles } = config
 
         //TODO show error message
-        if (areThereDuplicateNames()) {
+        if (areThereDuplicateNames(lobby)) {
 
             return
         }
@@ -162,12 +162,12 @@ export function startPregame() {
         let rolesLen = 0
         let lobbyLen = Object.keys(lobby).length
 
-        for(var i in roleList){
+        for(var i in roles){
             rolesLen += roles[i]
         }
 
         if(rolesLen === lobbyLen){
-            let statusRef = db.fetchRoomRef('status')
+            let statusRef = db.fetchRoomRef('config/status')
             statusRef.set(statusType.pregame)
         } else {
             //TODO show extra logic

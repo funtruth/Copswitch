@@ -1,6 +1,6 @@
 import { createStackNavigator } from "react-navigation";
 
-import HomeView from '../home/screens/HomeView'
+import HomeView from '../home/HomeView'
 import JoinSlide from '../home/screens/JoinSlide'
 import CreateSlide from '../home/screens/CreateSlide'
 
