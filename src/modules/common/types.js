@@ -7,6 +7,11 @@ export const statusType = {
 export const listenerType = {
     config: 'config',
     lobby: 'lobby',
+
+    gameState: 'gameState',
+    news: 'news',
+    events: 'events',
+    ready: 'ready',
 }
 
 export const configType = {

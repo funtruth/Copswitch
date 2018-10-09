@@ -48,6 +48,10 @@ class FirebaseService{
         })
     }
 
+    ref(path) {
+        return firebase.database().ref(path)
+    }
+
     fetchRoomRef(path){
         return firebase.database().ref(`rooms/${this.roomId}/${path}`)
     }

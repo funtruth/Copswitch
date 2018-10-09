@@ -5,8 +5,7 @@ import {statusType, listenerType} from '../common/types'
 import NavigationTool from '../navigation/NavigationTool'
 
 const initialState = {
-    activeListeners: [],
-
+    //lobby
     config: {
         owner: false,
         status: statusType.lobby,
@@ -14,13 +13,34 @@ const initialState = {
     },
     lobby: [],
     myInfo: {},
+
+    //game
+    gameState: {
+        counter: 0,
+        phase: 0,
+        dayNum: 0,
+        nomination: null,
+        timeout: null,
+    },
+    news: [],
+    events: [],
+    ready: {},
+    myReady: false,
 }
 
 const PUSH_LISTENER_PATH = 'lobby/push_listener_path'
 const CLEAR_LISTENERS = 'lobby/clear_listeners'
 
+//lobby
 const LOBBY_LISTENER = 'lobby/lobby_listener'
 const CONFIG_LISTENER = 'lobby/config-listener'
+
+//game
+const GAMESTATE_LISTENER = 'game/gamestate-listener'
+const READY_LISTENER = 'game/ready_listener'
+const NEWS_LISTENER = 'game/news_listener'
+const EVENTS_LISTENER = 'game/events_listener'
+
 const RESET = 'lobby/reset'
 
 export function leaveLobby(){
@@ -39,38 +59,31 @@ export function leaveLobby(){
     }
 }
 
-export function turnOnLobbyListeners() {
-    return (dispatch) => {
-        dispatch(lobbyListenerOn(listenerType.config))
-        dispatch(lobbyListenerOn(listenerType.lobby))
-    }
-}
+export function turnOnListeners() {
+    return (dispatch, getState) => {
+        const { roomId } = getState().loading
+        let roomRef = db.ref(`rooms/${roomId}`)
 
-function lobbyListenerOn(listener){
-    return (dispatch) => {
-        let listenerRef = db.fetchRoomRef(listener)
-        dispatch({
-            type: PUSH_LISTENER_PATH,
-            payload: listener
-        })
-        listenerRef.on('value', snap => {
-            dispatch(newLobbyInfo(snap, listener))
+        roomRef.on('value', snap => {
+            for (var key in snap.val()) {
+                dispatch(newLobbyInfo(snap.val()[key], key))
+            }
         })
     }
 }
 
-function newLobbyInfo(snap, listener){
+function newLobbyInfo(snap, key){
     return (dispatch) => {
-        if (!snap.val()) return
+        if (!snap) return
 
-        switch(listener){
+        switch(key){
             case listenerType.config:
                 dispatch({
                     type: CONFIG_LISTENER,
                     payload: {
-                        owner: snap.val().owner === db.getUid(),
-                        status: snap.val().status,
-                        roles: _.sortBy(snap.val(), i => i),
+                        owner: snap.owner === db.getUid(),
+                        status: snap.status,
+                        roles: _.sortBy(snap.roles, i => i),
                     }
                 })
                 break
@@ -78,10 +91,23 @@ function newLobbyInfo(snap, listener){
                 dispatch({
                     type: LOBBY_LISTENER,
                     payload: {
-                        lobby: _.sortBy(snap.val(), i => i.joinedAt),
-                        myInfo: snap.val()[db.getUid()],
+                        lobby: _.sortBy(snap, i => i.joinedAt),
+                        myInfo: snap[db.getUid()],
                     }
                 })
+                break
+            
+            case listenerType.gameState:
+            
+                break
+            case listenerType.ready:
+            
+                break
+            case listenerType.news:
+            
+                break
+            case listenerType.events:
+            
                 break
             default:
         }
@@ -148,6 +174,15 @@ export default (state = initialState, action) => {
             return { ...state, config: action.payload }
         case LOBBY_LISTENER:
             return { ...state, ...action.payload }
+
+        case GAMESTATE_LISTENER:
+            return { ...state, gameState: action.payload }
+        case READY_LISTENER:
+            return { ...state, ready: action.payload }
+        case NEWS_LISTENER:
+            return { ...state, news: [...state.news, action.payload] }
+        case EVENTS_LISTENER:
+            return { ...state, events: [...state.events, action.payload] }
             
         case RESET: 
             return initialState

@@ -1,4 +1,4 @@
-import { turnOnLobbyListeners } from '../lobby/LobbyReducer'
+import { turnOnListeners } from '../lobby/LobbyReducer'
 import { inLobbyStatus } from '../loading/LoadingReducer'
 
 import randomize from 'randomatic'
@@ -117,7 +117,7 @@ export function reset() {
 function moveToLobby(roomId){
     return (dispatch) => {
         dispatch(inLobbyStatus(roomId)) //Lobby reducer
-        dispatch(turnOnLobbyListeners())
+        dispatch(turnOnListeners())
         NavigationTool.navigate("Lobby")
         dispatch({
             type: RESET
