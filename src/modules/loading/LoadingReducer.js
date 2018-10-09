@@ -1,11 +1,15 @@
+import {db} from '@services'
+
 const initialState = {
     inLobby: false,
     inGame: false,
-    roomId: null
+    roomId: null,
+    timeOffset: 0,
 }
 
 const PLAYER_IN_LOBBY = 'loading/player_in_lobby'
 const PLAYER_IN_GAME = 'loading/player_in_game'
+const GET_TIMEOFFSET = 'loading/get-timeoffset'
 
 export function inLobbyStatus(roomId) {
     return (dispatch) => {
@@ -24,12 +28,25 @@ export function inGameStatus() {
     }
 }
 
+export function getTimeOffset() {
+    return async (dispatch) => {
+        let dt = await db.get('.info/serverTimeOffset')
+        alert(dt)
+        dispatch({
+            type: GET_TIMEOFFSET,
+            payload: dt
+        })
+    }
+}
+
 export default (state = initialState, action) => {
     switch(action.type){
         case PLAYER_IN_LOBBY:
             return { ...state, inLobby: true, roomId: action.payload }
         case PLAYER_IN_GAME:
             return { ...state, inGame: true }
+        case GET_TIMEOFFSET:
+            return { ...state, timeOffset: action.payload }
         default:
             return state;
     }

@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { View } from 'react-native';
 import { connect } from 'react-redux'
 
+import { getTimeOffset } from './LoadingReducer'
 import { turnOnListeners } from '../lobby/LobbyReducer'
 
 import { db } from '@services'
@@ -14,6 +15,8 @@ class LoadingScreen extends Component {
         
         const { inLobby, inGame,
             turnOnListeners } = this.props
+
+        this.props.getTimeOffset()
 
         if (inLobby) turnOnListeners()
 
@@ -40,5 +43,6 @@ export default connect(
     }),
     {
         turnOnListeners,
+        getTimeOffset,
     }
 )(LoadingScreen)
