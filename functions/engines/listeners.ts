@@ -58,7 +58,9 @@ async function onGameStatusUpdate(change, roomId) {
                 phase: 0,
                 dayNum: 1,
             },
-            status: 'statusType/game'
+            config: {
+                status: 'statusType/game'
+            }
         }
     )
 }

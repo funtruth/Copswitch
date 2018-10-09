@@ -5,6 +5,7 @@ import {
 }   from 'react-native';
 import { connect } from 'react-redux'
 import { leaveLobby } from './LobbyReducer'
+import { inGameStatus } from '../loading/LoadingReducer'
 import LinearGradient from 'react-native-linear-gradient'
 
 import NavigationTool from '../navigation/NavigationTool'
@@ -25,6 +26,7 @@ class LobbyView extends Component {
         if(newProps.config.status === statusType.pregame){
             //TODO move to reducer?
             NavigationTool.navigate('Game')
+            this.props.inGameStatus()
         }
     }
     
@@ -79,9 +81,8 @@ export default connect(
         myInfo: state.lobby.myInfo,
         config: state.lobby.config,
     }),
-    dispatch => {
-        return {
-            leaveLobby: () => dispatch(leaveLobby())
-        }
+    {
+        inGameStatus,
+        leaveLobby,
     }
 )(LobbyView)

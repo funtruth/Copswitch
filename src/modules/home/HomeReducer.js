@@ -6,7 +6,7 @@ import {db} from '@services'
 import firebase from '../../app/admin'
 import NavigationTool from '../navigation/NavigationTool'
 
-import { configTypes } from '../common/types'
+import { configTypes, statusType } from '../common/types'
 
 const initialState = {
     loading: false,
@@ -48,7 +48,7 @@ export function checkRoom(roomId){
                 payload: 'Invalid Room Code'
             })
         //If the room status is not Lobby ... game has started
-        } else if (roomInfo.config.status !== 'Lobby'){
+        } else if (roomInfo.config.status !== statusType.lobby){
             dispatch({
                 type: ERROR_MESSAGE,
                 payload: 'Game has already Started.'

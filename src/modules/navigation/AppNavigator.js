@@ -3,7 +3,7 @@ import { createStackNavigator } from "react-navigation";
 import Loading from '../loading/LoadingScreen';
 import HomeNavigator from './HomeNavigator';
 import Lobby from '../lobby/LobbyView';
-import Game from "../game/GameScreen";
+import Game from "../game/GameView";
 
 import { fadeIn } from './navAnim'
 

@@ -1,9 +1,10 @@
 const initialState = {
     nameState: 'name',
-    //TODO alive: false handling maybe here
+    bottomView: false,
 }
 
 const TOGGLE_NAME_STATE = 'game/toggle_name_state'
+const TOGGLE_BOTTOM_VIEW = 'game/toggle-bottom-view'
 
 export function toggleNameState() {
     return (dispatch, getState) => {
@@ -16,10 +17,20 @@ export function toggleNameState() {
     }
 }
 
+export function toggleBottomView() {
+    return (dispatch) => {
+        dispatch({
+            type: TOGGLE_BOTTOM_VIEW
+        })
+    }
+}
+
 export default (state = initialState, action) => {
     switch(action.type){
         case TOGGLE_NAME_STATE:
             return { ...state, nameState: action.payload }
+        case TOGGLE_BOTTOM_VIEW:
+            return { ...state, bottomView: !state.bottomView }
         default:
             return state;
     }

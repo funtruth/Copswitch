@@ -1,19 +1,12 @@
 import React, { Component } from 'react'
 import { 
-    View,
-    TouchableOpacity,
-    Dimensions
+    View, Text
 } from 'react-native'
-
-import { Styler } from '@common'
-
-const { height, width } = Dimensions.get('window')
+import { GameInfo } from '@library';
+import { statusType } from '../../common/types';
+const { Phases } = GameInfo
 
 class General extends Component {
-    state = {
-        visible: false
-    }
-
     //TODO VERY inefficient rendering
     _renderList() {
         const { news } = this.props
@@ -29,64 +22,46 @@ class General extends Component {
         return itemArr
     }
 
-    _showNews = () => {
-        this.setState({
-            visible: !this.state.visible
-        })
-    }
-
     render() {
-        const { visible } = this.state
-        const { headerStyle, newsContainerStyle } = styles
-
-        if (!visible) {
-            return (
-                <TouchableOpacity
-                    style={styles.headerStyle}
-                    onPress={this._showNews}
-                >
-                    
-                </TouchableOpacity>
-            )
-        }
+        const { config, gameState } = this.props
+        if (config.status !== statusType.game) return null
 
         return (
-            <View style = {newsContainerStyle}>
-                {this._renderList()}
+            <View style = {styles.container}>
+                <Text style={styles.subtext}>Phase</Text>
+                <Text style={styles.bigtext}>{Phases[gameState.phase].name}</Text>
+                <Text style={styles.subtext}>Prompt</Text>
+                <Text style={styles.medtext}>{Phases[gameState.phase].message}</Text>
             </View>
         )
     }
 }
 
 const styles = {
-    headerStyle: {
+    container: {
         position: 'absolute',
         top: 15,
         left: 10,
         right: 10,
-        height: 0.1*height,
-        backgroundColor: Styler.color.light,
-        borderRadius: 15
+        backgroundColor: '#fff',
+        padding: 5,
     },
-    newsContainerStyle: {
-        position: 'absolute',
-        top: 15,
-        left: 10,
-        right: 10,
-        height: 0.5*height,
-        backgroundColor: Styler.color.light,
-        borderRadius: 15
+    subtext: {
+        fontFamily: 'Roboto-Regular',
+        fontSize: 13,
+        color: '#6f6f6f',
     },
-    message: {
-        fontSize: 15,
-        fontFamily: Styler.fontFamily.Regular,
-        color: Styler.color.dark,
-        marginTop:5,
-        marginBottom:5,
+    medtext: {
+        fontFamily: 'Roboto-Regular',
+        fontSize: 18,
+        color: '#000',
     },
-    messageContainer: {
-        margin:5,
-    },
+    bigtext: {
+        fontFamily: 'Roboto-Medium',
+        fontSize: 22,
+        lineHeight: 25,
+        color: '#000',
+    }
 }
 
 export default General

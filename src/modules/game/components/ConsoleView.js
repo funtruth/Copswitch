@@ -32,7 +32,7 @@ class ConsoleView extends Component {
 
     render() {
         const { config, gameState } = this.props
-        if (config.status === statusType.pregame) return null
+        if (config.status !== statusType.game) return null
 
         return ( 
             <View style = {{

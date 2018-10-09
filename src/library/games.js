@@ -38,19 +38,19 @@ export const Modes = [
 
 export const Phases = {
     0: {
-        name : 'DAY',
+        name : 'Day',
         message : 'Choose an Option',
         buttonOne : 'Vote',
         buttonTwo : 'Abstain'
     },
     1: {
-        name : 'TRIAL',
+        name : 'Trial',
         message : 'Decide their Fate',
         buttonOne : 'Innocent',
         buttonTwo : 'Guilty'
     },
     2: {
-        name : 'NIGHT',
+        name : 'Night',
         message : 'Perform an Action',
         buttonOne : 'Visit',
         buttonTwo : 'sleep'
