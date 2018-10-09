@@ -19,17 +19,14 @@ const initialState = {
         counter: 0,
         phase: 0,
         dayNum: 0,
-        nomination: null,
-        timeout: null,
     },
+    nomination: null,
+    timeout: null,
     news: [],
     events: [],
     ready: {},
     myReady: false,
 }
-
-const PUSH_LISTENER_PATH = 'lobby/push_listener_path'
-const CLEAR_LISTENERS = 'lobby/clear_listeners'
 
 //lobby
 const LOBBY_LISTENER = 'lobby/lobby_listener'
@@ -37,6 +34,8 @@ const CONFIG_LISTENER = 'lobby/config-listener'
 
 //game
 const GAMESTATE_LISTENER = 'game/gamestate-listener'
+const NOMINATE_LISTENER = 'game/nominate-listener'
+const TIMEOUT_LISTENER = 'game/timeout-listener'
 const READY_LISTENER = 'game/ready_listener'
 const NEWS_LISTENER = 'game/news_listener'
 const EVENTS_LISTENER = 'game/events_listener'
@@ -65,9 +64,9 @@ export function turnOnListeners() {
         let roomRef = db.ref(`rooms/${roomId}`)
 
         roomRef.on('value', snap => {
-            for (var key in snap.val()) {
-                dispatch(newLobbyInfo(snap.val()[key], key))
-            }
+            snap.forEach(child => {
+                dispatch(newLobbyInfo(child.val(), child.key))
+            })
         })
     }
 }
@@ -96,18 +95,44 @@ function newLobbyInfo(snap, key){
                     }
                 })
                 break
-            
             case listenerType.gameState:
-            
+                dispatch({
+                    type: GAMESTATE_LISTENER,
+                    payload: snap
+                })
+                break
+            case listenerType.nominate:
+                dispatch({
+                    type: NOMINATE_LISTENER,
+                    payload: snap
+                })
+                break
+            case listenerType.timeout:
+                dispatch({
+                    type: TIMEOUT_LISTENER,
+                    payload: snap
+                })
                 break
             case listenerType.ready:
-            
+                dispatch({
+                    type: READY_LISTENER,
+                    payload: {
+                        ready: snap,
+                        myReady: snap[db.getUid()]
+                    }
+                })
                 break
             case listenerType.news:
-            
+                dispatch({
+                    type: NEWS_LISTENER,
+                    payload: snap
+                })
                 break
             case listenerType.events:
-            
+                dispatch({
+                    type: EVENTS_LISTENER,
+                    payload: snap
+                })
                 break
             default:
         }
@@ -116,14 +141,10 @@ function newLobbyInfo(snap, key){
 
 function clearListeners(){
     return (dispatch, getState) => {
-        const { activeListeners } = getState().lobby
-        for(var i=0; i<activeListeners.length; i++){
-            let listenerRef = db.fetchRoomRef(activeListeners[i])
-            listenerRef.off()
-        }
-        dispatch({
-            type: CLEAR_LISTENERS
-        })
+        const { roomId } = getState().loading
+        let roomRef = db.ref(`rooms/${roomId}`)
+
+        if (roomRef) roomRef.off()
     }
 }
 
@@ -165,11 +186,6 @@ const areThereDuplicateNames = (lobby) => {
 
 export default (state = initialState, action) => {
     switch(action.type){
-        case PUSH_LISTENER_PATH:
-            return { ...state, activeListeners: [...state.activeListeners, action.payload] }
-        case CLEAR_LISTENERS:
-            return { ...state, activeListeners: [] }
-
         case CONFIG_LISTENER:
             return { ...state, config: action.payload }
         case LOBBY_LISTENER:
@@ -177,12 +193,16 @@ export default (state = initialState, action) => {
 
         case GAMESTATE_LISTENER:
             return { ...state, gameState: action.payload }
+        case NOMINATE_LISTENER:
+            return { ...state, nominate: action.payload }
+        case TIMEOUT_LISTENER:
+            return { ...state, timeout: action.payload }
         case READY_LISTENER:
             return { ...state, ready: action.payload }
         case NEWS_LISTENER:
-            return { ...state, news: [...state.news, action.payload] }
+            return { ...state, news: action.payload }
         case EVENTS_LISTENER:
-            return { ...state, events: [...state.events, action.payload] }
+            return { ...state, events: action.payload }
             
         case RESET: 
             return initialState

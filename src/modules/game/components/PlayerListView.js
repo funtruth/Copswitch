@@ -7,12 +7,10 @@ import {
     Dimensions
 } from 'react-native'
 import { connect } from 'react-redux'
-import { gameChoice } from '../GameReducer'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
 import { Styler } from '@common'
 import { Separator } from '@components'
-import { arrObjUtil } from '@services';
 
 const { height, width } = Dimensions.get('window')
 
@@ -46,7 +44,6 @@ class PlayerListView extends Component {
 
     _onPress(item){
         //TODO algorithm that takes my roleid and target to see if valid ... THEN continue
-        this.props.gameChoice(item.key)
     }
     
     render() {
@@ -93,9 +90,4 @@ export default connect(
     state => ({
         lobby: state.lobby.lobby,
     }),
-    dispatch => {
-        return {
-            gameChoice: (choice) => dispatch(gameChoice(choice))
-        }
-    }
 )(PlayerListView)

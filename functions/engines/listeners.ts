@@ -53,7 +53,11 @@ async function onGameStatusUpdate(change, roomId) {
         {
             lobby,
             ready,
-            counter: 0,
+            gameState: {
+                counter: 0,
+                phase: 0,
+                dayNum: 1,
+            },
             status: 'statusType/game'
         }
     )

@@ -5,8 +5,7 @@ import LoadingReducer from '../modules/loading/LoadingReducer'
 import MenuReducer from '../menu/MenuReducer'
 import HomeReducer from '../modules/home/HomeReducer'
 import LobbyReducer from '../modules/lobby/LobbyReducer'
-import GameReducer from '../modules/game/GameReducer'
-import GameStateReducer from '../modules/gameState/GameStateReducer'
+import UIReducer from '../modules/gameState/UIReducer'
 
 const reducers = {
     profile: ProfileReducer,
@@ -14,8 +13,7 @@ const reducers = {
     menu: MenuReducer,
     home: HomeReducer,
     lobby: LobbyReducer,
-    game: GameReducer,
-    gameState: GameStateReducer,
+    ui: UIReducer,
 }
 
 export default combineReducers( reducers )

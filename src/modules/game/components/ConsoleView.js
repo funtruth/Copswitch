@@ -6,7 +6,6 @@ import {
     Dimensions
 } from 'react-native';
 import { connect } from 'react-redux'
-import { gameChoice } from '../GameReducer'
 import { GameInfo } from '@library';
 import { Styler } from '@common'
 
@@ -22,11 +21,11 @@ class ConsoleView extends Component {
     }
     
     buttonTwoPress = () => {
-        this.props.gameChoice(-1)
+        
     }
 
     resetOptionPress() {
-        this.props.gameChoice(null)
+        
     }
 
     render() {
@@ -77,11 +76,6 @@ export default connect(
     state => ({
         phase: state.game.phase,
         dayNum: state.game.dayNum
-    }),
-    dispatch => {
-        return {
-            gameChoice: (choice) => dispatch(gameChoice(choice))
-        }
-    }
+    })
 )(ConsoleView)
 

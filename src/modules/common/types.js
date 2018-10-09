@@ -9,6 +9,8 @@ export const listenerType = {
     lobby: 'lobby',
 
     gameState: 'gameState',
+    nominate: 'nominate',
+    timeout: 'timeout',
     news: 'news',
     events: 'events',
     ready: 'ready',
