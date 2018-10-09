@@ -2,7 +2,8 @@ import { turnOnListeners } from '../lobby/LobbyReducer'
 import { inLobbyStatus } from '../loading/LoadingReducer'
 
 import randomize from 'randomatic'
-import { firebase, db } from '@services'
+import {db} from '@services'
+import firebase from '../../app/admin'
 import NavigationTool from '../navigation/NavigationTool'
 
 import { configTypes } from '../common/types'
@@ -38,7 +39,6 @@ export function checkRoom(roomId){
             type: START_LOADING
         })
 
-        //Takes a snap of the corresponding room
         const roomInfo = await db.get(`rooms/${roomId}`)
 
         //If the room does not exist ... invalid code
@@ -48,7 +48,7 @@ export function checkRoom(roomId){
                 payload: 'Invalid Room Code'
             })
         //If the room status is not Lobby ... game has started
-        } else if (roomInfo.status !== 'Lobby'){
+        } else if (roomInfo.config.status !== 'Lobby'){
             dispatch({
                 type: ERROR_MESSAGE,
                 payload: 'Game has already Started.'
@@ -69,7 +69,7 @@ export function checkRoom(roomId){
 }
 
 //Creating a room process
-export function createRoom(roomConfig){
+export function createRoom(){
     return async (dispatch, getState) => {
         const { profile } = getState()
 

@@ -6,7 +6,7 @@ import LobbyRole from '../components/LobbyRole';
 const { height, width } = Dimensions.get('window')
 
 class LobbyRolesView extends Component {
-    renderRole = ({item}) => <LobbyRole {...item}/>
+    renderRole = ({item, index}) => <LobbyRole key={index} {...item}/>
 
     keyExtractor = (item) => item.key
 

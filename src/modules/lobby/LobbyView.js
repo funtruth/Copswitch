@@ -42,10 +42,7 @@ class LobbyView extends Component {
                     pagingEnabled={true}
                 >
                     <LobbyPlayerView
-                        data={this.props.lobby}
-                    />
-                    <LobbyRolesView
-                        data={this.props.config.roles}
+                        lobby={this.props.lobby}
                     />
                     <LobbySetupView/>
                 </ScrollView>
