@@ -59,7 +59,7 @@ class FirebaseService{
     leaveLobby(){
         //If already left lobby, don't do anything
         if(!this.roomId) return
-        firebase.database().ref(`rooms/${roomId}/lobby/${this.uid}`).remove()
+        firebase.database().ref(`rooms/${this.roomId}/lobby/${this.uid}`).remove()
     }
 
     deleteRoom(){

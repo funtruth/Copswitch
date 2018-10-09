@@ -1,6 +1,6 @@
 import { createStackNavigator } from "react-navigation";
 
-import HomeScreen from '../home/screens/HomeScreen'
+import HomeView from '../home/screens/HomeView'
 import JoinSlide from '../home/screens/JoinSlide'
 import CreateSlide from '../home/screens/CreateSlide'
 
@@ -24,7 +24,7 @@ const config = () => {
 const HomeNavigator = createStackNavigator(
     {
       Home: {
-        screen: HomeScreen
+        screen: HomeView
       },
       Join: {
         screen: JoinSlide

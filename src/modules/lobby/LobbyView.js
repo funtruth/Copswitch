@@ -24,7 +24,7 @@ class LobbyView extends Component {
     componentWillReceiveProps(newProps){
         if(newProps.config.status === statusType.pregame){
             //TODO move to reducer?
-            NavigationTool.navigate('Pregame')
+            NavigationTool.navigate('Game')
         }
     }
     

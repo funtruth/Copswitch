@@ -30,9 +30,9 @@ export default Commands = [
         onPress: () => {
             let roomRef = firebase.database().ref('rooms')
             roomRef.child(DEV_ROOM).set({
-                owner: firebase.auth().currentUser.uid,
                 config: {
-                    status: 'Lobby'
+                    status: 'Lobby',
+                    owner: firebase.auth().currentUser.uid,
                 }
             })
         }

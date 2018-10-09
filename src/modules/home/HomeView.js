@@ -20,7 +20,7 @@ const { height, width } = Dimensions.get('window')
 
 const T = (props) => <Text style={styles.optionStyle}>{props.children}</Text>
 
-class HomeScreen extends Component {
+class HomeView extends Component {
     _joinRoom = () => {
         NavigationTool.navigate('Join')
     }
@@ -144,4 +144,4 @@ export default connect(
     {
         createRoom,
     }
-)(HomeScreen)
+)(HomeView)

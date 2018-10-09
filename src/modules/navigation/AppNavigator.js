@@ -3,7 +3,6 @@ import { createStackNavigator } from "react-navigation";
 import Loading from '../loading/LoadingScreen';
 import HomeNavigator from './HomeNavigator';
 import Lobby from '../lobby/LobbyView';
-import Pregame from "../pregame/PregameScreen";
 import Game from "../game/GameScreen";
 
 import { fadeIn } from './navAnim'
@@ -33,9 +32,6 @@ const Navigator = createStackNavigator(
         },
         Lobby: {
           screen: Lobby
-        },
-        Pregame:{
-          screen: Pregame
         },
         Game: {
           screen: Game
