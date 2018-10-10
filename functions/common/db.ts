@@ -14,10 +14,6 @@ export function update(path, value) {
   return admin.database().ref(path).update(value)
 }
 
-export function batchUpdate(value) {
-  return admin.database().ref().update(value)
-}
-
 export function remove(path) {
   return admin.database().ref(path).remove();
 }

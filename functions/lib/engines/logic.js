@@ -17,7 +17,7 @@ function onVote(choices, rss) {
     let triggerNum = helpers.getTriggerNum(playerNum);
     for (var uid in choices) {
         if (choices[uid] !== null) {
-            ballots[choices[uid]]++;
+            ballots[choices[uid]] ? ballots[choices[uid]]++ : ballots[choices[uid]] = 1;
             ballotCount++;
         }
     }
@@ -31,7 +31,7 @@ function onVote(choices, rss) {
     if (nominate) {
         return {
             [`news/${Date.now()}`]: `${rss.lobby[nominate].name} has been put on trial.`,
-            gameState: setGameState(rss.counter + 1),
+            gameState: setGameState(rss.gameState.counter + 1),
             nominate,
             choice: null,
             ready: null
@@ -39,13 +39,13 @@ function onVote(choices, rss) {
     }
     else if (ballotCount >= playerNum) {
         return {
-            gameState: setGameState(rss.counter + 2),
+            gameState: setGameState(rss.gameState.counter + 2),
             nominate: null,
             choice: null,
             ready: null
         };
     }
-    return null;
+    return {};
 }
 exports.onVote = onVote;
 function onTrial(votes, rss) {
@@ -76,11 +76,11 @@ function onTrial(votes, rss) {
     if (gVotes.length > iVotes.length) {
         rss.lobby[rss.nominate].dead = true;
         news[timestamp + 1] = rss.lobby[rss.nominate].name + ' has been hung!';
-        nextCounter = rss.counter + 1;
+        nextCounter = rss.gameState.counter + 1;
     }
     else {
         news[timestamp + 1] = rss.lobby[rss.nominate].name + ' was not hung.';
-        nextCounter = rss.counter - 1;
+        nextCounter = rss.gameState.counter - 1;
     }
     return {
         news,
@@ -119,7 +119,7 @@ function onNight(choices, rss) {
     return {
         [`events/${Date.now()}`]: events,
         lobby,
-        gameState: setGameState(rss.counter + 1),
+        gameState: setGameState(rss.gameState.counter + 1),
         choice: null,
         ready: null,
     };

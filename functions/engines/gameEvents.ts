@@ -62,7 +62,6 @@ async function onPlayerDamaged(snap, roomId, uid) {
 }
 
 /*uses
-    should batchUpdate if this gets bigger
     assigning new killer
 */
 async function onPlayerDeath(roomId, uid) {

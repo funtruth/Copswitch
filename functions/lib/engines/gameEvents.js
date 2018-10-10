@@ -64,7 +64,6 @@ function onPlayerDamaged(snap, roomId, uid) {
 }
 exports.onPlayerDamaged = onPlayerDamaged;
 /*uses
-    should batchUpdate if this gets bigger
     assigning new killer
 */
 function onPlayerDeath(roomId, uid) {

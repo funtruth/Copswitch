@@ -69,7 +69,7 @@ async function onPlayerChoiceHandler(choices, roomId) {
     let roomSnapshot = await db.get(`rooms/${roomId}`)
     let playerNum = helpers.getPlayerCount(roomSnapshot.lobby)
     let triggerNum = helpers.getTriggerNum(playerNum)
-    let gamePhase = roomSnapshot.counter % 3
+    let gamePhase = roomSnapshot.gameState.phase
 
     let total = Object.keys(choices).length;
     let batch = {}
