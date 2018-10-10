@@ -11,7 +11,7 @@
 		"fuse.js": "^3.2.1",
 		"lodash": "^4.17.10",
 		"lottie-react-native": "^2.5.0",
-		"randomatic": "^1.1.7",
+		"randomatic": "^3.1.0",
 		"react": "^16.3.1",
 		"react-native": "^0.55.4",
 		"react-native-firebase": "^4.3.8",

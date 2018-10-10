@@ -3,7 +3,6 @@ import { inLobbyStatus } from '../loading/LoadingReducer'
 
 import randomize from 'randomatic'
 import {db} from '@services'
-import firebase from '../../app/admin'
 import NavigationTool from '../navigation/NavigationTool'
 
 import { configTypes, statusType } from '../common/types'
@@ -92,9 +91,9 @@ export function createRoom(){
         }
         
         //Write owner and room status to the database
-        firebase.database().ref(`rooms/${roomId}/config`).set({
+        db.set(`rooms/${roomId}/config`,{
             owner: db.getUid(),
-            status:'Lobby',
+            status: statusType.lobby,
             roles: {},
         })
 

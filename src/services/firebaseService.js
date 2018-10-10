@@ -18,6 +18,10 @@ class FirebaseService{
         });
     }
 
+    set(path, val) {
+        return firebase.database().ref(path).set(val)
+    }
+
     //Fetch
     getUid(){
         return this.uid
