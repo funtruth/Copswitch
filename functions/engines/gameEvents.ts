@@ -25,6 +25,9 @@ async function onPlayerDamaged(snap, roomId, uid) {
             case 'e':
                 deathNote = `${deathNote} ${lobby[uid].name} was killed by the Mafia.`
                 break
+            case 'H':
+                deathNote = `${deathNote} ${lobby[uid].name} was shot by a Hunter.`
+                break
             default:
         }
     }

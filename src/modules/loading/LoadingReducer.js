@@ -31,7 +31,6 @@ export function inGameStatus() {
 export function getTimeOffset() {
     return async (dispatch) => {
         let dt = await db.get('.info/serverTimeOffset')
-        alert(dt)
         dispatch({
             type: GET_TIMEOFFSET,
             payload: dt

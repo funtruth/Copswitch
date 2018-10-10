@@ -99,7 +99,7 @@ function onTrial(votes, rss) {
 
 function onNight(choices, rss) {
     let lobby = rss.lobby
-    let events = []
+    let events = {}
     let actions = []
 
     //push all actions into an array with their prio
@@ -116,7 +116,12 @@ function onNight(choices, rss) {
 
     //do all actions
     for (var i=0; i<actions.length; i++) {
-        _action(actions[i].uid, rss.lobby, choices)
+        _action(
+            actions[i].uid,
+            rss.lobby,
+            choices,
+            events,
+        )
     }
 
     //clean up lobby before writing it
@@ -136,8 +141,8 @@ function onNight(choices, rss) {
 }
 
 //[a]ctor
-//check for flags, do role
-function _action(a, lobby, choices) {
+//check for flags, give event text, do role
+function _action(a, lobby, choices, events) {
     var flags = lobby[choices[a]].flag
     if (flags) {
         for (var uid in flags) {
@@ -145,7 +150,35 @@ function _action(a, lobby, choices) {
         }
     }
 
+    if (roles[lobby[a].roleid].text) {
+        events[choices[a]][Date.now()] = roles[lobby[a].roleid].text
+    }
+
     switch(lobby[a].roleId) {
+        case 'a':
+            events[a][Date.now()] = `Your target is a ${roles[lobby[choices[a]].roleId].name}.`
+            break
+        case 'k':
+            lobby[choices[a]].sus = true
+            break
+        case 'A':
+            if (roles[lobby[choices[a]].roleId].sus || lobby[choices[a]].sus) {
+                events[a][Date.now()] = roles.A.eventIsSus
+            } else {
+                events[a][Date.now()] = roles.A.evenIsNotSus
+            }
+            break
+        case 'B':
+            lobby[choices[a]].flag[a] = (v, lobby) => {
+                events[a][Date.now()] = `${lobby[v].name} visited your target last night!`
+            }
+            break
+        case 'H':
+            lobby[choices[a]].health[a] = -1
+            break
+        case 'K':
+            lobby[choices[a]].health[a] = 1
+            break
         case 'g':
         case 'Q':
             if (!roles[lobby[choices[a]].roleId].rbi) {
@@ -153,8 +186,10 @@ function _action(a, lobby, choices) {
             }
             break
         case 'I':
-            lobby[a].flag[a] = (v, lobby) => {
-                lobby[v].health[a] = -1
+            if (a === choices[a]) {
+                lobby[a].flag[a] = (v, lobby) => {
+                    lobby[v].health[a] = -1
+                }
             }
             break
         default:

@@ -3,7 +3,7 @@ sus: appears suspicious if investigated
 rbi: immune to roleblock
 killer: produces an heir if killed
 
-priority: prep100, tag200, do300, haunt400
+priority: prep100, tag200, do300
 
 TODO
 passive: passive roles, send value to ref.choices
@@ -16,7 +16,7 @@ export default {
         sus: true,
         targetTown : true,
         type : 1,
-        priority: 400,
+        priority: 300,
     },
     b : {
         name: "Fugitive",
@@ -77,7 +77,8 @@ export default {
     k : {
         name: "Schemer",
         sus: true,
-        type : 1
+        type : 1,
+        priority: 200,
     },
     l : {
         name: "Silencer",
@@ -98,10 +99,14 @@ export default {
     A : {
         name: "Detective",
         type : 2,
+        eventIsSus: 'Your target is suspicious. They are a member of the mafia!',
+        eventIsNotSus: 'Your target is not suspicious.',
+        priority: 300,
     },
     B : {
         name: "Warden",
         type : 2,
+        priority: 150,
     },
     C : {
         name: "Prophet",
@@ -125,7 +130,9 @@ export default {
     },
     H : {
         name: "Hunter",
-        type : 2,
+        type: 2,
+        text: 'You were shot by a Hunter!',
+        priority: 200,
     },
     I : {
         name: "Soldier",
@@ -139,6 +146,7 @@ export default {
     K : {
         name: "Doctor",
         type : 2,
+        priority: 300,
     },
     L : {
         name: "Bodyguard",
@@ -164,6 +172,7 @@ export default {
         name: "Escort",
         rbi: true,
         type : 2,
+        text: 'You were distracted last night!',
     },
     R : {
         name: "Ritualist",
