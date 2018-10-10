@@ -19,8 +19,8 @@ const initialState = {
         counter: 0,
         phase: 0,
         dayNum: 0,
+        nominate: null,
     },
-    nomination: null,
     timeout: null,
     news: [],
     events: [],
@@ -34,7 +34,6 @@ const CONFIG_LISTENER = 'lobby/config-listener'
 
 //game
 const GAMESTATE_LISTENER = 'game/gamestate-listener'
-const NOMINATE_LISTENER = 'game/nominate-listener'
 const TIMEOUT_LISTENER = 'game/timeout-listener'
 const READY_LISTENER = 'game/ready_listener'
 const NEWS_LISTENER = 'game/news_listener'
@@ -98,12 +97,6 @@ function newLobbyInfo(snap, key){
             case listenerType.gameState:
                 dispatch({
                     type: GAMESTATE_LISTENER,
-                    payload: snap
-                })
-                break
-            case listenerType.nominate:
-                dispatch({
-                    type: NOMINATE_LISTENER,
                     payload: snap
                 })
                 break
@@ -193,8 +186,6 @@ export default (state = initialState, action) => {
 
         case GAMESTATE_LISTENER:
             return { ...state, gameState: action.payload }
-        case NOMINATE_LISTENER:
-            return { ...state, nominate: action.payload }
         case TIMEOUT_LISTENER:
             return { ...state, timeout: action.payload }
         case READY_LISTENER:

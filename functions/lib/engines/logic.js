@@ -31,16 +31,14 @@ function onVote(choices, rss) {
     if (nominate) {
         return {
             [`news/${Date.now()}`]: `${rss.lobby[nominate].name} has been put on trial.`,
-            gameState: setGameState(rss.gameState.counter + 1),
-            nominate,
+            gameState: Object.assign({}, setGameState(rss.gameState.counter + 1), { nominate }),
             choice: null,
             ready: null
         };
     }
     else if (ballotCount >= playerNum) {
         return {
-            gameState: setGameState(rss.gameState.counter + 2),
-            nominate: null,
+            gameState: Object.assign({}, setGameState(rss.gameState.counter + 2), { nominate: null }),
             choice: null,
             ready: null
         };
@@ -85,8 +83,7 @@ function onTrial(votes, rss) {
     return {
         news,
         lobby: rss.lobby,
-        gameState: setGameState(nextCounter),
-        nominate: null,
+        gameState: Object.assign({}, setGameState(nextCounter), { nominate: null }),
         ready: null,
         choice: null,
     };
@@ -105,7 +102,7 @@ function onNight(choices, rss) {
         events[uid] = {};
     }
     //shuffle order & stable sort by prio
-    _.shuffle(actions);
+    actions = _.shuffle(actions);
     actions.sort((a, b) => a.priority - b.priority);
     //do all actions
     for (var i = 0; i < actions.length; i++) {

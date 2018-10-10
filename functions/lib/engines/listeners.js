@@ -9,6 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const db = require("../common/db");
+const _ = require("lodash");
 const helpers = require("../common/helpers");
 const logic = require("./logic");
 function onPlayerJoinedRoom(roomId, uid) {
@@ -25,25 +26,18 @@ function onGameStatusUpdate(change, roomId) {
         if (change.before.val() !== 'statusType/lobby' || change.after.val() !== 'statusType/pregame')
             return;
         let rss = yield db.get(`rooms/${roomId}`);
+        //prepare role list
         let rolesArr = [];
         for (var id in rss.config.roles) {
             for (var j = 0; j < rss.config.roles[id]; j++) {
                 rolesArr.push(id);
             }
         }
-        //Fisher-Yates Shuffle
-        let counter = rolesArr.length;
-        while (counter > 0) {
-            let index = Math.floor(Math.random() * counter);
-            counter--;
-            let temp = rolesArr[counter];
-            rolesArr[counter] = rolesArr[index];
-            rolesArr[index] = temp;
-        }
+        rolesArr = _.shuffle(rolesArr);
         //Finishing player details
         let lobby = rss.lobby;
         let ready = {};
-        counter = 0;
+        let counter = 0;
         for (var uid in rss.lobby) {
             lobby[uid].roleId = rolesArr[counter];
             ready[uid] = false;

@@ -1,4 +1,5 @@
 import * as db from '../common/db'
+import * as _ from 'lodash'
 import * as helpers from '../common/helpers'
 import * as logic from './logic'
 
@@ -17,29 +18,19 @@ async function onGameStatusUpdate(change, roomId) {
     
     let rss = await db.get(`rooms/${roomId}`)
     
+    //prepare role list
     let rolesArr = [];
     for(var id in rss.config.roles){
         for(var j=0; j<rss.config.roles[id]; j++){
             rolesArr.push(id)
         }
     }
-
-    //Fisher-Yates Shuffle
-    let counter = rolesArr.length;
-    while (counter > 0) {
-        let index = Math.floor(Math.random() * counter);
-
-        counter--;
-
-        let temp = rolesArr[counter];
-        rolesArr[counter] = rolesArr[index];
-        rolesArr[index] = temp;
-    }
+    rolesArr = _.shuffle(rolesArr)
 
     //Finishing player details
     let lobby = rss.lobby
     let ready = {}
-    counter = 0
+    let counter = 0
     
     for (var uid in rss.lobby) {
         lobby[uid].roleId = rolesArr[counter]
