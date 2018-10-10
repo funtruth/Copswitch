@@ -30,9 +30,7 @@ function onVote(choices, rss) {
     }
     if (nominate) {
         return {
-            news: {
-                [Date.now()]: `${rss.lobby[nominate].name} has been put on trial.`
-            },
+            [`news/${Date.now()}`]: `${rss.lobby[nominate].name} has been put on trial.`,
             gameState: setGameState(rss.counter + 1),
             nominate,
             choice: null,
@@ -96,7 +94,7 @@ function onTrial(votes, rss) {
 exports.onTrial = onTrial;
 function onNight(choices, rss) {
     let lobby = rss.lobby;
-    let events = [];
+    let events = {};
     let actions = [];
     //push all actions into an array with their prio
     for (var uid in lobby) {
@@ -104,22 +102,22 @@ function onNight(choices, rss) {
             uid,
             priority: roles_1.default[lobby[uid].roleId].priority,
         });
+        events[uid] = {};
     }
     //shuffle order & stable sort by prio
     _.shuffle(actions);
     actions.sort((a, b) => a.priority - b.priority);
     //do all actions
     for (var i = 0; i < actions.length; i++) {
-        _action(actions[i].uid, rss.lobby, choices);
+        _action(actions[i].uid, rss.lobby, choices, events);
     }
     //clean up lobby before writing it
     for (var uid in lobby) {
-        lobby[uid].cause = undefined;
+        lobby[uid].flag = undefined;
+        lobby[uid].health = undefined;
     }
     return {
-        events: {
-            [rss.counter]: events
-        },
+        [`events/${Date.now()}`]: events,
         lobby,
         gameState: setGameState(rss.counter + 1),
         choice: null,
@@ -128,25 +126,71 @@ function onNight(choices, rss) {
 }
 exports.onNight = onNight;
 //[a]ctor
-//check for flags, do role
-function _action(a, lobby, choices) {
+//check for flags, give event text, do role
+function _action(a, lobby, choices, events) {
     var flags = lobby[choices[a]].flag;
     if (flags) {
         for (var uid in flags) {
             flags[uid](a, lobby);
         }
     }
+    if (roles_1.default[lobby[a].roleid].text) {
+        events[choices[a]][Date.now()] = roles_1.default[lobby[a].roleid].text;
+    }
     switch (lobby[a].roleId) {
+        case 'a':
+            events[a][Date.now()] = `Your target is a ${roles_1.default[lobby[choices[a]].roleId].name}.`;
+            break;
+        case 'c':
+        case 'd':
+        case 'e':
+            lobby[choices[a]].health[a] = -1;
+            break;
+        case 'k':
+            lobby[choices[a]].sus = true;
+            break;
+        case 'A':
+            if (roles_1.default[lobby[choices[a]].roleId].sus || lobby[choices[a]].sus) {
+                events[a][Date.now()] = 'Your target is suspicious. They are a member of the mafia!';
+            }
+            else {
+                events[a][Date.now()] = 'Your target is not suspicious.';
+            }
+            break;
+        case 'B':
+            lobby[choices[a]].flag[a] = (v, lobby) => {
+                if (!roles_1.default[lobby[v].roleId].sneak) {
+                    events[a][Date.now()] = `${lobby[v].name} visited your target last night!`;
+                }
+            };
+            break;
+        case 'E':
+            lobby[a].roleId = lobby[choices[a]].roleId;
+            break;
+        case 'H':
+            lobby[choices[a]].health[a] = -1;
+            break;
+        case 'K':
+            lobby[choices[a]].health[a] = 1;
+            break;
         case 'g':
         case 'Q':
             if (!roles_1.default[lobby[choices[a]].roleId].rbi) {
                 choices[choices[a]] = -1;
+                events[choices[a]][Date.now()] = 'You were distracted last night.';
+            }
+            else {
+                events[choices[a]][Date.now()] = 'Someone tried to distract you, but you were not affected.';
             }
             break;
         case 'I':
-            lobby[a].flag[a] = (v, lobby) => {
-                lobby[v].health[a] = -1;
-            };
+            if (a === choices[a]) {
+                lobby[a].health[a] = 100;
+                lobby[a].flag[a] = (v, lobby) => {
+                    lobby[v].health[a] = -1;
+                    events[a][Date.now()] = 'You shot someone who visited you!';
+                };
+            }
             break;
         default:
     }

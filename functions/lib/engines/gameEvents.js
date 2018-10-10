@@ -15,30 +15,50 @@ function onPlayerDamaged(snap, roomId, uid) {
     return __awaiter(this, void 0, void 0, function* () {
         let lobby = yield db.get(`rooms/${roomId}/lobby`);
         let health = 0;
+        let damaged = false;
         let autopsy = [];
         for (var i in snap) {
             if (snap[i] < 0) {
-                autopsy.push(lobby[i].roleId);
+                damaged = true;
             }
+            autopsy.push(lobby[i].roleId);
             health += snap[i];
         }
-        if (health >= 0)
-            return;
-        let deathNote = '';
+        let dead = health < 0;
+        let news = [];
+        let batch = {};
         for (var j = 0; j < autopsy.length; j++) {
             switch (autopsy[j]) {
                 case 'b':
                 case 'c':
                 case 'd':
                 case 'e':
-                    deathNote = `${deathNote} ${lobby[uid].name} was killed by the Mafia.`;
+                    dead && news.push(`${lobby[uid].name} was killed by the Mafia.`);
+                    break;
+                case 'H':
+                    dead && news.push(`${lobby[uid].name} was shot by a Hunter.`);
+                    break;
+                case 'I':
+                    batch[`events/${uid}/${Date.now()}`] = 'You were shot by a Soldier!';
+                    break;
+                case 'K':
+                    damaged && (batch[`events/${uid}/${Date.now()}`] = 'You were healed by a Doctor!');
+                    break;
+                case 'M':
+                    damaged && !dead && news.push(`${lobby[uid].name} was shot by a Hunter.`);
                     break;
                 default:
             }
         }
-        let batch = {};
-        batch[`news/${Date.now()}`] = deathNote;
-        batch[`lobby/${uid}/dead`] = true;
+        if (news.length > 0) {
+            batch[`news/${Date.now()}`] = news.join(' ');
+        }
+        else {
+            return;
+        }
+        if (dead) {
+            batch[`lobby/${uid}/dead`] = true;
+        }
         return db.update(`rooms/${roomId}`, batch);
     });
 }

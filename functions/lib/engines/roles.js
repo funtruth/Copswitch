@@ -3,49 +3,45 @@
 sus: appears suspicious if investigated
 rbi: immune to roleblock
 killer: produces an heir if killed
-
-priority: prep100, tag200, do300, haunt400
-
-TODO
-passive: passive roles, send value to ref.choices
-targetType: 'self', 'town', 'dead',
+priority: prep100, tag200, do300
+text: default event text to target
+sneak: does not visit when visiting
 */
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.default = {
     a: {
         name: "Informant",
         sus: true,
-        targetTown: true,
         type: 1,
-        priority: 400,
+        priority: 300,
     },
     b: {
         name: "Fugitive",
         sus: true,
-        targetTown: true,
         type: 1,
         priority: 300,
     },
     c: {
         name: "Assassin",
-        targetTown: true,
         killer: true,
         type: 1,
         priority: 300,
+        text: 'Someone attacked you!',
     },
     d: {
         name: "Ninja",
         sus: true,
-        targetTown: true,
         killer: "e",
         type: 1,
+        sneak: true,
+        text: 'Someone attacked you!',
     },
     e: {
         name: "Murderer",
         sus: true,
-        targetTown: true,
         killer: "e",
         type: 1,
+        text: 'Someone attacked you!',
     },
     f: {
         name: "Thug",
@@ -66,24 +62,24 @@ exports.default = {
     i: {
         name: "Underboss",
         sus: true,
-        targetTown: true,
         type: 1,
     },
     j: {
         name: "Politician",
         sus: true,
-        targetTown: true,
         type: 1,
     },
     k: {
         name: "Schemer",
         sus: true,
-        type: 1
+        type: 1,
+        priority: 200,
     },
     l: {
         name: "Silencer",
         sus: true,
         type: 1,
+        text: 'You were silenced last night! You cannot talk or communicate today.',
     },
     m: {
         name: "Drunk",
@@ -98,10 +94,13 @@ exports.default = {
     A: {
         name: "Detective",
         type: 2,
+        priority: 300,
     },
     B: {
         name: "Warden",
         type: 2,
+        priority: 150,
+        sneak: true,
     },
     C: {
         name: "Prophet",
@@ -114,6 +113,7 @@ exports.default = {
     E: {
         name: "Nostalgic",
         type: 2,
+        text: 'You remembered your friend, and changed your identity.',
     },
     F: {
         name: "Listener",
@@ -126,6 +126,8 @@ exports.default = {
     H: {
         name: "Hunter",
         type: 2,
+        text: 'You were shot by a Hunter!',
+        priority: 200,
     },
     I: {
         name: "Soldier",
@@ -139,6 +141,7 @@ exports.default = {
     K: {
         name: "Doctor",
         type: 2,
+        priority: 300,
     },
     L: {
         name: "Bodyguard",
