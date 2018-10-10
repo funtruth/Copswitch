@@ -2,49 +2,45 @@
 sus: appears suspicious if investigated
 rbi: immune to roleblock
 killer: produces an heir if killed
-
 priority: prep100, tag200, do300
-
-TODO
-passive: passive roles, send value to ref.choices
-targetType: 'self', 'town', 'dead',
+text: default event text to target
+sneak: does not visit when visiting
 */
 
 export default {
     a : {
         name: "Informant",
         sus: true,
-        targetTown : true,
         type : 1,
         priority: 300,
     },
     b : {
         name: "Fugitive",
         sus: true,
-        targetTown : true,
         type : 1,
         priority: 300,
     },
     c : {
         name: "Assassin",
-        targetTown: true,
         killer: true,
         type: 1,
         priority: 300,
+        text: 'Someone attacked you!',
     },
     d : {
         name: "Ninja",
         sus: true,
-        targetTown : true,
         killer : "e",
         type : 1,
+        sneak: true,
+        text: 'Someone attacked you!',
     },
     e : {
         name: "Murderer",
         sus: true,
-        targetTown : true,
         killer : "e",
         type : 1,
+        text: 'Someone attacked you!',
     },
     f : {
         name: "Thug",
@@ -65,13 +61,11 @@ export default {
     i : {
         name: "Underboss",
         sus: true,
-        targetTown : true,
         type : 1,
     },
     j : {
         name: "Politician",
         sus: true,
-        targetTown : true,
         type : 1,
     },
     k : {
@@ -84,6 +78,7 @@ export default {
         name: "Silencer",
         sus: true,
         type : 1,
+        text: 'You were silenced last night! You cannot talk or communicate today.',
     },
     m : {
         name: "Drunk",
@@ -95,30 +90,29 @@ export default {
         sus: true,
         type : 1
     },
-    
     A : {
         name: "Detective",
-        type : 2,
-        eventIsSus: 'Your target is suspicious. They are a member of the mafia!',
-        eventIsNotSus: 'Your target is not suspicious.',
+        type: 2,
         priority: 300,
     },
     B : {
         name: "Warden",
-        type : 2,
+        type: 2,
         priority: 150,
+        sneak: true,
     },
     C : {
         name: "Prophet",
-        type : 2,
+        type: 2,
     },
     D : {
         name: "Private",
-        type : 2,
+        type: 2,
     },
     E : {
         name: "Nostalgic",
-        type : 2,
+        type: 2,
+        text: 'You remembered your friend, and changed your identity.',
     },
     F : {
         name: "Listener",
@@ -172,7 +166,6 @@ export default {
         name: "Escort",
         rbi: true,
         type : 2,
-        text: 'You were distracted last night!',
     },
     R : {
         name: "Ritualist",

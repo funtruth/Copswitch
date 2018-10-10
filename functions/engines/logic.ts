@@ -34,9 +34,7 @@ function onVote(choices, rss) {
 
     if (nominate) {
         return {
-            news: {
-                [Date.now()]: `${rss.lobby[nominate].name} has been put on trial.`
-            },
+            [`news/${Date.now()}`]: `${rss.lobby[nominate].name} has been put on trial.`,
             gameState: setGameState(rss.counter + 1),
             nominate,
             choice: null,
@@ -108,6 +106,7 @@ function onNight(choices, rss) {
             uid,
             priority: roles[lobby[uid].roleId].priority,
         })
+        events[uid] = {}
     }
 
     //shuffle order & stable sort by prio
@@ -126,13 +125,12 @@ function onNight(choices, rss) {
 
     //clean up lobby before writing it
     for(var uid in lobby){
-        lobby[uid].cause = undefined;
+        lobby[uid].flag = undefined;
+        lobby[uid].health = undefined;
     }
 
     return {
-        events: {
-            [rss.counter]: events
-        },
+        [`events/${Date.now()}`]: events,
         lobby,
         gameState: setGameState(rss.counter + 1),
         choice: null,
@@ -158,20 +156,30 @@ function _action(a, lobby, choices, events) {
         case 'a':
             events[a][Date.now()] = `Your target is a ${roles[lobby[choices[a]].roleId].name}.`
             break
+        case 'c':
+        case 'd':
+        case 'e':
+            lobby[choices[a]].health[a] = -1
+            break
         case 'k':
             lobby[choices[a]].sus = true
             break
         case 'A':
             if (roles[lobby[choices[a]].roleId].sus || lobby[choices[a]].sus) {
-                events[a][Date.now()] = roles.A.eventIsSus
+                events[a][Date.now()] = 'Your target is suspicious. They are a member of the mafia!'
             } else {
-                events[a][Date.now()] = roles.A.evenIsNotSus
+                events[a][Date.now()] = 'Your target is not suspicious.'
             }
             break
         case 'B':
             lobby[choices[a]].flag[a] = (v, lobby) => {
-                events[a][Date.now()] = `${lobby[v].name} visited your target last night!`
+                if (!roles[lobby[v].roleId].sneak){
+                    events[a][Date.now()] = `${lobby[v].name} visited your target last night!`
+                }
             }
+            break
+        case 'E':
+            lobby[a].roleId = lobby[choices[a]].roleId
             break
         case 'H':
             lobby[choices[a]].health[a] = -1
@@ -183,12 +191,17 @@ function _action(a, lobby, choices, events) {
         case 'Q':
             if (!roles[lobby[choices[a]].roleId].rbi) {
                 choices[choices[a]] = -1
+                events[choices[a]][Date.now()] = 'You were distracted last night.'
+            } else {
+                events[choices[a]][Date.now()] = 'Someone tried to distract you, but you were not affected.'
             }
             break
         case 'I':
             if (a === choices[a]) {
+                lobby[a].health[a] = 100
                 lobby[a].flag[a] = (v, lobby) => {
                     lobby[v].health[a] = -1
+                    events[a][Date.now()] = 'You shot someone who visited you!'
                 }
             }
             break
