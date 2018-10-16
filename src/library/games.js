@@ -40,20 +40,53 @@ export const Phases = {
     0: {
         name : 'Day',
         message : 'Choose an Option',
-        buttonOne : 'Vote',
-        buttonTwo : 'Abstain'
+        choices: [
+            { 
+                label: 'Vote',
+                detail: 'Put someone\non trial',
+                icon: 'ios-compass',
+                onPress: 'lobby',
+            },
+            {
+                label: 'Abstain',
+                detail: 'Get ready\nto sleep',
+                icon: 'ios-megaphone',
+                onPress: -1,
+            }
+        ],
     },
     1: {
         name : 'Trial',
         message : 'Decide their Fate',
-        buttonOne : 'Innocent',
-        buttonTwo : 'Guilty'
+        choices: [
+            { 
+                label: 'Innocent',
+                detail: 'Vouch for\ntheir innocence!',
+                icon: 'ios-compass',
+                onPress: 1,
+            },
+            {
+                label: 'Guilty',
+                detail: 'Sentence them\nto death!',
+                icon: 'ios-megaphone',
+                onPress: 0,
+            }
+        ],
     },
     2: {
         name : 'Night',
         message : 'Perform an Action',
-        buttonOne : 'Visit',
-        buttonTwo : 'sleep'
+        choices: [
+            { 
+                label: 'Vote',
+                detail: 'Put someone\non trial',
+                icon: 'ios-compass',
+            },
+            {
+                label: 'Abstain',
+                detail: 'Get ready\nto sleep',
+                icon: 'ios-megaphone',
+            }
+        ],
     }
-    
 }

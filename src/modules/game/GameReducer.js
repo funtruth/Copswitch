@@ -1,10 +1,10 @@
 const initialState = {
     nameState: 'name',
-    bottomView: false,
+    lobbyModal: false,
 }
 
 const TOGGLE_NAME_STATE = 'game/toggle_name_state'
-const TOGGLE_BOTTOM_VIEW = 'game/toggle-bottom-view'
+const SHOW_MODAL_BY_KEY = 'game/show-modal-by-key'
 
 export function toggleNameState() {
     return (dispatch, getState) => {
@@ -17,10 +17,11 @@ export function toggleNameState() {
     }
 }
 
-export function toggleBottomView() {
+export function showModalByKey(key) {
     return (dispatch) => {
         dispatch({
-            type: TOGGLE_BOTTOM_VIEW
+            type: SHOW_MODAL_BY_KEY,
+            payload: key
         })
     }
 }
@@ -29,8 +30,8 @@ export default (state = initialState, action) => {
     switch(action.type){
         case TOGGLE_NAME_STATE:
             return { ...state, nameState: action.payload }
-        case TOGGLE_BOTTOM_VIEW:
-            return { ...state, bottomView: !state.bottomView }
+        case SHOW_MODAL_BY_KEY:
+            return { ...state, [`${action.payload}Modal`]: true }
         default:
             return state;
     }

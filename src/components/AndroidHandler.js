@@ -24,7 +24,7 @@ class AndroidHandler extends Component {
 
     render() {
         return (
-            <StatusBar translucent backgroundColor={'rgba(0,0,0,0.1)'}/>
+            <StatusBar backgroundColor={'rgba(0,0,0,1)'}/>
         )
     }
 }
