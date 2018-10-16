@@ -6,6 +6,7 @@ import {
     TouchableOpacity,
 }   from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
+import PlayerListView from './PlayerListView';
 
 const tabs = [
     {
@@ -17,6 +18,7 @@ const tabs = [
         label: 'Players',
         icon: 'ios-people',
         key: 'lobby',
+        Component: PlayerListView,
     },
     {
         label: 'Events',
@@ -31,6 +33,13 @@ class Body extends Component {
         this.state = {
             tabIndex: 1
         }
+    }
+
+    _renderBody = (item, index) => {
+        if (!item.Component) return null
+        return (
+            <item.Component key={index}/>
+        )
     }
 
     _renderTab = (item, index) => {
@@ -70,9 +79,7 @@ class Body extends Component {
     render() {
         return (
             <View style={styles.body}>
-                <ScrollView
-                    style={{ flex: 1 }}
-                />
+                {tabs.map(this._renderBody)}
                 <View style={styles.tabs}>
                     {tabs.map(this._renderTab)}
                 </View>

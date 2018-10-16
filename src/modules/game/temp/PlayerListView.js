@@ -7,10 +7,8 @@ import {
     Dimensions
 } from 'react-native'
 import { connect } from 'react-redux'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-
-import { Styler } from '@common'
-import { Separator } from '@components'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import LinearGradient from 'react-native-linear-gradient';
 
 const { height, width } = Dimensions.get('window')
 
@@ -21,23 +19,34 @@ class PlayerListView extends Component {
                 (item.immune?'needle':
                     (item.status?item.statusname:null)))
         return (
-            <TouchableOpacity style = {{
+            <TouchableOpacity 
+                style = {{
                     opacity: item.dead?0.6:1,
                     justifyContent:'center',
-                    alignItems:'center'
+                    alignItems:'center',
+                    width: 0.5 * width,
                 }}
                 onPress = {() => this._onPress(item)}
+                activeOpacity={item.dead?1:0.2}
             >
-                <View style = {{flexDirection:'row'}}>
+                <LinearGradient
+                    colors={['#407999', '#2a3e59']}
+                    start={{x: 0.2, y: 0}}
+                    end={{x: 0.8, y: 0}}
+                    style = {styles.gradient}
+                >
                     <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
-                        <MaterialCommunityIcons name={iconName}
-                            style={{fontSize:15, alignSelf:'center'}}/>
+                        <Icon
+                            name={iconName}
+                            style={{fontSize:15, alignSelf:'center'}}
+                            color="#fff"
+                        />
                     </View>
                     <View style = {{flex:0.7, justifyContent:'center'}}>
                         <Text style = {styles.player}>{item.name}</Text>
                     </View>
                     <View style={{flex:0.15}}/>
-                </View>
+                </LinearGradient>
             </TouchableOpacity>
         )
     }
@@ -48,41 +57,37 @@ class PlayerListView extends Component {
     
     render() {
         return (
-            <View style={{
-                height,
-                width,
-                justifyContent: 'center',
-                alignItems: 'center'
-            }}>
-                <View style={{flex:0.7}}>
-                    <Text style={styles.header1}>Who are you</Text>
-                    <Text style={styles.header2}>Visiting?</Text>
-                    <FlatList
-                        data={this.props.lobby}
-                        ItemSeparatorComponent={() => <Separator/>}
-                        renderItem={this._renderItem}
-                        keyExtractor={item => item.uid}
-                    />
-                </View>
-            </View>
+            <FlatList
+                data={this.props.lobby}
+                renderItem={this._renderItem}
+                numColumns={2}
+                keyExtractor={item => item.uid}
+            />
         )
     }
 }
 
 const styles = {
+    gradient: {
+        flexDirection:'row',
+        borderRadius: 3,
+        padding: 5,
+        margin: 3,
+    },
     header1: {
-        fontFamily: Styler.fontFamily.Medium,
+        fontFamily: 'Roboto-Medium',
         fontSize: 19
     },
     header2: {
-        fontFamily: Styler.fontFamily.Regular,
+        fontFamily: 'Roboto-Medium',
         fontSize: 25
     },
     player: {
-        fontFamily: Styler.fontFamily.Regular,
+        fontFamily: 'Roboto-Medium',
         fontSize: 16,
         alignSelf: 'center',
-        margin: 5
+        margin: 5,
+        color: '#fff',
     }
 }
 
