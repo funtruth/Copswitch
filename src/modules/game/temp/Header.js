@@ -3,16 +3,14 @@ import {
     View,
     Text,
 }   from 'react-native'
+import { connect } from 'react-redux'
 import { GameInfo } from '@library';
-import { statusType } from '../../common/types';
 
 const { Phases } = GameInfo
 
 class Header extends Component {
     render() {
-        const { config, gameState } = this.props
-        if (config.status !== statusType.game) return null
-
+        const { gameState } = this.props
         return (
             <View style={styles.header}>
                 <Text style={styles.title}>{Phases[gameState.phase].name}</Text>
@@ -42,4 +40,8 @@ const styles = {
     }
 }
 
-export default Header
+export default connect(
+    state => ({
+        gameState: state.lobby.gameState,
+    }),
+)(Header)

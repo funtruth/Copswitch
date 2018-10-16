@@ -1,13 +1,9 @@
 import React, { Component } from 'react'
-import { View } from 'react-native'
-import { connect } from 'react-redux'
 import LinearGradient from 'react-native-linear-gradient'
 
 import Header from './temp/Header';
-import Footer from './temp/Footer';
-
-import { showModalByKey } from './GameReducer'
 import Body from './temp/Body';
+import Footer from './temp/Footer';
 
 class GameView extends Component {
     render() {
@@ -18,17 +14,9 @@ class GameView extends Component {
                 end={{x:0, y:1}}
                 style = {styles.container}
             >
-                <Header
-                    config={this.props.config}
-                    gameState={this.props.gameState}
-                />
-                <Body
-                    showModalByKey={this.props.showModalByKey}
-                />
-                <Footer
-                    gameState={this.props.gameState}
-                    showModalByKey={this.props.showModalByKey}
-                />
+                <Header/>
+                <Body/>
+                <Footer/>
             </LinearGradient>
         )
     }
@@ -42,16 +30,4 @@ const styles = {
     }
 }
 
-export default connect(
-    state => ({
-        config: state.lobby.config,
-        gameState: state.lobby.gameState,
-        ready: state.game.myReady,
-        roleId: state.lobby.myInfo.roleId,
-        news: state.game.news,
-        events: state.game.events,
-    }),
-    {
-        showModalByKey,
-    }
-)(GameView)
+export default GameView

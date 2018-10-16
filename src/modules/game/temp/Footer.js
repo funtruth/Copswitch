@@ -4,8 +4,10 @@ import {
     Text,
     TouchableOpacity,
 }   from 'react-native'
+import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
+import { showModalByKey } from '../GameReducer'
 import { GameInfo } from '@library';
 
 const { Phases } = GameInfo
@@ -78,4 +80,11 @@ const styles = {
     }
 }
 
-export default Footer
+export default connect(
+    state => ({
+        gameState: state.lobby.gameState,
+    }),
+    {
+        showModalByKey,
+    }
+)(Footer)

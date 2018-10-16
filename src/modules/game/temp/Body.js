@@ -5,7 +5,10 @@ import {
     Text,
     TouchableOpacity,
 }   from 'react-native'
+import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
+
+import { showModalByKey } from '../GameReducer'
 import PlayerListView from './PlayerListView';
 
 const tabs = [
@@ -112,4 +115,9 @@ const styles = {
     },
 }
 
-export default Body
+export default connect(
+    null,
+    {
+        showModalByKey,
+    }
+)(Body)
