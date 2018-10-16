@@ -3,6 +3,7 @@ import _ from 'lodash'
 import {db} from '@services'
 import {statusType, listenerType} from '../common/types'
 import NavigationTool from '../navigation/NavigationTool'
+import { myReadyChanged } from '../game/GameReducer';
 
 const initialState = {
     //lobby
@@ -25,7 +26,6 @@ const initialState = {
     news: [],
     events: [],
     ready: {},
-    myReady: false,
 }
 
 //lobby
@@ -109,11 +109,9 @@ function newLobbyInfo(snap, key){
             case listenerType.ready:
                 dispatch({
                     type: READY_LISTENER,
-                    payload: {
-                        ready: snap,
-                        myReady: snap[db.getUid()]
-                    }
+                    payload: snap
                 })
+                dispatch(myReadyChanged(snap[db.getUid()]))
                 break
             case listenerType.news:
                 dispatch({

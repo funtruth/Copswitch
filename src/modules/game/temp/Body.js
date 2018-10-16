@@ -9,7 +9,7 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { showModalByKey } from '../GameReducer'
-import PlayerListView from './PlayerListView';
+import Lobby from './Lobby';
 
 const tabs = [
     {
@@ -21,7 +21,7 @@ const tabs = [
         label: 'Players',
         icon: 'ios-people',
         key: 'lobby',
-        Component: PlayerListView,
+        Component: Lobby,
     },
     {
         label: 'Events',

@@ -7,7 +7,7 @@ import {
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import { showModalByKey } from '../GameReducer'
+import { showModalByKey, playerChoice } from '../GameReducer'
 import { GameInfo } from '@library';
 
 const { Phases } = GameInfo
@@ -35,6 +35,7 @@ class Footer extends Component {
     _onPress = (onPress) => {
         switch(typeof onPress) {
             case 'number':
+                this.props.playerChoice(onPress)
                 break
             case 'string':
                 this.props.showModalByKey(onPress)
@@ -86,5 +87,6 @@ export default connect(
     }),
     {
         showModalByKey,
+        playerChoice,
     }
 )(Footer)
