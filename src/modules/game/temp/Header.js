@@ -10,11 +10,25 @@ const { Phases } = GameInfo
 
 class Header extends Component {
     render() {
-        const { gameState } = this.props
+        const { gameState, lobby } = this.props
+        let title, message
+        switch(gameState.phase) {
+            case 0:
+            case 2:
+                title = Phases[gameState.phase].name + gameState.dayNum
+                message = Phases[gameState.phase].message
+                break
+            case 1:
+                title = Phases[gameState.phase].name
+                message = Phases[gameState.phase].message + ' ' + gameState.nominate
+                break
+            default:
+        }
+
         return (
             <View style={styles.header}>
-                <Text style={styles.title}>{Phases[gameState.phase].name}</Text>
-                <Text style={styles.subtitle}>{Phases[gameState.phase].message}</Text>
+                <Text style={styles.title}>{title}</Text>
+                <Text style={styles.subtitle}>{message}</Text>
             </View>
         )
     }
@@ -43,5 +57,6 @@ const styles = {
 export default connect(
     state => ({
         gameState: state.lobby.gameState,
+        lobby: state.lobby.lobby,
     }),
 )(Header)

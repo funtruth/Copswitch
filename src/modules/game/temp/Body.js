@@ -8,7 +8,8 @@ import {
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import { showModalByKey } from '../GameReducer'
+import { showViewByKey } from '../GameReducer'
+import News from './News';
 import Lobby from './Lobby';
 
 const tabs = [
@@ -16,6 +17,7 @@ const tabs = [
         label: 'News',
         icon: 'ios-paper-plane',
         key: 'news',
+        Component: News
     },
     {
         label: 'Players',
@@ -39,7 +41,7 @@ class Body extends Component {
     }
 
     _renderBody = (item, index) => {
-        if (!item.Component) return null
+        if (item.key !== this.props.mainView) return null
         return (
             <item.Component key={index}/>
         )
@@ -73,7 +75,7 @@ class Body extends Component {
     }
 
     _onPress = (index, key) => {
-        this.props.showModalByKey(key)
+        this.props.showViewByKey(key)
         this.setState({
             tabIndex: index
         })
@@ -116,8 +118,10 @@ const styles = {
 }
 
 export default connect(
-    null,
+    state => ({
+        mainView: state.game.mainView,
+    }),
     {
-        showModalByKey,
+        showViewByKey,
     }
 )(Body)

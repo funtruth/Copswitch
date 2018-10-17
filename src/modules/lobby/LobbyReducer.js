@@ -116,7 +116,7 @@ function newLobbyInfo(snap, key){
             case listenerType.news:
                 dispatch({
                     type: NEWS_LISTENER,
-                    payload: snap
+                    payload: _.sortBy(snap, i => -i.key)
                 })
                 break
             case listenerType.events:

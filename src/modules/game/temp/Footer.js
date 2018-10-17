@@ -7,7 +7,7 @@ import {
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import { showModalByKey, playerChoice } from '../GameReducer'
+import { showViewByKey, playerChoice } from '../GameReducer'
 import { GameInfo } from '@library';
 
 const { Phases } = GameInfo
@@ -38,7 +38,7 @@ class Footer extends Component {
                 this.props.playerChoice(onPress)
                 break
             case 'string':
-                this.props.showModalByKey(onPress)
+                this.props.showViewByKey(onPress)
                 break
             default:
         }
@@ -86,7 +86,7 @@ export default connect(
         gameState: state.lobby.gameState,
     }),
     {
-        showModalByKey,
+        showViewByKey,
         playerChoice,
     }
 )(Footer)

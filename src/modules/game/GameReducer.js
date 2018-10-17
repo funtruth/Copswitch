@@ -2,7 +2,7 @@ import {db} from '@services'
 
 const initialState = {
     nameState: 'name',
-    lobbyModal: false,
+    mainView: 'lobby',
 }
 
 const TOGGLE_NAME_STATE = 'game/toggle_name_state'
@@ -20,7 +20,7 @@ export function toggleNameState() {
     }
 }
 
-export function showModalByKey(key) {
+export function showViewByKey(key) {
     return (dispatch) => {
         dispatch({
             type: SHOW_MODAL_BY_KEY,
@@ -60,7 +60,7 @@ export default (state = initialState, action) => {
         case TOGGLE_NAME_STATE:
             return { ...state, nameState: action.payload }
         case SHOW_MODAL_BY_KEY:
-            return { ...state, [`${action.payload}Modal`]: true }
+            return { ...state, mainView: action.payload }
         case MY_READY_CHANGED:
             return { ...state, myReady: action.payload }
         default:

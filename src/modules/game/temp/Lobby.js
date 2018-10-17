@@ -15,40 +15,30 @@ import { playerChoice } from '../GameReducer'
 const { height, width } = Dimensions.get('window')
 
 class Lobby extends Component {
+    _renderIcon = (item) => {
+        return (
+            <Icon
+                key={item}
+                name={item}
+                size={15}
+                color="#fff"
+            />
+        )  
+    }
+
     _renderItem = ({item}) => {
-        const iconName = item.dead?'skull':
-            (item.readyvalue?'check-circle':
-                (item.immune?'needle':
-                    (item.status?item.statusname:null)))
+        let icons = []
+        if (item.dead) icons.push('skull')
+        if (this.props.ready[item.uid]) icons.push('check-circle')
+
         return (
             <TouchableOpacity 
-                style = {{
-                    opacity: item.dead?0.6:1,
-                    justifyContent:'center',
-                    alignItems:'center',
-                    width: 0.5 * width,
-                }}
+                style = {styles.player}
                 onPress = {() => this._onPress(item)}
                 activeOpacity={item.dead?1:0.2}
             >
-                <LinearGradient
-                    colors={['#407999', '#2a3e59']}
-                    start={{x: 0.2, y: 0}}
-                    end={{x: 0.8, y: 0}}
-                    style = {styles.gradient}
-                >
-                    <View style = {{flex:0.15,justifyContent:'center',alignItems:'center'}}>
-                        <Icon
-                            name={iconName}
-                            style={{fontSize:15, alignSelf:'center'}}
-                            color="#fff"
-                        />
-                    </View>
-                    <View style = {{flex:0.7, justifyContent:'center'}}>
-                        <Text style = {styles.player}>{item.name}</Text>
-                    </View>
-                    <View style={{flex:0.15}}/>
-                </LinearGradient>
+                <Text style = {styles.name}>{item.name}</Text>
+                {icons.map(this._renderIcon)}
             </TouchableOpacity>
         )
     }
@@ -64,6 +54,7 @@ class Lobby extends Component {
                 data={this.props.lobby}
                 renderItem={this._renderItem}
                 numColumns={2}
+                contentContainerStyle={styles.flatlist}
                 keyExtractor={item => item.uid}
             />
         )
@@ -71,22 +62,21 @@ class Lobby extends Component {
 }
 
 const styles = {
-    gradient: {
+    flatlist: {
+        alignItems: 'center',
+        paddingTop: 15,
+    },
+    player:{
         flexDirection:'row',
-        borderRadius: 3,
+        justifyContent:'center',
+        alignItems:'center',
         padding: 5,
         margin: 3,
+        width: 0.45 * width,
+        backgroundColor: '#384959',
     },
-    header1: {
-        fontFamily: 'Roboto-Medium',
-        fontSize: 19
-    },
-    header2: {
-        fontFamily: 'Roboto-Medium',
-        fontSize: 25
-    },
-    player: {
-        fontFamily: 'Roboto-Medium',
+    name: {
+        fontFamily: 'Roboto-Regular',
         fontSize: 16,
         alignSelf: 'center',
         margin: 5,
@@ -97,6 +87,7 @@ const styles = {
 export default connect(
     state => ({
         lobby: state.lobby.lobby,
+        ready: state.lobby.ready,
     }),
     {
         playerChoice,
