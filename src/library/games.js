@@ -57,7 +57,7 @@ export const Phases = {
     },
     1: {
         name : 'Trial',
-        message : 'Decide their Fate',
+        message : 'Decide the fate of ',
         choices: [
             { 
                 label: 'Innocent',

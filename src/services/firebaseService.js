@@ -21,6 +21,9 @@ class FirebaseService{
     set(path, val) {
         return firebase.database().ref(path).set(val)
     }
+    update(path, val) {
+        return firebase.database().ref(path).update(val)
+    }
 
     //Fetch
     getUid(){

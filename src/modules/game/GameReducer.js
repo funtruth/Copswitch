@@ -3,6 +3,7 @@ import {db} from '@services'
 const initialState = {
     nameState: 'name',
     mainView: 'lobby',
+    myReady: false,
 }
 
 const TOGGLE_NAME_STATE = 'game/toggle_name_state'
@@ -34,9 +35,12 @@ export function playerChoice(val) {
         const { loading } = getState()
         const { roomId } = loading
         const uid = db.getUid()
-        db.set(
-            `rooms/${roomId}/choice/${uid}`,
-            val
+        db.update(
+            `rooms/${roomId}`,
+            {
+                [`choice/${uid}`]: val,
+                [`ready/${uid}`]: val !== null ? true : null,
+            }
         )
 
         dispatch({

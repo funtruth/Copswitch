@@ -23,13 +23,13 @@ class Lobby extends Component {
                 size={15}
                 color="#fff"
             />
-        )  
+        )
     }
 
     _renderItem = ({item}) => {
         let icons = []
         if (item.dead) icons.push('skull')
-        if (this.props.ready[item.uid]) icons.push('check-circle')
+        if (this.props.ready && this.props.ready[item.uid]) icons.push('check-circle')
 
         return (
             <TouchableOpacity 
@@ -44,6 +44,7 @@ class Lobby extends Component {
     }
 
     _onPress(item){
+        if (this.props.myReady)
         //TODO algorithm that takes my roleid and target to see if valid ... THEN continue
         this.props.playerChoice(item.uid)
     }
@@ -88,6 +89,7 @@ export default connect(
     state => ({
         lobby: state.lobby.lobby,
         ready: state.lobby.ready,
+        myReady: state.game.myReady,
     }),
     {
         playerChoice,

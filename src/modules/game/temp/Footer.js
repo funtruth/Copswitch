@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { showViewByKey, playerChoice } from '../GameReducer'
+import Waiting from './Waiting'
 import { GameInfo } from '@library';
 
 const { Phases } = GameInfo
@@ -49,6 +50,7 @@ class Footer extends Component {
         return (
             <View style={styles.footer}>
                 {Phases[gameState.phase].choices.map(this._renderOption)}
+                <Waiting/>
             </View>
         )
     }

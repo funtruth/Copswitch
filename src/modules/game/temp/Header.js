@@ -15,12 +15,12 @@ class Header extends Component {
         switch(gameState.phase) {
             case 0:
             case 2:
-                title = Phases[gameState.phase].name + gameState.dayNum
+                title = `${Phases[gameState.phase].name} ${gameState.dayNum}`
                 message = Phases[gameState.phase].message
                 break
             case 1:
                 title = Phases[gameState.phase].name
-                message = Phases[gameState.phase].message + ' ' + gameState.nominate
+                message = Phases[gameState.phase].message + lobby.find(i => i.uid === gameState.nominate).name
                 break
             default:
         }
