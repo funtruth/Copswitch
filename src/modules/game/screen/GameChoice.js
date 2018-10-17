@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { showViewByKey, playerChoice } from '../GameReducer'
-import Waiting from './Waiting'
+import Waiting from '../components/Waiting'
 import { GameInfo } from '@library';
 
 const { Phases } = GameInfo

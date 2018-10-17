@@ -9,9 +9,9 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { showViewByKey } from '../GameReducer'
-import News from './News'
-import GameChoice from './GameChoice'
-import Events from './Events'
+import News from '../screen/News'
+import GameChoice from '../screen/GameChoice'
+import Events from '../screen/Events'
 
 const tabs = [
     {

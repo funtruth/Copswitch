@@ -3,8 +3,9 @@ import {
     View, 
     Text,
 } from 'react-native'
+import { connect } from 'react-redux'
 
-class PrivateRoleView extends Component {
+class MyRole extends Component {
     render() {
         return (
             <View style = {{flex:0.25, justifyContent:'center'}}>
@@ -24,4 +25,8 @@ const styles = {
     },
 }
 
-export default PrivateRoleView
+export default connect(
+    state => ({
+
+    })
+)(MyRole)

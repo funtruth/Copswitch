@@ -54,6 +54,7 @@ class Header extends Component {
 
     _getMessage() {
         const { gameState, lobby } = this.props
+        if (lobby.length === 0) return ''
         if (gameState.phase === 1) {
             return Phases[gameState.phase].message + lobby.find(i => i.uid === gameState.nominate).name
         }
