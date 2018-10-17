@@ -46,7 +46,7 @@ class DevTool extends Component {
     
     render() {
         const { idle, icon, container } = styles
-
+        if (!__DEV__) return null
         return (
             <View style={container}>
                 {this.renderButtons()}

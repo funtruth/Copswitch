@@ -2,8 +2,6 @@ import React, { Component } from 'react'
 import { StatusBar, BackHandler } from 'react-native'
 import { connect } from 'react-redux'
 
-import { toggleBottomView } from '../modules/game/GameReducer'
-
 class AndroidHandler extends Component {
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
@@ -14,12 +12,7 @@ class AndroidHandler extends Component {
     }
 
     handleBackPress = () => {
-        const { showBottomView } = this.props
-        if (showBottomView) {
-            this.props.toggleBottomView()
-            return true
-        }
-        return false
+        return true
     }
 
     render() {
@@ -30,8 +23,8 @@ class AndroidHandler extends Component {
 }
 
 export default connect(
-    state => ({
-        showBottomView: state.home.showBottomView,
-    }),
-    { toggleBottomView }
+    null,
+    {
+
+    }
 )(AndroidHandler)

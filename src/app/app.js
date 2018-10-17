@@ -3,14 +3,23 @@ import { Provider } from 'react-redux';
 import { store, persistor } from '../redux/store';
 import { PersistGate } from 'redux-persist/integration/react'
 
-import AppContainer from './AppContainer';
+import AppNavigator from "../modules/navigation/AppNavigator";
+import AndroidHandler from '../components/AndroidHandler';
+import NavigationTool from '../modules/navigation/NavigationTool'
+import DevTool from '../components/dev/DevTool';
 
 class App extends Component {
     render(){
         return (
             <Provider store = {store}>
                 <PersistGate loading={null} persistor={persistor}>
-                    <AppContainer />
+                    <AppNavigator
+                        ref = {navigatorRef => {
+                            NavigationTool.setContainer(navigatorRef)
+                        }}
+                    />
+                    <AndroidHandler/>
+                    <DevTool/>
                 </PersistGate>
             </Provider>
         )
