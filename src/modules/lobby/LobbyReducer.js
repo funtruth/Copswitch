@@ -62,18 +62,37 @@ export function turnOnListeners() {
         const { roomId } = getState().loading
         let roomRef = db.ref(`rooms/${roomId}`)
 
-        roomRef.on('value', snap => {
-            snap.forEach(child => {
-                dispatch(newLobbyInfo(child.val(), child.key))
-            })
+        roomRef.on('child_added', snap => {
+            dispatch(newLobbyInfo(snap.key, snap.val()))
+        })
+
+        roomRef.on('child_changed', snap => {
+            dispatch(newLobbyInfo(snap.key, snap.val()))
+        })
+
+        roomRef.on('child_removed', snap => {
+            dispatch(childRemoved(snap.key))
         })
     }
 }
 
-function newLobbyInfo(snap, key){
+function childRemoved(key) {
     return (dispatch) => {
-        if (!snap) return
+        switch(key) {
+            case listenerType.ready:
+                dispatch({
+                    type: READY_LISTENER,
+                    payload: snap
+                })
+                dispatch(myReadyChanged(false))
+                break
+            default:
+        }
+    }
+}
 
+function newLobbyInfo(key, snap){
+    return (dispatch) => {
         switch(key){
             case listenerType.config:
                 dispatch({
@@ -116,7 +135,7 @@ function newLobbyInfo(snap, key){
             case listenerType.news:
                 dispatch({
                     type: NEWS_LISTENER,
-                    payload: _.sortBy(snap, i => -i.key)
+                    payload: _.sortBy(snap, i => -i.timestamp)
                 })
                 break
             case listenerType.events:

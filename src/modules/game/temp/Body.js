@@ -9,8 +9,9 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { showViewByKey } from '../GameReducer'
-import News from './News';
-import Lobby from './Lobby';
+import News from './News'
+import Lobby from './Lobby'
+import Events from './Events'
 
 const tabs = [
     {
@@ -29,6 +30,7 @@ const tabs = [
         label: 'Events',
         icon: 'ios-unlock',
         key: 'events',
+        Component: Events,
     }
 ]
 
