@@ -4,14 +4,13 @@ import LinearGradient from 'react-native-linear-gradient'
 import Header from './temp/Header';
 import Body from './temp/Body';
 import Footer from './temp/Footer'
-import Lobby from './components/Lobby'
-import MyRole from './components/MyRole';
+import LobbyList from './screen/LobbyList';
 
 class GameView extends Component {
     render() {
         return (
             <LinearGradient
-                colors={['#374e60', '#111111']}
+                colors={['#374e60', '#222']}
                 start={{x:0, y:0}}
                 end={{x:0, y:1}}
                 style = {styles.container}
@@ -19,6 +18,7 @@ class GameView extends Component {
                 <Header/>
                 <Body/>
                 <Footer/>
+                <LobbyList/>
             </LinearGradient>
         )
     }

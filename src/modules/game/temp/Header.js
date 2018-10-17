@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { GameInfo } from '@library';
+import { showModalByKey } from '../GameReducer'
 
 const { Phases } = GameInfo
 
@@ -37,7 +38,7 @@ class Header extends Component {
     }
 
     _showLobby = () => {
-
+        this.props.showModalByKey('lobby')
     }
 
     _showPersonal = () => {
@@ -139,4 +140,7 @@ export default connect(
         gameState: state.lobby.gameState,
         lobby: state.lobby.lobby,
     }),
+    {
+        showModalByKey,
+    }
 )(Header)

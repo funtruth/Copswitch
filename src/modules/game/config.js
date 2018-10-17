@@ -12,7 +12,7 @@ export const Tabs = [
     {
         label: 'Game',
         icon: 'ios-home',
-        key: 'lobby',
+        key: 'game',
         Component: GameChoice,
     },
     {

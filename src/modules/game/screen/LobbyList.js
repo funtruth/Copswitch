@@ -1,19 +1,15 @@
 import React, { Component } from 'react'
-import { 
-    View,
+import {
     Text,
     FlatList,
     TouchableOpacity,
-    Dimensions
 } from 'react-native'
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
-import { playerChoice } from '../GameReducer'
+import LobbyModal from '../modal/LobbyModal';
 
-const { height, width } = Dimensions.get('window')
-
-class Lobby extends Component {
+class LobbyList extends Component {
     _renderIcon = (item) => {
         return (
             <Icon
@@ -42,55 +38,51 @@ class Lobby extends Component {
         )
     }
 
-    _onPress(item){
-        if (this.props.myReady)
-        //TODO algorithm that takes my roleid and target to see if valid ... THEN continue
-        this.props.playerChoice(item.uid)
+    _onPress = () => {
     }
-    
+
     render() {
         return (
-            <FlatList
-                data={this.props.lobby}
-                renderItem={this._renderItem}
-                numColumns={2}
-                contentContainerStyle={styles.flatlist}
-                keyExtractor={item => item.uid}
-            />
+            <LobbyModal
+                type="lobby"
+                title="All Players"
+            >
+                <FlatList
+                    data={this.props.lobby}
+                    renderItem={this._renderItem}
+                    contentContainerStyle={styles.flatlist}
+                    keyExtractor={item => item.uid}
+                />
+            </LobbyModal>
         )
     }
 }
 
 const styles = {
     flatlist: {
-        alignItems: 'center',
-        paddingTop: 15,
+        flex: 1,
+        backgroundColor: '#1e2125',
     },
     player:{
         flexDirection:'row',
-        justifyContent:'center',
         alignItems:'center',
-        padding: 5,
-        margin: 3,
-        width: 0.45 * width,
-        backgroundColor: '#384959',
     },
     name: {
         fontFamily: 'Roboto-Regular',
         fontSize: 16,
-        alignSelf: 'center',
-        margin: 5,
-        color: '#fff',
-    }
+        margin: 3,
+        marginLeft: 8,
+        color: '#a8a8a8',
+    },
 }
 
 export default connect(
     state => ({
         lobby: state.lobby.lobby,
         ready: state.lobby.ready,
-        myReady: state.game.myReady,
+        modalView: state.game.modalView,
     }),
     {
-        playerChoice,
+        
     }
-)(Lobby)
+)(LobbyList)
