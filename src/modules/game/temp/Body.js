@@ -27,24 +27,6 @@ const styles = {
     body: {
         flex: 1,
     },
-    tabs: {
-        height: 80,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderTopWidth: 1,
-        borderTopColor: '#b6b6b6',
-    },
-    item: {
-        alignItems: 'center',
-        flex: 0.3,
-    },
-    title: {
-        fontFamily: 'Roboto-Medium',
-        fontSize: 14,
-        color: '#fff',
-        textAlign: 'center',
-    },
 }
 
 export default connect(

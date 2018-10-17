@@ -45,7 +45,7 @@ class LobbyList extends Component {
         return (
             <LobbyModal
                 type="lobby"
-                title="All Players"
+                title="List of Players"
             >
                 <FlatList
                     data={this.props.lobby}
@@ -80,9 +80,5 @@ export default connect(
     state => ({
         lobby: state.lobby.lobby,
         ready: state.lobby.ready,
-        modalView: state.game.modalView,
     }),
-    {
-        
-    }
 )(LobbyList)

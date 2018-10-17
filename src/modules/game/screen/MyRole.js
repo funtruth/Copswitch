@@ -4,25 +4,23 @@ import {
     Text,
 } from 'react-native'
 import { connect } from 'react-redux'
+import LobbyModal from '../modal/LobbyModal';
 
 class MyRole extends Component {
     render() {
         return (
-            <View style = {{flex:0.25, justifyContent:'center'}}>
-                
-                
-            </View>
+            <LobbyModal
+                type="myRole"
+                title="My Role Information"
+            >
+
+            </LobbyModal>
         )
     }
 }
 
 const styles = {
-    choiceButton: {
-        fontFamily:'FredokaOne-Regular',
-        fontSize: 17,
-        alignSelf: 'center',
-        margin:4,
-    },
+    
 }
 
 export default connect(

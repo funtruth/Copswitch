@@ -4,23 +4,37 @@ import {
     Text,
     TouchableOpacity,
 } from 'react-native'
+import Icon from 'react-native-vector-icons/Ionicons'
 
-class LobbyModalFooter extends Component {
+import { Constants } from '../config'
+
+class LobbyModalHeader extends Component {
     render() {
         return (
-            <View style={styles.footer}>
+            <View style={styles.header}>
                 <Text style={styles.title}>{this.props.title}</Text>
+                <TouchableOpacity
+                    style={styles.closeButton}
+                    hitSlop={{top: 10, bottom: 10, right: 10, left: 10}}
+                    onPress={this.props.onClose}
+                >
+                    <Icon name="ios-close" size={30} color="#fff"/>
+                </TouchableOpacity>
             </View>
         )
     }
 }
 
 const styles = {
-    footer: {
-        height: 30,
+    header: {
+        height: Constants.modalHeaderHeight,
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
+    },
+    closeButton: {
+        marginLeft: 'auto',
+        marginRight: 8,
     },
     title: {
         fontFamily: 'Roboto-Medium',
@@ -30,4 +44,4 @@ const styles = {
     }
 }
 
-export default LobbyModalFooter
+export default LobbyModalHeader

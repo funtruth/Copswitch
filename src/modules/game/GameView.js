@@ -5,6 +5,7 @@ import Header from './temp/Header';
 import Body from './temp/Body';
 import Footer from './temp/Footer'
 import LobbyList from './screen/LobbyList';
+import MyRole from './screen/MyRole';
 
 class GameView extends Component {
     render() {
@@ -19,6 +20,7 @@ class GameView extends Component {
                 <Body/>
                 <Footer/>
                 <LobbyList/>
+                <MyRole/>
             </LinearGradient>
         )
     }

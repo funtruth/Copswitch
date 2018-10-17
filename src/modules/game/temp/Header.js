@@ -7,6 +7,7 @@ import {
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
+import { Constants } from '../config'
 import { GameInfo } from '@library';
 import { showModalByKey } from '../GameReducer'
 
@@ -42,7 +43,7 @@ class Header extends Component {
     }
 
     _showPersonal = () => {
-
+        this.props.showModalByKey('myRole')
     }
 
     _getTitle() {
@@ -106,7 +107,7 @@ class Header extends Component {
 
 const styles = {
     header: {
-        height: 80,
+        height: Constants.headerHeight,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',

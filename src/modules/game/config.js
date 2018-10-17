@@ -22,3 +22,9 @@ export const Tabs = [
         Component: Events,
     }
 ]
+
+export const Constants = {
+    headerHeight: 80,
+    footerHeight: 80,
+    modalHeaderHeight: 35,
+}

@@ -5,6 +5,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 
+import { Constants } from '../config'
 import LobbyModalHeader from './LobbyModalHeader'
 import LobbyModalFooter from './LobbyModalFooter'
 import { showModalByKey } from '../GameReducer'
@@ -38,7 +39,7 @@ class LobbyModal extends Component {
     }
 
     _onClose = () => {
-        this.props.showModalByKey(null)
+        this.props.showModalByKey()
     }
     
     render() {
@@ -59,7 +60,10 @@ class LobbyModal extends Component {
                     style={styles.safezone}
                     activeOpacity={1}
                 >
-                    <LobbyModalHeader title={this.props.title}/>
+                    <LobbyModalHeader
+                        title={this.props.title}
+                        onClose={this._onClose}
+                    />
                     {this.props.children}
                     <LobbyModalFooter/>
                 </TouchableOpacity>
@@ -77,7 +81,7 @@ const styles = {
     },
     safezone: {
         position: 'absolute',
-        top: 70, bottom: 65,
+        top: Constants.headerHeight - 10, bottom: Constants.footerHeight - 15,
         left: 20, right: 20,
         backgroundColor: '#2a2d32',
         borderRadius: 2,

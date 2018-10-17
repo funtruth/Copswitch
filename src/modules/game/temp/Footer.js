@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { showViewByKey } from '../GameReducer'
-import { Tabs } from '../config'
+import { Tabs, Constants } from '../config'
 
 class Footer extends Component {
     constructor(props) {
@@ -63,7 +63,7 @@ class Footer extends Component {
 
 const styles = {
     tabs: {
-        height: 80,
+        height: Constants.footerHeight,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
