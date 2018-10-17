@@ -13,7 +13,7 @@ import { GameInfo } from '@library';
 
 const { Phases } = GameInfo
 
-class Footer extends Component {
+class GameChoice extends Component {
     _renderOption = (item) => {
         return (
             <TouchableOpacity
@@ -58,12 +58,10 @@ class Footer extends Component {
 
 const styles = {
     footer: {
-        height: 150,
+        flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        borderTopWidth: 1,
-        borderTopColor: '#b6b6b6',
     },
     item: {
         alignItems: 'center',
@@ -91,4 +89,4 @@ export default connect(
         showViewByKey,
         playerChoice,
     }
-)(Footer)
+)(GameChoice)

@@ -10,25 +10,25 @@ import Icon from 'react-native-vector-icons/Ionicons'
 
 import { showViewByKey } from '../GameReducer'
 import News from './News'
-import Lobby from './Lobby'
+import GameChoice from './GameChoice'
 import Events from './Events'
 
 const tabs = [
     {
         label: 'News',
-        icon: 'ios-paper-plane',
+        icon: 'ios-megaphone',
         key: 'news',
         Component: News
     },
     {
-        label: 'Players',
-        icon: 'ios-people',
+        label: 'Game',
+        icon: 'ios-home',
         key: 'lobby',
-        Component: Lobby,
+        Component: GameChoice,
     },
     {
         label: 'Events',
-        icon: 'ios-unlock',
+        icon: 'ios-paper-plane',
         key: 'events',
         Component: Events,
     }
@@ -56,7 +56,7 @@ class Body extends Component {
                 key={item.label}
                 style={[
                     styles.item,
-                    selected && { transform: [{ scale: 1.2 }]}
+                    selected && { transform: [{ scale: 1.1 }]}
                 ]}
                 onPress={this._onPress.bind(this, index, item.key)}
                 activeOpacity={0.6}

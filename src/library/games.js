@@ -62,13 +62,13 @@ export const Phases = {
             { 
                 label: 'Innocent',
                 detail: 'Vouch for\ntheir innocence!',
-                icon: 'ios-compass',
+                icon: 'ios-thumbs-up',
                 onPress: 1,
             },
             {
                 label: 'Guilty',
                 detail: 'Sentence them\nto death!',
-                icon: 'ios-megaphone',
+                icon: 'ios-thumbs-down',
                 onPress: 0,
             }
         ],

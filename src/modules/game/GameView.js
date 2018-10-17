@@ -3,7 +3,6 @@ import LinearGradient from 'react-native-linear-gradient'
 
 import Header from './temp/Header';
 import Body from './temp/Body';
-import Footer from './temp/Footer';
 
 class GameView extends Component {
     render() {
@@ -16,7 +15,6 @@ class GameView extends Component {
             >
                 <Header/>
                 <Body/>
-                <Footer/>
             </LinearGradient>
         )
     }
