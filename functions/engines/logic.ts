@@ -43,6 +43,7 @@ function onVote(choices, rss) {
             gameState: {
                 ...setGameState(rss.gameState.counter + 1),
                 nominate,
+                veto: rss.gameState.veto + 1,
             },
             choice: null,
             ready: null
@@ -52,6 +53,7 @@ function onVote(choices, rss) {
             gameState: {
                 ...setGameState(rss.gameState.counter + 2),
                 nominate: null,
+                veto: rss.gameState.veto,
             },
             choice: null,
             ready: null
@@ -89,6 +91,7 @@ function onTrial(votes, rss) {
     }
 
     let nextCounter
+    let nextVeto
     if (gVotes.length > iVotes.length) {
         rss.lobby[rss.nominate].dead = true
         news[timestamp + 1] = {
@@ -97,13 +100,20 @@ function onTrial(votes, rss) {
             counter: rss.gameState.counter,
         }
         nextCounter = rss.gameState.counter + 1
+        nextVeto = 0
     } else {
         news[timestamp + 1] = {
             message: rss.lobby[rss.nominate].name + ' was not hung.',
             timestamp,
             counter: rss.gameState.counter
         }
-        nextCounter = rss.gameState.counter - 1
+        if (rss.gameState.veto === 3) {
+            nextCounter = rss.gameState.counter + 1
+            nextVeto = 0
+        } else {
+            nextCounter = rss.gameState.counter - 1
+            nextVeto = rss.gameState.veto + 1
+        }
     }
 
     return {
@@ -112,6 +122,7 @@ function onTrial(votes, rss) {
         gameState: {
             ...setGameState(nextCounter),
             nominate: null,
+            veto: nextVeto,
         },
         ready: null,
         choice: null,
@@ -156,7 +167,11 @@ function onNight(choices, rss) {
     return {
         events,
         lobby,
-        gameState: setGameState(rss.gameState.counter + 1),
+        gameState: {
+            ...setGameState(rss.gameState.counter + 1),
+            nominate: null,
+            veto: 0,
+        },
         choice: null,
         ready: null,
     }
