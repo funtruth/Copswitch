@@ -4,6 +4,8 @@ import roles from './roles';
 
 async function onPlayerDamaged(snap, roomId, uid) {
     let lobby = await db.get(`rooms/${roomId}/lobby`)
+    let gameState = await db.get(`rooms/${roomId}/gameState`)
+    let timestamp = Date.now()
 
     let health = 0
     let damaged = false
@@ -19,7 +21,7 @@ async function onPlayerDamaged(snap, roomId, uid) {
 
     let dead = health < 0
     
-    let news = []
+    let report = []
     let batch = {}
     for (var j=0; j<autopsy.length; j++) {
         switch(autopsy[j]) {
@@ -27,26 +29,30 @@ async function onPlayerDamaged(snap, roomId, uid) {
             case 'c':
             case 'd':
             case 'e':
-                dead && news.push(`${lobby[uid].name} was killed by the Mafia.`)
+                dead && report.push(`${lobby[uid].name} was killed by the Mafia.`)
                 break
             case 'H':
-                dead && news.push(`${lobby[uid].name} was shot by a Hunter.`)
+                dead && report.push(`${lobby[uid].name} was shot by a Hunter.`)
                 break
             case 'I':
-                batch[`events/${uid}/${Date.now()}`] = 'You were shot by a Soldier!'
+                batch[`events/${uid}/${timestamp}`] = 'You were shot by a Soldier!'
                 break
             case 'K':
-                damaged && (batch[`events/${uid}/${Date.now()}`] = 'You were healed by a Doctor!')
+                damaged && (batch[`events/${uid}/${timestamp}`] = 'You were healed by a Doctor!')
                 break
             case 'M':
-                damaged && !dead && news.push(`${lobby[uid].name} was shot by a Hunter.`)
+                damaged && !dead && report.push(`${lobby[uid].name} was shot by a Hunter.`)
                 break
             default:
         }
     }
 
-    if (news.length > 0) {
-        batch[`news/${Date.now()}`] = news.join(' ')
+    if (report.length > 0) {
+        batch[`news/${timestamp}`] = {
+            message: report.join(' '),
+            timestamp,
+            counter: gameState.counter,
+        }
     } else {
         return
     }
@@ -82,16 +88,19 @@ async function onPlayerDeath(roomId, uid) {
 }
 
 async function onPlayerRevive(roomId, uid) {
-    let lobby = await db.get(`rooms/${roomId}/lobby`)
+    let { lobby, gameState } = await db.get(`rooms/${roomId}`)
 
     if (!lobby) return
     
     let reviveNote = `${lobby[uid].name} was brought back to life!`
+    let timestamp = Date.now()
 
     return db.update(
-        `rooms/${roomId}/news`,
+        `rooms/${roomId}/news/${timestamp}`,
         {
-            [Date.now()]: reviveNote,
+            message: reviveNote,
+            timestamp,
+            counter: gameState.counter
         }
     )
 }

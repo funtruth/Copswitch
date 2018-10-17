@@ -14,6 +14,8 @@ const roles_1 = require("./roles");
 function onPlayerDamaged(snap, roomId, uid) {
     return __awaiter(this, void 0, void 0, function* () {
         let lobby = yield db.get(`rooms/${roomId}/lobby`);
+        let gameState = yield db.get(`rooms/${roomId}/gameState`);
+        let timestamp = Date.now();
         let health = 0;
         let damaged = false;
         let autopsy = [];
@@ -25,7 +27,7 @@ function onPlayerDamaged(snap, roomId, uid) {
             health += snap[i];
         }
         let dead = health < 0;
-        let news = [];
+        let report = [];
         let batch = {};
         for (var j = 0; j < autopsy.length; j++) {
             switch (autopsy[j]) {
@@ -33,25 +35,29 @@ function onPlayerDamaged(snap, roomId, uid) {
                 case 'c':
                 case 'd':
                 case 'e':
-                    dead && news.push(`${lobby[uid].name} was killed by the Mafia.`);
+                    dead && report.push(`${lobby[uid].name} was killed by the Mafia.`);
                     break;
                 case 'H':
-                    dead && news.push(`${lobby[uid].name} was shot by a Hunter.`);
+                    dead && report.push(`${lobby[uid].name} was shot by a Hunter.`);
                     break;
                 case 'I':
-                    batch[`events/${uid}/${Date.now()}`] = 'You were shot by a Soldier!';
+                    batch[`events/${uid}/${timestamp}`] = 'You were shot by a Soldier!';
                     break;
                 case 'K':
-                    damaged && (batch[`events/${uid}/${Date.now()}`] = 'You were healed by a Doctor!');
+                    damaged && (batch[`events/${uid}/${timestamp}`] = 'You were healed by a Doctor!');
                     break;
                 case 'M':
-                    damaged && !dead && news.push(`${lobby[uid].name} was shot by a Hunter.`);
+                    damaged && !dead && report.push(`${lobby[uid].name} was shot by a Hunter.`);
                     break;
                 default:
             }
         }
-        if (news.length > 0) {
-            batch[`news/${Date.now()}`] = news.join(' ');
+        if (report.length > 0) {
+            batch[`news/${timestamp}`] = {
+                message: report.join(' '),
+                timestamp,
+                counter: gameState.counter,
+            };
         }
         else {
             return;
@@ -81,12 +87,15 @@ function onPlayerDeath(roomId, uid) {
 exports.onPlayerDeath = onPlayerDeath;
 function onPlayerRevive(roomId, uid) {
     return __awaiter(this, void 0, void 0, function* () {
-        let lobby = yield db.get(`rooms/${roomId}/lobby`);
+        let { lobby, gameState } = yield db.get(`rooms/${roomId}`);
         if (!lobby)
             return;
         let reviveNote = `${lobby[uid].name} was brought back to life!`;
-        return db.update(`rooms/${roomId}/news`, {
-            [Date.now()]: reviveNote,
+        let timestamp = Date.now();
+        return db.update(`rooms/${roomId}/news/${timestamp}`, {
+            message: reviveNote,
+            timestamp,
+            counter: gameState.counter
         });
     });
 }

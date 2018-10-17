@@ -122,7 +122,7 @@ function newLobbyInfo(snap, key){
             case listenerType.events:
                 dispatch({
                     type: EVENTS_LISTENER,
-                    payload: snap
+                    payload: _.sortBy(snap[db.getUid()], i => -i.key)
                 })
                 break
             default:

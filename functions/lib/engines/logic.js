@@ -29,8 +29,13 @@ function onVote(choices, rss) {
         }
     }
     if (nominate) {
+        let ts = Date.now();
         return {
-            [`news/${Date.now()}`]: `${rss.lobby[nominate].name} has been put on trial.`,
+            [`news/${ts}`]: {
+                message: `${rss.lobby[nominate].name} has been put on trial.`,
+                timestamp: ts,
+                counter: rss.gameState.counter,
+            },
             gameState: Object.assign({}, setGameState(rss.gameState.counter + 1), { nominate }),
             choice: null,
             ready: null
@@ -69,15 +74,27 @@ function onTrial(votes, rss) {
     else {
         nameString = gVotes.join(', ');
     }
-    news[timestamp] = nameString + ' voted against' + rss.lobby[rss.nominate].name + '.';
+    news[timestamp] = {
+        message: nameString + ' voted against' + rss.lobby[rss.nominate].name + '.',
+        timestamp,
+        counter: rss.gameState.counter,
+    };
     let nextCounter;
     if (gVotes.length > iVotes.length) {
         rss.lobby[rss.nominate].dead = true;
-        news[timestamp + 1] = rss.lobby[rss.nominate].name + ' has been hung!';
+        news[timestamp + 1] = {
+            message: rss.lobby[rss.nominate].name + ' has been hung!',
+            timestamp,
+            counter: rss.gameState.counter,
+        };
         nextCounter = rss.gameState.counter + 1;
     }
     else {
-        news[timestamp + 1] = rss.lobby[rss.nominate].name + ' was not hung.';
+        news[timestamp + 1] = {
+            message: rss.lobby[rss.nominate].name + ' was not hung.',
+            timestamp,
+            counter: rss.gameState.counter
+        };
         nextCounter = rss.gameState.counter - 1;
     }
     return {
