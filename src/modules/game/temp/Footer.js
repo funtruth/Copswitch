@@ -19,6 +19,7 @@ class Footer extends Component {
     }
 
     _renderTab = (item, index) => {
+        if (!item.label) return null
         const selected = this.state.tabIndex === index
         return (
             <TouchableOpacity

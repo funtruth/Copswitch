@@ -1,6 +1,7 @@
 import News from './screen/News'
 import GameChoice from './screen/GameChoice'
 import Events from './screen/Events'
+import Lobby from './screen/Lobby'
 
 export const Tabs = [
     {
@@ -20,6 +21,10 @@ export const Tabs = [
         icon: 'ios-paper-plane',
         key: 'events',
         Component: Events,
+    },
+    {
+        key: 'lobby',
+        Component: Lobby,
     }
 ]
 

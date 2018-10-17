@@ -4,7 +4,7 @@ const initialState = {
     nameState: 'name',
     mainView: 'game',
     modalView: null,
-    myReady: false,
+    myReady: null,
 }
 
 const TOGGLE_NAME_STATE = 'game/toggle_name_state'
@@ -61,12 +61,21 @@ export function playerChoice(val) {
     }
 }
 
-export function myReadyChanged(bool) {
-    return (dispatch) => {
+export function myReadyChanged(nBool) {
+    return (dispatch, getState) => {
+        const { loading } = getState()
+        const { roomId } = loading
+
         dispatch({
             type: MY_READY_CHANGED,
-            payload: bool
+            payload: nBool
         })
+        if (typeof nBool === 'object' && roomId) {
+            db.set(
+                `rooms/${roomId}/loaded/${db.getUid()}`,
+                true
+            )
+        }
     }
 }
 

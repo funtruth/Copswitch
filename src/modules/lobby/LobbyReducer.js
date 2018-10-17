@@ -82,9 +82,9 @@ function childRemoved(key) {
             case listenerType.ready:
                 dispatch({
                     type: READY_LISTENER,
-                    payload: null
+                    payload: {}
                 })
-                dispatch(myReadyChanged(false))
+                dispatch(myReadyChanged(null))
                 break
             default:
         }
