@@ -6,6 +6,10 @@ async function onPlayerDamaged(snap, roomId, uid) {
     let lobby = await db.get(`rooms/${roomId}/lobby`)
     let gameState = await db.get(`rooms/${roomId}/gameState`)
     let timestamp = Date.now()
+    let defaultInfo = {
+        timestamp,
+        counter: gameState.counter,
+    }
 
     let health = 0
     let damaged = false
@@ -35,10 +39,10 @@ async function onPlayerDamaged(snap, roomId, uid) {
                 dead && report.push(`${lobby[uid].name} was shot by a Hunter.`)
                 break
             case 'I':
-                batch[`events/${uid}/${timestamp}`] = 'You were shot by a Soldier!'
+                batch[`events/${uid}/${timestamp}`] = { message: 'You were shot by a Soldier!', ...defaultInfo }
                 break
             case 'K':
-                damaged && (batch[`events/${uid}/${timestamp}`] = 'You were healed by a Doctor!')
+                damaged && (batch[`events/${uid}/${timestamp}`] = { message: 'You were healed by a Doctor!', ...defaultInfo })
                 break
             case 'M':
                 damaged && !dead && report.push(`${lobby[uid].name} was shot by a Hunter.`)

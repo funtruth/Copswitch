@@ -123,7 +123,7 @@ function onNight(choices, rss) {
     actions.sort((a, b) => a.priority - b.priority);
     //do all actions
     for (var i = 0; i < actions.length; i++) {
-        _action(actions[i].uid, rss.lobby, choices, events);
+        _action(actions[i].uid, rss.lobby, rss.gameState.counter, choices, events);
     }
     //clean up lobby before writing it
     for (var uid in lobby) {
@@ -131,7 +131,7 @@ function onNight(choices, rss) {
         lobby[uid].health = undefined;
     }
     return {
-        [`events/${Date.now()}`]: events,
+        events,
         lobby,
         gameState: setGameState(rss.gameState.counter + 1),
         choice: null,
@@ -141,19 +141,24 @@ function onNight(choices, rss) {
 exports.onNight = onNight;
 //[a]ctor
 //check for flags, give event text, do role
-function _action(a, lobby, choices, events) {
+function _action(a, lobby, ctr, choices, events) {
     var flags = lobby[choices[a]].flag;
+    var ts = Date.now();
+    var defaultInfo = {
+        timestamp: ts,
+        counter: ctr,
+    };
     if (flags) {
         for (var uid in flags) {
             flags[uid](a, lobby);
         }
     }
     if (roles_1.default[lobby[a].roleid].text) {
-        events[choices[a]][Date.now()] = roles_1.default[lobby[a].roleid].text;
+        events[choices[a]][ts] = Object.assign({ message: roles_1.default[lobby[a].roleid].text }, defaultInfo);
     }
     switch (lobby[a].roleId) {
         case 'a':
-            events[a][Date.now()] = `Your target is a ${roles_1.default[lobby[choices[a]].roleId].name}.`;
+            events[a][ts] = Object.assign({ message: `Your target is a ${roles_1.default[lobby[choices[a]].roleId].name}.` }, defaultInfo);
             break;
         case 'c':
         case 'd':
@@ -165,16 +170,16 @@ function _action(a, lobby, choices, events) {
             break;
         case 'A':
             if (roles_1.default[lobby[choices[a]].roleId].sus || lobby[choices[a]].sus) {
-                events[a][Date.now()] = 'Your target is suspicious. They are a member of the mafia!';
+                events[a][ts] = Object.assign({ message: 'Your target is suspicious. They are a member of the mafia!' }, defaultInfo);
             }
             else {
-                events[a][Date.now()] = 'Your target is not suspicious.';
+                events[a][ts] = Object.assign({ message: 'Your target is not suspicious.' }, defaultInfo);
             }
             break;
         case 'B':
             lobby[choices[a]].flag[a] = (v, lobby) => {
                 if (!roles_1.default[lobby[v].roleId].sneak) {
-                    events[a][Date.now()] = `${lobby[v].name} visited your target last night!`;
+                    events[a][ts] = Object.assign({ message: `${lobby[v].name} visited your target last night!` }, defaultInfo);
                 }
             };
             break;
@@ -191,10 +196,10 @@ function _action(a, lobby, choices, events) {
         case 'Q':
             if (!roles_1.default[lobby[choices[a]].roleId].rbi) {
                 choices[choices[a]] = -1;
-                events[choices[a]][Date.now()] = 'You were distracted last night.';
+                events[choices[a]][ts] = Object.assign({ message: 'You were distracted last night.' }, defaultInfo);
             }
             else {
-                events[choices[a]][Date.now()] = 'Someone tried to distract you, but you were not affected.';
+                events[choices[a]][ts] = Object.assign({ message: 'Someone tried to distract you, but you were not affected.' }, defaultInfo);
             }
             break;
         case 'I':
@@ -202,7 +207,7 @@ function _action(a, lobby, choices, events) {
                 lobby[a].health[a] = 100;
                 lobby[a].flag[a] = (v, lobby) => {
                     lobby[v].health[a] = -1;
-                    events[a][Date.now()] = 'You shot someone who visited you!';
+                    events[a][ts] = Object.assign({ message: 'You shot someone who visited you!' }, defaultInfo);
                 };
             }
             break;
