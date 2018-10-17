@@ -3,6 +3,9 @@ import LinearGradient from 'react-native-linear-gradient'
 
 import Header from './temp/Header';
 import Body from './temp/Body';
+import Footer from './temp/Footer'
+import Lobby from './components/Lobby'
+import MyRole from './components/MyRole';
 
 class GameView extends Component {
     render() {
@@ -15,6 +18,7 @@ class GameView extends Component {
             >
                 <Header/>
                 <Body/>
+                <Footer/>
             </LinearGradient>
         )
     }
