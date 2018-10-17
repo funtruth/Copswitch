@@ -32,7 +32,7 @@ class LobbyModal extends Component {
         Animated.timing(
             this.state.modalVal, {
                 toValue: val ? 1 : 0,
-                duration: 350,
+                duration: 250,
                 useNativeDriver: true
             }
         ).start()
@@ -77,7 +77,7 @@ const styles = {
         position: 'absolute',
         top: 0, bottom: 0,
         left: 0, right: 0,
-        backgroundColor: 'rgba(0,0,0,0.4)',
+        backgroundColor: 'rgba(0,0,0,0.6)',
     },
     safezone: {
         position: 'absolute',
