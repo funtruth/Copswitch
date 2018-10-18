@@ -13,8 +13,7 @@ const _ = require("lodash");
 const roles_1 = require("./roles");
 function onPlayerDamaged(snap, roomId, uid) {
     return __awaiter(this, void 0, void 0, function* () {
-        let lobby = yield db.get(`rooms/${roomId}/lobby`);
-        let gameState = yield db.get(`rooms/${roomId}/gameState`);
+        let { lobby, gameState } = yield db.get(`rooms/${roomId}`);
         let timestamp = Date.now();
         let defaultInfo = {
             timestamp,

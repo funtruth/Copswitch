@@ -50,6 +50,8 @@ function onGameStatusUpdate(change, roomId) {
                 counter: 0,
                 phase: 0,
                 dayNum: 1,
+                nominate: null,
+                veto: 0,
             },
             config: {
                 status: 'statusType/game'

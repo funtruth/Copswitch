@@ -3,8 +3,7 @@ import * as _ from 'lodash'
 import roles from './roles';
 
 async function onPlayerDamaged(snap, roomId, uid) {
-    let lobby = await db.get(`rooms/${roomId}/lobby`)
-    let gameState = await db.get(`rooms/${roomId}/gameState`)
+    let { lobby, gameState } = await db.get(`rooms/${roomId}`)
     let timestamp = Date.now()
     let defaultInfo = {
         timestamp,

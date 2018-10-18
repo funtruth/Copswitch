@@ -85,6 +85,7 @@ const styles = {
         backgroundColor: '#384959',
         padding: 10,
         marginTop: 10,
+        borderRadius: 2,
     },
     time: {
         fontFamily: 'Roboto-Medium',

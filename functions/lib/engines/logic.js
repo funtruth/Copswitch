@@ -36,14 +36,14 @@ function onVote(choices, rss) {
                 timestamp: ts,
                 counter: rss.gameState.counter,
             },
-            gameState: Object.assign({}, setGameState(rss.gameState.counter + 1), { nominate }),
+            gameState: Object.assign({}, setGameState(rss.gameState.counter + 1), { nominate, veto: rss.gameState.veto + 1 }),
             choice: null,
             ready: null
         };
     }
     else if (ballotCount >= playerNum) {
         return {
-            gameState: Object.assign({}, setGameState(rss.gameState.counter + 2), { nominate: null }),
+            gameState: Object.assign({}, setGameState(rss.gameState.counter + 2), { nominate: null, veto: rss.gameState.veto }),
             choice: null,
             ready: null
         };
@@ -80,6 +80,7 @@ function onTrial(votes, rss) {
         counter: rss.gameState.counter,
     };
     let nextCounter;
+    let nextVeto;
     if (gVotes.length > iVotes.length) {
         rss.lobby[rss.nominate].dead = true;
         news[timestamp + 1] = {
@@ -88,6 +89,7 @@ function onTrial(votes, rss) {
             counter: rss.gameState.counter,
         };
         nextCounter = rss.gameState.counter + 1;
+        nextVeto = 0;
     }
     else {
         news[timestamp + 1] = {
@@ -95,12 +97,19 @@ function onTrial(votes, rss) {
             timestamp,
             counter: rss.gameState.counter
         };
-        nextCounter = rss.gameState.counter - 1;
+        if (rss.gameState.veto === 3) {
+            nextCounter = rss.gameState.counter + 1;
+            nextVeto = 0;
+        }
+        else {
+            nextCounter = rss.gameState.counter - 1;
+            nextVeto = rss.gameState.veto + 1;
+        }
     }
     return {
         news,
         lobby: rss.lobby,
-        gameState: Object.assign({}, setGameState(nextCounter), { nominate: null }),
+        gameState: Object.assign({}, setGameState(nextCounter), { nominate: null, veto: nextVeto }),
         ready: null,
         choice: null,
     };
@@ -133,7 +142,7 @@ function onNight(choices, rss) {
     return {
         events,
         lobby,
-        gameState: setGameState(rss.gameState.counter + 1),
+        gameState: Object.assign({}, setGameState(rss.gameState.counter + 1), { nominate: null, veto: 0 }),
         choice: null,
         ready: null,
     };
