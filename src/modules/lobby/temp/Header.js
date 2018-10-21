@@ -4,9 +4,12 @@ import {
     Text,
     TouchableOpacity,
 }   from 'react-native'
+import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { leaveLobby } from '../LobbyReducer'
+
+import { Constants } from '../../common/config'
 
 class Header extends Component {
     _leaveLobby = () => {

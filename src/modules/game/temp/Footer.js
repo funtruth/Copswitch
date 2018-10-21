@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { showViewByKey } from '../GameReducer'
-import { Tabs, Constants } from '../config'
+import { GameTabs, Constants } from '../../common/config'
 
 class Footer extends Component {
     constructor(props) {
@@ -56,7 +56,7 @@ class Footer extends Component {
     render() {
         return (
             <View style={styles.tabs}>
-                {Tabs.map(this._renderTab)}
+                {GameTabs.map(this._renderTab)}
             </View>
         )
     }

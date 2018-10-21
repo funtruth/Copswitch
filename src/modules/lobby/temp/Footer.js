@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { showViewByKey } from '../LobbyReducer'
-import { Tabs, Constants } from '../config'
+import { LobbyTabs, Constants } from '../../common/config'
 
 class Footer extends Component {
     constructor(props) {
@@ -56,7 +56,7 @@ class Footer extends Component {
     render() {
         return (
             <View style={styles.tabs}>
-                {Tabs.map(this._renderTab)}
+                {LobbyTabs.map(this._renderTab)}
             </View>
         )
     }

@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import { StatusBar, BackHandler } from 'react-native'
 import { connect } from 'react-redux'
 
+import { showModalByKey } from '../modules/common/ViewReducer'
+
 class AndroidHandler extends Component {
     componentDidMount() {
         BackHandler.addEventListener('hardwareBackPress', this.handleBackPress);
@@ -12,6 +14,11 @@ class AndroidHandler extends Component {
     }
 
     handleBackPress = () => {
+        if (this.props.modalView) {
+            this.props.showModalByKey()
+        } else {
+            
+        }
         return true
     }
 
@@ -23,8 +30,10 @@ class AndroidHandler extends Component {
 }
 
 export default connect(
-    null,
+    state => ({
+        modalView: state.view.modalView,
+    }),
     {
-
+        showModalByKey,
     }
 )(AndroidHandler)

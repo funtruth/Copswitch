@@ -4,7 +4,7 @@ import {
 }   from 'react-native'
 import { connect } from 'react-redux'
 
-import { Tabs } from '../config'
+import { GameTabs } from '../../common/config'
 
 class Body extends Component {
     _renderBody = (item, index) => {
@@ -17,7 +17,7 @@ class Body extends Component {
     render() {
         return (
             <View style={styles.body}>
-                {Tabs.map(this._renderBody)}
+                {GameTabs.map(this._renderBody)}
             </View>
         )
     }

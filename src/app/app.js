@@ -4,6 +4,7 @@ import { store, persistor } from '../redux/store';
 import { PersistGate } from 'redux-persist/integration/react'
 
 import AppNavigator from "../modules/navigation/AppNavigator";
+import AlertView from '../modules/common/alerts/AlertView'
 import AndroidHandler from '../components/AndroidHandler';
 import NavigationTool from '../modules/navigation/NavigationTool'
 import DevTool from '../components/dev/DevTool';
@@ -18,6 +19,7 @@ class App extends Component {
                             NavigationTool.setContainer(navigatorRef)
                         }}
                     />
+                    <AlertView/>
                     <AndroidHandler/>
                     <DevTool/>
                 </PersistGate>

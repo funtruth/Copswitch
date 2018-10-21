@@ -8,9 +8,9 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import {modalType} from '../../common/types'
-import { Constants } from '../config'
+import { Constants } from '../../common/config'
 import { GameInfo } from '@library';
-import { showModalByKey } from '../GameReducer'
+import { showModalByKey } from '../../common/ViewReducer'
 
 const { Phases } = GameInfo
 
