@@ -1,13 +1,13 @@
 import {db} from '@services'
+import { showGameViewByKey } from '../common/ViewReducer'
+import {gameViewType} from '../common/types'
 
 const initialState = {
     nameState: 'name',
-    mainView: 'game',
     myReady: null,
 }
 
 const TOGGLE_NAME_STATE = 'game/toggle_name_state'
-const SHOW_VIEW_BY_KEY = 'game/show-view-by-key'
 const MY_READY_CHANGED = 'game/my-ready-changed'
 
 export function toggleNameState() {
@@ -21,39 +21,35 @@ export function toggleNameState() {
     }
 }
 
-export function showViewByKey(key) {
-    return (dispatch) => {
-        dispatch({
-            type: SHOW_VIEW_BY_KEY,
-            payload: key
-        })
-    }
-}
-
 export function playerChoice(val) {
     return (dispatch, getState) => {
         const { loading } = getState()
         const { roomId } = loading
         const uid = db.getUid()
+        const ready = val !== null
         db.update(
             `rooms/${roomId}`,
             {
                 [`choice/${uid}`]: val,
-                [`ready/${uid}`]: val !== null ? true : null,
+                [`ready/${uid}`]: ready,
             }
         )
 
         dispatch({
             type: MY_READY_CHANGED,
-            payload: val !== null
+            payload: ready
         })
+        dispatch(
+            showGameViewByKey(ready ? gameViewType.waiting : gameViewType.game)
+        )
     }
 }
 
 export function myReadyChanged(nBool) {
     return (dispatch, getState) => {
-        const { loading } = getState()
+        const { loading, game } = getState()
         const { roomId } = loading
+        const { myReady } = game
 
         dispatch({
             type: MY_READY_CHANGED,
@@ -65,6 +61,11 @@ export function myReadyChanged(nBool) {
                 true
             )
         }
+        if (!myReady && nBool) {
+            dispatch(
+                showGameViewByKey(gameViewType.waiting)
+            )
+        }
     }
 }
 
@@ -72,8 +73,6 @@ export default (state = initialState, action) => {
     switch(action.type){
         case TOGGLE_NAME_STATE:
             return { ...state, nameState: action.payload }
-        case SHOW_VIEW_BY_KEY:
-            return { ...state, mainView: action.payload }
         case MY_READY_CHANGED:
             return { ...state, myReady: action.payload }
         default:

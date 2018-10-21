@@ -7,6 +7,8 @@ import {
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import { playerChoice } from '../GameReducer'
+
 class LobbyList extends Component {
     _renderIcon = (item) => {
         return (
@@ -27,7 +29,7 @@ class LobbyList extends Component {
         return (
             <TouchableOpacity 
                 style = {styles.player}
-                onPress = {() => this._onPress(item)}
+                onPress = {this._onPress.bind(this, item)}
                 activeOpacity={item.dead?1:0.2}
             >
                 <Text style = {styles.name}>{item.name}</Text>
@@ -36,7 +38,9 @@ class LobbyList extends Component {
         )
     }
 
-    _onPress = () => {
+    _onPress = (item) => {
+        //algorithm that checks, returns error if not applicable
+        this.props.playerChoice(item.uid)
     }
 
     render() {
@@ -45,6 +49,7 @@ class LobbyList extends Component {
                 data={this.props.lobby}
                 renderItem={this._renderItem}
                 contentContainerStyle={styles.flatlist}
+                numColumns={2}
                 keyExtractor={item => item.uid}
             />
         )
@@ -53,19 +58,23 @@ class LobbyList extends Component {
 
 const styles = {
     flatlist: {
-        flex: 1,
-        backgroundColor: '#1e2125',
+        padding: 11,
     },
     player:{
+        flex: 1,
         flexDirection:'row',
         alignItems:'center',
+        backgroundColor: '#384959',
+        padding: 10,
+        margin: 4,
+        borderRadius: 2,
     },
     name: {
         fontFamily: 'Roboto-Regular',
         fontSize: 16,
         margin: 3,
         marginLeft: 8,
-        color: '#a8a8a8',
+        color: '#fff',
     },
 }
 
@@ -74,4 +83,7 @@ export default connect(
         lobby: state.lobby.lobby,
         ready: state.lobby.ready,
     }),
+    {
+        playerChoice,
+    }
 )(LobbyList)

@@ -5,7 +5,6 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 
-import { Constants } from '../config'
 import LobbyModalHeader from './LobbyModalHeader'
 import LobbyModalFooter from './LobbyModalFooter'
 import { showModalByKey } from '../ViewReducer'
@@ -78,11 +77,11 @@ const styles = {
         top: 0, bottom: 0,
         left: 0, right: 0,
         backgroundColor: 'rgba(0,0,0,0.6)',
+        justifyContent: 'center',
     },
     safezone: {
         position: 'absolute',
-        top: Constants.headerHeight - 10, bottom: Constants.footerHeight - 15,
-        left: 20, right: 20,
+        left: 8, right: 8,
         backgroundColor: '#2a2d32',
         borderRadius: 2,
         borderWidth: 0.5,

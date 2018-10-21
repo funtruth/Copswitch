@@ -7,8 +7,8 @@ import {
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import { showViewByKey, playerChoice } from '../GameReducer'
-import Waiting from '../components/Waiting'
+import { playerChoice } from '../GameReducer'
+import { showGameViewByKey } from '../../common/ViewReducer'
 import { GameInfo } from '@library';
 
 const { Phases } = GameInfo
@@ -39,7 +39,7 @@ class GameChoice extends Component {
                 this.props.playerChoice(onPress)
                 break
             case 'string':
-                this.props.showViewByKey(onPress)
+                this.props.showGameViewByKey(onPress)
                 break
             default:
         }
@@ -50,7 +50,6 @@ class GameChoice extends Component {
         return (
             <View style={styles.footer}>
                 {Phases[gameState.phase].choices.map(this._renderOption)}
-                <Waiting/>
             </View>
         )
     }
@@ -86,7 +85,7 @@ export default connect(
         gameState: state.lobby.gameState,
     }),
     {
-        showViewByKey,
+        showGameViewByKey,
         playerChoice,
     }
 )(GameChoice)

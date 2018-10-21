@@ -1,3 +1,5 @@
+import {gameViewType} from '../modules/common/types'
+
 export const Games = [{
     'Mafia': {
         settings: {
@@ -45,7 +47,7 @@ export const Phases = {
                 label: 'Vote',
                 detail: 'Put someone\non trial',
                 icon: 'ios-compass',
-                onPress: 'lobby',
+                onPress: gameViewType.lobby,
             },
             {
                 label: 'Abstain',

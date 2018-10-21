@@ -8,7 +8,7 @@ import { GameTabs } from '../../common/config'
 
 class Body extends Component {
     _renderBody = (item, index) => {
-        if (item.key !== this.props.mainView) return null
+        if (item.key !== this.props.gameView) return null
         return (
             <item.Component key={index}/>
         )
@@ -31,6 +31,6 @@ const styles = {
 
 export default connect(
     state => ({
-        mainView: state.game.mainView,
+        gameView: state.view.gameView,
     }),
 )(Body)
