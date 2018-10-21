@@ -6,6 +6,9 @@ import NavigationTool from '../navigation/NavigationTool'
 import { myReadyChanged } from '../game/GameReducer';
 
 const initialState = {
+    //ui
+    lobbyView: 'game',
+
     //lobby
     config: {
         owner: false,
@@ -28,6 +31,9 @@ const initialState = {
     ready: {},
 }
 
+//UI
+const SHOW_VIEW_BY_KEY = 'lobby/show-view-by-key'
+
 //lobby
 const LOBBY_LISTENER = 'lobby/lobby_listener'
 const CONFIG_LISTENER = 'lobby/config-listener'
@@ -40,6 +46,15 @@ const NEWS_LISTENER = 'game/news_listener'
 const EVENTS_LISTENER = 'game/events_listener'
 
 const RESET = 'lobby/reset'
+
+export function showViewByKey(key) {
+    return (dispatch) => {
+        dispatch({
+            type: SHOW_VIEW_BY_KEY,
+            payload: key
+        })
+    }
+}
 
 export function leaveLobby(){
     return (dispatch, getState) => {
@@ -196,6 +211,9 @@ const areThereDuplicateNames = (lobby) => {
 
 export default (state = initialState, action) => {
     switch(action.type){
+        case SHOW_VIEW_BY_KEY:
+            return { ...state, lobbyView: action.payload }
+            
         case CONFIG_LISTENER:
             return { ...state, config: action.payload }
         case LOBBY_LISTENER:

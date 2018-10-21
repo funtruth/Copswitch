@@ -4,40 +4,25 @@ import {
     Text,
     TouchableOpacity,
 }   from 'react-native'
-import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import {modalType} from '../../common/types'
-import { Constants } from '../config'
-import { GameInfo } from '@library';
-import { showModalByKey } from '../GameReducer'
-
-const { Phases } = GameInfo
+import { leaveLobby } from '../LobbyReducer'
 
 class Header extends Component {
-    _showLobby = () => {
-        this.props.showModalByKey(modalType.lobby)
+    _leaveLobby = () => {
+        this.props.leaveLobby()
     }
 
     _showPersonal = () => {
-        this.props.showModalByKey(modalType.myRole)
     }
 
     _getTitle() {
-        const { gameState } = this.props
-        if (gameState.phase === 1) {
-            return Phases[gameState.phase].name
-        }
-        return `${Phases[gameState.phase].name} ${gameState.dayNum}`
+        const { roomId } = this.props
+        return roomId
     }
 
     _getMessage() {
-        const { gameState, lobby } = this.props
-        if (lobby.length === 0) return ''
-        if (gameState.phase === 1) {
-            return Phases[gameState.phase].message + lobby.find(i => i.uid === gameState.nominate).name
-        }
-        return Phases[gameState.phase].message
+        return 'Lobby Code'
     }
 
     render() {
@@ -52,31 +37,16 @@ class Header extends Component {
                     activeOpacity={0.6}
                 >
                     <Icon
-                        name="ios-people"
+                        name="ios-arrow-round-back"
                         size={25}
                         color="#fff"
                     />
-                    <Text style={styles.label}>Players</Text>
+                    <Text style={styles.label}>Leave</Text>
                 </TouchableOpacity>
                 <View>
                     <Text style={styles.title}>{this._getTitle()}</Text>
                     <Text style={styles.subtitle}>{this._getMessage()}</Text>
                 </View>
-                <TouchableOpacity
-                    style={[
-                        styles.item,
-                        { right: 20 }
-                    ]}
-                    onPress={this._showPersonal}
-                    activeOpacity={0.6}
-                >
-                    <Icon
-                        name="ios-contact"
-                        size={25}
-                        color="#fff"
-                    />
-                    <Text style={styles.label}>My Role</Text>
-                </TouchableOpacity>
             </View>
         )
     }
@@ -115,10 +85,9 @@ const styles = {
 
 export default connect(
     state => ({
-        gameState: state.lobby.gameState,
-        lobby: state.lobby.lobby,
+        roomId: state.loading.roomId,
     }),
     {
-        showModalByKey,
+        leaveLobby,
     }
 )(Header)

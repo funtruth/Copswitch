@@ -7,7 +7,7 @@ import {
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import { showViewByKey } from '../GameReducer'
+import { showViewByKey } from '../LobbyReducer'
 import { Tabs, Constants } from '../config'
 
 class Footer extends Component {

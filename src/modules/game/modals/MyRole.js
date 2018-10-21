@@ -6,8 +6,9 @@ import {
 import { connect } from 'react-redux'
 import _ from 'lodash'
 
+import {modalType} from '../../common/types'
 import {Roles} from '@library'
-import LobbyModal from '../modal/LobbyModal';
+import LobbyModal from '../../common/modals/LobbyModal';
 
 class MyRole extends Component {
     _renderTitle() {
@@ -60,7 +61,7 @@ class MyRole extends Component {
 
         return (
             <LobbyModal
-                type="myRole"
+                type={modalType.myRole}
                 title="My Role Information"
             >
                 {this._renderTitle()}

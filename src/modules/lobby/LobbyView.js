@@ -1,25 +1,14 @@
 import React, { Component } from 'react';
-import {
-    ScrollView,
-    Dimensions,
-}   from 'react-native';
 import { connect } from 'react-redux'
-import { leaveLobby } from './LobbyReducer'
 import { inGameStatus } from '../loading/LoadingReducer'
 import LinearGradient from 'react-native-linear-gradient'
 
 import NavigationTool from '../navigation/NavigationTool'
-import { Header } from '@components'
 import {statusType} from '../common/types'
 
-import LobbyPlayerView from './screens/LobbyPlayerView'
-import LobbyNameModal from './screens/LobbyNameModal'
-import LobbyRolesView from './screens/LobbyRolesView'
-import LobbySetupView from './screens/LobbySetupView'
-
-import LobbyOptionView from './components/LobbyOptionView'
-
-const { height, width } = Dimensions.get('window')
+import Header from './temp/Header';
+import Footer from './temp/Footer';
+import MyName from './modals/MyName';
 
 class LobbyView extends Component {
     componentWillReceiveProps(newProps){
@@ -31,28 +20,16 @@ class LobbyView extends Component {
     }
     
     render() {
-        const { roomId, leaveLobby } = this.props
-        const { container, content, contentContainer } = styles
+        const { container } = styles
 
         return (
-            <LinearGradient colors={['#3A2F26', '#2E2620']} style={container}>
-                <Header icon='angle-left' onPress={leaveLobby}>{roomId}</Header>
-                <ScrollView
-                    style={content}
-                    contentContainerStyle={contentContainer}
-                    horizontal={true}
-                    pagingEnabled={true}
-                >
-                    <LobbyPlayerView
-                        lobby={this.props.lobby}
-                    />
-                    <LobbySetupView/>
-                </ScrollView>
-                <LobbyOptionView/>
-                <LobbyNameModal
-                    name={this.props.name}
-                    lobby={this.props.lobby}
-                />
+            <LinearGradient
+                colors={['#3A2F26', '#2E2620']}
+                style={container}
+            >
+                <Header/>
+                <Footer/>
+                <MyName/>
             </LinearGradient>
         )
     }
@@ -64,25 +41,15 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'center'
     },
-    content: {
-        height: 0.7*height,
-        width,
-        borderWidth: 1
-    },
-    contentContainer: {
-        justifyContent: 'center'
-    }
 }
 
 export default connect(
     state => ({
-        roomId: state.loading.roomId,
         lobby: state.lobby.lobby,
         myInfo: state.lobby.myInfo,
         config: state.lobby.config,
     }),
     {
         inGameStatus,
-        leaveLobby,
     }
 )(LobbyView)

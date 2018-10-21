@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
 import { Constants } from '../config'
 import LobbyModalHeader from './LobbyModalHeader'
 import LobbyModalFooter from './LobbyModalFooter'
-import { showModalByKey } from '../GameReducer'
+import { showModalByKey } from '../ViewReducer'
 
 const AnimatedOpacity = Animated.createAnimatedComponent(TouchableOpacity)
 
@@ -94,7 +94,7 @@ const styles = {
 
 export default connect(
     state => ({
-        modalView: state.game.modalView,
+        modalView: state.view.modalView,
     }),
     {
         showModalByKey,

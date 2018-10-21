@@ -7,10 +7,7 @@ import {
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
-import {modalType} from '../../common/types'
-import LobbyModal from '../../common/modals/LobbyModal';
-
-class LobbyList extends Component {
+class Lobby extends Component {
     _renderIcon = (item) => {
         return (
             <Icon
@@ -34,7 +31,6 @@ class LobbyList extends Component {
                 activeOpacity={item.dead?1:0.2}
             >
                 <Text style = {styles.name}>{item.name}</Text>
-                <View style={{ marginLeft: 'auto' }}/>
                 {icons.map(this._renderIcon)}
             </TouchableOpacity>
         )
@@ -45,30 +41,24 @@ class LobbyList extends Component {
 
     render() {
         return (
-            <LobbyModal
-                type={modalType.lobby}
-                title="List of Players"
-            >
-                <FlatList
-                    data={this.props.lobby}
-                    renderItem={this._renderItem}
-                    contentContainerStyle={styles.flatlist}
-                    keyExtractor={item => item.uid}
-                />
-            </LobbyModal>
+            <FlatList
+                data={this.props.lobby}
+                renderItem={this._renderItem}
+                contentContainerStyle={styles.flatlist}
+                keyExtractor={item => item.uid}
+            />
         )
     }
 }
 
 const styles = {
     flatlist: {
-        flex: -1,
+        flex: 1,
+        backgroundColor: '#1e2125',
     },
     player:{
         flexDirection:'row',
         alignItems:'center',
-        marginBottom: 8,
-        backgroundColor: '#1e2125',
     },
     name: {
         fontFamily: 'Roboto-Regular',
@@ -84,4 +74,4 @@ export default connect(
         lobby: state.lobby.lobby,
         ready: state.lobby.ready,
     }),
-)(LobbyList)
+)(Lobby)

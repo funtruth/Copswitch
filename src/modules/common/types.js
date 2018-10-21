@@ -19,3 +19,9 @@ export const listenerType = {
 export const configType = {
     gameMode: 'gameMode/classic',
 }
+
+export const modalType = {
+    myName: 'lobby/myName',
+    lobby: 'game/lobby',
+    myRole: 'game/myRole',
+}
