@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import { StatusBar, BackHandler } from 'react-native'
 import { connect } from 'react-redux'
 
-import { showModalByKey } from '../modules/common/ViewReducer'
+import {gameViewType} from '../modules/common/types'
+import { showModalByKey, showGameViewByKey } from '../modules/common/ViewReducer'
 
 class AndroidHandler extends Component {
     componentDidMount() {
@@ -17,7 +18,12 @@ class AndroidHandler extends Component {
         if (this.props.modalView) {
             this.props.showModalByKey()
         } else {
-            
+            switch(this.props.gameView) {
+                case gameViewType.lobby:
+                    this.props.showGameViewByKey(gameViewType.game)
+                    break
+                default:
+            }
         }
         return true
     }
@@ -32,8 +38,10 @@ class AndroidHandler extends Component {
 export default connect(
     state => ({
         modalView: state.view.modalView,
+        gameView: state.view.gameView,
     }),
     {
         showModalByKey,
+        showGameViewByKey,
     }
 )(AndroidHandler)
