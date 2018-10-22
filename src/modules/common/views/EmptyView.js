@@ -12,7 +12,7 @@ class EmptyView extends Component {
                 <Icon
                     name="ios-leaf"
                     size={25}
-                    color="#fff"
+                    color="#c6c6c6"
                 />
                 <Text style={styles.subtitle}>
                     {`There is\nnothing here`}
@@ -30,7 +30,7 @@ const styles = {
     subtitle: {
         fontFamily: 'Roboto-Regular',
         fontSize: 12,
-        color: '#e6e6e6',
+        color: '#c6c6c6',
         textAlign: 'center',
     },
 }

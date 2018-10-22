@@ -3,10 +3,9 @@ import {
     View,
     Text,
     FlatList,
-    TouchableOpacity,
 } from 'react-native'
 import { connect } from 'react-redux'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import Icon from 'react-native-vector-icons/Ionicons'
 
 import {modalType} from '../../common/types'
 import LobbyModal from '../../common/modals/LobbyModal';
@@ -25,23 +24,20 @@ class LobbyList extends Component {
 
     _renderItem = ({item}) => {
         let icons = []
-        if (item.dead) icons.push('skull')
-        if (this.props.ready && this.props.ready[item.uid]) icons.push('check-circle')
+        if (item.dead) icons.push('ios-hand')
+        if (this.props.ready && this.props.ready[item.uid]) icons.push('md-checkmark')
 
         return (
-            <TouchableOpacity 
-                style = {styles.player}
-                onPress = {() => this._onPress(item)}
-                activeOpacity={item.dead?1:0.2}
+            <View
+                style = {[
+                    styles.player
+                ]}
             >
                 <Text style = {styles.name}>{item.name}</Text>
                 <View style={{ marginLeft: 'auto' }}/>
                 {icons.map(this._renderIcon)}
-            </TouchableOpacity>
+            </View>
         )
-    }
-
-    _onPress = () => {
     }
 
     render() {
@@ -54,6 +50,7 @@ class LobbyList extends Component {
                     data={this.props.lobby}
                     renderItem={this._renderItem}
                     contentContainerStyle={styles.flatlist}
+                    numColumns={2}
                     keyExtractor={item => item.uid}
                 />
             </LobbyModal>
@@ -66,17 +63,19 @@ const styles = {
         flex: -1,
     },
     player:{
+        flex: 1,
         flexDirection:'row',
         alignItems:'center',
-        marginBottom: 8,
+        margin: 4,
         backgroundColor: '#1e2125',
+        paddingLeft: 8,
+        paddingRight: 8,
     },
     name: {
         fontFamily: 'Roboto-Regular',
         fontSize: 16,
-        margin: 3,
-        marginLeft: 8,
-        color: '#a8a8a8',
+        margin: 4,
+        color: '#dfdfdf',
     },
 }
 

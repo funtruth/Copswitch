@@ -6,6 +6,7 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import LinearGradient from 'react-native-linear-gradient'
 
 import { playerChoice } from '../GameReducer'
 
@@ -32,6 +33,12 @@ class LobbyList extends Component {
                 onPress = {this._onPress.bind(this, item)}
                 activeOpacity={item.dead?1:0.2}
             >
+                <LinearGradient
+                    colors={['rgba(66,72,81,1)', 'rgba(50,55,61,1)']}
+                    start={{x: 0, y: 0}}
+                    end={{x: 0, y: 1}}
+                    style={styles.gradient}
+                />
                 <Text style = {styles.name}>{item.name}</Text>
                 {icons.map(this._renderIcon)}
             </TouchableOpacity>
@@ -60,14 +67,18 @@ const styles = {
     flatlist: {
         padding: 11,
     },
+    gradient: {
+        position: 'absolute',
+        top: 0, bottom: 0,
+        left: 0, right: 0,
+        borderRadius: 2,
+    },
     player:{
         flex: 1,
         flexDirection:'row',
         alignItems:'center',
-        backgroundColor: '#384959',
-        padding: 10,
+        padding: 8,
         margin: 4,
-        borderRadius: 2,
     },
     name: {
         fontFamily: 'Roboto-Regular',

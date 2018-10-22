@@ -46,13 +46,13 @@ export const Phases = {
             { 
                 label: 'Vote',
                 detail: 'Put someone\non trial',
-                icon: 'ios-compass',
+                icon: 'ios-create',
                 onPress: gameViewType.lobby,
             },
             {
                 label: 'Abstain',
                 detail: 'Get ready\nto sleep',
-                icon: 'ios-megaphone',
+                icon: 'ios-hand',
                 onPress: -1,
             }
         ],

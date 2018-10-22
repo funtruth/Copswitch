@@ -69,7 +69,7 @@ const styles = {
         alignItems: 'center',
         justifyContent: 'center',
         borderTopWidth: 1,
-        borderTopColor: '#b6b6b6',
+        borderTopColor: '#464646',
     },
     item: {
         alignItems: 'center',
