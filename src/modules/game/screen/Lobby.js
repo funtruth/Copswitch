@@ -5,7 +5,7 @@ import {
     TouchableOpacity,
 } from 'react-native'
 import { connect } from 'react-redux'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import Icon from 'react-native-vector-icons/Ionicons'
 import LinearGradient from 'react-native-linear-gradient'
 
 import { playerChoice } from '../GameReducer'
@@ -24,8 +24,8 @@ class LobbyList extends Component {
 
     _renderItem = ({item}) => {
         let icons = []
-        if (item.dead) icons.push('skull')
-        if (this.props.ready && this.props.ready[item.uid]) icons.push('check-circle')
+        if (item.dead) icons.push('ios-hand')
+        if (this.props.ready && this.props.ready[item.uid]) icons.push('md-checkmark')
 
         return (
             <TouchableOpacity 

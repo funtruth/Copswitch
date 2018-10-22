@@ -8,6 +8,7 @@ import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
 import { showGameViewByKey } from '../../common/ViewReducer'
+import {gameViewType} from '../../common/types'
 import { GameTabs, Constants } from '../../common/config'
 
 class Footer extends Component {
@@ -47,10 +48,14 @@ class Footer extends Component {
     }
 
     _onPress = (index, key) => {
-        this.props.showGameViewByKey(key)
         this.setState({
             tabIndex: index
         })
+        if (index === 1 && this.props.myReady) {
+            this.props.showGameViewByKey(gameViewType.waiting)
+        } else {
+            this.props.showGameViewByKey(key)
+        }
     }
 
     render() {
@@ -84,7 +89,9 @@ const styles = {
 }
 
 export default connect(
-    null,
+    state => ({
+        myReady: state.game.myReady,
+    }),
     {
         showGameViewByKey,
     }

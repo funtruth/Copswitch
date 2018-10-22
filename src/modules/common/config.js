@@ -8,7 +8,7 @@ import News from '../game/screen/News'
 import GameChoice from '../game/screen/GameChoice'
 import Events from '../game/screen/Events'
 import LobbyList from '../game/screen/Lobby'
-import Waiting from '../game/components/Waiting';
+import Waiting from '../game/screen/Waiting';
 
 export const LobbyTabs = [
     {
