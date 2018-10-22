@@ -1,16 +1,23 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux'
-import { inGameStatus } from '../loading/LoadingReducer'
 import LinearGradient from 'react-native-linear-gradient'
 
+import { inGameStatus } from '../loading/LoadingReducer'
+import { showModalByKey } from '../common/ViewReducer'
+
 import NavigationTool from '../navigation/NavigationTool'
-import {statusType} from '../common/types'
+import {statusType, modalType} from '../common/types'
 
 import Header from './temp/Header';
 import Footer from './temp/Footer';
 import MyName from './modals/MyName';
-
+import Body from './temp/Body';
+    
 class LobbyView extends Component {
+    componentDidMount() {
+        this.props.showModalByKey(modalType.myName)
+    }
+
     componentWillReceiveProps(newProps){
         if(newProps.config.status === statusType.pregame){
             //TODO move to reducer?
@@ -28,6 +35,7 @@ class LobbyView extends Component {
                 style={container}
             >
                 <Header/>
+                <Body/>
                 <Footer/>
                 <MyName/>
             </LinearGradient>
@@ -37,9 +45,9 @@ class LobbyView extends Component {
 
 const styles = {
     container:{
+        backgroundColor: '#2a3743',
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center'
+        width: '100%',
     },
 }
 
@@ -51,5 +59,6 @@ export default connect(
     }),
     {
         inGameStatus,
+        showModalByKey,
     }
 )(LobbyView)

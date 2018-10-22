@@ -1,11 +1,15 @@
 
 import React, { Component } from 'react';
-import { 
+import {
+    Text,
     TextInput
 } from 'react-native'
+import { connect } from 'react-redux'
+
 import {modalType} from '../../common/types'
 
-import { nameUtil, fuseService } from '@services'
+import { db, nameUtil, fuseService } from '@services'
+import { showModalByKey } from '../../common/ViewReducer'
 
 import LobbyModal from '../../common/modals/LobbyModal';
 
@@ -16,7 +20,8 @@ class MyName extends Component {
     constructor(props){
         super(props)
         this.state = {
-            name: ''
+            name: '',
+            invalidChars: ' ',
         }
     }
 
@@ -40,7 +45,10 @@ class MyName extends Component {
         const { valid, invalidChars } = nameUtil.checkIfValidName(name, {allowSpaces: true})
 
         if (!valid) {
-            console.log('invalid characters', invalidChars)
+            this.setState({
+                invalidChars
+            })
+            this.refs.textInput.focus()
             return
         }
 
@@ -49,6 +57,7 @@ class MyName extends Component {
             return
         }
 
+        this.props.showModalByKey()
         db.updateUsername(name)
     }
 
@@ -62,20 +71,23 @@ class MyName extends Component {
             <LobbyModal
                 type={modalType.myName}
                 title="Edit Name"
+                forced
             >
                 <TextInput
                     ref = 'textInput'
                     keyboardType='default'
                     autoFocus
                     autoCapitalize='words'
-                    underlineColorAndroid={'transparent'}
+                    underlineColorAndroid={this.state.invalidChars !== ' ' ? '#ca4444' : 'transparent'}
                     value = {this.state.name}
-                    placeholder='ENTER NAME'
+                    placeholder='Choose a nickname ...'
+                    placeholderTextColor="#d6d6d6"
                     maxLength={maxCharLen}
                     style={styles.textInput}
                     onChangeText = {this.onChange}
                     onSubmitEditing = {this._onSubmitEditing}
                 />
+                <Text style={styles.error}>{this.state.invalidChars}</Text>
             </LobbyModal>
         )
     }
@@ -84,12 +96,22 @@ class MyName extends Component {
 const styles = {
     textInput: {
         fontFamily:'Roboto-Regular',
-        fontSize: 218,
+        fontSize: 15,
+        lineHeight: 18,
         color: '#fff',
-        textAlign:'center',
-        justifyContent:'center',
-        borderRadius: 2
+        paddingLeft: 8, paddingRight: 8,
     },
+    error: {
+        fontFamily:'Roboto-Regular',
+        fontSize: 11,
+        color: '#ca4444',
+        paddingLeft: 8, paddingRight: 8,
+    }
 }
 
-export default MyName
+export default connect(
+    null,
+    {
+        showModalByKey,
+    }
+)(MyName)
