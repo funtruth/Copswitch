@@ -1,4 +1,4 @@
-import { NavigationActions } from 'react-navigation'
+import { NavigationActions, StackActions } from 'react-navigation'
 
 let _container;
 
@@ -8,16 +8,11 @@ function setContainer(container){
 
 function reset(routeName){
     _container.dispatch(
-        NavigationActions.reset({
+        StackActions.reset({
             index: 0,
-            actions: [
-                NavigationActions.navigate({
-                    type: 'Navigation/NAVIGATE',
-                    routeName
-                })
-            ]
+            actions: [NavigationActions.navigate({ routeName })],
         })
-    )
+    );
 }
 
 function back(){

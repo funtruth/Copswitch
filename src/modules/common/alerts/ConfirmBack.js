@@ -4,19 +4,21 @@ import {
     Text,
     TouchableOpacity,
 } from 'react-native'
+import { connect } from 'react-redux'
 
 import NavigationTool from '../../navigation/NavigationTool'
+
+import { showAlertByKey } from '../ViewReducer'
+import { reset } from '../../loading/LoadingReducer'
 
 class ConfirmBack extends Component {
     _onConfirm = () => {
         let routeName = NavigationTool.getCurrentRoute().routeName
         switch(routeName) {
             case 'Lobby':
-                this.props.onClose()
-                NavigationTool.back()
-                break
             case 'Game':
-                this.props.onClose()
+                this.props.showAlertByKey()
+                this.props.reset()
                 NavigationTool.reset('HomeNav')
                 break
             default:
@@ -115,4 +117,10 @@ const styles = {
     },
 }
 
-export default ConfirmBack
+export default connect(
+    null,
+    {
+        reset,
+        showAlertByKey,
+    }
+)(ConfirmBack)

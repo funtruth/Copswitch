@@ -47,9 +47,7 @@ class AlertView extends Component {
         switch(this.props.alertView) {
             case alertType.confirmBack:
                 return (
-                    <ConfirmBack
-                        onClose={this._onClose}
-                    />
+                    <ConfirmBack/>
                 )
             default:
                 return null

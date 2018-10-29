@@ -31,7 +31,9 @@ class LobbyView extends Component {
 
         return (
             <LinearGradient
-                colors={['#3A2F26', '#2E2620']}
+                colors={['#374e60', '#222']}
+                start={{x:0, y:0}}
+                end={{x:0, y:1}}
                 style={container}
             >
                 <Header/>
