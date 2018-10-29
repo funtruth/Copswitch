@@ -20,6 +20,10 @@ export const configType = {
     gameMode: 'gameMode/classic',
 }
 
+export const alertType = {
+    confirmBack: 'alert/confirmBack',
+}
+
 export const modalType = {
     myName: 'lobby/myName',
     lobby: 'game/lobby',

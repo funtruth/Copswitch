@@ -4,9 +4,6 @@ const initialState = {
     modalView: null,
 
     alertView: null,
-    alertConfig: {
-        onPress: null,
-    },
 
     lobbyView: lobbyViewType.game,
 
