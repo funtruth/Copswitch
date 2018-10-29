@@ -19,9 +19,6 @@ class Game extends Component {
                 <Animated.View
                     style={[
                         styles.item,
-                        {
-                            opacity: this.state.myReadyVal,
-                        }
                     ]}
                 >
                     <Icon

@@ -53,7 +53,6 @@ class Lobby extends Component {
 
 const styles = {
     flatlist: {
-        flex: 1,
         backgroundColor: '#1e2125',
     },
     player:{

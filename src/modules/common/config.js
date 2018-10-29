@@ -1,4 +1,4 @@
-import {gameViewType} from './types'
+import {lobbyViewType, gameViewType} from './types'
 
 import Game from '../lobby/screen/Game'
 import Roles from '../lobby/screen/Roles'
@@ -14,19 +14,19 @@ export const LobbyTabs = [
     {
         label: 'Roles',
         icon: 'ios-grid',
-        key: 'roles',
+        key: lobbyViewType.roles,
         Component: Roles,
     },
     {
         label: 'Game',
         icon: 'ios-flash',
-        key: 'game',
+        key: lobbyViewType.game,
         Component: Game,
     },
     {
         label: 'Players',
         icon: 'ios-people',
-        key: 'lobby',
+        key: lobbyViewType.lobby,
         Component: Lobby,
     },
 ]

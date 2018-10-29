@@ -31,9 +31,9 @@ export const modalType = {
 }
 
 export const lobbyViewType = {
-    roles: 'gameView/roles',
-    game: 'gameView/game',
-    lobby: 'gameView/lobby',
+    roles: 'lobbyView/roles',
+    game: 'lobbyView/game',
+    lobby: 'lobbyView/lobby',
 }
 
 export const gameViewType = {

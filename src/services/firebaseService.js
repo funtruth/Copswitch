@@ -73,9 +73,9 @@ class FirebaseService{
         firebase.database().ref(`rooms/${this.roomId}`).remove()
     }
 
-    updateUsername(newName){
-        firebase.database().ref(`rooms/${this.roomId}/lobby/${this.uid}`).update({
-            name:newName,
+    updateUsername(newName, roomId){
+        firebase.database().ref(`rooms/${roomId}/lobby/${this.uid}`).update({
+            name: newName,
         })
     }
 

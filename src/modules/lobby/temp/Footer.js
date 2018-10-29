@@ -7,7 +7,7 @@ import {
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import { showViewByKey } from '../LobbyReducer'
+import { showLobbyViewByKey } from '../../common/ViewReducer'
 import { LobbyTabs, Constants } from '../../common/config'
 
 class Footer extends Component {
@@ -47,7 +47,7 @@ class Footer extends Component {
     }
 
     _onPress = (index, key) => {
-        this.props.showViewByKey(key)
+        this.props.showLobbyViewByKey(key)
         this.setState({
             tabIndex: index
         })
@@ -86,6 +86,6 @@ const styles = {
 export default connect(
     null,
     {
-        showViewByKey,
+        showLobbyViewByKey,
     }
 )(Footer)

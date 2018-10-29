@@ -22,10 +22,18 @@ class MyName extends Component {
     constructor(props){
         super(props)
         this.state = {
-            name: '',
+            name: props.myInfo.name,
             error: null,
         }
         this.refocus = false
+    }
+
+    componentWillReceiveProps(newProps) {
+        if (newProps.myInfo.name !== this.props.myInfo.name) {
+            this.setState({
+                name: newProps.myInfo.name
+            })
+        }
     }
 
     onChange = (text) => {
@@ -74,7 +82,7 @@ class MyName extends Component {
         }
 
         this.props.showModalByKey()
-        db.updateUsername(name)
+        db.updateUsername(name, this.props.roomId)
     }
 
     _onDonePress = () => {
@@ -154,7 +162,10 @@ const styles = {
 }
 
 export default connect(
-    null,
+    state => ({
+        roomId: state.loading.roomId,
+        myInfo: state.lobby.myInfo,
+    }),
     {
         showModalByKey,
     }
