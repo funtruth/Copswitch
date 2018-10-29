@@ -58,14 +58,13 @@ export function showViewByKey(key) {
 
 export function leaveLobby(){
     return (dispatch, getState) => {
-        const { owner } = getState().lobby.config
+        //const { owner } = getState().lobby.config
 
         dispatch(clearListeners())
         
-        if(owner) db.deleteRoom()
-        else db.leaveLobby()
+        //if(owner) db.deleteRoom()
+        //else db.leaveLobby()
 
-        NavigationTool.navigate("Home")
         dispatch({
             type: RESET
         })

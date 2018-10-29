@@ -7,13 +7,14 @@ import {
 import { connect } from 'react-redux'
 import Icon from 'react-native-vector-icons/Ionicons'
 
-import { leaveLobby } from '../LobbyReducer'
+import { showAlertByKey } from '../../common/ViewReducer'
 
 import { Constants } from '../../common/config'
+import {alertType} from '../../common/types'
 
 class Header extends Component {
     _leaveLobby = () => {
-        this.props.leaveLobby()
+        this.props.showAlertByKey(alertType.confirmBack)
     }
 
     _showPersonal = () => {
@@ -36,7 +37,7 @@ class Header extends Component {
                         styles.item,
                         { left: 20 }
                     ]}
-                    onPress={this._showLobby}
+                    onPress={this._leaveLobby}
                     activeOpacity={0.6}
                 >
                     <Icon
@@ -91,6 +92,6 @@ export default connect(
         roomId: state.loading.roomId,
     }),
     {
-        leaveLobby,
+        showAlertByKey,
     }
 )(Header)

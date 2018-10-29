@@ -8,10 +8,15 @@ import { connect } from 'react-redux'
 
 import NavigationTool from '../../navigation/NavigationTool'
 
+import { leaveLobby } from '../../lobby/LobbyReducer'
 import { showAlertByKey } from '../ViewReducer'
 import { reset } from '../../loading/LoadingReducer'
 
 class ConfirmBack extends Component {
+    _onClose = () => {
+        this.props.showAlertByKey()
+    }
+    
     _onConfirm = () => {
         let routeName = NavigationTool.getCurrentRoute().routeName
         switch(routeName) {
@@ -20,6 +25,7 @@ class ConfirmBack extends Component {
                 this.props.showAlertByKey()
                 this.props.reset()
                 NavigationTool.reset('HomeNav')
+                this.props.leaveLobby()
                 break
             default:
         }
@@ -59,7 +65,7 @@ class ConfirmBack extends Component {
                 <Text style={styles.title}>{title}</Text>
                 <Text style={styles.subtitle}>{subtitle}</Text>
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.cancel} onPress={this.props.onClose}>
+                    <TouchableOpacity style={styles.cancel} onPress={this._onClose}>
                         <Text style={styles.cancelText}>{cancel}</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.confirm} onPress={this._onConfirm}>
@@ -120,6 +126,7 @@ const styles = {
 export default connect(
     null,
     {
+        leaveLobby,
         reset,
         showAlertByKey,
     }
