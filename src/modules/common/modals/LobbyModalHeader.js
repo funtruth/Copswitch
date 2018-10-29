@@ -13,7 +13,7 @@ class LobbyModalHeader extends Component {
         return (
             <View style={styles.header}>
                 <Text style={styles.title}>{this.props.title}</Text>
-                {!this.props.forced && <TouchableOpacity
+                {!this.props.hideX && <TouchableOpacity
                     style={styles.closeButton}
                     hitSlop={{top: 10, bottom: 10, right: 10, left: 10}}
                     onPress={this.props.onClose}
@@ -31,6 +31,7 @@ const styles = {
         width: '100%',
         flexDirection: 'row',
         alignItems: 'center',
+        marginTop: 8,
     },
     closeButton: {
         marginLeft: 'auto',

@@ -1,8 +1,10 @@
 
 import React, { Component } from 'react';
 import {
+    View,
     Text,
-    TextInput
+    TextInput,
+    TouchableOpacity,
 } from 'react-native'
 import { connect } from 'react-redux'
 
@@ -21,8 +23,9 @@ class MyName extends Component {
         super(props)
         this.state = {
             name: '',
-            invalidChars: ' ',
+            error: null,
         }
+        this.refocus = false
     }
 
     onChange = (text) => {
@@ -31,14 +34,27 @@ class MyName extends Component {
         })
     }
 
+    //modalBackground pressed
+    _onClose = () => {
+        this.setState({
+            error: `You must pick a name before playing`
+        })
+        this.refocus = true
+    }
+
+    _onBlur = () => {
+        if (this.refocus) {
+            this.refs.textInput.focus()
+        }
+    }
+
     checkName = (name) => {
-        if(!name){
-            //must give a name
-            return
-        } 
-        
-        if(name.length < minCharLen){
+        if(!name || name.length < minCharLen){
             //too short
+            this.setState({
+                error: `Your name must be at least ${minCharLen} characters in length`,
+            })
+            this.refocus = true
             return
         }
 
@@ -46,9 +62,9 @@ class MyName extends Component {
 
         if (!valid) {
             this.setState({
-                invalidChars
+                error: `The characters "${invalidChars.join(', ')}" are invalid`,
             })
-            this.refs.textInput.focus()
+            this.refocus = true
             return
         }
 
@@ -61,6 +77,10 @@ class MyName extends Component {
         db.updateUsername(name)
     }
 
+    _onDonePress = () => {
+        this.checkName(this.state.name.trim())
+    }
+
     _onSubmitEditing = (event) => {
         let name = event.nativeEvent.text.trim()
         this.checkName(name)
@@ -71,14 +91,15 @@ class MyName extends Component {
             <LobbyModal
                 type={modalType.myName}
                 title="Edit Name"
-                forced
+                hideX
+                onPress={this._onClose}
             >
                 <TextInput
                     ref = 'textInput'
                     keyboardType='default'
                     autoFocus
                     autoCapitalize='words'
-                    underlineColorAndroid={this.state.invalidChars !== ' ' ? '#ca4444' : 'transparent'}
+                    underlineColorAndroid={this.state.error ? '#ca4444' : '#d6d6d6'}
                     value = {this.state.name}
                     placeholder='Choose a nickname ...'
                     placeholderTextColor="#d6d6d6"
@@ -86,8 +107,14 @@ class MyName extends Component {
                     style={styles.textInput}
                     onChangeText = {this.onChange}
                     onSubmitEditing = {this._onSubmitEditing}
+                    onBlur={this._onBlur}
                 />
-                <Text style={styles.error}>{this.state.invalidChars}</Text>
+                <View style={styles.bottom}>
+                    <Text style={styles.error}>{this.state.error}</Text>
+                    <TouchableOpacity style={styles.cancel} onPress={this._onDonePress}>
+                        <Text style={styles.cancelText}>{'Done'}</Text>
+                    </TouchableOpacity>
+                </View>
             </LobbyModal>
         )
     }
@@ -106,7 +133,24 @@ const styles = {
         fontSize: 11,
         color: '#ca4444',
         paddingLeft: 8, paddingRight: 8,
-    }
+        marginBottom: 8,
+    },
+    bottom: {
+        flexDirection: 'row',
+    },
+    cancel: {
+        backgroundColor: '#2a2d32',
+        marginLeft: 'auto',
+        paddingLeft: 12, paddingRight: 12,
+        paddingTop: 6,
+        paddingBottom: 8
+    },
+    cancelText: {
+        fontFamily: 'Roboto-Regular',
+        fontSize: 15,
+        lineHeight: 17,
+        color: '#fff',
+    },
 }
 
 export default connect(

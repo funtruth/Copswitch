@@ -85,12 +85,12 @@ const styles = {
         fontFamily: 'Roboto-Regular',
         fontSize: 14,
         lineHeight: 16,
-        color: '#fff',
+        color: '#d6d6d6',
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'flex-end',
-        marginBottom: 8,
+        marginBottom: 6,
         marginTop: 16,
     },
     cancel: {

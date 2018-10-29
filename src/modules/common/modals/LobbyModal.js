@@ -45,7 +45,6 @@ class LobbyModal extends Component {
     
     render() {
         if (!this.state.visible) return null
-        const { forced } = this.props
 
         return (
             <AnimatedOpacity
@@ -55,8 +54,7 @@ class LobbyModal extends Component {
                         opacity: this.state.modalVal,
                     }
                 ]}
-                onPress={this._onClose}
-                disabled={forced}
+                onPress={this.props.onPress || this._onClose}
                 activeOpacity={1}
             >
                 <TouchableOpacity
@@ -66,7 +64,7 @@ class LobbyModal extends Component {
                     <LobbyModalHeader
                         title={this.props.title}
                         onClose={this._onClose}
-                        forced={forced}
+                        hideX={this.props.hideX}
                     />
                     {this.props.children}
                     <LobbyModalFooter/>
