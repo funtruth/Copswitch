@@ -1,51 +1,46 @@
 import React, { Component } from 'react'
 import {
+    View,
     Text,
     FlatList,
     TouchableOpacity,
 } from 'react-native'
 import { connect } from 'react-redux'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import Icon from 'react-native-vector-icons/Ionicons'
 
-class Roles extends Component {
-    _renderIcon = (item) => {
-        return (
-            <Icon
-                key={item}
-                name={item}
-                size={15}
-                color="#fff"
-            />
-        )
+import {Roles} from '@library'
+
+class RoleView extends Component {
+    _onPress = (item) => {
+        
     }
 
     _renderItem = ({item}) => {
-        let icons = []
-        if (item.dead) icons.push('skull')
-        if (this.props.ready && this.props.ready[item.uid]) icons.push('check-circle')
-
         return (
             <TouchableOpacity 
-                style = {styles.player}
-                onPress = {() => this._onPress(item)}
-                activeOpacity={item.dead?1:0.2}
+                style={styles.player}
+                onPress={this._onPress.bind(this, item)}
             >
-                <Text style = {styles.name}>{item.name}</Text>
-                {icons.map(this._renderIcon)}
+                <View style={{ flex: 0.6 }}>
+                    <Text style={styles.label}>{'Role'}</Text>
+                    <Text style={styles.name}>{Roles[item.key].name}</Text>
+                </View>
+                <View style={{ flex: 0.3, alignItems: 'center' }}>
+                    <Text style={styles.label}>{'Count'}</Text>
+                    <Text style={styles.name}>{item.count}</Text>
+                </View>
+                <Icon name="ios-information-circle" size={25} color={'#fff'}/>
             </TouchableOpacity>
         )
-    }
-
-    _onPress = () => {
     }
 
     render() {
         return (
             <FlatList
-                data={this.props.lobby}
+                data={this.props.roles}
                 renderItem={this._renderItem}
                 contentContainerStyle={styles.flatlist}
-                keyExtractor={item => item.uid}
+                keyExtractor={item => item.key}
             />
         )
     }
@@ -53,25 +48,30 @@ class Roles extends Component {
 
 const styles = {
     flatlist: {
-        flex: 1,
-        backgroundColor: '#1e2125',
+        padding: 8,
     },
     player:{
         flexDirection:'row',
         alignItems:'center',
+        padding: 4,
+        alignSelf: 'center',
+    },
+    label: {
+        fontFamily: 'Roboto-Medium',
+        fontSize: 13,
+        lineHeight: 14,
+        color: '#d6d6d6',
     },
     name: {
         fontFamily: 'Roboto-Regular',
-        fontSize: 16,
-        margin: 3,
-        marginLeft: 8,
-        color: '#a8a8a8',
+        fontSize: 17,
+        lineHeight: 19,
+        color: '#fff',
     },
 }
 
 export default connect(
     state => ({
-        lobby: state.lobby.lobby,
-        ready: state.lobby.ready,
+        roles: state.lobby.config.roles,
     }),
-)(Roles)
+)(RoleView)

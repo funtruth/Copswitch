@@ -5,38 +5,47 @@ import {
     TouchableOpacity,
 } from 'react-native'
 import { connect } from 'react-redux'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
+import Icon from 'react-native-vector-icons/Ionicons'
+
+import {db} from '@services'
+import {modalType} from '../../common/types'
+
+import { showModalByKey } from '../../common/ViewReducer'
 
 class Lobby extends Component {
+    _onPress = () => {
+        this.props.showModalByKey(modalType.myName)
+    }
+
     _renderIcon = (item) => {
         return (
             <Icon
                 key={item}
                 name={item}
-                size={15}
+                size={18}
                 color="#fff"
+                style={{ marginRight: 8 }}
             />
         )
     }
 
     _renderItem = ({item}) => {
         let icons = []
-        if (item.dead) icons.push('skull')
-        if (this.props.ready && this.props.ready[item.uid]) icons.push('check-circle')
+        let meFlag = item.uid === db.getUid()
+        let isOwner = item.uid === this.props.owner
+        if (meFlag) icons.push('md-create')
+        if (isOwner) icons.push('ios-star')
 
         return (
             <TouchableOpacity 
-                style = {styles.player}
-                onPress = {() => this._onPress(item)}
-                activeOpacity={item.dead?1:0.2}
+                style={styles.player}
+                onPress={this._onPress}
+                disabled={!meFlag}
             >
                 <Text style = {styles.name}>{item.name}</Text>
                 {icons.map(this._renderIcon)}
             </TouchableOpacity>
         )
-    }
-
-    _onPress = () => {
     }
 
     render() {
@@ -53,24 +62,33 @@ class Lobby extends Component {
 
 const styles = {
     flatlist: {
-        backgroundColor: '#1e2125',
+        padding: 8,
     },
     player:{
         flexDirection:'row',
         alignItems:'center',
+        backgroundColor: '#1e2125',
+        width: '100%',
+        padding: 12,
+        marginBottom: 8,
+        borderRadius: 2,
     },
     name: {
         fontFamily: 'Roboto-Regular',
         fontSize: 16,
-        margin: 3,
         marginLeft: 8,
-        color: '#a8a8a8',
+        marginRight: 8,
+        color: '#fff',
     },
 }
 
 export default connect(
     state => ({
+        owner: state.lobby.config.owner,
         lobby: state.lobby.lobby,
         ready: state.lobby.ready,
     }),
+    {
+        showModalByKey,
+    }
 )(Lobby)

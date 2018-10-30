@@ -22,13 +22,14 @@ class MyName extends Component {
     constructor(props){
         super(props)
         this.state = {
-            name: props.myInfo.name,
+            name: null,
             error: null,
         }
         this.refocus = false
     }
 
     componentWillReceiveProps(newProps) {
+        if (newProps.myInfo.name === undefined || this.props.myInfo.name === undefined) return
         if (newProps.myInfo.name !== this.props.myInfo.name) {
             this.setState({
                 name: newProps.myInfo.name
@@ -44,6 +45,9 @@ class MyName extends Component {
 
     //modalBackground pressed
     _onClose = () => {
+        if (this.props.myInfo.name) {
+            return this.props.showModalByKey()
+        }
         this.setState({
             error: `You must pick a name before playing`
         })
@@ -86,7 +90,7 @@ class MyName extends Component {
     }
 
     _onDonePress = () => {
-        this.checkName(this.state.name.trim())
+        this.checkName(this.state.name)
     }
 
     _onSubmitEditing = (event) => {

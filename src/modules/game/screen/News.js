@@ -6,6 +6,8 @@ import {
 } from 'react-native'
 import { connect } from 'react-redux'
 
+import EmptyView from '../../common/views/EmptyView'
+
 class News extends Component {
     constructor(props) {
         super(props)
@@ -72,6 +74,7 @@ class News extends Component {
                 contentContainerStyle={styles.flatlist}
                 inverted
                 keyExtractor={item => item.timestamp.toString()}
+                ListEmptyComponent={<EmptyView/>}
             />
         )
     }

@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import * as helpers from '../common/helpers'
 
 import {db} from '@services'
 import {statusType, listenerType} from '../common/types'
@@ -7,12 +8,14 @@ import { myReadyChanged } from '../game/GameReducer';
 const initialState = {
     //lobby
     config: {
-        owner: false,
+        owner: null,
         status: statusType.lobby,
         roles: [],
     },
     lobby: [],
-    myInfo: {},
+    myInfo: {
+        name: '',
+    },
 
     //game
     gameState: {
@@ -96,9 +99,9 @@ function newLobbyInfo(key, snap){
                 dispatch({
                     type: CONFIG_LISTENER,
                     payload: {
-                        owner: snap.owner === db.getUid(),
+                        owner: snap.owner,
                         status: snap.status,
-                        roles: _.sortBy(snap.roles, i => i),
+                        roles: helpers.sortRoles(snap.roles),
                     }
                 })
                 break
@@ -158,25 +161,23 @@ function clearListeners(){
 
 export function startPregame() {
     return (dispatch, getState) => {
-        const { config, lobby } = getState().lobby
-        const { roles } = config
+        const { lobby, loading } = getState()
+        const { roles } = lobby.config
 
         //TODO show error message
-        if (areThereDuplicateNames(lobby)) {
-
+        if (areThereDuplicateNames(lobby.lobby)) {
             return
         }
 
         let rolesLen = 0
-        let lobbyLen = Object.keys(lobby).length
 
-        for(var i in roles){
-            rolesLen += roles[i]
+        for(var i=0; i<roles.length; i++){
+            rolesLen += roles[i].count
         }
 
-        if(rolesLen === lobbyLen){
-            let statusRef = db.fetchRoomRef('config/status')
-            statusRef.set(statusType.pregame)
+        if(rolesLen === lobby.lobby.length){
+            let statusRef = db.fetchRoomRef('config', loading.roomId)
+            statusRef.update({ status: statusType.pregame })
         } else {
             //TODO show extra logic
         }
@@ -185,9 +186,9 @@ export function startPregame() {
 
 const areThereDuplicateNames = (lobby) => {
     let names = {}
-    for (uid in lobby) {
-        if (names[lobby[uid].name]) return true
-        names[lobby[uid].name] = true
+    for (var i=0; i<lobby.length; i++) {
+        if (names[lobby[i].name]) return true
+        names[lobby[i].name] = true
     }
     return false
 } 

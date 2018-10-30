@@ -59,8 +59,8 @@ class FirebaseService{
         return firebase.database().ref(path)
     }
 
-    fetchRoomRef(path){
-        return firebase.database().ref(`rooms/${this.roomId}/${path}`)
+    fetchRoomRef(path, roomId){
+        return firebase.database().ref(`rooms/${roomId}/${path}`)
     }
 
     leaveLobby(){
