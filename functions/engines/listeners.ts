@@ -58,26 +58,19 @@ async function onGameStatusUpdate(change, roomId) {
     )
 }
 
-async function onPlayerChoiceHandler(choices, roomId) {
-    let roomSnapshot = await db.get(`rooms/${roomId}`)
-    let playerNum = helpers.getPlayerCount(roomSnapshot.lobby)
-    let triggerNum = helpers.getTriggerNum(playerNum)
-    let gamePhase = roomSnapshot.gameState.phase
-
-    let total = Object.keys(choices).length;
-    let batch = {}
-
-    if (gamePhase == 0 && total >= triggerNum){
-        batch = logic.onVote(choices, roomSnapshot)
-    } else if (gamePhase == 1 && total >= playerNum - 1){
-        batch = logic.onTrial(choices, roomSnapshot)
-    } else if (gamePhase == 2 && total >= playerNum){
-        batch = logic.onNight(choices, roomSnapshot)
-    } else {
-        return
+async function onPlayerChoiceHandler(roomId:number) {
+    let rss = await db.get(`rooms/${roomId}`)
+    let data = {
+        updates: {},
+        timestamp: Date.now(),
     }
 
-    return db.update(`rooms/${roomId}`, batch)
+    const phase = rss.gameState.phase
+    const phaseListener = rss.library[phase] && rss.library[phase].phaseListener
+
+    Function(`return ${phaseListener}`)()(rss, data)
+
+    return db.update(`rooms/${roomId}`, data.updates)
 }
 
 async function onPlayerLoadHandler(loaded, roomId) {

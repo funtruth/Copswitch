@@ -26,7 +26,7 @@ exports.onPlayerLoad = functions.database.ref('/rooms/{roomId}/loaded')
     .onUpdate((change, event) => onPlayerLoadHandler(change.after.val(), event.params.roomId))
 
 exports.onPlayerChoice = functions.database.ref('/rooms/{roomId}/choice')
-    .onUpdate((change, event) => onPlayerChoiceHandler(change.after.val(), event.params.roomId))
+    .onUpdate((change, event) => onPlayerChoiceHandler(event.params.roomId))
 
 //game events
 exports.onPlayerDamaged = functions.database.ref(`rooms/{roomId}/lobby/{uid}/health`)
