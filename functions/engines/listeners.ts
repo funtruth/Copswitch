@@ -60,17 +60,17 @@ async function onGameStatusUpdate(change, roomId) {
 
 async function onPlayerChoiceHandler(roomId:number) {
     let rss = await db.get(`rooms/${roomId}`)
-    let data = {
+    let write = {
         updates: {},
-        timestamp: Date.now(),
+        ts: Date.now(),
     }
 
     const phase = rss.gameState.phase
     const phaseListener = rss.library[phase] && rss.library[phase].phaseListener
 
-    Function(`return ${phaseListener}`)()(rss, data)
+    Function(`return ${phaseListener}`)()(rss, write)
 
-    return db.update(`rooms/${roomId}`, data.updates)
+    return db.update(`rooms/${roomId}`, write.updates)
 }
 
 async function onPlayerLoadHandler(loaded, roomId) {
